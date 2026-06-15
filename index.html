@@ -457,7 +457,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helv
 .cmt-q-meta{font-size:10px;color:var(--faint);display:flex;gap:6px;}
 .cmt-q-meta span{padding:2px 6px;background:var(--glass2);border-radius:4px;}
 .cmt-q-text{font-size:14px;color:var(--txt);line-height:1.7;margin-bottom:16px;}
-.cmt-q-text .katex{font-size:1.05em;}
+.cmt-q-text .katex{font-size:1.15em;}
+#m-cmt-confirm{z-index:800!important;}
+#m-cmt-confirm .md{position:relative;}
 .cmt-q-opts{display:flex;flex-direction:column;gap:8px;}
 .cmt-q-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .25s var(--ease-spring);background:var(--glass);}
 .cmt-q-opt:hover{border-color:var(--border2);background:var(--glass2);}
@@ -2309,34 +2311,74 @@ function cmtUpdateYearRange(){
   const info=document.getElementById('cmt-year-info');
   if(info)info.textContent=`${e-s+1} years selected (${s}–${e})`;
 }
-function cmtGetPrompt(){
-  const subjList=cmtConfig.subjects.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(', ');
-  const chList=[];
-  cmtConfig.subjects.forEach(s=>{
-    const chs=cmtConfig.chapters[s];
-    if(chs&&chs.length)chs.forEach(ch=>chList.push(`${ch} (${s})`));
-  });
-  const diff=cmtConfig.difficulty==='advanced'?'JEE Advanced level':'JEE Mains level';
-  const yearNote=(cmtConfig.source==='pyq'||cmtConfig.source==='mix')?` Focus on questions from years ${cmtConfig.yearStart} to ${cmtConfig.yearEnd}.`:'';
-  const sourceNote=cmtConfig.source==='pyq'?'Use only real past JEE exam questions.':''; 
-  const mcqLine=cmtConfig.mcq?`Generate ${cmtConfig.mcq} MCQ questions with 4 options (A/B/C/D), exactly 1 correct answer.`:'';
-  const intLine=cmtConfig.intQ?`Generate ${cmtConfig.intQ} integer-type questions where the answer is a numerical value (integer or up to 2 decimal places).`:'';
-  const multiLine=cmtConfig.multiQ?`Generate ${cmtConfig.multiQ} multiple-correct MCQ questions with 4 options (A/B/C/D), where 2 or more options are correct.`:'';
-  return `Generate a JEE mock test with ${cmtConfig.totalQ} questions for subjects: ${subjList}.${chList.length?' Chapters: '+chList.join(', ')+'.':''} Difficulty: ${diff}.${yearNote}${sourceNote}
-${mcqLine}
-${intLine}
-${multiLine}
-For EACH question, return a JSON array. Each element must be an object with these exact keys:
-- "num": question number (1,2,3...)
-- "subject": "physics" or "chemistry" or "maths"
-- "chapter": chapter name
-- "mode": "mcq" or "int" or "multi"
-- "question": full question text (use $...$ for inline math, $$...$$ for display math)
-- "options": array of 4 option strings for MCQ/multi, or empty array [] for integer
-- "answer": for MCQ the correct letter "A"/"B"/"C"/"D", for multi an array like ["A","C"], for int the number as string like "42"
-- "solution": brief solution explanation (1-3 sentences)
-Return ONLY the JSON array, no markdown, no explanation.`;
+function cmtGetBatchPrompt(subject,mode,count,diff,batchNum,totalBatches){
+  const subjLabel=subject.charAt(0).toUpperCase()+subject.slice(1);
+  const chList=cmtConfig.chapters[subject];
+  const chNote=chList&&chList.length?` Focus on these chapters: ${chList.join(', ')}.`:'';
+  const diffNote=diff==='advanced'?'JEE Advanced':'JEE Mains';
+  const yearNote=(cmtConfig.source==='pyq'||cmtConfig.source==='mix')?` Base these on real JEE questions from ${cmtConfig.yearStart}–${cmtConfig.yearEnd}.`:'';
+  const modeLabel=mode==='mcq'?'single-correct MCQ (exactly 1 correct out of 4)':mode==='multi'?'multiple-correct MCQ (2 or more correct out of 4)':'integer-type (numerical answer, integer or up to 2 decimals)';
+  const answerFormat=mode==='mcq'?'"answer": "B" (single letter)':mode==='multi'?'"answer": ["A","C"] (array of correct letters)':'"answer": "42" (string of the number)';
+  const exampleMCQ=mode==='mcq'?`
+EXAMPLE QUESTION (JEE-level MCQ):
+{
+  "subject": "${subject}",
+  "chapter": "Mechanics",
+  "mode": "mcq",
+  "question": "A block of mass $m$ slides down a smooth inclined plane of angle $\\theta$ with acceleration $a$. If the same block is placed on a rough incline with coefficient of friction $\\mu$, the new acceleration is:",
+  "options": ["$g\\sin\\theta - \\mu g\\cos\\theta$", "$g\\sin\\theta + \\mu g\\cos\\theta$", "$g\\cos\\theta - \\mu g\\sin\\theta$", "$g(\\sin\\theta - \\mu)$"],
+  "answer": "A",
+  "solution": "On rough surface, friction opposes motion: $ma = mg\\sin\\theta - \\mu mg\\cos\\theta$, giving $a = g\\sin\\theta - \\mu g\\cos\\theta$."
+}`:'';
+  const exampleINT=mode==='int'?`
+EXAMPLE QUESTION (JEE Integer-type):
+{
+  "subject": "${subject}",
+  "chapter": "Electrostatics",
+  "mode": "int",
+  "question": "Two point charges $+2q$ and $-q$ are placed at distance $d$ apart. The electric field at the midpoint between them has magnitude $\\frac{nq}{2\\pi\\epsilon_0 d^2}$. Find $n$.",
+  "options": [],
+  "answer": "3",
+  "solution": "At midpoint, fields add: $E = \\frac{2q}{4\\pi\\epsilon_0(d/2)^2} + \\frac{q}{4\\pi\\epsilon_0(d/2)^2} = \\frac{3q}{\\pi\\epsilon_0 d^2} = \\frac{3 \\cdot 4q}{4\\pi\\epsilon_0 d^2}$, so $n = 3$."
+}`:'';
+  const exampleMULTI=mode==='multi'?`
+EXAMPLE QUESTION (JEE Multi-correct):
+{
+  "subject": "${subject}",
+  "chapter": "Modern Physics",
+  "mode": "multi",
+  "question": "Which of the following statements about photoelectric effect are correct?",
+  "options": ["Stopping potential depends on intensity of incident light", "Maximum kinetic energy depends on frequency of incident light", "There is a threshold frequency below which no emission occurs", "Photoelectric current is proportional to intensity"],
+  "answer": ["B", "C", "D"],
+  "solution": "Stopping potential depends on frequency (not intensity). Max KE = hf - φ depends on frequency. Threshold frequency exists. Current ∝ intensity."
+}`:'';
+  return `You are a ${diffNote}-level ${subjLabel} question setter. Generate exactly ${count} high-quality ${modeLabel} questions for JEE preparation.${chNote}${yearNote}
+
+CRITICAL RULES:
+- Questions must be ORIGINAL, CHALLENGING, and EXAM-REALISTIC — not generic textbook problems
+- Each question should require deep conceptual understanding or multi-step calculation
+- Include a mix of conceptual, numerical, and application-based questions
+- Vary difficulty within ${diffNote} level (some moderate, some hard)
+- ALL math MUST use KaTeX syntax: inline $...$ and display $$...$$
+- Use \\times for multiplication, \\frac{a}{b} for fractions, \\sqrt{x} for roots, \\rightarrow for arrows
+- Do NOT use plain text for math. Every formula must be in $...$ delimiters
+
+${exampleMCQ}${exampleINT}${exampleMULTI}
+
+Return a JSON array with exactly ${count} objects. Each object:
+{
+  "subject": "${subject}",
+  "chapter": "chapter name",
+  "mode": "${mode}",
+  "question": "full question text with $KaTeX$ math",
+  "options": ${mode==='int'?'[]':'["option A","option B","option C","option D"]'},
+  "answer": ${answerFormat},
+  "solution": "1-3 sentence solution with $KaTeX$ math"
 }
+
+Return ONLY the JSON array. No markdown, no code blocks, no explanation.`;
+}
+function cmtIsMobile(){return navigator.maxTouchPoints>0&&window.innerWidth<768;}
 async function cmtGenerate(){
   if(cmtConfig.totalQ<5){toast('⚠️ Need at least 5 questions');return;}
   if(cmtConfig.totalQ>75){toast('⚠️ Maximum 75 questions');return;}
@@ -2347,50 +2389,120 @@ async function cmtGenerate(){
   }
   document.getElementById('cmt-gen-btn').disabled=true;
   document.getElementById('cmt-loading').style.display='flex';
-  document.getElementById('cmt-loading-title').textContent='Generating Questions...';
-  document.getElementById('cmt-loading-fill').style.width='10%';
-  document.getElementById('cmt-loading-sub').textContent='Building your custom test...';
   cmtAbortController=new AbortController();
-  const timeout=setTimeout(()=>{cmtAbortController.abort();},180000);
+  const isMobile=cmtIsMobile();
+  const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
+  const totalTimeout=setTimeout(()=>{cmtAbortController.abort();},300000);
   try{
-    const prompt=cmtGetPrompt();
-    let result;
-    if(cmtConfig.source==='pyq'){
-      document.getElementById('cmt-loading-sub').textContent='Searching PYQ database + AI generation...';
-      document.getElementById('cmt-loading-fill').style.width='30%';
+    const batches=cmtPlanBatches();
+    const totalBatches=batches.length;
+    document.getElementById('cmt-loading-title').textContent=`Generating ${cmtConfig.totalQ} Questions...`;
+    document.getElementById('cmt-loading-sub').textContent=`0/${totalBatches} batches complete`;
+    document.getElementById('cmt-loading-fill').style.width='5%';
+    let allQuestions=[];
+    if(isMobile){
+      for(let i=0;i<batches.length;i++){
+        if(cmtAbortController.signal.aborted)throw new Error('Cancelled');
+        const b=batches[i];
+        document.getElementById('cmt-loading-sub').textContent=`Batch ${i+1}/${totalBatches}: ${b.subject} ${b.mode.toUpperCase()} (${b.count} questions)`;
+        document.getElementById('cmt-loading-fill').style.width=Math.round(5+((i)/totalBatches)*90)+'%';
+        const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+1,totalBatches);
+        const raw=await cmtCallAI(prompt,'groq',settings);
+        const parsed=cmtParseBatchResponse(raw,b);
+        allQuestions=allQuestions.concat(parsed);
+      }
+    }else{
+      const PARALLEL=2;
+      for(let i=0;i<batches.length;i+=PARALLEL){
+        if(cmtAbortController.signal.aborted)throw new Error('Cancelled');
+        const chunk=batches.slice(i,i+PARALLEL);
+        document.getElementById('cmt-loading-sub').textContent=`Batches ${i+1}-${Math.min(i+PARALLEL,totalBatches)}/${totalBatches} (parallel)`;
+        document.getElementById('cmt-loading-fill').style.width=Math.round(5+((i)/totalBatches)*90)+'%';
+        const results=await Promise.allSettled(chunk.map((b,idx)=>{
+          const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+idx+1,totalBatches);
+          const prov=(idx%2===0)?'groq':'ollama';
+          return cmtCallAI(prompt,prov,settings);
+        }));
+        for(let j=0;j<results.length;j++){
+          const r=results[j];
+          const b=chunk[j];
+          if(r.status==='fulfilled'){
+            const parsed=cmtParseBatchResponse(r.value,b);
+            allQuestions=allQuestions.concat(parsed);
+          }else{
+            console.warn('Batch failed:',b,r.reason);
+          }
+        }
+      }
     }
-    result=await cmtCallAI(prompt);
-    clearTimeout(timeout);
-    document.getElementById('cmt-loading-fill').style.width='80%';
-    document.getElementById('cmt-loading-sub').textContent='Parsing questions...';
-    let parsed;
-    try{
-      let text=result.trim();
-      if(text.startsWith('```'))text=text.replace(/^```json?\n?/,'').replace(/\n?```$/,'');
-      parsed=JSON.parse(text);
-      if(!Array.isArray(parsed))throw new Error('Not an array');
-    }catch(e){
-      const match=result.match(/\[[\s\S]*\]/);
-      if(match)parsed=JSON.parse(match[0]);
-      else throw new Error('Could not parse AI response as JSON');
-    }
-    parsed=parsed.filter(q=>q&&q.question&&q.mode);
-    if(parsed.length<3)throw new Error('Too few valid questions received');
-    parsed.forEach((q,i)=>{
-      q.num=i+1;
-      if(!q.subject||!cmtConfig.subjects.includes(q.subject))q.subject=cmtConfig.subjects[i%cmtConfig.subjects.length];
-      if(!q.mode)q.mode='mcq';
+    clearTimeout(totalTimeout);
+    if(allQuestions.length<5)throw new Error('Too few questions generated. Try again.');
+    allQuestions.forEach((q,i)=>{q.num=i+1;});
+    cmtQuestions=allQuestions;
+    document.getElementById('cmt-loading-fill').style.width='100%';
+    document.getElementById('cmt-loading-sub').textContent=`${allQuestions.length} questions ready!`;
+    setTimeout(()=>{document.getElementById('cmt-loading').style.display='none';document.getElementById('cmt-gen-btn').disabled=false;cmtStartTest();},500);
+  }catch(err){
+    clearTimeout(totalTimeout);
+    document.getElementById('cmt-loading').style.display='none';
+    document.getElementById('cmt-gen-btn').disabled=false;
+    if(err.name!=='AbortError')toast('❌ '+err.message);
+  }
+}
+function cmtPlanBatches(){
+  const batches=[];
+  const types=[];
+  if(cmtConfig.mcq>0)types.push({mode:'mcq',count:cmtConfig.mcq});
+  if(cmtConfig.intQ>0)types.push({mode:'int',count:cmtConfig.intQ});
+  if(cmtConfig.multiQ>0)types.push({mode:'multi',count:cmtConfig.multiQ});
+  if(!types.length)types.push({mode:'mcq',count:cmtConfig.totalQ});
+  const totalTypeQ=types.reduce((s,t)=>s+t.count,0);
+  cmtConfig.subjects.forEach(subj=>{
+    const subjShare=Math.round(cmtConfig.totalQ/cmtConfig.subjects.length);
+    types.forEach(t=>{
+      const typeShare=Math.round(subjShare*t.count/totalTypeQ);
+      if(typeShare<=0)return;
+      for(let i=0;i<typeShare;i+=5){
+        batches.push({subject:subj,mode:t.mode,count:Math.min(5,typeShare-i)});
+      }
+    });
+  });
+  let totalGenerated=batches.reduce((s,b)=>s+b.count,0);
+  while(totalGenerated<cmtConfig.totalQ){
+    const subj=cmtConfig.subjects[batches.length%cmtConfig.subjects.length];
+    const need=Math.min(5,cmtConfig.totalQ-totalGenerated);
+    batches.push({subject:subj,mode:'mcq',count:need});
+    totalGenerated+=need;
+  }
+  return batches;
+}
+function cmtParseBatchResponse(raw,batch){
+  try{
+    let text=raw.trim();
+    if(text.startsWith('```'))text=text.replace(/^```json?\n?/,'').replace(/\n?```$/,'');
+    let parsed=JSON.parse(text);
+    if(!Array.isArray(parsed))throw new Error('not array');
+    return parsed.filter(q=>q&&q.question&&q.mode).map(q=>{
+      q.subject=batch.subject;
+      if(!q.mode)q.mode=batch.mode;
       if(!q.options)q.options=[];
       if(q.answer===undefined||q.answer===null)q.answer='';
       if(!q.solution)q.solution='';
+      return q;
     });
-    cmtQuestions=parsed;
-    document.getElementById('cmt-loading-fill').style.width='100%';
-    setTimeout(()=>{document.getElementById('cmt-loading').style.display='none';cmtStartTest();},400);
-  }catch(err){
-    document.getElementById('cmt-loading').style.display='none';
-    document.getElementById('cmt-gen-btn').disabled=false;
-    toast('❌ Generation failed: '+err.message);
+  }catch(e){
+    try{
+      const match=raw.match(/\[[\s\S]*\]/);
+      if(match){
+        let parsed=JSON.parse(match[0]);
+        return parsed.filter(q=>q&&q.question).map(q=>{
+          q.subject=batch.subject;if(!q.mode)q.mode=batch.mode;
+          if(!q.options)q.options=[];if(!q.solution)q.solution='';
+          return q;
+        });
+      }
+    }catch(e2){}
+    return [];
   }
 }
 function cmtCancelGeneration(){
@@ -2398,13 +2510,12 @@ function cmtCancelGeneration(){
   document.getElementById('cmt-loading').style.display='none';
   document.getElementById('cmt-gen-btn').disabled=false;
 }
-async function cmtCallAI(prompt){
-  const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
-  const provider=settings.provider||'groq';
+async function cmtCallAI(prompt,provider,settings){
+  settings=settings||JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
   if(provider==='ollama'){
     const url=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
     const model=settings.ollamaModel||'qwen2.5:3b';
-    const res=await fetch(url+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,prompt,stream:false,options:{temperature:0.7,num_predict:8192}}),signal:cmtAbortController.signal});
+    const res=await fetch(url+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,prompt,stream:false,options:{temperature:0.6,num_predict:4096}}),signal:cmtAbortController.signal});
     if(!res.ok)throw new Error('Ollama error '+res.status);
     const data=await res.json();return data.response;
   }else{
@@ -2412,10 +2523,20 @@ async function cmtCallAI(prompt){
     const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
     const model=settings.openaiModel||'llama-3.3-70b-versatile';
     if(!key)throw new Error('No API key — set one in Doubt Solver settings');
-    const res=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:8192}),signal:cmtAbortController.signal});
+    const res=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'system',content:'You are a JEE exam question setter. Return ONLY valid JSON arrays.'},{role:'user',content:prompt}],temperature:0.6,max_tokens:4096}),signal:cmtAbortController.signal});
     if(!res.ok){const e=await res.text();throw new Error('API error '+res.status+': '+e.slice(0,100));}
     const data=await res.json();return data.choices[0].message.content;
   }
+}
+function cmtSafeHtml(text){
+  if(!text)return'';
+  const mathBlocks=[];
+  let s=String(text);
+  s=s.replace(/\$\$[\s\S]+?\$\$/g,m=>{const i=mathBlocks.length;mathBlocks.push(m);return '\x00MATHBLOCK'+i+'\x00';});
+  s=s.replace(/\$[^$\n]+?\$/g,m=>{const i=mathBlocks.length;mathBlocks.push(m);return '\x00MATHBLOCK'+i+'\x00';});
+  s=s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  s=s.replace(/\x00MATHBLOCK(\d+)\x00/g,(m,i)=>mathBlocks[parseInt(i)]);
+  return s;
 }
 function cmtStartTest(){
   cm('m-cmt-config');
@@ -2430,9 +2551,11 @@ function cmtStartTest(){
   window._cmtKeyHandler=function(e){
     if(document.getElementById('cmt-player').style.display==='none')return;
     if(!e.key)return;
-    if(e.key==='ArrowRight'||e.key==='Enter'&&!e.target.matches('input,textarea')){e.preventDefault();cmtNextQ();}
+    e.stopPropagation();
+    if(e.key==='ArrowRight'||(e.key==='Enter'&&!e.target.matches('input,textarea'))){e.preventDefault();cmtNextQ();}
     else if(e.key==='ArrowLeft'){e.preventDefault();cmtPrevQ();}
     else if(['a','b','c','d'].includes(e.key.toLowerCase())&&!e.target.matches('input,textarea')){
+      e.preventDefault();
       const q=cmtQuestions[cmtState.current];
       const letter=e.key.toUpperCase();
       if(q.mode==='mcq')cmtSelectOption(letter);
@@ -2482,7 +2605,7 @@ function cmtRenderQuestion(){
       const letter=String.fromCharCode(65+i);
       const sel=currentAns===letter;
       return `<div class="cmt-q-opt ${sel?'selected':''}" onclick="cmtSelectOption('${letter}')">
-        <div class="cmt-q-opt-radio"></div><div class="cmt-q-opt-label"><b>${letter}.</b> ${esc(opt)}</div></div>`;
+        <div class="cmt-q-opt-radio"></div><div class="cmt-q-opt-label"><b>${letter}.</b> ${cmtSafeHtml(opt)}</div></div>`;
     }).join('')}</div>`;
   }else if(q.mode==='multi'){
     const selected=Array.isArray(currentAns)?currentAns:[];
@@ -2490,7 +2613,7 @@ function cmtRenderQuestion(){
       const letter=String.fromCharCode(65+i);
       const sel=selected.includes(letter);
       return `<div class="cmt-q-opt ${sel?'selected':''}" onclick="cmtSelectMulti('${letter}')">
-        <div class="cmt-q-opt-check"></div><div class="cmt-q-opt-label"><b>${letter}.</b> ${esc(opt)}</div></div>`;
+        <div class="cmt-q-opt-check"></div><div class="cmt-q-opt-label"><b>${letter}.</b> ${cmtSafeHtml(opt)}</div></div>`;
     }).join('')}</div>`;
   }else{
     optsHTML=`<div style="margin-top:4px"><input class="cmt-q-int-input" type="text" id="cmt-int-input" placeholder="Enter answer" value="${currentAns||''}" oninput="cmtSetIntAnswer(this.value)"/></div>`;
@@ -2505,7 +2628,7 @@ function cmtRenderQuestion(){
         ${q.chapter?`<span style="padding:2px 6px;background:var(--glass2);border-radius:4px">${esc(q.chapter)}</span>`:''}
       </div>
     </div>
-    <div class="cmt-q-text" id="cmt-q-text">${esc(q.question)}</div>
+    <div class="cmt-q-text" id="cmt-q-text">${cmtSafeHtml(q.question)}</div>
     ${optsHTML}
   </div>
   <div class="cmt-q-actions">
@@ -2516,7 +2639,7 @@ function cmtRenderQuestion(){
   </div>`;
   document.getElementById('cmt-mark-btn').className='cmt-q-mark-btn'+(cmtState.marked.has(cmtState.current)?' on':'');
   cmtRenderNav();
-  cmtRenderMath('cmt-q-text');
+  cmtRenderMath('cmt-player-main');
 }
 function cmtRenderMath(id){
   const el=document.getElementById(id);
@@ -2668,10 +2791,10 @@ function cmtShowQDetail(idx){
       <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${statusColor}20;color:${statusColor};font-weight:600">${q.status.toUpperCase()}</span>
       <span style="font-size:10px;color:var(--faint)">${q.marks>=0?'+':''}${q.marks} marks</span>
     </div>
-    <div style="font-size:13px;color:var(--txt);line-height:1.6;margin-bottom:8px" id="cmt-detail-text">${esc(q.question)}</div>
-    ${q.options&&q.options.length?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px">${q.options.map((o,i)=>{const l=String.fromCharCode(65+i);const isCor=Array.isArray(q.answer)?q.answer.includes(l):q.answer===l;const isUser=Array.isArray(q.userAns)?q.userAns.includes(l):q.userAns===l;return `<div style="padding:3px 0;${isCor?'color:var(--green);font-weight:600':''}${isUser&&!isCor?'color:var(--red);text-decoration:line-through':''}">${l}. ${esc(o)}${isCor?' ✓':''}${isUser&&!isCor?' ✗':''}</div>`;}).join('')}</div>`:''}
+    <div style="font-size:13px;color:var(--txt);line-height:1.6;margin-bottom:8px" id="cmt-detail-text">${cmtSafeHtml(q.question)}</div>
+    ${q.options&&q.options.length?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px">${q.options.map((o,i)=>{const l=String.fromCharCode(65+i);const isCor=Array.isArray(q.answer)?q.answer.includes(l):q.answer===l;const isUser=Array.isArray(q.userAns)?q.userAns.includes(l):q.userAns===l;return `<div style="padding:3px 0;${isCor?'color:var(--green);font-weight:600':''}${isUser&&!isCor?'color:var(--red);text-decoration:line-through':''}">${l}. ${cmtSafeHtml(o)}${isCor?' ✓':''}${isUser&&!isCor?' ✗':''}</div>`;}).join('')}</div>`:''}
     ${q.mode==='int'?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Your answer: <b style="color:${q.status==='correct'?'var(--green)':'var(--red)'}">${esc(String(q.userAns))}</b> | Correct: <b style="color:var(--green)">${esc(String(q.answer))}</b></div>`:''}
-    ${q.solution?`<div style="font-size:11px;color:var(--faint);padding-top:8px;border-top:1px solid var(--border);line-height:1.6"><b>Solution:</b> ${esc(q.solution)}</div>`:''}
+    ${q.solution?`<div style="font-size:11px;color:var(--faint);padding-top:8px;border-top:1px solid var(--border);line-height:1.6"><b>Solution:</b> ${cmtSafeHtml(q.solution)}</div>`:''}
   </div>`;
   cmtRenderMath('cmt-detail-text');
 }
