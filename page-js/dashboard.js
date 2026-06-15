@@ -1,6 +1,6 @@
 // page-js/dashboard.js
 import { DB } from '../js/data.js';
-import { safePct, fmtDate, esc } from '../js/helpers.js';
+import { safePct, fmtDate, esc, animateChartBars } from '../js/helpers.js';
 /* ═══════════════ DASHBOARD ═══════════════ */
 function renderDashboard(el){
   const all=[...DB.chapters.physics,...DB.chapters.chemistry,...DB.chapters.maths];
@@ -69,5 +69,5 @@ function renderDashboard(el){
   </div>`;
 }
 
-/* ═══════════════ WINDOW EXPORTS ═══════════════ */
-window.renderDashboard=renderDashboard;
+/* ═══════════════ WRAPPER WITH CHART ANIMATIONS ═══════════════ */
+window.renderDashboard=function(el){renderDashboard(el);setTimeout(()=>animateChartBars(el),60);};

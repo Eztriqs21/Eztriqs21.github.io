@@ -1,6 +1,6 @@
 // page-js/analytics.js
 import { DB } from '../js/data.js';
-import { esc, fmtDate } from '../js/helpers.js';
+import { esc, fmtDate, animateChartBars } from '../js/helpers.js';
 /* ═══════════════ ANALYTICS ═══════════════ */
 function renderAnalytics(el){
   const logs=DB.studyLogs||[];
@@ -240,6 +240,6 @@ function saveAnalyticsLog(){
   sv('studyLogs');renderAnalytics(document.getElementById('content-wrap'));toast('✅ Session logged!');
 }
 
-/* ═══════════════ WINDOW EXPORTS ═══════════════ */
-window.renderAnalytics=renderAnalytics;
+/* ═══════════════ WRAPPER WITH CHART ANIMATIONS ═══════════════ */
+window.renderAnalytics=function(el){renderAnalytics(el);setTimeout(()=>animateChartBars(el),60);};
 window.saveAnalyticsLog=saveAnalyticsLog;

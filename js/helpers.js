@@ -24,6 +24,36 @@ export function animateAllCounters(scope){
   });
 }
 
+/* ═══════════════ CHART ANIMATIONS ═══════════════ */
+const _M=window.Motion;
+export function animateBarCharts(scope){
+  if(!_M||!_M.animate)return;
+  scope.querySelectorAll('.bar-fill').forEach((bar,i)=>{
+    const h=bar.style.height;bar.style.height='0%';
+    setTimeout(()=>_M.animate(bar,{height:['0%',h]},{duration:.6,easing:[.34,1.56,.64,1],delay:i*.06}),80);
+  });
+  scope.querySelectorAll('.pbar').forEach((bar,i)=>{
+    const w=bar.style.width;bar.style.width='0%';
+    setTimeout(()=>_M.animate(bar,{width:['0%',w]},{duration:.7,easing:[.34,1.56,.64,1],delay:i*.08+100}),120);
+  });
+}
+export function animateSVGDraw(scope){
+  if(!_M||!_M.animate)return;
+  scope.querySelectorAll('svg path[stroke]').forEach(path=>{
+    const len=path.getTotalLength?.()||0;
+    if(!len)return;
+    path.style.strokeDasharray=len;path.style.strokeDashoffset=len;
+    _M.animate(path,{strokeDashoffset:[len,0]},{duration:1.2,easing:[.25,1,.5,1],delay:.2});
+  });
+  scope.querySelectorAll('svg circle').forEach((c,i)=>{
+    c.style.opacity='0';c.style.transformOrigin='center';
+    _M.animate(c,{opacity:['0','1'],transform:['scale(0)','scale(1)']},{duration:.3,easing:[.34,1.56,.64,1],delay:.3+i*.04});
+  });
+}
+export function animateChartBars(scope){
+  animateBarCharts(scope);animateSVGDraw(scope);
+}
+
 /* ═══════════════ DEBOUNCE UTILITY ═══════════════ */
 export function debounce(fn,ms){
   let timer;
@@ -402,6 +432,7 @@ window.compressImageToDataUrl=compressImageToDataUrl;window.readFileLocal=readFi
 window.uploadToSupabaseStorage=uploadToSupabaseStorage;window.uploadPrereqError=uploadPrereqError;
 window.getStorageBucket=getStorageBucket;window.storageFolderKey=storageFolderKey;window.storageErrorMessage=storageErrorMessage;
 window.animateValue=animateValue;window.animateAllCounters=animateAllCounters;
+window.animateBarCharts=animateBarCharts;window.animateSVGDraw=animateSVGDraw;window.animateChartBars=animateChartBars;
 window.debounce=debounce;
 window.debouncedUpdChList=debouncedUpdChList;window.debouncedUpdAsnList=debouncedUpdAsnList;window.debouncedUpdTstList=debouncedUpdTstList;
 window.fileExt=fileExt;
