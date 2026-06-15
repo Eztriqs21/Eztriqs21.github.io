@@ -444,6 +444,41 @@ window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;windo
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;
 
+/* ═══════════════ MOUSE PARALLAX ═══════════════ */
+(function(){
+  const orbs=document.querySelectorAll('.orb');
+  if(!orbs.length)return;
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*2;my=(e.clientY/window.innerHeight-.5)*2;},{passive:true});
+  function tick(){
+    rx+=(mx-rx)*.08;ry+=(my-ry)*.08;
+    orbs.forEach((o,i)=>{
+      const s=i===0?16:12;
+      o.style.transform='translate('+rx*s+'px,'+ry*s+'px)';
+    });
+    requestAnimationFrame(tick);
+  }
+  if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches)tick();
+})();
+
+/* ═══════════════ CARD TILT HOVER ═══════════════ */
+(function(){
+  if(!window.Motion||!window.Motion.animate)return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  document.addEventListener('pointermove',e=>{
+    const card=e.target.closest('.stat-card,.prep-card');
+    if(!card)return;
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    window.Motion.animate(card,{transform:'perspective(600px) rotateY('+x*6+'deg) rotateX('+(-y*6)+'deg) translateY(-3px)'},{duration:.15,easing:[.25,1,.5,1]});
+  },{passive:true});
+  document.addEventListener('pointerleave',e=>{
+    const card=e.target.closest('.stat-card,.prep-card');
+    if(card)window.Motion.animate(card,{transform:'perspective(600px) rotateY(0deg) rotateX(0deg) translateY(0px)'},{duration:.3,easing:[.34,1.56,.64,1]});
+  },true);
+})();
+
 /* ═══════════════ MOTION ONE MICRO-INTERACTIONS ═══════════════ */
 (function(){
   const _M=window.Motion;
