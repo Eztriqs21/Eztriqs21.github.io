@@ -2387,60 +2387,58 @@ async function cmtGenerate(){
     const yrs=cmtConfig.yearEnd-cmtConfig.yearStart+1;
     if(yrs<3){toast('⚠️ Select at least 3 years for PYQ mode');return;}
   }
+  const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
+  if(!settings.openaiKey){toast('⚠️ Set a Groq API key in Doubt Solver settings first');return;}
   document.getElementById('cmt-gen-btn').disabled=true;
   document.getElementById('cmt-loading').style.display='flex';
   cmtAbortController=new AbortController();
   const isMobile=cmtIsMobile();
-  const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
   const totalTimeout=setTimeout(()=>{cmtAbortController.abort();},300000);
   try{
     const batches=cmtPlanBatches();
     const totalBatches=batches.length;
     document.getElementById('cmt-loading-title').textContent=`Generating ${cmtConfig.totalQ} Questions...`;
-    document.getElementById('cmt-loading-sub').textContent=`0/${totalBatches} batches complete`;
-    document.getElementById('cmt-loading-fill').style.width='5%';
+    document.getElementById('cmt-loading-sub').textContent='Starting...';
+    document.getElementById('cmt-loading-fill').style.width='3%';
     let allQuestions=[];
-    if(isMobile){
-      for(let i=0;i<batches.length;i++){
-        if(cmtAbortController.signal.aborted)throw new Error('Cancelled');
-        const b=batches[i];
-        document.getElementById('cmt-loading-sub').textContent=`Batch ${i+1}/${totalBatches}: ${b.subject} ${b.mode.toUpperCase()} (${b.count} questions)`;
-        document.getElementById('cmt-loading-fill').style.width=Math.round(5+((i)/totalBatches)*90)+'%';
-        const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+1,totalBatches);
+    let errors=[];
+    for(let i=0;i<batches.length;i++){
+      if(cmtAbortController.signal.aborted)throw new Error('Cancelled');
+      const b=batches[i];
+      const pct=Math.round(3+((i)/totalBatches)*94);
+      document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — ${b.subject} ${b.mode.toUpperCase()} (${b.count}Q)`;
+      document.getElementById('cmt-loading-fill').style.width=pct+'%';
+      const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+1,totalBatches);
+      let parsed=[];
+      try{
         const raw=await cmtCallAI(prompt,'groq',settings);
-        const parsed=cmtParseBatchResponse(raw,b);
-        allQuestions=allQuestions.concat(parsed);
-      }
-    }else{
-      const PARALLEL=2;
-      for(let i=0;i<batches.length;i+=PARALLEL){
-        if(cmtAbortController.signal.aborted)throw new Error('Cancelled');
-        const chunk=batches.slice(i,i+PARALLEL);
-        document.getElementById('cmt-loading-sub').textContent=`Batches ${i+1}-${Math.min(i+PARALLEL,totalBatches)}/${totalBatches} (parallel)`;
-        document.getElementById('cmt-loading-fill').style.width=Math.round(5+((i)/totalBatches)*90)+'%';
-        const results=await Promise.allSettled(chunk.map((b,idx)=>{
-          const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+idx+1,totalBatches);
-          const prov=(idx%2===0)?'groq':'ollama';
-          return cmtCallAI(prompt,prov,settings);
-        }));
-        for(let j=0;j<results.length;j++){
-          const r=results[j];
-          const b=chunk[j];
-          if(r.status==='fulfilled'){
-            const parsed=cmtParseBatchResponse(r.value,b);
-            allQuestions=allQuestions.concat(parsed);
-          }else{
-            console.warn('Batch failed:',b,r.reason);
+        parsed=cmtParseBatchResponse(raw,b);
+      }catch(groqErr){
+        if(!isMobile){
+          try{
+            document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — Retrying on Ollama...`;
+            const raw=await cmtCallAI(prompt,'ollama',settings);
+            parsed=cmtParseBatchResponse(raw,b);
+          }catch(ollamaErr){
+            errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${groqErr.message}`);
           }
+        }else{
+          errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${groqErr.message}`);
         }
+      }
+      allQuestions=allQuestions.concat(parsed);
+      if(errors.length&&i<batches.length-1){
+        document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — ${errors.length} failed, continuing...`;
       }
     }
     clearTimeout(totalTimeout);
-    if(allQuestions.length<5)throw new Error('Too few questions generated. Try again.');
+    if(!allQuestions.length)throw new Error('No questions generated. Check your API key and try again.');
+    if(errors.length&&allQuestions.length<5)throw new Error(errors[0]);
     allQuestions.forEach((q,i)=>{q.num=i+1;});
     cmtQuestions=allQuestions;
     document.getElementById('cmt-loading-fill').style.width='100%';
-    document.getElementById('cmt-loading-sub').textContent=`${allQuestions.length} questions ready!`;
+    const errNote=errors.length?` (${errors.length} batch${errors.length>1?'es':''} failed)`:'';
+    document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--green)">✓ ${allQuestions.length} questions ready!</span>${errNote}`;
     setTimeout(()=>{document.getElementById('cmt-loading').style.display='none';document.getElementById('cmt-gen-btn').disabled=false;cmtStartTest();},500);
   }catch(err){
     clearTimeout(totalTimeout);
@@ -2459,13 +2457,24 @@ function cmtPlanBatches(){
   const totalTypeQ=types.reduce((s,t)=>s+t.count,0);
   cmtConfig.subjects.forEach(subj=>{
     const subjShare=Math.round(cmtConfig.totalQ/cmtConfig.subjects.length);
+    const subjBatches=[];
     types.forEach(t=>{
       const typeShare=Math.round(subjShare*t.count/totalTypeQ);
       if(typeShare<=0)return;
       for(let i=0;i<typeShare;i+=5){
-        batches.push({subject:subj,mode:t.mode,count:Math.min(5,typeShare-i)});
+        subjBatches.push({subject:subj,mode:t.mode,count:Math.min(5,typeShare-i)});
       }
     });
+    let pending=null;
+    subjBatches.forEach(b=>{
+      if(pending&&pending.mode===b.mode&&pending.count+b.count<=5){
+        pending.count+=b.count;
+      }else{
+        if(pending)batches.push(pending);
+        pending={...b};
+      }
+    });
+    if(pending)batches.push(pending);
   });
   let totalGenerated=batches.reduce((s,b)=>s+b.count,0);
   while(totalGenerated<cmtConfig.totalQ){
@@ -2512,21 +2521,27 @@ function cmtCancelGeneration(){
 }
 async function cmtCallAI(prompt,provider,settings){
   settings=settings||JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
-  if(provider==='ollama'){
-    const url=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-    const model=settings.ollamaModel||'qwen2.5:3b';
-    const res=await fetch(url+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,prompt,stream:false,options:{temperature:0.6,num_predict:4096}}),signal:cmtAbortController.signal});
-    if(!res.ok)throw new Error('Ollama error '+res.status);
-    const data=await res.json();return data.response;
-  }else{
-    const key=settings.openaiKey||'';
-    const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
-    const model=settings.openaiModel||'llama-3.3-70b-versatile';
-    if(!key)throw new Error('No API key — set one in Doubt Solver settings');
-    const res=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'system',content:'You are a JEE exam question setter. Return ONLY valid JSON arrays.'},{role:'user',content:prompt}],temperature:0.6,max_tokens:4096}),signal:cmtAbortController.signal});
-    if(!res.ok){const e=await res.text();throw new Error('API error '+res.status+': '+e.slice(0,100));}
-    const data=await res.json();return data.choices[0].message.content;
-  }
+  const controller=new AbortController();
+  const perTimeout=provider==='ollama'?90000:45000;
+  const timer=setTimeout(()=>controller.abort(),perTimeout);
+  const signal=AbortSignal.any?AbortSignal.any([controller.signal,cmtAbortController.signal]):controller.signal;
+  try{
+    if(provider==='ollama'){
+      const url=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
+      const model=settings.ollamaModel||'qwen2.5:3b';
+      const res=await fetch(url+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,prompt,stream:false,options:{temperature:0.6,num_predict:4096}}),signal});
+      if(!res.ok)throw new Error('Ollama '+res.status);
+      const data=await res.json();return data.response;
+    }else{
+      const key=settings.openaiKey||'';
+      const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
+      const model=settings.openaiModel||'llama-3.3-70b-versatile';
+      if(!key)throw new Error('No API key');
+      const res=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'system',content:'You are a JEE exam question setter. Return ONLY valid JSON arrays.'},{role:'user',content:prompt}],temperature:0.6,max_tokens:4096}),signal});
+      if(!res.ok){const e=await res.text();throw new Error('API '+res.status+': '+e.slice(0,80));}
+      const data=await res.json();return data.choices[0].message.content;
+    }
+  }finally{clearTimeout(timer);}
 }
 function cmtSafeHtml(text){
   if(!text)return'';
