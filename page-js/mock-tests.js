@@ -927,6 +927,13 @@ window.cmtNextQ=cmtNextQ;
 window.cmtPrevQ=cmtPrevQ;
 window.cmtSelectOption=cmtSelectOption;
 window.cmtSelectMulti=cmtSelectMulti;
+function cmtCleanup(){
+  if(cmtState.timerInterval)clearInterval(cmtState.timerInterval);
+  if(window._cmtKeyHandler){document.removeEventListener('keydown',window._cmtKeyHandler);window._cmtKeyHandler=null;}
+  const player=document.getElementById('cmt-player');
+  if(player)player.style.display='none';
+  document.body.style.overflow='';
+}
 window.cmtSetIntAnswer=cmtSetIntAnswer;
 window.cmtToggleMark=cmtToggleMark;
 window.cmtClearAnswer=cmtClearAnswer;
@@ -936,3 +943,4 @@ window.cmtSubmitTest=cmtSubmitTest;
 window.cmtShowResults=cmtShowResults;
 window.cmtShowQDetail=cmtShowQDetail;
 window.cmtSaveToHistory=cmtSaveToHistory;
+window.cmtCleanup=cmtCleanup;

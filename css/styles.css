@@ -575,7 +575,7 @@ body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Ro
 
 @media(max-width:768px){
   .cmt-player-sidebar{display:none;}
-  .cmt-mobile-nav{display:none;position:absolute;bottom:48px;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:10;box-shadow:0 -4px 18px rgba(0,0,0,.35);border-radius:12px 12px 0 0;}
+  .cmt-mobile-nav{display:none;position:absolute;bottom:48px;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;box-shadow:0 -4px 18px rgba(0,0,0,.35);border-radius:12px 12px 0 0;}
   .cmt-mobile-nav.open{display:block;}
   .cmt-player-body{flex-direction:column;}
   .cmt-q-display{padding:14px;}

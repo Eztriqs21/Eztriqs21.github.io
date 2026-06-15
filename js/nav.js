@@ -10,6 +10,7 @@ export let aPriority='none',pendingAFiles=[],pendingTFiles=[];
 export let calcQuestions=[],calcShowResults=false,calcAnsKey={};
 
 export function go(page){
+  if(PAGE==='mocktests'&&page!=='mocktests'&&window.cmtCleanup)window.cmtCleanup();
   PAGE=page;
   document.querySelectorAll('.si,.bni').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.si .si-act').forEach(el=>el.remove());

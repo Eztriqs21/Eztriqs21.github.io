@@ -264,8 +264,10 @@ let toastT;
 export function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2800);}
 
 /* ═══════════════ FILE CACHE ═══════════════ */
-const _fileCache={};let _fcacheOrder=[];const _FCACHE_MAX=80;
-export function _fcache(data,_name){if(!data)return'';const id=uid();_fileCache[id]=data;_fcacheOrder.push(id);while(_fcacheOrder.length>_FCACHE_MAX){const old=_fcacheOrder.shift();delete _fileCache[old];}return id;}
+const _fileCache={};let _fcacheOrder=[];const _FCACHE_MAX=80;const _FCACHE_MAX_BYTES=20*1024*1024;
+let _fcacheBytes=0;
+function _fcacheSize(d){return typeof d==='string'?d.length*2:0;}
+export function _fcache(data,_name){if(!data)return'';const id=uid();const sz=_fcacheSize(data);_fileCache[id]=data;_fcacheOrder.push({id,sz});_fcacheBytes+=sz;while(_fcacheOrder.length>_FCACHE_MAX||_fcacheBytes>_FCACHE_MAX_BYTES){const old=_fcacheOrder.shift();_fcacheBytes-=old.sz;delete _fileCache[old.id];}return id;}
 export function _fget(id){return id&&_fileCache[id]?(_fileCache[id]):null;}
 
 /* ═══════════════ FILE ITEM HTML ═══════════════ */

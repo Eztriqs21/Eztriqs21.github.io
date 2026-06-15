@@ -1,5 +1,5 @@
 // page-js/personalized-prep.js
-import { DB, sv } from '../js/data.js';
+import { DB, sv, KEYS } from '../js/data.js';
 import { uid, esc, toast } from '../js/helpers.js';
 
 let prepTab='notebook';

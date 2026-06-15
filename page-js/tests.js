@@ -1,5 +1,5 @@
 // page-js/tests.js
-import { DB, sv } from '../js/data.js';
+import { DB, sv, findCh } from '../js/data.js';
 import { esc, fmtDate, cm, om, toast, setupDZ, debouncedUpdTstList } from '../js/helpers.js';
 /* ═══════════════ TESTS ═══════════════ */
 let testSearch='';
