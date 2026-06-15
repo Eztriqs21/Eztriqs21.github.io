@@ -1,0 +1,29 @@
+<div class="pg-hdr anim-up">
+  <div class="pg-title">🧠 Personalized Prep</div>
+  <div class="pg-sub">Your AI study companion — upload notes, chat with AI, and prepare smarter</div>
+</div>
+<div class="prep-cards anim-up d1">
+  <div class="prep-card" onclick="prepTab='notebook';renderPrep(document.getElementById('content-wrap'))">
+    <div class="prep-card-ico">💬</div>
+    <div class="prep-card-title">JEE Prep Notebook</div>
+    <div class="prep-card-desc">AI chat with your uploaded notes</div>
+  </div>
+  <div class="prep-card" onclick="go('revision')">
+    <div class="prep-card-ico">📋</div>
+    <div class="prep-card-title">Revision Checklist</div>
+    <div class="prep-card-desc">Track completed topics</div>
+  </div>
+  <div class="prep-card" onclick="go('pyq')">
+    <div class="prep-card-ico">🎯</div>
+    <div class="prep-card-title">PYQ Research</div>
+    <div class="prep-card-desc">Pattern analysis & search</div>
+  </div>
+  <div class="prep-card" onclick="go('scoreanalytics')">
+    <div class="prep-card-ico">📈</div>
+    <div class="prep-card-title">Score Analytics</div>
+    <div class="prep-card-desc">Performance insights</div>
+  </div>
+</div>
+<div class="prep-sec anim-up d2">
+  ${prepTab==='notebook'?prepRenderNotebook():''}
+</div>

@@ -1,0 +1,10 @@
+<div class="pg-hdr anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div><div class="pg-title">Test</div><div class="pg-sub">Test history and performance analysis</div></div>
+    <button class="btn btn-primary" onclick="openAddTest()">+ Add Test</button>
+  </div>
+  <div class="anim-up d1" style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <input class="inp" type="text" id="test-search" placeholder="🔍 Search tests by name or chapter..." oninput="testSearch=this.value;debouncedUpdTstList()" style="flex:1;min-width:160px;font-size:13px" value="${esc(testSearch)}" autocomplete="off">
+    ${hasSyl?'<span class="chip chip-med" style="font-size:10px">📚 Syllabus-wise</span>':''}
+  </div>
+  <div id="test-list-container">${filtered.length===0?'<div class="gc empty"><div class="empty-icon">📊</div><div class="empty-title">'+(DB.tests.length?'No tests match your search':'No tests recorded')+'</div><div class="empty-sub">'+(DB.tests.length?'Try a different search term':'Click &quot;+ Add Test&quot;')+'</div></div>':
+  filtered.map(function(t,i){return tstCard(t,i);}).join('')}</div>

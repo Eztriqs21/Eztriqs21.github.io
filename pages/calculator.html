@@ -1,0 +1,40 @@
+<!-- Calculator page HTML template (for reference - actual rendering done by JS) -->
+<div class="pg-hdr anim-up"><div class="pg-title">Calculator</div><div class="pg-sub">Full JEE mock evaluation engine</div></div>
+
+<div class="ptabs anim-up d1">
+  <button class="ptab on" onclick="switchCalcTab('manual')">🧮 Manual Calculator</button>
+</div>
+
+<div class="calc-mode open" id="calc-mode-manual">
+<div class="gc section-block anim-up d2" style="padding:20px">
+  <div class="section-title">🗝️ Answer Key <span style="font-size:10px;font-weight:400;color:var(--faint)">(required)</span></div>
+  <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>
+  <textarea class="inp" id="calc-key-txt" rows="3" placeholder="Paste answer key...&#10;e.g. 1:A, 2:C, 3:D, 4:B, 5:A ...&#10;integer: 1:25, 2:100, 3:45 ...&#10;multi-correct: 1:ABD, 2:CD, 3:ABC"></textarea>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+    <button class="btn btn-ghost btn-sm" onclick="applyAnsKey()">Apply Key</button>
+    <span id="key-status" style="font-size:11px;color:var(--green)"></span>
+  </div>
+</div>
+
+<div class="gc section-block anim-up d3" style="overflow:hidden;padding:20px">
+  <div style="padding:0 0 10px;font-size:11px;color:var(--faint);margin-bottom:6px">
+    💡 Keyboard shortcuts: <b>A/B/C/D</b> to select · <b>0-9</b> for Integer type · <b>S</b> to skip · <b>Enter</b> next question · Toggle <b>MCQ</b>/<b>INT</b>/<b>MULTI</b> per question
+  </div>
+  <div style="padding:0 0 12px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div style="font-size:13px;font-weight:700">📋 Response Sheet — 75 Questions</div>
+    <div style="font-size:11px;color:var(--muted)">${ans} answered · ${skp} skipped · ${pend} remaining</div>
+  </div>
+  <div class="q-matrix-wrap">
+    <div class="q-matrix">
+      <div class="q-matrix-header"><div>Q#</div><div>Subject</div><div>Type</div><div>Response</div><div>Skip</div></div>
+      <div id="q-mat-body" style="max-height:440px;overflow-y:auto;-webkit-overflow-scrolling:touch">${buildQMat()}</div>
+    </div>
+  </div>
+  <div style="padding:14px 0 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    <button class="btn btn-ghost btn-sm" onclick="resetCalc()">🔄 Reset</button>
+    <button class="btn btn-primary" onclick="evalCalc()" style="padding:10px 22px">🧮 Calculate Score</button>
+  </div>
+</div>
+
+<div id="calc-results" style="margin-top:16px;display:none"></div>
+</div>

@@ -1,0 +1,12 @@
+<div class="ds-wrap anim-up">
+    <div class="pg-hdr ds-header">
+      <div class="pg-title">📸 Doubt Solver</div>
+      <div class="pg-sub">Quick one-shot answers or start a conversation with AI.</div>
+    </div>
+    <div class="ds-tabs">
+      <button class="ds-tab ${dsTab==='quick'?'on':''}" onclick="dsSwitchTab('quick')">⚡ Quick Ask</button>
+      <button class="ds-tab ${dsTab==='chat'?'on':''}" onclick="dsSwitchTab('chat')">💬 Chat</button>
+      <button class="btn btn-ghost btn-xs" onclick="dsOpenSettings()" style="margin-left:auto">⚙️</button>
+    </div>
+    <div id="ds-tab-content">${dsTab==='quick'?dsRenderQuickAsk():dsRenderChat()}</div>
+  </div>

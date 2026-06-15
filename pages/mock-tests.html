@@ -1,0 +1,61 @@
+  <div class="pg-hdr anim-up"><div class="pg-title">📝 Mock Tests</div><div class="pg-sub">Log and track your practice test performance</div></div>
+  <div class="cmt-hero anim-up d1" onclick="openCmtConfig()">
+    <div class="cmt-hero-title">🎯 Create Custom Mock Test</div>
+    <div class="cmt-hero-sub">Generate AI-powered tests or pick from past JEE papers. Full-screen exam mode with timer, question navigator, and instant AI analysis.</div>
+  </div>
+  <div class="gc section-block anim-up d1" style="padding:20px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="section-title">📋 All Mock Tests</div>
+      <button class="btn btn-primary btn-sm" onclick="openAddMockTest()">+ New Mock Test</button>
+    </div>
+    ${isEmpty?`<div class="mt-empty">No mock tests logged yet. Tap "+ New Mock Test" to get started.</div>`:
+    subjOrder.filter(s=>grouped[s]).map(subj=>{
+      const meta=subjMeta[subj]||{icon:'📋',c:'var(--muted)'};
+      const months=Object.keys(grouped[subj]).sort().reverse();
+      const totalInSubj=months.reduce((sum,ym)=>sum+grouped[subj][ym].length,0);
+      return `<div class="mt-subj-section anim-up">
+        <div class="mt-subj-header">
+          <div class="mt-subj-icon" style="background:${meta.c}15">${meta.icon}</div>
+          <div class="mt-subj-name" style="color:${meta.c}">${esc(subj)}</div>
+          <div class="mt-subj-count">${totalInSubj} test${totalInSubj>1?'s':''}</div>
+        </div>
+        ${months.map(ym=>{
+          const items=grouped[subj][ym];
+          return `<div class="mt-month" id="mtm-${subj}-${ym}">
+            <div class="mt-month-head" onclick="document.getElementById('mtm-${subj}-${ym}').classList.toggle('open')">
+              <span class="mt-month-chev">▶</span>
+              <span class="mt-month-title">${monthLabel(ym)}</span>
+              <span class="mt-month-count">${items.length}</span>
+            </div>
+            <div class="mt-month-body">
+              ${items.map((m,i)=>{
+                const pct=Math.round(m.marksScored/m.totalMarks*100);
+                const pctClass=pct>=70?'good':pct>=40?'ok':'bad';
+                return `<div class="mt-card" style="margin-bottom:8px">
+                  <div class="mt-card-head">
+                    <div class="mt-card-subj" style="color:${meta.c}">${esc(subj)}</div>
+                    <div class="mt-card-date">${fmtDate(m.date)}</div>
+                  </div>
+                  <div class="mt-card-score">
+                    <span class="mt-card-num">${m.marksScored}</span>
+                    <span class="mt-card-max">/ ${m.totalMarks}</span>
+                    <span class="mt-card-pct ${pctClass}">${pct}%</span>
+                  </div>
+                  <div class="mt-card-meta">
+                    ${m.timeTaken?`<span class="chip chip-med">⏱️ ${m.timeTaken}m</span>`:''}
+                    ${m.syllabus?`<span class="chip chip-hi">📚 Syllabus</span>`:''}
+                  </div>
+                  ${m.syllabus?`<div class="mt-card-syllabus">📚 ${esc(m.syllabus)}</div>`:''}
+                  ${m.topicsToReview?`<div class="mt-card-review" id="mt-review-${m.id}">📌 <b>Topics to Review:</b> ${esc(m.topicsToReview)}</div>`:''}
+                  <div class="mt-card-actions">
+                    ${m.topicsToReview?`<button class="btn btn-ghost btn-xs" onclick="toggleMockTestAnalysis('${m.id}')">📊 Analysis</button>`:''}
+                    <button class="btn btn-danger btn-xs" onclick="deleteMockTest('${m.id}')">🗑️ Delete</button>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('')}
+  </div>`
