@@ -4385,20 +4385,33 @@ async function dsSendChat(){
     const systemMsg='You are a JEE expert tutor. Provide clear, step-by-step solutions. Use LaTeX notation ($$...$$ for display math, $...$ for inline math) for ALL mathematical expressions. Maintain context from previous messages in this conversation.';
     const messages=[{role:'system',content:systemMsg},...history];
     let answer;
-    if(settings.provider==='ollama'){
-      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages,stream:false})});
-      clearTimeout(tid);
-      if(!resp.ok)throw new Error('Ollama error '+resp.status);
-      const j=await resp.json();
-      answer=j.message?.content||'No answer generated.';
-    }else{
+    const tryGroq=async()=>{
       const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
       const resp=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey},signal:ctrl.signal,body:JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages,max_tokens:2048})});
-      clearTimeout(tid);
       if(!resp.ok)throw new Error('API error '+resp.status);
       const j=await resp.json();
-      answer=j.choices?.[0]?.message?.content||'No answer generated.';
+      return j.choices?.[0]?.message?.content||'No answer generated.';
+    };
+    const tryOllama=async()=>{
+      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
+      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages,stream:false})});
+      if(!resp.ok)throw new Error('Ollama error '+resp.status);
+      const j=await resp.json();
+      return j.message?.content||'No answer generated.';
+    };
+    if(settings.provider==='ollama'){
+      answer=await tryOllama();
+    }else{
+      try{
+        answer=await tryGroq();
+      }catch(groqErr){
+        clearTimeout(tid);
+        const m=(groqErr.message||'').toLowerCase();
+        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
+          toast('⚡ Groq limit — switching to Ollama...');
+          answer=await tryOllama();
+        }else throw groqErr;
+      }
     }
     const aiMsg={id:'msg_'+uid(),role:'assistant',content:answer,ts:Date.now()};
     chat.messages.push(aiMsg);
@@ -4925,18 +4938,32 @@ Output ONLY the JSON array.`;
 
   try{
     let content;
-    if(settings.provider==='ollama'){
-      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],stream:false,options:{num_predict:8192}})});
-      if(!resp.ok)throw new Error('Ollama error: '+resp.status);
-      const j=await resp.json();
-      content=j.message?.content||'';
-    }else{
+    const tryGroq=async()=>{
       const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
       const resp=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey},body:JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],max_tokens:8192,temperature:0.15})});
       if(!resp.ok){const errBody=await resp.text().catch(()=>'');throw new Error('API error '+resp.status+': '+errBody.slice(0,200));}
       const j=await resp.json();
-      content=j.choices?.[0]?.message?.content||'';
+      return j.choices?.[0]?.message?.content||'';
+    };
+    const tryOllama=async()=>{
+      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
+      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],stream:false,options:{num_predict:8192}})});
+      if(!resp.ok)throw new Error('Ollama error: '+resp.status);
+      const j=await resp.json();
+      return j.message?.content||'';
+    };
+    if(settings.provider==='ollama'){
+      content=await tryOllama();
+    }else{
+      try{
+        content=await tryGroq();
+      }catch(groqErr){
+        const m=(groqErr.message||'').toLowerCase();
+        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
+          toast('⚡ Groq limit hit — retrying with Ollama...');
+          content=await tryOllama();
+        }else throw groqErr;
+      }
     }
     const questions=pyqCleanJson(content);
     if(!questions||!Array.isArray(questions)||!questions.length)throw new Error('AI returned invalid data. Try again.');
@@ -4968,18 +4995,32 @@ async function pyqFetchSolution(idx){
   const userMsg='Provide a detailed step-by-step solution for this JEE question:\n\n'+r.text+'\n\nCorrect Answer: '+r.answer+'\n\nGive a thorough solution suitable for a JEE aspirant.';
   try{
     let content;
-    if(settings.provider==='ollama'){
-      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],stream:false,options:{num_predict:4096}})});
-      if(!resp.ok)throw new Error('Ollama error');
-      const j=await resp.json();
-      content=j.message?.content||'No solution generated.';
-    }else{
+    const tryGroq=async()=>{
       const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
       const resp=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey},body:JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],max_tokens:4096,temperature:0.2})});
       if(!resp.ok)throw new Error('API error '+resp.status);
       const j=await resp.json();
-      content=j.choices?.[0]?.message?.content||'No solution generated.';
+      return j.choices?.[0]?.message?.content||'No solution generated.';
+    };
+    const tryOllama=async()=>{
+      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
+      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],stream:false,options:{num_predict:4096}})});
+      if(!resp.ok)throw new Error('Ollama error');
+      const j=await resp.json();
+      return j.message?.content||'No solution generated.';
+    };
+    if(settings.provider==='ollama'){
+      content=await tryOllama();
+    }else{
+      try{
+        content=await tryGroq();
+      }catch(groqErr){
+        const m=(groqErr.message||'').toLowerCase();
+        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
+          toast('⚡ Groq limit — using Ollama for solution...');
+          content=await tryOllama();
+        }else throw groqErr;
+      }
     }
     solEl.innerHTML='<div style="font-weight:700;color:var(--indigo);margin-bottom:8px">📝 Detailed Solution</div><div style="white-space:pre-line;line-height:1.7">'+pyqEscapeHtml(content)+'</div>';
     pyqRenderMath(solEl);
@@ -5446,7 +5487,15 @@ When referencing uploaded notes, mention which note you're referring to.${notesC
     if(provider==='ollama'){
       reply=await prepOllamaChat(sysPrompt,msgs,ollamaUrl,ollamaModel);
     }else{
-      reply=await prepGroqChat(sysPrompt,msgs,apiBase,openaiKey,openaiModel);
+      try{
+        reply=await prepGroqChat(sysPrompt,msgs,apiBase,openaiKey,openaiModel);
+      }catch(groqErr){
+        const m=(groqErr.message||'').toLowerCase();
+        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
+          toast('⚡ Groq limit — switching to Ollama...');
+          reply=await prepOllamaChat(sysPrompt,msgs,ollamaUrl,ollamaModel);
+        }else throw groqErr;
+      }
     }
     DB.prepChat.messages.push({id:uid(),role:'assistant',content:reply,ts:Date.now()});
     DB.prepChat.updatedAt=Date.now();
