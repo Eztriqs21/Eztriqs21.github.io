@@ -2,6 +2,7 @@
 import { render } from './nav.js';
 import { load } from './data.js';
 import { loadSupaConfig } from './supabase-sync.js';
+import { initThemes } from './themes.js';
 
 // Page modules — each registers its render function on window
 import '../page-js/dashboard.js';
@@ -20,6 +21,7 @@ import '../page-js/personalized-prep.js';
 import '../page-js/study-log.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  initThemes();
   load();
   loadSupaConfig();
   render();

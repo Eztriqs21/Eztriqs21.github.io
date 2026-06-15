@@ -6,7 +6,7 @@
 /* ── RESET ─────────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 html{scroll-behavior:smooth;height:100%;}
-body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--void);color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;min-height:100dvh;min-height:100vh;line-height:1.6;}
+body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--void);color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;min-height:100dvh;min-height:100vh;line-height:1.6;transition:background-color .4s var(--ease-out),color .3s var(--ease-out);}
 
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root{
@@ -17,7 +17,7 @@ body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Ro
 
   /* Accent — Electric Indigo */
   --indigo:#6C5CE7;--indigo2:#A29BFE;--indigo3:#C8C3FF;--indigo-dim:rgba(108,92,231,.10);--indigo-glow:rgba(108,92,231,.20);
-  --accent:#6C5CE7;--accent2:#A29BFE;--accent-bg:rgba(108,92,231,.08);--accent-glow:rgba(108,92,231,.16);
+  --accent:#6C5CE7;--accent2:#A29BFE;--accent-dim:rgba(108,92,231,.10);--accent-bg:rgba(108,92,231,.08);--accent-glow:rgba(108,92,231,.16);
 
   /* Subject colors — Celestial */
   --phys:#38BDF8;--phys2:#7DD3FC;--phys-dim:rgba(56,189,248,.08);--phys-glow:rgba(56,189,248,.16);
@@ -50,6 +50,50 @@ body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Ro
   /* Radii */
   --radius:14px;--radius-sm:10px;--radius-lg:18px;--radius-xl:22px;
 }
+
+/* ── THEME: LINEAR DARK ────────────────────────────────────── */
+[data-theme="linear"]{
+  --void:#0F0F12;--surface:#141418;--surface2:#1C1C24;--surface3:#24242E;
+  --glass:rgba(255,255,255,.04);--glass2:rgba(255,255,255,.07);--glass3:rgba(255,255,255,.10);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.14);--border3:rgba(255,255,255,.20);
+
+  --indigo:#22D3EE;--indigo2:#67E8F9;--indigo3:#A5F3FC;--indigo-dim:rgba(34,211,238,.10);--indigo-glow:rgba(34,211,238,.20);
+  --accent:#22D3EE;--accent2:#67E8F9;--accent-dim:rgba(34,211,238,.10);--accent-bg:rgba(34,211,238,.08);--accent-glow:rgba(34,211,238,.16);
+
+  --phys:#22D3EE;--phys2:#67E8F9;--phys-dim:rgba(34,211,238,.08);--phys-glow:rgba(34,211,238,.16);
+  --chem:#F472B6;--chem2:#F9A8D4;--chem-dim:rgba(244,114,182,.08);--chem-glow:rgba(244,114,182,.16);
+  --math:#A3E635;--math2:#D9F99D;--math-dim:rgba(163,230,53,.08);--math-glow:rgba(163,230,53,.16);
+
+  --green:#34D399;--green2:#6EE7B7;--green-dim:rgba(52,211,153,.08);--green-glow:rgba(52,211,153,.16);
+  --red:#FB7185;--red2:#FDA4AF;--red-dim:rgba(251,113,133,.08);
+  --orange:#FB923C;--orange2:#FDBA74;--orange-dim:rgba(251,146,60,.08);
+  --yellow:#FBBF24;--yellow2:#FDE68A;--yellow-dim:rgba(251,191,36,.08);
+
+  --txt:#E8ECF4;--txt2:#C4CAD6;--muted:#8B95A8;--faint:#5A6478;--ghost:#3D4658;
+  --card:var(--surface);--fg:var(--txt);--bg:var(--void);
+}
+
+/* ── THEME: OBSIDIAN GOLD ──────────────────────────────────── */
+[data-theme="obsidian"]{
+  --void:#0A0A0B;--surface:#10100F;--surface2:#1A1916;--surface3:#24221E;
+  --glass:rgba(255,255,255,.03);--glass2:rgba(255,255,255,.06);--glass3:rgba(255,255,255,.09);
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);--border3:rgba(255,255,255,.18);
+
+  --indigo:#F59E0B;--indigo2:#FCD34D;--indigo3:#FDE68A;--indigo-dim:rgba(245,158,11,.10);--indigo-glow:rgba(245,158,11,.20);
+  --accent:#F59E0B;--accent2:#FCD34D;--accent-dim:rgba(245,158,11,.10);--accent-bg:rgba(245,158,11,.08);--accent-glow:rgba(245,158,11,.16);
+
+  --phys:#60A5FA;--phys2:#93C5FD;--phys-dim:rgba(96,165,250,.08);--phys-glow:rgba(96,165,250,.16);
+  --chem:#34D399;--chem2:#6EE7B7;--chem-dim:rgba(52,211,153,.08);--chem-glow:rgba(52,211,153,.16);
+  --math:#F87171;--math2:#FCA5A5;--math-dim:rgba(248,113,113,.08);--math-glow:rgba(248,113,113,.16);
+
+  --green:#34D399;--green2:#6EE7B7;--green-dim:rgba(52,211,153,.08);--green-glow:rgba(52,211,153,.16);
+  --red:#FB7185;--red2:#FDA4AF;--red-dim:rgba(251,113,133,.08);
+  --orange:#FB923C;--orange2:#FDBA74;--orange-dim:rgba(251,146,60,.08);
+  --yellow:#FBBF24;--yellow2:#FDE68A;--yellow-dim:rgba(251,191,36,.08);
+
+  --txt:#E8ECF4;--txt2:#C4CAD6;--muted:#8B95A8;--faint:#5A6478;--ghost:#3D4658;
+  --card:var(--surface);--fg:var(--txt);--bg:var(--void);
+}
 @media(max-width:768px){:root{--bh:52px;}}
 @media(max-width:480px){:root{--bh:48px;}}
 
@@ -65,7 +109,7 @@ body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Ro
 .app{display:flex;min-height:100vh;position:relative;}
 
 /* ── SIDEBAR ───────────────────────────────────────────────── */
-.sidebar{width:var(--sb);flex-shrink:0;position:fixed;top:0;left:0;height:100%;z-index:200;background:rgba(8,10,16,.94);backdrop-filter:blur(20px) saturate(1.2);-webkit-backdrop-filter:blur(20px) saturate(1.2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .45s var(--ease-dramatic);will-change:transform;}
+.sidebar{width:var(--sb);flex-shrink:0;position:fixed;top:0;left:0;height:100%;z-index:200;background:rgba(8,10,16,.94);backdrop-filter:blur(20px) saturate(1.2);-webkit-backdrop-filter:blur(20px) saturate(1.2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:transform .45s var(--ease-dramatic),background-color .4s var(--ease-out),border-color .3s var(--ease-out);will-change:transform;}
 .brand{padding:24px 18px 18px;border-bottom:1px solid var(--border);position:relative;}
 .brand::after{content:'';position:absolute;bottom:0;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--indigo-glow),transparent);}
 .brand-row{display:flex;align-items:center;gap:12px;}
@@ -594,6 +638,15 @@ body{font-family:'JetBrains Mono',-apple-system,BlinkMacSystemFont,"Segoe UI",Ro
 .btn-danger:hover{background:rgba(251,113,133,.16);border-color:rgba(251,113,133,.32);}
 .btn-sm{padding:6px 12px;font-size:11px;}
 .btn-xs{padding:4px 9px;font-size:10px;border-radius:8px;}
+
+/* ── THEME TOGGLE BUTTONS ──────────────────────────────────── */
+.theme-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:16px;cursor:pointer;transition:all .3s var(--ease-spring);position:relative;overflow:hidden;}
+.theme-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-dim,rgba(108,92,231,.10)),transparent);opacity:0;transition:opacity .3s;pointer-events:none;}
+.theme-btn:hover{color:var(--txt);border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.theme-btn:hover::before{opacity:1;}
+.theme-btn:active{transform:scale(.95) translateY(0);}
+.theme-btn.active{color:var(--accent);border-color:var(--accent);background:var(--accent-dim,rgba(108,92,231,.10));box-shadow:0 0 12px var(--accent-glow,rgba(108,92,231,.20));}
+.theme-btn.active::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:12px;height:2px;background:var(--accent);border-radius:1px;}
 
 /* ── FORM ──────────────────────────────────────────────────── */
 .fg{margin-bottom:13px;}
