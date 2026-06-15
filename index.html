@@ -1602,6 +1602,7 @@ function load(){
   if(!DB.doubtChats)DB.doubtChats={physics:{messages:[],createdAt:null,updatedAt:null},chemistry:{messages:[],createdAt:null,updatedAt:null},maths:{messages:[],createdAt:null,updatedAt:null}};
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
   if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
+  cmtLoadHashes();
 }
 const LS_SAFE_BUDGET=4*1024*1024;
 function usesCloudStorage(){return !!(supaClient&&supaConfig&&currentSyncKey);}
@@ -2316,64 +2317,103 @@ function cmtGetBatchPrompt(subject,mode,count,diff,batchNum,totalBatches){
   const chList=cmtConfig.chapters[subject];
   const chNote=chList&&chList.length?` Focus on these chapters: ${chList.join(', ')}.`:'';
   const diffNote=diff==='advanced'?'JEE Advanced':'JEE Mains';
+  const diffDetail=diff==='advanced'?'This is JEE Advanced level — questions should be multi-concept, tricky, require deep insight, and often combine 2-3 topics. Options should be close and misleading.':'This is JEE Mains level — questions should test conceptual clarity and numerical ability. Moderate to hard difficulty, exam-realistic.';
   const yearNote=(cmtConfig.source==='pyq'||cmtConfig.source==='mix')?` Base these on real JEE questions from ${cmtConfig.yearStart}–${cmtConfig.yearEnd}.`:'';
   const modeLabel=mode==='mcq'?'single-correct MCQ (exactly 1 correct out of 4)':mode==='multi'?'multiple-correct MCQ (2 or more correct out of 4)':'integer-type (numerical answer, integer or up to 2 decimals)';
   const answerFormat=mode==='mcq'?'"answer": "B" (single letter)':mode==='multi'?'"answer": ["A","C"] (array of correct letters)':'"answer": "42" (string of the number)';
+  const pyqTopics=PYQ_DATA[subject]||[];
+  const topTopics=pyqTopics.sort((a,b)=>b.weight-a.weight).slice(0,5);
+  const topicWeightNote=topTopics.length?` KEY TOPICS BY JEE WEIGHTAGE: ${topTopics.map(t=>`${t.topic} (${t.weight}% weightage, ~${t.questions} Qs/year)`).join(', ')}. Prioritize these topics.`:'';
   const exampleMCQ=mode==='mcq'?`
-EXAMPLE QUESTION (JEE-level MCQ):
+EXAMPLE 1 (Conceptual):
 {
   "subject": "${subject}",
   "chapter": "Mechanics",
   "mode": "mcq",
-  "question": "A block of mass $m$ slides down a smooth inclined plane of angle $\\theta$ with acceleration $a$. If the same block is placed on a rough incline with coefficient of friction $\\mu$, the new acceleration is:",
-  "options": ["$g\\sin\\theta - \\mu g\\cos\\theta$", "$g\\sin\\theta + \\mu g\\cos\\theta$", "$g\\cos\\theta - \\mu g\\sin\\theta$", "$g(\\sin\\theta - \\mu)$"],
+  "question": "A uniform rod of length $L$ and mass $M$ is pivoted at one end. The moment of inertia about the pivot and the time period of small oscillations are respectively:",
+  "options": ["$\\frac{ML^2}{3}$, $2\\pi\\sqrt{\\frac{2L}{3g}}$", "$\\frac{ML^2}{3}$, $2\\pi\\sqrt{\\frac{2L}{g}}$", "$\\frac{ML^2}{12}$, $2\\pi\\sqrt{\\frac{L}{3g}}$", "$\\frac{ML^2}{12}$, $2\\pi\\sqrt{\\frac{6L}{g}}$"],
   "answer": "A",
-  "solution": "On rough surface, friction opposes motion: $ma = mg\\sin\\theta - \\mu mg\\cos\\theta$, giving $a = g\\sin\\theta - \\mu g\\cos\\theta$."
-}`:'';
-  const exampleINT=mode==='int'?`
-EXAMPLE QUESTION (JEE Integer-type):
+  "solution": "For rod pivoted at end: $I = \\frac{ML^2}{3}$. For physical pendulum: $T = 2\\pi\\sqrt{\\frac{I}{Mgd}}$ where $d = L/2$. So $T = 2\\pi\\sqrt{\\frac{ML^2/3}{MgL/2}} = 2\\pi\\sqrt{\\frac{2L}{3g}}$."
+}
+EXAMPLE 2 (Numerical):
 {
   "subject": "${subject}",
   "chapter": "Electrostatics",
-  "mode": "int",
-  "question": "Two point charges $+2q$ and $-q$ are placed at distance $d$ apart. The electric field at the midpoint between them has magnitude $\\frac{nq}{2\\pi\\epsilon_0 d^2}$. Find $n$.",
-  "options": [],
-  "answer": "3",
-  "solution": "At midpoint, fields add: $E = \\frac{2q}{4\\pi\\epsilon_0(d/2)^2} + \\frac{q}{4\\pi\\epsilon_0(d/2)^2} = \\frac{3q}{\\pi\\epsilon_0 d^2} = \\frac{3 \\cdot 4q}{4\\pi\\epsilon_0 d^2}$, so $n = 3$."
+  "mode": "mcq",
+  "question": "Two point charges $+q$ and $-3q$ are placed at distance $2a$ apart. The electric field intensity is zero at a point:",
+  "options": ["At distance $a$ from $+q$ on the line joining them (between charges)", "At distance $a$ from $+q$ on the extension beyond $+q$", "At distance $3a$ from $-3q$ on the extension beyond $-3q$", "Nowhere on the line joining them"],
+  "answer": "B",
+  "solution": "Between charges: fields add (both point toward $-3q$). Beyond $+q$: fields oppose. At distance $x$ from $+q$: $\\frac{kq}{x^2} = \\frac{k(3q)}{(2a+x)^2}$. Solving: $x = a$. Point is distance $a$ from $+q$ on the side away from $-3q$."
 }`:'';
-  const exampleMULTI=mode==='multi'?`
-EXAMPLE QUESTION (JEE Multi-correct):
+  const exampleINT=mode==='int'?`
+EXAMPLE 1:
 {
   "subject": "${subject}",
   "chapter": "Modern Physics",
-  "mode": "multi",
-  "question": "Which of the following statements about photoelectric effect are correct?",
-  "options": ["Stopping potential depends on intensity of incident light", "Maximum kinetic energy depends on frequency of incident light", "There is a threshold frequency below which no emission occurs", "Photoelectric current is proportional to intensity"],
-  "answer": ["B", "C", "D"],
-  "solution": "Stopping potential depends on frequency (not intensity). Max KE = hf - φ depends on frequency. Threshold frequency exists. Current ∝ intensity."
+  "mode": "int",
+  "question": "The work function of a metal is $2.0 \\text{ eV}$. When light of wavelength $4000 \\text{ \\AA}$ falls on it, the maximum kinetic energy of emitted photoelectrons in eV is (up to 2 decimal places).",
+  "options": [],
+  "answer": "1.10",
+  "solution": "$E = \\frac{hc}{\\lambda} = \\frac{12400}{4000} = 3.10 \\text{ eV}$. $K_{max} = E - \\phi = 3.10 - 2.0 = 1.10 \\text{ eV}$."
+}
+EXAMPLE 2:
+{
+  "subject": "${subject}",
+  "chapter": "Thermal Physics",
+  "mode": "int",
+  "question": "An ideal gas undergoes a cyclic process $A \\to B \\to C \\to A$ as shown in the $PV$ diagram. If $P_A = 2 \\text{ atm}$, $V_A = 1 \\text{ L}$, $P_C = 1 \\text{ atm}$, $V_C = 2 \\text{ L}$, and $B$ is at $(3 \\text{ atm}, 3 \\text{ L})$, the net work done in the cycle in Joules is (use $1 \\text{ atm} = 10^5 \\text{ Pa}$).",
+  "options": [],
+  "answer": "200",
+  "solution": "Work = area enclosed by triangle $ABC = \\frac{1}{2}|P_A(V_B-V_C) + P_B(V_C-V_A) + P_C(V_A-V_B)|$. Computing: $\\frac{1}{2}|2(3-2)+3(2-1)+1(1-3)| = \\frac{1}{2}|2+3-2| = 1.5 \\text{ L·atm} = 150 \\text{ J}$. (Answer may vary based on exact diagram.)"
 }`:'';
-  return `You are a ${diffNote}-level ${subjLabel} question setter. Generate exactly ${count} high-quality ${modeLabel} questions for JEE preparation.${chNote}${yearNote}
+  const exampleMULTI=mode==='multi'?`
+EXAMPLE 1:
+{
+  "subject": "${subject}",
+  "chapter": "Electromagnetism",
+  "mode": "multi",
+  "question": "A charged particle moves in a uniform magnetic field. Which of the following quantities remain constant?",
+  "options": ["Speed of the particle", "Kinetic energy of the particle", "Magnitude of momentum of the particle", "Direction of momentum of the particle"],
+  "answer": ["B", "C"],
+  "solution": "Magnetic force $F = qvB\\sin\\theta$ is always perpendicular to velocity, so it does no work. KE and speed are constant. Momentum direction changes (circular/helical path), so direction of momentum is NOT constant. Magnitude of momentum $|p| = mv$ is constant."
+}
+EXAMPLE 2:
+{
+  "subject": "${subject}",
+  "chapter": "Optics",
+  "mode": "multi",
+  "question": "In a Young's double slit experiment, which of the following will increase the fringe width?",
+  "options": ["Increasing the distance between slits", "Increasing the distance to screen", "Using light of shorter wavelength", "Using light of longer wavelength"],
+  "answer": ["B", "D"],
+  "solution": "Fringe width $\\beta = \\frac{\\lambda D}{d}$. Increasing $D$ (screen distance) increases $\\beta$. Increasing $\\lambda$ (longer wavelength) increases $\\beta$. Decreasing $d$ (slit separation) increases $\\beta$. Shorter wavelength DECREASES $\\beta$."
+}`:'';
+  const avoidList=diff==='advanced'?' Avoid straightforward formula-plugging questions. Every question should require thinking, not just substitution.':' Avoid overly complex multi-step problems. Focus on conceptual clarity and direct application.';
+  return `You are a senior JEE examiner setting a ${diffNote} exam paper for ${subjLabel}.${topicWeightNote}${chNote}${yearNote}
 
-CRITICAL RULES:
-- Questions must be ORIGINAL, CHALLENGING, and EXAM-REALISTIC — not generic textbook problems
-- Each question should require deep conceptual understanding or multi-step calculation
-- Include a mix of conceptual, numerical, and application-based questions
-- Vary difficulty within ${diffNote} level (some moderate, some hard)
-- ALL math MUST use KaTeX syntax: inline $...$ and display $$...$$
-- Use \\times for multiplication, \\frac{a}{b} for fractions, \\sqrt{x} for roots, \\rightarrow for arrows
-- Do NOT use plain text for math. Every formula must be in $...$ delimiters
+${diffDetail}
+${avoidList}
+
+QUALITY RULES (non-negotiable):
+- Each question must be UNIQUE — no two questions should test the same concept
+- Questions must look and feel like REAL JEE exam questions from the last 5 years
+- Include numerical values, diagrams described in text, and multi-step reasoning
+- Options must be plausible — wrong options should be common mistakes/traps
+- Solutions must be complete with formulas and step-by-step working
+- ALL math MUST use KaTeX: inline $...$ and display $$...$$
+- Use \\times for ×, \\frac{a}{b} for fractions, \\sqrt{x} for roots, \\rightarrow for →
+- Mix conceptual, numerical, and application-based questions
 
 ${exampleMCQ}${exampleINT}${exampleMULTI}
 
 Return a JSON array with exactly ${count} objects. Each object:
 {
   "subject": "${subject}",
-  "chapter": "chapter name",
+  "chapter": "specific chapter name",
   "mode": "${mode}",
   "question": "full question text with $KaTeX$ math",
-  "options": ${mode==='int'?'[]':'["option A","option B","option C","option D"]'},
+  "options": ${mode==='int'?'[]':'["option A text","option B text","option C text","option D text"]'},
   "answer": ${answerFormat},
-  "solution": "1-3 sentence solution with $KaTeX$ math"
+  "solution": "complete solution with $KaTeX$ formulas"
 }
 
 Return ONLY the JSON array. No markdown, no code blocks, no explanation.`;
@@ -2451,12 +2491,44 @@ async function cmtGenerate(){
     }
     clearTimeout(totalTimeout);
     if(!allQuestions.length)throw new Error(forceOllama?'Ollama not responding — make sure it\'s running':'No questions generated. Check your API key and try again.');
-    if(errors.length&&allQuestions.length<5)throw new Error(errors[0]);
+    document.getElementById('cmt-loading-sub').innerHTML='<span style="color:var(--txt)">Deduplicating questions...</span>';
+    document.getElementById('cmt-loading-fill').style.width='97%';
+    let seen=new Set();
+    allQuestions=allQuestions.filter(q=>{
+      const h=cmtQuestionHash(q);
+      if(!h||h.length<20)return true;
+      if(seen.has(h))return false;
+      seen.add(h);
+      return true;
+    });
+    allQuestions=allQuestions.filter(q=>!cmtIsDuplicate(q));
+    const target=cmtConfig.totalQ;
+    let retries=0;
+    const MAX_RETRIES=3;
+    while(allQuestions.length<target&&retries<MAX_RETRIES){
+      retries++;
+      document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Regenerating ${target-allQuestions.length} missing questions (attempt ${retries}/${MAX_RETRIES})...</span>`;
+      const need=target-allQuestions.length;
+      const regenBatches=[];
+      for(let i=0;i<need;i+=5)regenBatches.push({subject:cmtConfig.subjects[i%cmtConfig.subjects.length],mode:'mcq',count:Math.min(5,need-i)});
+      for(const b of regenBatches){
+        try{
+          const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,1,1);
+          const raw=await cmtCallAI(prompt,forceOllama?'ollama':'groq',settings);
+          const parsed=cmtParseBatchResponse(raw,b);
+          const newQ=parsed.filter(q=>!cmtIsDuplicate(q)&&!seen.has(cmtQuestionHash(q)));
+          newQ.forEach(q=>{seen.add(cmtQuestionHash(q));});
+          allQuestions=allQuestions.concat(newQ);
+        }catch(e){}
+      }
+    }
     allQuestions.forEach((q,i)=>{q.num=i+1;});
     cmtQuestions=allQuestions;
+    cmtSaveNewHashes(allQuestions);
     document.getElementById('cmt-loading-fill').style.width='100%';
     const errNote=errors.length?` (${errors.length} batch${errors.length>1?'es':''} failed)`:'';
-    document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--green)">✓ ${allQuestions.length} questions ready!</span>${errNote}`;
+    const retryNote=retries?` (${retries} regeneration round${retries>1?'s':''})`:'';
+    document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--green)">✓ ${allQuestions.length} questions ready!</span>${errNote}${retryNote}`;
     setTimeout(()=>{document.getElementById('cmt-loading').style.display='none';document.getElementById('cmt-gen-btn').disabled=false;cmtStartTest();},500);
   }catch(err){
     clearTimeout(totalTimeout);
@@ -2469,6 +2541,32 @@ function cmtIsRateLimitError(err){
   if(!err||!err.message)return false;
   const m=err.message.toLowerCase();
   return m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('exceeded')||m.includes('tokens per');
+}
+const CMT_HASH_KEY='jeehq3_cmt_hashes';
+const CMT_HASH_MAX=170;
+let cmtGenHashes=[];
+function cmtLoadHashes(){
+  try{cmtGenHashes=JSON.parse(localStorage.getItem(CMT_HASH_KEY))||[];}catch(e){cmtGenHashes=[];}
+}
+function cmtSaveHashes(){
+  if(cmtGenHashes.length>CMT_HASH_MAX)cmtGenHashes=cmtGenHashes.slice(-CMT_HASH_MAX);
+  try{localStorage.setItem(CMT_HASH_KEY,JSON.stringify(cmtGenHashes));}catch(e){}
+}
+function cmtQuestionHash(q){
+  const t=(q.question||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,120);
+  return t;
+}
+function cmtIsDuplicate(q){
+  const h=cmtQuestionHash(q);
+  if(!h||h.length<20)return false;
+  return cmtGenHashes.includes(h);
+}
+function cmtSaveNewHashes(questions){
+  questions.forEach(q=>{
+    const h=cmtQuestionHash(q);
+    if(h&&h.length>=20&&!cmtGenHashes.includes(h))cmtGenHashes.push(h);
+  });
+  cmtSaveHashes();
 }
 function cmtPlanBatches(){
   const batches=[];
@@ -2813,6 +2911,7 @@ function cmtShowResults(r){
   <div class="cmt-results-q-grid">${r.qResults.map((q,i)=>`<div class="cmt-results-q-btn ${q.status}" title="Q${i+1}: ${q.status}" onclick="cmtShowQDetail(${i})">${i+1}</div>`).join('')}</div>
   <div id="cmt-q-detail" style="margin-top:12px;display:none"></div>`;
   window._cmtResults=r;
+  om('m-cmt-results');
 }
 function cmtShowQDetail(idx){
   const r=window._cmtResults;if(!r)return;
