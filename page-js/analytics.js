@@ -1,4 +1,6 @@
 // page-js/analytics.js
+import { DB } from '../js/data.js';
+import { esc, fmtDate } from '../js/helpers.js';
 /* ═══════════════ ANALYTICS ═══════════════ */
 function renderAnalytics(el){
   const logs=DB.studyLogs||[];
@@ -237,3 +239,7 @@ function saveAnalyticsLog(){
   DB.studyLogs.unshift({id:'sl_'+Date.now(),subject:subj,topic:note||'Study Session',duration:dur,date,createdAt:new Date().toISOString()});
   sv('studyLogs');renderAnalytics(document.getElementById('content-wrap'));toast('✅ Session logged!');
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderAnalytics=renderAnalytics;
+window.saveAnalyticsLog=saveAnalyticsLog;

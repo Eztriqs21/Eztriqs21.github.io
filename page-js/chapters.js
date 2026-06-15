@@ -1,5 +1,7 @@
 // page-js/chapters.js
 /* ═══════════════ CHAPTERS ═══════════════ */
+import { DB, sv, findCh, mkCh } from '../js/data.js';
+import { uid, esc, safePct, cm, om, toast, setupDZ, debouncedUpdChList } from '../js/helpers.js';
 let matrixFilter='all';
 let chSearch='';
 let accState={physics:true,chemistry:true,maths:true};
@@ -242,3 +244,25 @@ function handleNoteFiles(files){
     updateChapterList();toast('✅ '+ct+' note saved');
   });
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderChapters=renderChapters;
+window.updateChapterList=updateChapterList;
+window.buildChaptersList=buildChaptersList;
+window.toggleAcc=toggleAcc;
+window.setMF=setMF;
+window.toggleChDone=toggleChDone;
+window.setChStr=setChStr;
+window.togglePyq=togglePyq;
+window.toggleSubTopics=toggleSubTopics;
+window.toggleSubTopic=toggleSubTopic;
+window.addSubTopic=addSubTopic;
+window.openAddCh=openAddCh;
+window.saveAddCh=saveAddCh;
+window.openEditCh=openEditCh;
+window.saveEditCh=saveEditCh;
+window.deleteEditCh=deleteEditCh;
+window.openNotes=openNotes;
+window.setNoteType=setNoteType;
+window.renderNotesList=renderNotesList;
+window.handleNoteFiles=handleNoteFiles;

@@ -1,4 +1,6 @@
 // page-js/study-log.js
+import { DB, sv } from '../js/data.js';
+import { cm, om, toast } from '../js/helpers.js';
 function openStudyLog(){document.getElementById('sl-date').value=new Date().toISOString().split('T')[0];om('m-study-log');setTimeout(()=>document.getElementById('sl-topic').focus(),320);}
 function saveStudyLog(){
   const topic=document.getElementById('sl-topic').value.trim();if(!topic){toast('⚠️ Enter a topic');return;}
@@ -9,3 +11,8 @@ function saveStudyLog(){
   sv('studyLogs');cm('m-study-log');if(PAGE==='dashboard')renderDashboard(document.getElementById('content-wrap'));toast('✅ Session logged!');
 }
 function deleteStudyLog(id){DB.studyLogs=DB.studyLogs.filter(l=>l.id!==id);sv('studyLogs');if(PAGE==='dashboard')renderDashboard(document.getElementById('content-wrap'));else if(PAGE==='analytics')renderAnalytics(document.getElementById('content-wrap'));}
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.openStudyLog = openStudyLog;
+window.saveStudyLog = saveStudyLog;
+window.deleteStudyLog = deleteStudyLog;

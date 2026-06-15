@@ -1,4 +1,6 @@
 // page-js/tests.js
+import { DB, sv } from '../js/data.js';
+import { esc, fmtDate, cm, om, toast, setupDZ, debouncedUpdTstList } from '../js/helpers.js';
 /* ═══════════════ TESTS ═══════════════ */
 let testSearch='';
 function updateTestList(){
@@ -108,7 +110,7 @@ function syncDirectToBreakdown(){
   document.getElementById('t-calc-max').textContent=max;
 }
 function openAddTest(){
-  pendingTFiles=[];
+  window.pendingTFiles=[];
   ['t-name','tp-c','tp-w','tp-s','tc-c','tc-w','tc-s','tm-c','tm-w','tm-s','t-direct-marks','test-t-p','test-t-c','test-t-m','test-t-tot'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('t-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('t-file-list').innerHTML='';
@@ -125,8 +127,8 @@ function openAddTest(){
   setupDZ('t-dz','t-finp',handleTFiles);
   om('m-test');setTimeout(()=>document.getElementById('t-name').focus(),320);
 }
-function handleTFiles(files){rdFiles(files,obj=>{pendingTFiles.push(obj);refreshTFileList();});}
-function refreshTFileList(){const el=document.getElementById('t-file-list');if(!el)return;el.innerHTML=pendingTFiles.map((f,i)=>fItemHTML(f)+`<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="pendingTFiles.splice(${i},1);refreshTFileList()">✕</button></div>`).join('');}
+function handleTFiles(files){rdFiles(files,obj=>{window.pendingTFiles.push(obj);refreshTFileList();});}
+function refreshTFileList(){const el=document.getElementById('t-file-list');if(!el)return;el.innerHTML=window.pendingTFiles.map((f,i)=>fItemHTML(f)+`<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingTFiles.splice(${i},1);refreshTFileList()">✕</button></div>`).join('');}
 function saveTest(){
   const name=document.getElementById('t-name').value.trim();if(!name){toast('⚠️ Enter test name');return;}
   let p,c,m,total,maxScore;
@@ -152,7 +154,7 @@ function saveTest(){
     const subj=cb.dataset.subj;
     if(subj&&syllabus[subj])syllabus[subj].push(cb.value);
   });
-  DB.tests.unshift({id:'t_'+Date.now(),name,date:document.getElementById('t-date').value||new Date().toISOString(),physics:p,chemistry:c,maths:m,totalScore:Math.max(0,total),maxScore,timing,papers:pendingTFiles.map(f=>({d:f.url||f.data,n:f.name})),syllabus});
+  DB.tests.unshift({id:'t_'+Date.now(),name,date:document.getElementById('t-date').value||new Date().toISOString(),physics:p,chemistry:c,maths:m,totalScore:Math.max(0,total),maxScore,timing,papers:window.pendingTFiles.map(f=>({d:f.url||f.data,n:f.name})),syllabus});
   if(!sv('tests')){DB.tests.shift();return;}
   cm('m-test');updateTestList();toast('✅ Test saved!');
 }
@@ -170,3 +172,17 @@ function saveTestAsMockTest(id){
   om('m-mocktest');
   setTimeout(function(){document.getElementById('mt-scored').focus();},320);
 }
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderTests=renderTests;
+window.updateTestList=updateTestList;
+window.getFilteredTests=getFilteredTests;
+window.tstCard=tstCard;
+window.setTestMode=setTestMode;
+window.syncBreakdownToDirect=syncBreakdownToDirect;
+window.syncDirectToBreakdown=syncDirectToBreakdown;
+window.openAddTest=openAddTest;
+window.handleTFiles=handleTFiles;
+window.refreshTFileList=refreshTFileList;
+window.saveTest=saveTest;
+window.delTest=delTest;
+window.saveTestAsMockTest=saveTestAsMockTest;

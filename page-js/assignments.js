@@ -1,4 +1,6 @@
 // page-js/assignments.js
+import { DB, sv } from '../js/data.js';
+import { esc, cm, om, toast, setupDZ, debouncedUpdAsnList } from '../js/helpers.js';
 /* ═══════════════ ASSIGNMENTS ═══════════════ */
 let asnSearch='';
 function updateAssignmentList(){
@@ -68,20 +70,20 @@ function asnCard(a,i){
     </div>
   </div>`;
 }
-function openAddAssign(){pendingAFiles=[];aPriority='none';setAP('none');['a-title','a-desc','a-syl'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});document.getElementById('a-file-list').innerHTML='';document.getElementById('a-syl-wrap').style.display='none';setupDZ('a-dz','a-finp',handleAFiles);om('m-asgn');setTimeout(function(){document.getElementById('a-title').focus();},320);}
+function openAddAssign(){window.pendingAFiles=[];window.aPriority='none';setAP('none');['a-title','a-desc','a-syl'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});document.getElementById('a-file-list').innerHTML='';document.getElementById('a-syl-wrap').style.display='none';setupDZ('a-dz','a-finp',handleAFiles);om('m-asgn');setTimeout(function(){document.getElementById('a-title').focus();},320);}
 function setAP(p){
-  aPriority=p;
+  window.aPriority=p;
   ['none','high','medium','low'].forEach(pri=>{
     const id={none:'ap-none',high:'ap-hi',medium:'ap-med',low:'ap-lo'}[pri];
     const btn=document.getElementById(id);if(!btn)return;
     btn.style.cssText=pri===p?'background:var(--indigo-dim);color:var(--indigo);border:1px solid rgba(99,102,241,.3)':'';
   });
 }
-function handleAFiles(files){rdFiles(files,obj=>{pendingAFiles.push(obj);refreshAFileList();});}
-function refreshAFileList(){const el=document.getElementById('a-file-list');if(!el)return;el.innerHTML=pendingAFiles.map((f,i)=>fItemHTML(f)+`<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="pendingAFiles.splice(${i},1);refreshAFileList()">✕</button></div>`).join('');}
+function handleAFiles(files){rdFiles(files,obj=>{window.pendingAFiles.push(obj);refreshAFileList();});}
+function refreshAFileList(){const el=document.getElementById('a-file-list');if(!el)return;el.innerHTML=window.pendingAFiles.map((f,i)=>fItemHTML(f)+`<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingAFiles.splice(${i},1);refreshAFileList()">✕</button></div>`).join('');}
 function saveAssignment(){
   const t=document.getElementById('a-title').value.trim();if(!t){toast('⚠️ Enter a title');return;}
-  DB.assignments.unshift({id:'a_'+Date.now(),title:t,description:document.getElementById('a-desc').value.trim(),priority:aPriority||'none',completed:false,attachments:pendingAFiles.map(f=>({d:f.url||f.data,n:f.name})),syllabus:document.getElementById('a-syl').value.trim()||undefined,createdAt:new Date().toISOString()});
+  DB.assignments.unshift({id:'a_'+Date.now(),title:t,description:document.getElementById('a-desc').value.trim(),priority:window.aPriority||'none',completed:false,attachments:window.pendingAFiles.map(f=>({d:f.url||f.data,n:f.name})),syllabus:document.getElementById('a-syl').value.trim()||undefined,createdAt:new Date().toISOString()});
   if(!sv('assignments')){DB.assignments.shift();return;}
   cm('m-asgn');updateAssignmentList();toast('✅ Task added!');
 }
@@ -100,3 +102,15 @@ function toggleAsnDone(id){
 }
 function delAsn(id){cfm2('Delete task?','This cannot be undone.',()=>{DB.assignments=DB.assignments.filter(x=>x.id!==id);sv('assignments');updateAssignmentList();toast('🗑️ Deleted');});}
 function attachToAsn(id,files){rdFiles(files,obj=>{const a=DB.assignments.find(x=>x.id===id);if(!a)return;if(!a.attachments)a.attachments=[];a.attachments.push({d:obj.url||obj.data,n:obj.name});if(!sv('assignments')){a.attachments.pop();return;}updateAssignmentList();toast('📎 Attached!');});}
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderAssignments=renderAssignments;
+window.updateAssignmentList=updateAssignmentList;
+window.asnCard=asnCard;
+window.openAddAssign=openAddAssign;
+window.setAP=setAP;
+window.handleAFiles=handleAFiles;
+window.refreshAFileList=refreshAFileList;
+window.saveAssignment=saveAssignment;
+window.toggleAsnDone=toggleAsnDone;
+window.delAsn=delAsn;
+window.attachToAsn=attachToAsn;

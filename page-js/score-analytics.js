@@ -1,4 +1,6 @@
 // page-js/score-analytics.js
+import { DB } from '../js/data.js';
+
 function renderScoreAnalytics(el){
   const tests=DB.tests||[];
   if(!tests.length){
@@ -80,5 +82,8 @@ function renderScoreAnalytics(el){
         }).join('')}
       </table>
     </div>
-  </div>`;
+    </div>`;
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderScoreAnalytics=renderScoreAnalytics;

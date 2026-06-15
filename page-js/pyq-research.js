@@ -1,4 +1,7 @@
 // page-js/pyq-research.js
+import { DB } from '../js/data.js';
+import { esc, toast } from '../js/helpers.js';
+
 let pyqTab='pattern',pyqSearchSubj='physics',pyqSearchExam='mains',pyqSearchMax=20;
 let pyqSearchResults=[],pyqSearchLoading=false,pyqSearchQ='';
 let pyqPlannerDays=30,pyqPlannerPlan=null;
@@ -582,3 +585,21 @@ function pyqGeneratePlan(){
   pyqRenderTab();
   toast('✅ Study plan generated!');
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderPYQ=renderPYQ;
+window.pyqSwitchTab=pyqSwitchTab;
+window.pyqRenderTab=pyqRenderTab;
+window.pyqRenderPattern=pyqRenderPattern;
+window.pyqEscapeHtml=pyqEscapeHtml;
+window.pyqRenderSearch=pyqRenderSearch;
+window.pyqCleanJson=pyqCleanJson;
+window.pyqRunSearch=pyqRunSearch;
+window.pyqFetchSolution=pyqFetchSolution;
+window.pyqToggleYear=pyqToggleYear;
+window.pyqRenderImages=pyqRenderImages;
+window.pyqRenderMath=pyqRenderMath;
+window.pyqRenderResults=pyqRenderResults;
+window.pyqRenderPlanner=pyqRenderPlanner;
+window.pyqRenderPlannerResult=pyqRenderPlannerResult;
+window.pyqGeneratePlan=pyqGeneratePlan;

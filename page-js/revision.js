@@ -1,4 +1,5 @@
 // page-js/revision.js
+import { KEYS } from '../js/data.js';
 const REV_SYLLABUS={
   physics:[
     {topic:'Mechanics',subs:['Units & Measurements','Kinematics','Laws of Motion','Work Energy & Power','Rotational Motion','Gravitation','Properties of Solids & Liquids','Thermodynamics','Kinetic Theory of Gases']},
@@ -78,3 +79,9 @@ function revToggle(subj,topic,currentVal){
   revSave(st);
   renderRevision(document.getElementById('content-wrap'));
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderRevision=renderRevision;
+window.revLoad=revLoad;
+window.revSave=revSave;
+window.revToggle=revToggle;

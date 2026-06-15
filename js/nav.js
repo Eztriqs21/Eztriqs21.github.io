@@ -1,12 +1,15 @@
 // js/nav.js
+import { KEYS } from './data.js';
+import { animateAllCounters } from './helpers.js';
+
 /* ═══════════════ NAV ═══════════════ */
-let PAGE='dashboard';
-let notesChapterId=null,noteType='detailed';
-let aPriority='none',pendingAFiles=[],pendingTFiles=[];
+export let PAGE='dashboard';
+export let notesChapterId=null,noteType='detailed';
+export let aPriority='none',pendingAFiles=[],pendingTFiles=[];
 
-let calcQuestions=[],calcShowResults=false,calcAnsKey={};
+export let calcQuestions=[],calcShowResults=false,calcAnsKey={};
 
-function go(page){
+export function go(page){
   PAGE=page;
   document.querySelectorAll('.si,.bni').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.si .si-act').forEach(el=>el.remove());
@@ -24,32 +27,30 @@ function go(page){
 let _renderLock=false;
 let _lastPage=null;
 
-function render(){
+export function render(){
   if(_renderLock)return;
   _renderLock=true;
   const el=document.getElementById('content-wrap');
   
-  // Page transition: fade out current, then render new
   el.style.transition='opacity .18s var(--ease-out), transform .18s var(--ease-out)';
   el.style.opacity='0';
   el.style.transform='translateY(8px)';
   
   setTimeout(()=>{
     el.innerHTML='';
-    if(PAGE==='dashboard')renderDashboard(el);
-    else if(PAGE==='analytics')renderAnalytics(el);
-    else if(PAGE==='revision')renderRevision(el);
-    else if(PAGE==='pyq')renderPYQ(el);
-    else if(PAGE==='scoreanalytics')renderScoreAnalytics(el);
-    else if(PAGE==='chapters')renderChapters(el);
-    else if(PAGE==='assignments')renderAssignments(el);
-    else if(PAGE==='tests')renderTests(el);
-     else if(PAGE==='calculator')renderCalculator(el);
-     else if(PAGE==='mocktests')renderMockTests(el);
-     else if(PAGE==='doubtsolver')renderDoubtSolver(el);
-     else if(PAGE==='prep')renderPrep(el);
+    if(PAGE==='dashboard')window.renderDashboard(el);
+    else if(PAGE==='analytics')window.renderAnalytics(el);
+    else if(PAGE==='revision')window.renderRevision(el);
+    else if(PAGE==='pyq')window.renderPYQ(el);
+    else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
+    else if(PAGE==='chapters')window.renderChapters(el);
+    else if(PAGE==='assignments')window.renderAssignments(el);
+    else if(PAGE==='tests')window.renderTests(el);
+     else if(PAGE==='calculator')window.renderCalculator(el);
+     else if(PAGE==='mocktests')window.renderMockTests(el);
+     else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
+     else if(PAGE==='prep')window.renderPrep(el);
     
-    // Force reflow then animate in
     el.offsetHeight;
     el.style.opacity='1';
     el.style.transform='translateY(0)';
@@ -63,7 +64,7 @@ function render(){
 
 /* SIDEBAR */
 let _sbOpen=false;
-function toggleSidebar(){
+export function toggleSidebar(){
   _sbOpen=!_sbOpen;
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('mob-overlay');
@@ -78,7 +79,7 @@ function toggleSidebar(){
     closeSidebar();
   }
 }
-function closeSidebar(){
+export function closeSidebar(){
   _sbOpen=false;
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('mob-overlay');
@@ -95,3 +96,21 @@ function closeSidebar(){
   const sb=document.getElementById('sidebar');
   if(sb)sb.addEventListener('click',function(e){e.stopPropagation();});
 })();
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.PAGE=PAGE;
+window.go=go;window.render=render;
+window.toggleSidebar=toggleSidebar;window.closeSidebar=closeSidebar;
+window.notesChapterId=notesChapterId;window.noteType=noteType;
+window.aPriority=aPriority;window.pendingAFiles=pendingAFiles;window.pendingTFiles=pendingTFiles;
+window.calcQuestions=calcQuestions;window.calcShowResults=calcShowResults;window.calcAnsKey=calcAnsKey;
+
+/* Re-export setters for nav state that page modules mutate */
+window.setNotesChapterId=function(v){notesChapterId=v;window.notesChapterId=v;};
+window.setNoteType=function(v){noteType=v;window.noteType=v;};
+window.setAPriority=function(v){aPriority=v;window.aPriority=v;};
+window.setPendingAFiles=function(v){pendingAFiles=v;window.pendingAFiles=v;};
+window.setPendingTFiles=function(v){pendingTFiles=v;window.pendingTFiles=v;};
+window.setCalcQuestions=function(v){calcQuestions=v;window.calcQuestions=v;};
+window.setCalcShowResults=function(v){calcShowResults=v;window.calcShowResults=v;};
+window.setCalcAnsKey=function(v){calcAnsKey=v;window.calcAnsKey=v;};

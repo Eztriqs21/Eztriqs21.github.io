@@ -1,4 +1,7 @@
 // page-js/mock-tests.js
+import { DB, sv } from '../js/data.js';
+import { uid, esc, fmtDate, cm, om, toast } from '../js/helpers.js';
+
 function openAddMockTest(){
   document.getElementById('mt-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('mt-scored').value='';
@@ -884,3 +887,52 @@ function cmtSaveToHistory(){
   go('mocktests');
   toast('✅ Saved to history!');
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderMockTests=renderMockTests;
+window.openAddMockTest=openAddMockTest;
+window.saveMockTest=saveMockTest;
+window.deleteMockTest=deleteMockTest;
+window.toggleMockTestAnalysis=toggleMockTestAnalysis;
+window.openCmtConfig=openCmtConfig;
+window.cmtRenderConfig=cmtRenderConfig;
+window.cmtToggleSubject=cmtToggleSubject;
+window.cmtToggleChapter=cmtToggleChapter;
+window.cmtUpdateCounts=cmtUpdateCounts;
+window.cmtSetSource=cmtSetSource;
+window.cmtSetDiff=cmtSetDiff;
+window.cmtSetTime=cmtSetTime;
+window.cmtUpdateYearRange=cmtUpdateYearRange;
+window.cmtGetBatchPrompt=cmtGetBatchPrompt;
+window.cmtIsMobile=cmtIsMobile;
+window.cmtGenerate=cmtGenerate;
+window.cmtIsRateLimitError=cmtIsRateLimitError;
+window.cmtLoadHashes=cmtLoadHashes;
+window.cmtSaveHashes=cmtSaveHashes;
+window.cmtQuestionHash=cmtQuestionHash;
+window.cmtIsDuplicate=cmtIsDuplicate;
+window.cmtSaveNewHashes=cmtSaveNewHashes;
+window.cmtPlanBatches=cmtPlanBatches;
+window.cmtParseBatchResponse=cmtParseBatchResponse;
+window.cmtCancelGeneration=cmtCancelGeneration;
+window.cmtCallAI=cmtCallAI;
+window.cmtSafeHtml=cmtSafeHtml;
+window.cmtStartTest=cmtStartTest;
+window.cmtStartTimer=cmtStartTimer;
+window.cmtRenderNav=cmtRenderNav;
+window.cmtRenderQuestion=cmtRenderQuestion;
+window.cmtRenderMath=cmtRenderMath;
+window.cmtGoTo=cmtGoTo;
+window.cmtNextQ=cmtNextQ;
+window.cmtPrevQ=cmtPrevQ;
+window.cmtSelectOption=cmtSelectOption;
+window.cmtSelectMulti=cmtSelectMulti;
+window.cmtSetIntAnswer=cmtSetIntAnswer;
+window.cmtToggleMark=cmtToggleMark;
+window.cmtClearAnswer=cmtClearAnswer;
+window.cmtToggleNav=cmtToggleNav;
+window.cmtConfirmSubmit=cmtConfirmSubmit;
+window.cmtSubmitTest=cmtSubmitTest;
+window.cmtShowResults=cmtShowResults;
+window.cmtShowQDetail=cmtShowQDetail;
+window.cmtSaveToHistory=cmtSaveToHistory;

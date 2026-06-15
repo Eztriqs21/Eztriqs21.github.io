@@ -1,4 +1,7 @@
 // page-js/personalized-prep.js
+import { DB, sv } from '../js/data.js';
+import { uid, esc, toast } from '../js/helpers.js';
+
 let prepTab='notebook';
 function renderPrep(el){
   if(!el)return;
@@ -309,3 +312,19 @@ function prepClearChat(){
   renderPrep(document.getElementById('content-wrap'));
   toast('🗑️ Chat cleared');
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderPrep=renderPrep;
+window.prepRenderNotebook=prepRenderNotebook;
+window.prepRenderMsg=prepRenderMsg;
+window.prepRenderMd=prepRenderMd;
+window.prepRenderKatex=prepRenderKatex;
+window.prepScrollBottom=prepScrollBottom;
+window.prepDeleteNote=prepDeleteNote;
+window.prepHandleFiles=prepHandleFiles;
+window.prepExtractPdfText=prepExtractPdfText;
+window.prepOcrPdf=prepOcrPdf;
+window.prepSendChat=prepSendChat;
+window.prepOllamaChat=prepOllamaChat;
+window.prepGroqChat=prepGroqChat;
+window.prepClearChat=prepClearChat;

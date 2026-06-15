@@ -1,18 +1,19 @@
 // js/data.js
+import { toast } from './helpers.js';
 /* ═══════════════ DATA & PERSISTENCE ═══════════════ */
-const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',sl:'jeehq3_sl',tab:'jeehq3_tab',mt:'jeehq3_mt',ds:'jeehq3_ds',dchat:'jeehq3_dchat',dsSettings:'jeehq3_ds_settings',rev:'jeehq3_rev',prepChat:'jeehq3_prep'};
-const ONE_SHOT_LINKS={
+export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',sl:'jeehq3_sl',tab:'jeehq3_tab',mt:'jeehq3_mt',ds:'jeehq3_ds',dchat:'jeehq3_dchat',dsSettings:'jeehq3_ds_settings',rev:'jeehq3_rev',prepChat:'jeehq3_prep'};
+export const ONE_SHOT_LINKS={
   physics:{teacher:'Saleem Sir',pw:'https://youtube.com/@PW-JEEWallah'},
   chemistry:{teacher:'Amit Sir',pw:'https://youtube.com/@PW-JEEWallah'},
   maths:{teacher:'Sachin Sir',pw:'https://youtube.com/@PW-JEEWallah'}
 };
-function oneShotURL(subj,id,name){
+export function oneShotURL(subj,id,name){
   const subjCfg=ONE_SHOT_LINKS[subj];
   if(!subjCfg)return null;
   return subjCfg[id]||'https://youtube.com/results?search_query='+encodeURIComponent('JEE '+name+' One Shot '+subjCfg.teacher);
 }
-const DB={chapters:null,assignments:null,tests:null,studyLogs:null,mockTests:null,doubtHistory:null,doubtChats:null,prepChat:null};
-function load(){
+export const DB={chapters:null,assignments:null,tests:null,studyLogs:null,mockTests:null,doubtHistory:null,doubtChats:null,prepChat:null};
+export function load(){
   try{DB.chapters=JSON.parse(localStorage.getItem(KEYS.ch))||null;}catch(e){DB.chapters=null;}
   if(!DB.chapters)DB.chapters=defaultChapters();
   try{DB.assignments=JSON.parse(localStorage.getItem(KEYS.asn))||null;}catch(e){DB.assignments=null;}
@@ -26,17 +27,17 @@ function load(){
   if(!DB.doubtChats)DB.doubtChats={physics:{messages:[],createdAt:null,updatedAt:null},chemistry:{messages:[],createdAt:null,updatedAt:null},maths:{messages:[],createdAt:null,updatedAt:null}};
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
   if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
-  cmtLoadHashes();
+  if(window.cmtLoadHashes)window.cmtLoadHashes();
 }
-const LS_SAFE_BUDGET=4*1024*1024;
-function usesCloudStorage(){return !!(supaClient&&supaConfig&&currentSyncKey);}
-function lsBytesUsed(){
+export const LS_SAFE_BUDGET=4*1024*1024;
+export function usesCloudStorage(){return !!(window.supaClient&&window.supaConfig&&window.currentSyncKey);}
+export function lsBytesUsed(){
   let n=0;
   for(let i=0;i<localStorage.length;i++)n+=(localStorage.getItem(localStorage.key(i))||'').length*2;
   return n;
 }
-const LS_HARD_LIMIT=5*1024*1024;
-function sv(key,opts){
+export const LS_HARD_LIMIT=5*1024*1024;
+export function sv(key,opts){
   opts=opts||{};
   const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,studyLogs:KEYS.sl,mockTests:KEYS.mt,doubtHistory:KEYS.ds,doubtChats:KEYS.dchat,prepChat:KEYS.prepChat,revision:KEYS.rev};
   const lsKey=m[key];
@@ -65,19 +66,19 @@ function sv(key,opts){
     return false;
   }
   if(!opts.skipAutoSync){
-    if(supaClient&&supaConfig&&currentSyncKey)autoSync();
-    else enqueueSync();
+    if(window.supaClient&&window.supaConfig&&window.currentSyncKey)window.autoSync();
+    else window.enqueueSync();
   }
   return true;
 }
-function persistAllLocal(opts){
+export function persistAllLocal(opts){
   ['chapters','assignments','tests','studyLogs','mockTests','doubtHistory','doubtChats','prepChat','revision'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
 }
-function resetEphemeralUiState(){
+export function resetEphemeralUiState(){
   pendingAFiles=[];pendingTFiles=[];
   notesChapterId=null;calcShowResults=false;calcAnsKey={};
 }
-function applyCloudPayload(parsed){
+export function applyCloudPayload(parsed){
   if(!parsed||typeof parsed!=='object')return false;
   DB.chapters=Array.isArray(parsed.chapters)?parsed.chapters:defaultChapters();
   DB.assignments=Array.isArray(parsed.assignments)?parsed.assignments:defaultAssignments();
@@ -92,9 +93,9 @@ function applyCloudPayload(parsed){
 }
 
 /* ═══════════════ DEFAULT DATA (WITH FULL SUBTOPICS) ═══════════════ */
-function mkCh(id,name,subTopics){return{id,name,completed:false,strength:'uncovered',mainsPyqDone:false,advPyqDone:false,notes:{detailed:[],revision:[]},subTopics:subTopics||[]};}
-function st(prefix, names){return names.map((n,i)=>({id:prefix+'s'+(i+1),name:n,completed:false}));}
-function defaultChapters(){return{
+export function mkCh(id,name,subTopics){return{id,name,completed:false,strength:'uncovered',mainsPyqDone:false,advPyqDone:false,notes:{detailed:[],revision:[]},subTopics:subTopics||[]};}
+export function st(prefix, names){return names.map((n,i)=>({id:prefix+'s'+(i+1),name:n,completed:false}));}
+export function defaultChapters(){return{
   physics:[
     mkCh('p1','Physical World, Units & Measurements',st('p1',['Units','Dimensions','Error Analysis','Significant Figures','Measuring Instruments'])),
     mkCh('p2','Motion in a Straight Line',st('p2',['Distance & Displacement','Average Velocity','Kinematic Equations','Graphs','Relative Motion in 1D'])),
@@ -175,10 +176,19 @@ function defaultChapters(){return{
     mkCh('m23','Probability (Advanced)',st('m23',['Random Variables & Distributions','Mean & Variance','Bernoulli Trials','Binomial Distribution'])),
   ]
  };}
-function defaultAssignments(){return[
+export function defaultAssignments(){return[
   {id:'a1',title:'Physics DPP — Rotational Motion',description:'Solve all 25 problems.',priority:'high',completed:false,attachments:[],createdAt:new Date(Date.now()-86400000).toISOString()},
 ];}
-function defaultTests(){return[
+export function defaultTests(){return[
   {id:'t1',name:'Full Mock Test #1',date:new Date(Date.now()-604800000).toISOString(),physics:{correct:18,incorrect:5,unattempted:2},chemistry:{correct:20,incorrect:3,unattempted:2},maths:{correct:15,incorrect:7,unattempted:3},totalScore:212,maxScore:300,papers:[],timing:{total:175,physics:55,chemistry:45,maths:75},syllabus:{physics:['p1','p2','p3'],chemistry:['c1','c2'],maths:['m1','m2']}}
 ];}
-function findCh(subj,id){return DB.chapters[subj]?.find(c=>c.id===id);}
+export function findCh(subj,id){return DB.chapters[subj]?.find(c=>c.id===id);}
+
+window.KEYS=KEYS;window.DB=DB;window.sv=sv;window.load=load;
+window.usesCloudStorage=usesCloudStorage;window.lsBytesUsed=lsBytesUsed;
+window.LS_HARD_LIMIT=LS_HARD_LIMIT;window.LS_SAFE_BUDGET=LS_SAFE_BUDGET;
+window.ONE_SHOT_LINKS=ONE_SHOT_LINKS;window.oneShotURL=oneShotURL;
+window.defaultChapters=defaultChapters;window.defaultAssignments=defaultAssignments;
+window.defaultTests=defaultTests;window.mkCh=mkCh;window.findCh=findCh;
+window.persistAllLocal=persistAllLocal;window.resetEphemeralUiState=resetEphemeralUiState;
+window.applyCloudPayload=applyCloudPayload;

@@ -1,10 +1,12 @@
 // js/supabase-sync.js
-function usesCloudStorage(){return !!(supaClient&&supaConfig&&currentSyncKey);}
+import { DB } from './data.js';
+import { om, cm, toast, getStorageBucket, storageErrorMessage, uid, fileExt, isAllowedUpload, isPdfFile, isImageFile } from './helpers.js';
+
 const SUPA_KEY='jeehq_supa_config';
 const SYNC_KEY_STORAGE='jeehq_sync_key';
-let supaClient=null;
-let supaConfig=null;
-let currentSyncKey=null;
+export let supaClient=null;
+export let supaConfig=null;
+export let currentSyncKey=null;
 
 /* Sync timestamps for merge reconciliation */
 const SYNC_TS_KEY='jeehq3_sync_ts';
@@ -18,14 +20,14 @@ const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','d
 const SYNC_QUEUE_KEY='jeehq3_sync_q';
 function loadSyncQueue(){try{return JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY))||[];}catch(e){return[];}}
 function saveSyncQueue(q){try{localStorage.setItem(SYNC_QUEUE_KEY,JSON.stringify(q));}catch(e){}}
-function enqueueSync(){const q=loadSyncQueue();q.push({ts:Date.now()});saveSyncQueue(q);}
+export function enqueueSync(){const q=loadSyncQueue();q.push({ts:Date.now()});saveSyncQueue(q);}
 async function flushSyncQueue(){
   const q=loadSyncQueue();if(!q.length)return;
   saveSyncQueue([]);
   try{await pushToSupabase();}catch(e){console.warn('Sync queue flush failed:',e);saveSyncQueue(q);}
 }
 
-function loadSupaConfig(){
+export function loadSupaConfig(){
   try{supaConfig=JSON.parse(localStorage.getItem(SUPA_KEY))||null;}catch(e){supaConfig=null;}
   try{currentSyncKey=localStorage.getItem(SYNC_KEY_STORAGE)||null;}catch(e){currentSyncKey=null;}
   updateSupaStatus();
@@ -56,12 +58,12 @@ function updateSyncUI(){
     if(outBtn)outBtn.style.display='none';
   }
 }
-function openAuthModal(){
+export function openAuthModal(){
   document.getElementById('sync-key-input').value=currentSyncKey||'';
   om('m-auth');
   setTimeout(()=>document.getElementById('sync-key-input').focus(),320);
 }
-function saveSyncKey(){
+export function saveSyncKey(){
   const key=document.getElementById('sync-key-input').value.trim();
   if(!key){toast('⚠️ Enter a sync key');return;}
   currentSyncKey=key;
@@ -70,13 +72,13 @@ function saveSyncKey(){
   cm('m-auth');
   toast('✅ Sync key saved! Use same key on other devices.');
 }
-function clearSyncKey(){
+export function clearSyncKey(){
   currentSyncKey=null;
   localStorage.removeItem(SYNC_KEY_STORAGE);
   updateSyncUI();
   toast('🗑️ Sync key cleared');
 }
-function openSupabaseConfig(){
+export function openSupabaseConfig(){
   loadSupaConfig();
   const urlEl=document.getElementById('supa-url');
   const keyEl=document.getElementById('supa-key');
@@ -86,19 +88,19 @@ function openSupabaseConfig(){
     urlEl.value=supaConfig.url||'';
     keyEl.value=supaConfig.key||'';
     tableEl.value=supaConfig.table||'jeehq_data';
-    if(bucketEl)bucketEl.value=supaConfig.bucket||DEFAULT_STORAGE_BUCKET;
+    if(bucketEl)bucketEl.value=supaConfig.bucket||getStorageBucket();
   }else{
     urlEl.value='';keyEl.value='';
     tableEl.value='jeehq_data';
-    if(bucketEl)bucketEl.value=DEFAULT_STORAGE_BUCKET;
+    if(bucketEl)bucketEl.value=getStorageBucket();
   }
   om('m-supa-config');
 }
-function saveSupabaseConfig(){
+export function saveSupabaseConfig(){
   const url=document.getElementById('supa-url').value.trim();
   const key=document.getElementById('supa-key').value.trim();
   const table=document.getElementById('supa-table').value.trim()||'jeehq_data';
-  const bucket=(document.getElementById('supa-bucket')?.value.trim())||DEFAULT_STORAGE_BUCKET;
+  const bucket=(document.getElementById('supa-bucket')?.value.trim())||getStorageBucket();
   if(!url||!key){localStorage.removeItem(SUPA_KEY);supaConfig=null;supaClient=null;updateSupaStatus();cm('m-supa-config');toast('☁️ Cleared');return;}
   if(!url.startsWith('https://')||!url.includes('.supabase.co')){toast('⚠️ Invalid Supabase URL');return;}
   if(!/^[a-z0-9][a-z0-9._-]{0,62}$/i.test(bucket)){toast('⚠️ Invalid bucket name');return;}
@@ -107,7 +109,7 @@ function saveSupabaseConfig(){
   try{const { createClient } = window.supabase;supaClient=createClient(url,key);}catch(e){toast('⚠️ Init failed: '+e.message);return;}
   updateSupaStatus();cm('m-supa-config');toast('☁️ Saved! Testing connection...');testSupabaseConnection();
 }
-async function testStorageBucket(){
+export async function testStorageBucket(){
   if(!supaClient||!supaConfig)return false;
   const bucket=getStorageBucket();
   try{
@@ -140,7 +142,7 @@ async function testSupabaseConnection(){
     toast('☁️ Database OK — fix storage bucket "'+getStorageBucket()+'" for PDF uploads');
   }
 }
-async function pushToSupabase(){
+export async function pushToSupabase(){
   if(!supaClient||!supaConfig){toast('⚠️ Supabase not configured');return;}
   if(!currentSyncKey){toast('⚠️ Set a sync key first (🔑 Set Sync Key)');return;}
   try{
@@ -177,7 +179,7 @@ async function pushToSupabase(){
     }
   }catch(e){toast('⚠️ Push error: '+e.message);console.error('Push exception:',e);}
 }
-async function pullFromSupabase(){
+export async function pullFromSupabase(){
   if(!supaClient||!supaConfig){toast('⚠️ Supabase not configured');return;}
   if(!currentSyncKey){toast('⚠️ Set a sync key first (🔑 Set Sync Key)');return;}
   try{
@@ -204,12 +206,12 @@ async function pullFromSupabase(){
     });
     saveSyncTimestamps(cloudTs);
 
-    resetEphemeralUiState();
-    persistAllLocal({skipBudgetCheck:true});
+    window.resetEphemeralUiState();
+    window.persistAllLocal({skipBudgetCheck:true});
     requestAnimationFrame(()=>{
-      detachCalcKeyboard();
-      if(PAGE==='calculator')initCalcQ();
-      render();
+      window.detachCalcKeyboard();
+      if(window.PAGE==='calculator')window.initCalcQ();
+      window.render();
     });
     toast('☁️ Merged! ('+mergedCount+' entities updated)');
   }catch(e){toast('⚠️ Load error: '+e.message);console.error('Pull exception:',e);}
@@ -218,65 +220,17 @@ function autoSync(){
   if(!supaClient||!supaConfig||!currentSyncKey)return;
   flushSyncQueue();
 }
-const DEFAULT_STORAGE_BUCKET='jeehq-assets';
-function getStorageBucket(){
-  const b=(supaConfig&&supaConfig.bucket)?String(supaConfig.bucket).trim():'';
-  return b||DEFAULT_STORAGE_BUCKET;
-}
-function storageFolderKey(){
-  return String(currentSyncKey||'default').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,64);
-}
-function storageErrorMessage(error){
-  if(!error)return'Upload failed';
-  const raw=String(error.message||error.error||error.statusCode||'').trim();
-  const msg=raw.toLowerCase();
-  const bucket=getStorageBucket();
-  if(msg.includes('bucket')&&(msg.includes('not found')||msg.includes('does not exist')||msg.includes('not exist'))){
-    return 'Storage bucket "'+bucket+'" not found — create a public bucket with this exact name in Supabase → Storage';
-  }
-  if(msg.includes('row-level security')||msg.includes('violates')||msg.includes('policy')||(msg.includes('403')&&msg.length<8)){
-    return 'Storage RLS blocked upload for bucket "'+bucket+'". In Supabase → Storage → Policies, remove "authenticated only" rules and run the full SQL block in Setup (INSERT must allow anon). Detail: '+raw;
-  }
-  if(msg.includes('permission')||msg.includes('denied')||msg.includes('403')||msg.includes('401')){
-    return 'Storage permission denied for bucket "'+bucket+'". Re-run the Setup SQL policies; bucket name must match exactly. Detail: '+raw;
-  }
-  if(msg.includes('jwt')||msg.includes('apikey')||msg.includes('invalid key')){
-    return 'Invalid Supabase anon key — check Project Settings → API';
-  }
-  return raw||'Upload failed';
-}
-function uploadPrereqError(){
-  if(!supaClient||!supaConfig)return'⚠️ Supabase not configured — open ☁️ Setup in the sidebar';
-  if(!currentSyncKey)return'⚠️ Set a sync key first (🔑 Set Sync Key) — required for cloud file uploads';
-  return null;
-}
-async function uploadToSupabaseStorage(file){
-  const prereq=uploadPrereqError();
-  if(prereq){toast(prereq);return null;}
-  const max=5*1024*1024;
-  if(!isAllowedUpload(file)){toast('⚠️ PDF or images only');return null;}
-  if(file.size>max){toast('⚠️ Max 5MB per file');return null;}
-  const bucket=getStorageBucket();
-  const ext=fileExt(file.name)||'bin';
-  const path=storageFolderKey()+'/'+uid()+'.'+ext;
-  const contentType=file.type||(isPdfFile(file)?'application/pdf':isImageFile(file)?'image/jpeg':'application/octet-stream');
-  try{
-    const {error}=await supaClient.storage.from(bucket).upload(path,file,{contentType,upsert:false});
-    if(error){
-      const detail=storageErrorMessage(error);
-      toast('⚠️ '+detail);
-      console.error('Storage upload error:',{bucket,path,status:error.statusCode,error});
-      return null;
-    }
-    const {data:urlData}=supaClient.storage.from(bucket).getPublicUrl(path);
-    if(!urlData||!urlData.publicUrl){
-      toast('⚠️ Upload succeeded but public URL missing — ensure bucket "'+bucket+'" is Public');
-      return null;
-    }
-    return {id:uid(),name:file.name,type:contentType,size:file.size,url:urlData.publicUrl};
-  }catch(e){
-    toast('⚠️ '+storageErrorMessage(e));
-    console.error('Storage upload exception:',e);
-    return null;
-  }
-}
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.supaClient=supaClient;window.supaConfig=supaConfig;window.currentSyncKey=currentSyncKey;
+window.saveSyncKey=saveSyncKey;window.clearSyncKey=clearSyncKey;
+window.pushToSupabase=pushToSupabase;window.pullFromSupabase=pullFromSupabase;
+window.openSupabaseConfig=openSupabaseConfig;window.saveSupabaseConfig=saveSupabaseConfig;
+window.openAuthModal=openAuthModal;window.loadSupaConfig=loadSupaConfig;
+window.testStorageBucket=testStorageBucket;window.testSupabaseConnection=testSupabaseConnection;
+window.autoSync=autoSync;window.enqueueSync=enqueueSync;
+
+/* Proxy setters so window keeps in sync when module vars change */
+Object.defineProperty(window,'supaClient',{get:()=>supaClient,set:v=>{supaClient=v;}});
+Object.defineProperty(window,'supaConfig',{get:()=>supaConfig,set:v=>{supaConfig=v;}});
+Object.defineProperty(window,'currentSyncKey',{get:()=>currentSyncKey,set:v=>{currentSyncKey=v;}});

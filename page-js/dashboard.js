@@ -1,4 +1,6 @@
 // page-js/dashboard.js
+import { DB } from '../js/data.js';
+import { safePct, fmtDate, esc } from '../js/helpers.js';
 /* ═══════════════ DASHBOARD ═══════════════ */
 function renderDashboard(el){
   const all=[...DB.chapters.physics,...DB.chapters.chemistry,...DB.chapters.maths];
@@ -66,3 +68,6 @@ function renderDashboard(el){
     </div>
   </div>`;
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderDashboard=renderDashboard;

@@ -1,4 +1,7 @@
 // page-js/calculator.js
+import { DB } from '../js/data.js';
+import { esc, om, toast } from '../js/helpers.js';
+
 /* ═══════════════ CALCULATOR ═══════════════ */
 let calcQuestions=[],calcShowResults=false,calcAnsKey={};
 
@@ -419,3 +422,27 @@ function resetCalc(){
   currentFocusQ=1;
   renderCalculator(document.getElementById('content-wrap'));
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderCalculator=renderCalculator;
+window.initCalcQ=initCalcQ;
+window.switchCalcTab=switchCalcTab;
+window.buildQMat=buildQMat;
+window.setQResp=setQResp;
+window.toggleQSkip=toggleQSkip;
+window.toggleQType=toggleQType;
+window.setQMultiResp=setQMultiResp;
+window.setQIntResp=setQIntResp;
+window.intKeyHandler=intKeyHandler;
+window.applyAnsKey=applyAnsKey;
+window.focusQRow=focusQRow;
+window.attachCalcKeyboard=attachCalcKeyboard;
+window.detachCalcKeyboard=detachCalcKeyboard;
+window.evalCalc=evalCalc;
+window.scoreQ=scoreQ;
+window.saveCalcToHistory=saveCalcToHistory;
+window.saveCalcTestFromModal=saveCalcTestFromModal;
+window.saveCalcAsMockTest=saveCalcAsMockTest;
+window.buildCalcRes=buildCalcRes;
+window.getPerc=getPerc;
+window.resetCalc=resetCalc;

@@ -1,3 +1,6 @@
+import { DB, sv } from '../js/data.js';
+import { uid, esc, cm, om, toast } from '../js/helpers.js';
+
 // page-js/doubt-solver.js
 let dsState={step:0,imageData:null,imageFile:null,extractedText:'',textInput:'',answer:null,loading:false};
 let dsTab='quick'; // 'quick' or 'chat'
@@ -553,3 +556,43 @@ function saveDSSettings(){
 function dsSaveSettings(settings){
   try{localStorage.setItem(KEYS.dsSettings,JSON.stringify(settings));}catch(e){}
 }
+
+/* ═══════════════ WINDOW EXPORTS ═══════════════ */
+window.renderDoubtSolver=renderDoubtSolver;
+window.dsSwitchTab=dsSwitchTab;
+window.dsRenderQuickAsk=dsRenderQuickAsk;
+window.dsRenderChat=dsRenderChat;
+window.dsRenderChatMsg=dsRenderChatMsg;
+window.dsScrollChatBottom=dsScrollChatBottom;
+window.dsHandleFile=dsHandleFile;
+window.dsOnTextInput=dsOnTextInput;
+window.dsRemoveImage=dsRemoveImage;
+window.dsClearResults=dsClearResults;
+window.dsSetStep=dsSetStep;
+window.dsSolve=dsSolve;
+window.dsSolveVision=dsSolveVision;
+window.dsRunOCR=dsRunOCR;
+window.dsSearchAnswer=dsSearchAnswer;
+window.dsParseQuestion=dsParseQuestion;
+window.dsHasApi=dsHasApi;
+window.dsHasApiKey=dsHasApiKey;
+window.dsFormatError=dsFormatError;
+window.dsAskAI=dsAskAI;
+window.dsAskOllama=dsAskOllama;
+window.dsLocalSearch=dsLocalSearch;
+window.dsRenderAnswer=dsRenderAnswer;
+window.dsShowError=dsShowError;
+window.dsSolveDone=dsSolveDone;
+window.dsFeedback=dsFeedback;
+window.dsSwitchSubject=dsSwitchSubject;
+window.dsChatHandleFile=dsChatHandleFile;
+window.dsChatRemoveImage=dsChatRemoveImage;
+window.dsSendChat=dsSendChat;
+window.dsClearChat=dsClearChat;
+window.dsMigrateHistory=dsMigrateHistory;
+window.dsLoadSettings=dsLoadSettings;
+window.dsOpenSettings=dsOpenSettings;
+window.dsSetProvider=dsSetProvider;
+window.dsFetchOllamaModels=dsFetchOllamaModels;
+window.saveDSSettings=saveDSSettings;
+window.dsSaveSettings=dsSaveSettings;
