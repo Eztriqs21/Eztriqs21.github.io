@@ -2388,12 +2388,16 @@ async function cmtGenerate(){
     if(yrs<3){toast('⚠️ Select at least 3 years for PYQ mode');return;}
   }
   const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
-  if(!settings.openaiKey){toast('⚠️ Set a Groq API key in Doubt Solver settings first');return;}
+  const hasGroqKey=!!settings.openaiKey;
+  const hasOllama=true;
+  if(!hasGroqKey&&!hasOllama){toast('⚠️ Set a Groq API key or start Ollama');return;}
   document.getElementById('cmt-gen-btn').disabled=true;
   document.getElementById('cmt-loading').style.display='flex';
   cmtAbortController=new AbortController();
   const isMobile=cmtIsMobile();
   const totalTimeout=setTimeout(()=>{cmtAbortController.abort();},300000);
+  let forceOllama=!hasGroqKey;
+  if(forceOllama&&!isMobile)toast('ℹ️ No Groq key — using Ollama');
   try{
     const batches=cmtPlanBatches();
     const totalBatches=batches.length;
@@ -2410,20 +2414,34 @@ async function cmtGenerate(){
       document.getElementById('cmt-loading-fill').style.width=pct+'%';
       const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+1,totalBatches);
       let parsed=[];
-      try{
-        const raw=await cmtCallAI(prompt,'groq',settings);
-        parsed=cmtParseBatchResponse(raw,b);
-      }catch(groqErr){
-        if(!isMobile){
-          try{
-            document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — Retrying on Ollama...`;
-            const raw=await cmtCallAI(prompt,'ollama',settings);
-            parsed=cmtParseBatchResponse(raw,b);
-          }catch(ollamaErr){
+      if(forceOllama){
+        try{
+          const raw=await cmtCallAI(prompt,'ollama',settings);
+          parsed=cmtParseBatchResponse(raw,b);
+        }catch(ollamaErr){errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${ollamaErr.message}`);}
+      }else{
+        try{
+          const raw=await cmtCallAI(prompt,'groq',settings);
+          parsed=cmtParseBatchResponse(raw,b);
+        }catch(groqErr){
+          if(cmtIsRateLimitError(groqErr)){
+            forceOllama=true;
+            toast('⚡ Groq limit hit — switching to Ollama for remaining batches');
+            document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--orange)">Rate limited</span> — Switching to Ollama...`;
+            await new Promise(r=>setTimeout(r,500));
+            try{
+              const raw=await cmtCallAI(prompt,'ollama',settings);
+              parsed=cmtParseBatchResponse(raw,b);
+            }catch(ollamaErr){errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${ollamaErr.message}`);}
+          }else if(!isMobile){
+            try{
+              document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — Retrying on Ollama...`;
+              const raw=await cmtCallAI(prompt,'ollama',settings);
+              parsed=cmtParseBatchResponse(raw,b);
+            }catch(ollamaErr){errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${groqErr.message}`);}
+          }else{
             errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${groqErr.message}`);
           }
-        }else{
-          errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${groqErr.message}`);
         }
       }
       allQuestions=allQuestions.concat(parsed);
@@ -2432,7 +2450,7 @@ async function cmtGenerate(){
       }
     }
     clearTimeout(totalTimeout);
-    if(!allQuestions.length)throw new Error('No questions generated. Check your API key and try again.');
+    if(!allQuestions.length)throw new Error(forceOllama?'Ollama not responding — make sure it\'s running':'No questions generated. Check your API key and try again.');
     if(errors.length&&allQuestions.length<5)throw new Error(errors[0]);
     allQuestions.forEach((q,i)=>{q.num=i+1;});
     cmtQuestions=allQuestions;
@@ -2446,6 +2464,11 @@ async function cmtGenerate(){
     document.getElementById('cmt-gen-btn').disabled=false;
     if(err.name!=='AbortError')toast('❌ '+err.message);
   }
+}
+function cmtIsRateLimitError(err){
+  if(!err||!err.message)return false;
+  const m=err.message.toLowerCase();
+  return m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('exceeded')||m.includes('tokens per');
 }
 function cmtPlanBatches(){
   const batches=[];
