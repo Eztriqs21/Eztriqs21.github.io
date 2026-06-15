@@ -27,39 +27,49 @@ export function go(page){
 let _renderLock=false;
 let _lastPage=null;
 
+const _Motion=window.Motion;
+
 export function render(){
   if(_renderLock)return;
   _renderLock=true;
   const el=document.getElementById('content-wrap');
-  
-  el.style.transition='opacity .18s var(--ease-out), transform .18s var(--ease-out)';
-  el.style.opacity='0';
-  el.style.transform='translateY(8px)';
-  
-  setTimeout(()=>{
-    el.innerHTML='';
-    if(PAGE==='dashboard')window.renderDashboard(el);
-    else if(PAGE==='analytics')window.renderAnalytics(el);
-    else if(PAGE==='revision')window.renderRevision(el);
-    else if(PAGE==='pyq')window.renderPYQ(el);
-    else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
-    else if(PAGE==='chapters')window.renderChapters(el);
-    else if(PAGE==='assignments')window.renderAssignments(el);
-    else if(PAGE==='tests')window.renderTests(el);
-     else if(PAGE==='calculator')window.renderCalculator(el);
-     else if(PAGE==='mocktests')window.renderMockTests(el);
-     else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
-     else if(PAGE==='prep')window.renderPrep(el);
-    
+
+  if(_Motion&&_Motion.animate){
+    _Motion.animate(el,{opacity:[1,0],filter:['blur(0px)','blur(4px)'],transform:['translateY(0px)','translateY(12px)']},{duration:.18,easing:[.25,1,.5,1]}).then(()=>{
+      _renderSwap(el);
+    });
+  }else{
+    el.style.transition='opacity .18s var(--ease-out), transform .18s var(--ease-out)';
+    el.style.opacity='0';el.style.transform='translateY(8px)';
+    setTimeout(()=>_renderSwap(el),180);
+  }
+}
+
+function _renderSwap(el){
+  el.innerHTML='';
+  if(PAGE==='dashboard')window.renderDashboard(el);
+  else if(PAGE==='analytics')window.renderAnalytics(el);
+  else if(PAGE==='revision')window.renderRevision(el);
+  else if(PAGE==='pyq')window.renderPYQ(el);
+  else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
+  else if(PAGE==='chapters')window.renderChapters(el);
+  else if(PAGE==='assignments')window.renderAssignments(el);
+  else if(PAGE==='tests')window.renderTests(el);
+  else if(PAGE==='calculator')window.renderCalculator(el);
+  else if(PAGE==='mocktests')window.renderMockTests(el);
+  else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
+  else if(PAGE==='prep')window.renderPrep(el);
+
+  if(_Motion&&_Motion.animate){
+    _Motion.animate(el,{opacity:[0,1],filter:['blur(4px)','blur(0px)'],transform:['translateY(12px)','translateY(0px)']},{duration:.3,easing:[.34,1.56,.64,1]}).then(()=>{
+      _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
+    });
+  }else{
     el.offsetHeight;
-    el.style.opacity='1';
-    el.style.transform='translateY(0)';
+    el.style.opacity='1';el.style.transform='translateY(0)';
     el.style.transition='opacity .25s var(--ease-out), transform .25s var(--ease-out)';
-    
-    _renderLock=false;
-    _lastPage=PAGE;
-    setTimeout(()=>animateAllCounters(el),50);
-  }, 180);
+    _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
+  }
 }
 
 /* SIDEBAR */
@@ -99,7 +109,7 @@ export function closeSidebar(){
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
 window.PAGE=PAGE;
-window.go=go;window.render=render;
+window.go=go;window.render=render;window._renderSwap=_renderSwap;
 window.toggleSidebar=toggleSidebar;window.closeSidebar=closeSidebar;
 window.notesChapterId=notesChapterId;window.noteType=noteType;
 window.aPriority=aPriority;window.pendingAFiles=pendingAFiles;window.pendingTFiles=pendingTFiles;
