@@ -1,6 +1,7 @@
 // page-js/dashboard.js
 import { DB } from '../js/data.js';
-import { safePct, fmtDate, esc, animateChartBars } from '../js/helpers.js';
+import { safePct, fmtDate, esc } from '../js/helpers.js';
+import { pageLoadChoreography, chartChoreography, staggerIn, shouldAnimate } from '../js/animations.js';
 /* ═══════════════ DASHBOARD ═══════════════ */
 function renderDashboard(el){
   const all=[...DB.chapters.physics,...DB.chapters.chemistry,...DB.chapters.maths];
@@ -69,5 +70,14 @@ function renderDashboard(el){
   </div>`;
 }
 
-/* ═══════════════ WRAPPER WITH CHART ANIMATIONS ═══════════════ */
-window.renderDashboard=function(el){renderDashboard(el);setTimeout(()=>animateChartBars(el),60);};
+/* ═══════════════ WRAPPER WITH CHOREOGRAPHY ═══════════════ */
+window.renderDashboard=function(el){
+  renderDashboard(el);
+  if(shouldAnimate()){
+    setTimeout(()=>{
+      pageLoadChoreography(el);
+      chartChoreography(el);
+      staggerIn(el.querySelectorAll('.section-block'),{delay:0.15});
+    },60);
+  }
+};

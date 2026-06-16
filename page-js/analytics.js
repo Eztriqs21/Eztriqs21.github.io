@@ -1,6 +1,7 @@
 // page-js/analytics.js
 import { DB } from '../js/data.js';
-import { esc, fmtDate, animateChartBars } from '../js/helpers.js';
+import { esc, fmtDate, findCh } from '../js/helpers.js';
+import { pageLoadChoreography, chartChoreography, staggerIn, shouldAnimate } from '../js/animations.js';
 /* ═══════════════ ANALYTICS ═══════════════ */
 function renderAnalytics(el){
   const logs=DB.studyLogs||[];
@@ -240,6 +241,15 @@ function saveAnalyticsLog(){
   sv('studyLogs');renderAnalytics(document.getElementById('content-wrap'));toast('✅ Session logged!');
 }
 
-/* ═══════════════ WRAPPER WITH CHART ANIMATIONS ═══════════════ */
-window.renderAnalytics=function(el){renderAnalytics(el);setTimeout(()=>animateChartBars(el),60);};
+/* ═══════════════ WRAPPER WITH CHOREOGRAPHY ═══════════════ */
+window.renderAnalytics=function(el){
+  renderAnalytics(el);
+  if(shouldAnimate()){
+    setTimeout(()=>{
+      pageLoadChoreography(el);
+      chartChoreography(el);
+      staggerIn(el.querySelectorAll('.section-block'),{delay:0.2});
+    },60);
+  }
+};
 window.saveAnalyticsLog=saveAnalyticsLog;
