@@ -1,5 +1,5 @@
 // js/helpers.js
-import { usesCloudStorage, lsBytesUsed, LS_HARD_LIMIT, LS_SAFE_BUDGET, findCh } from './data.js';
+import { usesCloudStorage, lsBytesUsed, LS_HARD_LIMIT, LS_SAFE_BUDGET } from './data.js';
 import { modalOpenMobile, modalOpenDesktop, modalClose, toastSlideIn, toastSlideOut, shouldAnimate } from './animations.js';
 
 /* ═══════════════ ANIMATED COUNTER ═══════════════ */
