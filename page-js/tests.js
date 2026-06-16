@@ -35,7 +35,7 @@ function renderTests(el){
     <button class="btn btn-primary" onclick="openAddTest()">+ Add Test</button>
   </div>
   <div class="anim-up d1" style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
-    <input class="inp" type="text" id="test-search" placeholder="<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search tests by name or chapter..." oninput="testSearch=this.value;debouncedUpdTstList()" style="flex:1;min-width:160px;font-size:13px" value="${esc(testSearch)}" autocomplete="off">
+    <input class="inp" type="text" id="test-search" placeholder="Search tests by name or chapter..." oninput="setTestSearch(this.value);debouncedUpdTstList()" style="flex:1;min-width:160px;font-size:13px" value="${esc(testSearch)}" autocomplete="off">
     ${hasSyl?'<span class="chip chip-med" style="font-size:10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Syllabus-wise</span>':''}
   </div>
   <div id="test-list-container">${filtered.length===0?'<div class="gc empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div class="empty-title">'+(DB.tests.length?'No tests match your search':'No tests recorded')+'</div><div class="empty-sub">'+(DB.tests.length?'Try a different search term':'Click &quot;+ Add Test&quot;')+'</div></div>':
@@ -186,3 +186,4 @@ window.refreshTFileList=refreshTFileList;
 window.saveTest=saveTest;
 window.delTest=delTest;
 window.saveTestAsMockTest=saveTestAsMockTest;
+window.setTestSearch=function(v){testSearch=v;};

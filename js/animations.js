@@ -405,6 +405,34 @@ export function sectionFadeInView(el) {
 
 /* ═══════════════ COMPOSITE CHOREOGRAPHIES ═══════════════ */
 
+export function animateAllEntrance(scope) {
+  if (noMotion()) {
+    scope.querySelectorAll('.anim-up').forEach(e => { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
+    scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card').forEach(e => { e.style.opacity = '1'; });
+    return;
+  }
+  const els = scope.querySelectorAll('.anim-up');
+  els.forEach((el, i) => {
+    _M.animate(el, {
+      opacity: [0, 1],
+      transform: ['translateY(16px)', 'translateY(0px)']
+    }, { duration: 0.4, delay: i * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(() => {
+      el.classList.add('visible');
+    }).catch(() => {
+      el.classList.add('visible');
+    });
+  });
+  // Also animate section blocks and gc cards
+  const cards = scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card');
+  cards.forEach((card, i) => {
+    card.style.opacity = '0';
+    _M.animate(card, {
+      opacity: [0, 1],
+      transform: ['translateY(16px)', 'translateY(0px)']
+    }, { duration: 0.35, delay: 0.05 + i * 0.04, easing: [0.34, 1.56, 0.64, 1] });
+  });
+}
+
 export function pageLoadChoreography(scope) {
   if (noMotion()) {
     scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card, .prep-card, .freq-card').forEach(c => c.style.opacity = '1');

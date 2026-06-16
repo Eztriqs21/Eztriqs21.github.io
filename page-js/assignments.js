@@ -36,7 +36,7 @@ function renderAssignments(el){
     <div><div class="pg-title" data-text="Assignments">Assignments</div><div class="pg-sub">Tasks and study materials</div></div>
     <button class="btn btn-primary" onclick="openAddAssign()">+ Add Task</button>
   </div>
-  <input class="inp anim-up d1" type="text" id="asn-search" placeholder="<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search assignments by title, description, syllabus..." oninput="asnSearch=this.value;debouncedUpdAsnList()" style="font-size:13px;margin-bottom:12px" value="${esc(asnSearch)}" autocomplete="off">
+  <input class="inp anim-up d1" type="text" id="asn-search" placeholder="Search assignments by title, description, syllabus..." oninput="setAsnSearch(this.value);debouncedUpdAsnList()" style="font-size:13px;margin-bottom:12px" value="${esc(asnSearch)}" autocomplete="off">
   <div id="asn-stats" style="display:flex;gap:10px;margin-bottom:20px" class="anim-up d2">
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px">${asns.length}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">${DB.assignments.length===asns.length?'Total':'Filtered'}</div></div>
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--accent)">${pend}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">Pending</div></div>
@@ -114,3 +114,4 @@ window.saveAssignment=saveAssignment;
 window.toggleAsnDone=toggleAsnDone;
 window.delAsn=delAsn;
 window.attachToAsn=attachToAsn;
+window.setAsnSearch=function(v){asnSearch=v;};

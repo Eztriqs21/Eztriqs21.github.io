@@ -1,7 +1,7 @@
 // js/nav.js — Navigation with Motion One page transitions
 import { KEYS } from './data.js';
 import { animateAllCounters } from './helpers.js';
-import { pageExit, pageEnter, shouldAnimate } from './animations.js';
+import { pageExit, pageEnter, shouldAnimate, animateAllEntrance } from './animations.js';
 
 /* ═══════════════ NAV ═══════════════ */
 export let PAGE='dashboard';
@@ -13,6 +13,7 @@ export let calcQuestions=[],calcShowResults=false,calcAnsKey={};
 export function go(page){
   if(PAGE==='mocktests'&&page!=='mocktests'&&window.cmtCleanup)window.cmtCleanup();
   PAGE=page;
+  window.PAGE=page;
   document.querySelectorAll('.si,.bni').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.si .si-act').forEach(el=>el.remove());
   const si=document.getElementById('sn-'+page),bn=document.getElementById('bn-'+page);
@@ -37,6 +38,8 @@ export function render(){
   if(shouldAnimate()){
     pageExit(el).then(()=>{
       _renderSwap(el);
+    }).catch(()=>{
+      _renderSwap(el);
     });
   }else{
     _renderSwap(el);
@@ -45,23 +48,33 @@ export function render(){
 
 function _renderSwap(el){
   el.innerHTML='';
-  if(PAGE==='dashboard')window.renderDashboard(el);
-  else if(PAGE==='analytics')window.renderAnalytics(el);
-  else if(PAGE==='revision')window.renderRevision(el);
-  else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
-  else if(PAGE==='chapters')window.renderChapters(el);
-  else if(PAGE==='assignments')window.renderAssignments(el);
-  else if(PAGE==='tests')window.renderTests(el);
-  else if(PAGE==='calculator')window.renderCalculator(el);
-  else if(PAGE==='mocktests')window.renderMockTests(el);
-  else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
+  try{
+    if(PAGE==='dashboard')window.renderDashboard(el);
+    else if(PAGE==='analytics')window.renderAnalytics(el);
+    else if(PAGE==='revision')window.renderRevision(el);
+    else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
+    else if(PAGE==='chapters')window.renderChapters(el);
+    else if(PAGE==='assignments')window.renderAssignments(el);
+    else if(PAGE==='tests')window.renderTests(el);
+    else if(PAGE==='calculator')window.renderCalculator(el);
+    else if(PAGE==='mocktests')window.renderMockTests(el);
+    else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
+  }catch(err){
+    console.error('Render error for page:',PAGE,err);
+    el.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:18px;font-weight:700;margin-bottom:8px">Something went wrong</div><div style="font-size:13px">'+err.message+'</div></div>';
+  }
 
   if(shouldAnimate()){
     pageEnter(el).then(()=>{
+      animateAllEntrance(el);
+      _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
+    }).catch(()=>{
+      animateAllEntrance(el);
       _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
     });
   }else{
     el.offsetHeight;
+    animateAllEntrance(el);
     _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
   }
 }

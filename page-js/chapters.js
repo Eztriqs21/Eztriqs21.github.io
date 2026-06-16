@@ -28,7 +28,7 @@ function buildChaptersList(){
       </div>
       <div class="subj-acc-body">
         <div style="padding:8px 20px;border-bottom:1px solid var(--border)"><div class="pbar-wrap" style="height:4px"><div class="subj-acc-bar" style="height:4px;width:${pct}%;background:${s.color}"></div></div></div>
-        <div>${shown.length===0?`<div class="empty" style="padding:28px"><div class="empty-title">${chSearch.trim()?'No chapters match "'+esc(chSearch.trim())+'"':'No chapters match this filter'}</div>${chSearch.trim()?`<div class="empty-sub" style="margin-bottom:12px">Add a new chapter to ${s.label}?</div><button class="btn btn-primary btn-sm" onclick="chSearch='';document.getElementById('ch-search').value='';openAddCh('${s.key}')">+ Add Chapter</button>`:''}</div>`:
+        <div>${shown.length===0?`<div class="empty" style="padding:28px"><div class="empty-title">${chSearch.trim()?'No chapters match "'+esc(chSearch.trim())+'"':'No chapters match this filter'}</div>${chSearch.trim()?`<div class="empty-sub" style="margin-bottom:12px">Add a new chapter to ${s.label}?</div><button class="btn btn-primary btn-sm" onclick="setChSearch('');document.getElementById('ch-search').value='';openAddCh('${s.key}')">+ Add Chapter</button>`:''}</div>`:
         shown.map(ch=>`<div class="chapter-row" id="chrow-${s.key}-${ch.id}">
           <div class="ch-check ${ch.completed?'done':''}" onclick="event.stopPropagation();toggleChDone('${s.key}','${ch.id}')">
             ${ch.completed?'<svg width="11" height="11" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>':''}
@@ -74,7 +74,7 @@ function renderChapters(el){
     ${filters.map(f=>`<button class="btn btn-sm ${matrixFilter===f?'btn-primary':'btn-ghost'}" onclick="setMF('${f}')">${f==='all'?'All Chapters':f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}
   </div>
   <div style="margin-bottom:16px" class="anim-up d1">
-    <input class="inp" type="text" id="ch-search" placeholder="<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search chapters..." oninput="chSearch=this.value;debouncedUpdChList()" style="font-size:13px" value="${esc(chSearch)}" autocomplete="off">
+    <input class="inp" type="text" id="ch-search" placeholder="Search chapters..." oninput="setChSearch(this.value);debouncedUpdChList()" style="font-size:13px" value="${esc(chSearch)}" autocomplete="off">
   </div>
   <div id="ch-list-container">${buildChaptersList()}</div>`;
 }
@@ -262,7 +262,4 @@ window.saveAddCh=saveAddCh;
 window.openEditCh=openEditCh;
 window.saveEditCh=saveEditCh;
 window.deleteEditCh=deleteEditCh;
-window.openNotes=openNotes;
-window.setNoteType=setNoteType;
-window.renderNotesList=renderNotesList;
-window.handleNoteFiles=handleNoteFiles;
+window.setChSearch=function(v){chSearch=v;};

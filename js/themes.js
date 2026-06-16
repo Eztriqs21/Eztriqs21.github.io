@@ -1,18 +1,17 @@
 // js/themes.js — Theme Engine for JEE HQ
-// 3 themes: Ink Wash (default), Amber Walnut Morning, Opaline (light)
+// 2 themes: Dark (charcoal), Amber (orange)
 
 const THEMES = {
-  ink:    { label: 'Ink Wash',     icon: '●', color: '#7C83FF', desc: 'Soft blue-gray' },
-  amber:  { label: 'Amber Walnut', icon: '●', color: '#C07040', desc: 'Warm earthy tones' },
-  opaline:{ label: 'Opaline',      icon: '●', color: '#0FA4AF', desc: 'Cool teal light' }
+  dark:   { label: 'Dark',   icon: '●', color: '#888888', desc: 'Charcoal black' },
+  amber:  { label: 'Amber',  icon: '●', color: '#C07040', desc: 'Warm orange tones' }
 };
 
 function getSavedTheme() {
-  try { return localStorage.getItem('jeehq_theme') || 'ink'; } catch(e) { return 'ink'; }
+  try { return localStorage.getItem('jeehq_theme') || 'dark'; } catch(e) { return 'dark'; }
 }
 
 export function applyTheme(name) {
-  if (!THEMES[name]) name = 'ink';
+  if (!THEMES[name]) name = 'dark';
   document.documentElement.setAttribute('data-theme', name);
   try { localStorage.setItem('jeehq_theme', name); } catch(e) {}
   document.querySelectorAll('.theme-dot').forEach(dot => {
