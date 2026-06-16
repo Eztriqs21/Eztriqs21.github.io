@@ -98,7 +98,9 @@ input,textarea,select{font-family:inherit;}
 .sidebar .brand{padding:var(--sp-4) var(--sp-3);display:flex;align-items:center;gap:var(--sp-3);border-bottom:1px solid var(--border);min-height:56px;}
 .sidebar .brand-icon{width:32px;height:32px;border-radius:var(--r-sm);background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--accent);}
 .sidebar .brand-name{font-family:'Satoshi',sans-serif;font-size:16px;font-weight:800;color:var(--txt);white-space:nowrap;opacity:0;width:0;transition:opacity .2s var(--ease),width .2s var(--ease);overflow:hidden;}
+.sidebar .brand-sub{font-size:9px;color:var(--faint);white-space:nowrap;opacity:0;width:0;transition:opacity .2s var(--ease),width .2s var(--ease);overflow:hidden;}
 .sidebar:hover .brand-name,.sidebar.open .brand-name{opacity:1;width:auto;}
+.sidebar:hover .brand-sub,.sidebar.open .brand-sub{opacity:1;width:auto;}
 .sidebar .snav{flex:1;padding:var(--sp-2);overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
 .sidebar .snav::-webkit-scrollbar{display:none;}
 .sidebar .snav-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);padding:var(--sp-3) var(--sp-2) var(--sp-1);font-weight:700;white-space:nowrap;opacity:0;transition:opacity .2s var(--ease);}

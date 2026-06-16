@@ -13,7 +13,7 @@ function openNotes(subj,id){
 function setNoteType(t){
   window.noteType=t;
   const det=document.getElementById('note-type-det'),rev=document.getElementById('note-type-rev'),lbl=document.getElementById('note-type-lbl');
-  if(det){det.className=t==='detailed'?'btn btn-sm':'btn btn-ghost btn-sm';det.style.cssText=t==='detailed'?'background:var(--indigo-dim);color:var(--indigo);border:1px solid rgba(99,102,241,.3)':'';}
+  if(det){det.className=t==='detailed'?'btn btn-sm':'btn btn-ghost btn-sm';det.style.cssText=t==='detailed'?'background:var(--accent-dim);color:var(--accent);border:1px solid rgba(160,160,160,.3)':'';}
   if(rev){rev.className=t==='revision'?'btn btn-sm':'btn btn-ghost btn-sm';rev.style.cssText=t==='revision'?'background:rgba(59,130,246,.15);color:var(--phys);border:1px solid rgba(59,130,246,.3)':'';}
   if(lbl)lbl.textContent=t==='detailed'?'Detailed':'Revision';
 }

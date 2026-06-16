@@ -39,7 +39,7 @@ function renderAssignments(el){
   <input class="inp anim-up d1" type="text" id="asn-search" placeholder="🔍 Search assignments by title, description, syllabus..." oninput="asnSearch=this.value;debouncedUpdAsnList()" style="font-size:13px;margin-bottom:12px" value="${esc(asnSearch)}" autocomplete="off">
   <div id="asn-stats" style="display:flex;gap:10px;margin-bottom:20px" class="anim-up d2">
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px">${asns.length}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">${DB.assignments.length===asns.length?'Total':'Filtered'}</div></div>
-    <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--indigo)">${pend}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">Pending</div></div>
+    <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--accent)">${pend}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">Pending</div></div>
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--green)">${asns.length-pend}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">Done</div></div>
   </div>
   <div id="asn-list-container">${asns.length===0?`<div class="gc empty"><div class="empty-icon">📋</div><div class="empty-title">${DB.assignments.length?'No assignments match your search':'No assignments'}</div><div class="empty-sub">${DB.assignments.length?'Try a different search term':'Click &quot;+ Add Task&quot; to get started'}</div></div>`:
@@ -76,7 +76,7 @@ function setAP(p){
   ['none','high','medium','low'].forEach(pri=>{
     const id={none:'ap-none',high:'ap-hi',medium:'ap-med',low:'ap-lo'}[pri];
     const btn=document.getElementById(id);if(!btn)return;
-    btn.style.cssText=pri===p?'background:var(--indigo-dim);color:var(--indigo);border:1px solid rgba(99,102,241,.3)':'';
+    btn.style.cssText=pri===p?'background:var(--accent-dim);color:var(--accent);border:1px solid rgba(160,160,160,.3)':'';
   });
 }
 function handleAFiles(files){rdFiles(files,obj=>{window.pendingAFiles.push(obj);refreshAFileList();});}

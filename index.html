@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cyber">
+<html lang="en" data-theme="ink">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <title>JEE HQ — Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.cdnfonts.com/css/ncl-gasdrifo" rel="stylesheet">
-<link href="https://fonts.cdnfonts.com/css/olivera" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Satoshi:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -18,40 +16,37 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
-<div class="ambient"><div class="orb orb1"></div><div class="orb orb2"></div></div>
-<div class="noise"></div>
-<button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()">&#9776;</button>
 <div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()"></div>
 <div class="app">
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <div class="brand-row">
       <div class="brand-icon">
-        <div class="glow"></div>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/></svg>
       </div>
       <div><div class="brand-name">JEE HQ</div><div class="brand-sub">Command Center</div></div>
     </div>
   </div>
   <nav class="snav" id="snav">
     <div class="snav-lbl">Overview</div>
-    <div class="si on" id="sn-dashboard" onclick="go('dashboard')"><div class="si-act"></div><span class="si-txt">Dashboard</span></div>
-    <div class="si" id="sn-chapters" onclick="go('chapters')"><span class="si-txt">Chapters</span></div>
-    <div class="si" id="sn-revision" onclick="go('revision')"><span class="si-txt">Revision</span></div>
+    <div class="si on" id="sn-dashboard" onclick="go('dashboard')"><div class="si-ico">⚡</div><div class="si-act"></div><span class="si-txt">Dashboard</span></div>
+    <div class="si" id="sn-chapters" onclick="go('chapters')"><div class="si-ico">📖</div><span class="si-txt">Chapters</span></div>
+    <div class="si" id="sn-revision" onclick="go('revision')"><div class="si-ico">📋</div><span class="si-txt">Revision</span></div>
     <div class="snav-lbl">Practice</div>
-    <div class="si" id="sn-tests" onclick="go('tests')"><span class="si-txt">Tests</span></div>
-    <div class="si" id="sn-calculator" onclick="go('calculator')"><span class="si-txt">Calculator</span></div>
-    <div class="si" id="sn-mocktests" onclick="go('mocktests')"><span class="si-txt">Mock Tests</span></div>
-    <div class="si" id="sn-assignments" onclick="go('assignments')"><span class="si-txt">Assignments</span></div>
+    <div class="si" id="sn-tests" onclick="go('tests')"><div class="si-ico">📝</div><span class="si-txt">Tests</span></div>
+    <div class="si" id="sn-calculator" onclick="go('calculator')"><div class="si-ico">🧮</div><span class="si-txt">Calculator</span></div>
+    <div class="si" id="sn-mocktests" onclick="go('mocktests')"><div class="si-ico">🎯</div><span class="si-txt">Mock Tests</span></div>
+    <div class="si" id="sn-assignments" onclick="go('assignments')"><div class="si-ico">📌</div><span class="si-txt">Assignments</span></div>
     <div class="snav-lbl">Analysis</div>
-    <div class="si" id="sn-analytics" onclick="go('analytics')"><span class="si-txt">Analytics</span></div>
-    <div class="si" id="sn-scoreanalytics" onclick="go('scoreanalytics')"><span class="si-txt">Score Analytics</span></div>
-    <div class="si" id="sn-pyq" onclick="go('pyq')"><span class="si-txt">PYQ Analysis</span></div>
+    <div class="si" id="sn-analytics" onclick="go('analytics')"><div class="si-ico">📈</div><span class="si-txt">Analytics</span></div>
+    <div class="si" id="sn-scoreanalytics" onclick="go('scoreanalytics')"><div class="si-ico">📊</div><span class="si-txt">Score Analytics</span></div>
+    <div class="si" id="sn-pyq" onclick="go('pyq')"><div class="si-ico">🎯</div><span class="si-txt">PYQ Analysis</span></div>
     <div class="snav-lbl">AI Tools</div>
-    <div class="si" id="sn-doubtsolver" onclick="go('doubtsolver')"><span class="si-txt">Doubt Solver</span></div>
-    <div class="si" id="sn-prep" onclick="go('prep')"><span class="si-txt">Prep Notebook</span></div>
+    <div class="si" id="sn-doubtsolver" onclick="go('doubtsolver')"><div class="si-ico">💡</div><span class="si-txt">Doubt Solver</span></div>
+    <div class="si" id="sn-prep" onclick="go('prep')"><div class="si-ico">📚</div><span class="si-txt">Prep Notebook</span></div>
   </nav>
-  <div class="sfoot" style="padding:12px 16px;border-top:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
+  <div class="sfoot sfoot-sync" style="padding:12px 16px;border-top:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
     <div id="auth-status" style="font-size:10px;color:var(--faint);margin-bottom:8px;text-align:center">No sync key set</div>
     <div style="display:flex;gap:6px;margin-bottom:8px">
       <button class="btn btn-ghost btn-xs" style="flex:1;justify-content:center;font-size:9px;padding:5px 8px" onclick="openAuthModal()">Set Sync Key</button>
@@ -65,11 +60,10 @@
     <button class="btn btn-ghost btn-xs" style="width:100%;justify-content:center;font-size:9px;padding:5px 8px" onclick="openSupabaseConfig()">Setup Supabase</button>
   </div>
   <div class="sfoot" style="padding:12px 16px;border-top:1px solid var(--border);">
-    <div style="font-size:9px;color:var(--faint);text-align:center;margin-bottom:8px;letter-spacing:.06em">THEME</div>
-    <div style="display:flex;gap:6px;justify-content:center">
-      <button class="theme-btn" data-theme="cyber" title="Cyber Void">◆</button>
-      <button class="theme-btn" data-theme="linear" title="Linear Dark">◇</button>
-      <button class="theme-btn" data-theme="obsidian" title="Obsidian Gold">◈</button>
+    <div class="theme-dots">
+      <button class="theme-dot active" data-theme="ink" title="Ink Wash"></button>
+      <button class="theme-dot" data-theme="amber" title="Amber Walnut"></button>
+      <button class="theme-dot" data-theme="opaline" title="Opaline"></button>
     </div>
   </div>
   <div class="sfoot" style="font-size:9px;text-align:center;padding:10px 16px;">JEE Mains &amp; Advanced</div>
@@ -80,20 +74,25 @@
 </div>
 <nav class="bot-nav">
   <div class="bot-nav-inner">
-    <div class="bni on" id="bn-dashboard" onclick="go('dashboard')"><div class="bni-ico">⚡</div><div class="bni-lbl">Home</div><div class="bni-dot"></div></div>
-    <div class="bni" id="bn-analytics" onclick="go('analytics')"><div class="bni-ico">📈</div><div class="bni-lbl">Stats</div><div class="bni-dot"></div></div>
-    <div class="bni" id="bn-revision" onclick="go('revision')"><div class="bni-ico">📋</div><div class="bni-lbl">Revision</div><div class="bni-dot"></div></div>
-    <div class="bni" id="bn-pyq" onclick="go('pyq')"><div class="bni-ico">🎯</div><div class="bni-lbl">PYQ</div><div class="bni-dot"></div></div>
-    <div class="bni" id="bn-chapters" onclick="go('chapters')"><div class="bni-ico">📖</div><div class="bni-lbl">Chapters</div><div class="bni-dot"></div></div>
-    <div class="bni" id="bn-calculator" onclick="go('calculator')"><div class="bni-ico">🧮</div><div class="bni-lbl">Calc</div><div class="bni-dot"></div></div>
-    <div class="bni" id="bn-more" onclick="toggleSidebar()"><div class="bni-ico">☰</div><div class="bni-lbl">More</div><div class="bni-dot"></div></div>
+    <div class="bni on" id="bn-dashboard" onclick="go('dashboard')"><div class="bni-ico">⚡</div><div class="bni-lbl">Home</div></div>
+    <div class="bni" id="bn-analytics" onclick="go('analytics')"><div class="bni-ico">📈</div><div class="bni-lbl">Stats</div></div>
+    <div class="bni" id="bn-revision" onclick="go('revision')"><div class="bni-ico">📋</div><div class="bni-lbl">Revision</div></div>
+    <div class="bni" id="bn-pyq" onclick="go('pyq')"><div class="bni-ico">🎯</div><div class="bni-lbl">PYQ</div></div>
+    <div class="bni" id="bn-chapters" onclick="go('chapters')"><div class="bni-ico">📖</div><div class="bni-lbl">Chapters</div></div>
+    <div class="bni" id="bn-more" onclick="toggleSidebar()"><div class="bni-ico">☰</div><div class="bni-lbl">More</div></div>
   </div>
 </nav>
+<button class="fab" id="fab-btn" onclick="toggleFab()">+</button>
+<div class="fab-actions" id="fab-actions">
+  <button class="fab-action" onclick="om('m-test');closeFab()"><div class="fab-action-ico">📝</div>Add Test</button>
+  <button class="fab-action" onclick="om('m-study-log');closeFab()"><div class="fab-action-ico">📚</div>Log Study</button>
+  <button class="fab-action" onclick="om('m-asgn');closeFab()"><div class="fab-action-ico">📌</div>Add Assignment</button>
+</div>
 
 <!-- Device Sync Modal -->
 <div class="mo" id="m-auth">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">☁️ Device Sync</div><button class="md-x" onclick="cm('m-auth')">✕</button></div>
+    <div class="md-head"><div class="md-title">Device Sync</div><button class="md-x" onclick="cm('m-auth')">&#10005;</button></div>
     <div class="md-body">
       <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">Enter a sync key to link your devices. Use the <b>same key</b> on laptop and mobile to share data.</p>
       <div class="fg"><label>Your Sync Key</label><input class="inp" id="sync-key-input" type="text" placeholder="e.g. myjeekey2026"/></div>
@@ -109,7 +108,7 @@
 <!-- Supabase Config Modal -->
 <div class="mo" id="m-supa-config">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">☁️ Supabase Setup</div><button class="md-x" onclick="cm('m-supa-config')">✕</button></div>
+    <div class="md-head"><div class="md-title">Supabase Setup</div><button class="md-x" onclick="cm('m-supa-config')">&#10005;</button></div>
     <div class="md-body">
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px">Connect your JEE HQ dashboard to Supabase for automatic cloud sync across all devices.</p>
       <div class="fg"><label>Supabase Project URL</label><input class="inp" id="supa-url" type="url" placeholder="https://xxxxxx.supabase.co"/></div>
@@ -118,11 +117,11 @@
       <div class="fg"><label>Storage Bucket (default: jeehq-assets)</label><input class="inp" id="supa-bucket" type="text" value="jeehq-assets" placeholder="jeehq-assets"/></div>
       <div style="font-size:10px;color:var(--faint);margin-top:8px;line-height:1.5">
         <b>How to set up:</b><br/>
-        1. Create a project at <a href="https://supabase.com" target="_blank" style="color:var(--indigo)">supabase.com</a><br/>
-        2. Project Settings → API → copy URL &amp; anon key<br/>
-        3. SQL Editor → create table <code>jeehq_data</code> (see block below)<br/>
-        4. Storage → New bucket → name <b>exactly</b> <code>jeehq-assets</code> → enable <b>Public bucket</b><br/>
-        5. Storage → Policies → run the storage SQL block below<br/>
+        1. Create a project at <a href="https://supabase.com" target="_blank" style="color:var(--accent)">supabase.com</a><br/>
+        2. Project Settings &#8594; API &#8594; copy URL &amp; anon key<br/>
+        3. SQL Editor &#8594; create table <code>jeehq_data</code> (see block below)<br/>
+        4. Storage &#8594; New bucket &#8594; name <b>exactly</b> <code>jeehq-assets</code> &#8594; enable <b>Public bucket</b><br/>
+        5. Storage &#8594; Policies &#8594; run the storage SQL block below<br/>
         6. Paste settings here, save, then set a sync key in the sidebar<br/>
         <code style="display:block;background:rgba(255,255,255,.05);padding:8px;border-radius:6px;margin-top:6px;font-size:9px;white-space:pre-wrap">CREATE TABLE jeehq_data (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -130,7 +129,7 @@
   data jsonb NOT NULL,
   updated_at timestamptz DEFAULT now()
 );</code>
-        <code style="display:block;background:rgba(255,255,255,.05);padding:8px;border-radius:6px;margin-top:6px;font-size:9px;white-space:pre-wrap">-- Storage policies — run ALL of this in SQL Editor (replace bucket name if needed)
+        <code style="display:block;background:rgba(255,255,255,.05);padding:8px;border-radius:6px;margin-top:6px;font-size:9px;white-space:pre-wrap">-- Storage policies &#8212; run ALL of this in SQL Editor (replace bucket name if needed)
 DROP POLICY IF EXISTS "jeehq_public_read" ON storage.objects;
 DROP POLICY IF EXISTS "jeehq_anon_upload" ON storage.objects;
 DROP POLICY IF EXISTS "jeehq_objects_select" ON storage.objects;
@@ -150,7 +149,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
     </div>
     <div class="md-foot">
       <button class="btn btn-ghost btn-sm" onclick="cm('m-supa-config')">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="saveSupabaseConfig()">Save & Test</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSupabaseConfig()">Save &amp; Test</button>
     </div>
   </div>
 </div>
@@ -161,21 +160,21 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
     <div class="md-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <div class="md-title" id="pv-title" style="flex:1;min-width:120px">Preview</div>
       <div id="pv-pdf-controls" style="display:none;align-items:center;gap:6px;font-size:12px">
-        <button class="btn btn-ghost btn-xs" onclick="pvPage(-1)" style="padding:4px 8px">◀</button>
+        <button class="btn btn-ghost btn-xs" onclick="pvPage(-1)" style="padding:4px 8px">&#9664;</button>
         <span id="pv-page-info" style="color:var(--muted);min-width:50px;text-align:center">1 / 1</span>
-        <button class="btn btn-ghost btn-xs" onclick="pvPage(1)" style="padding:4px 8px">▶</button>
+        <button class="btn btn-ghost btn-xs" onclick="pvPage(1)" style="padding:4px 8px">&#9654;</button>
         <span style="width:1px;height:16px;background:var(--border);margin:0 4px"></span>
-        <button class="btn btn-ghost btn-xs" onclick="pvZoom(-0.25)" style="padding:4px 8px">−</button>
+        <button class="btn btn-ghost btn-xs" onclick="pvZoom(-0.25)" style="padding:4px 8px">&#8722;</button>
         <span id="pv-zoom-label" style="color:var(--muted);min-width:40px;text-align:center">100%</span>
         <button class="btn btn-ghost btn-xs" onclick="pvZoom(0.25)" style="padding:4px 8px">+</button>
       </div>
       <div id="pv-img-controls" style="display:none;align-items:center;gap:6px;font-size:12px">
-        <button class="btn btn-ghost btn-xs" onclick="pvZoomImg(-0.25)" style="padding:4px 8px">−</button>
+        <button class="btn btn-ghost btn-xs" onclick="pvZoomImg(-0.25)" style="padding:4px 8px">&#8722;</button>
         <span id="pv-img-zoom-label" style="color:var(--muted);min-width:40px;text-align:center">100%</span>
         <button class="btn btn-ghost btn-xs" onclick="pvZoomImg(0.25)" style="padding:4px 8px">+</button>
-        <button class="btn btn-ghost btn-xs" onclick="pvImgReset()" style="padding:4px 8px">↺</button>
+        <button class="btn btn-ghost btn-xs" onclick="pvImgReset()" style="padding:4px 8px">&#8634;</button>
       </div>
-      <button class="md-x" onclick="cm('m-preview')">✕</button>
+      <button class="md-x" onclick="cm('m-preview')">&#10005;</button>
     </div>
     <div class="md-body" id="pv-body" style="position:relative;overflow:auto"></div>
     <div id="pv-footer" style="display:none;padding:8px 12px;text-align:center;font-size:11px;color:var(--faint);background:var(--glass);border-radius:0 0 14px 14px;justify-content:center;align-items:center;flex-wrap:wrap"></div>
@@ -185,27 +184,27 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Add Assignment Modal -->
 <div class="mo" id="m-asgn">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Add Assignment</div><button class="md-x" onclick="cm('m-asgn')">✕</button></div>
+    <div class="md-head"><div class="md-title">Add Assignment</div><button class="md-x" onclick="cm('m-asgn')">&#10005;</button></div>
     <div class="md-body">
-      <div class="fg"><label>Title</label><input class="inp" id="a-title" type="text" placeholder="e.g. Physics DPP — Rotational Motion"/></div>
+      <div class="fg"><label>Title</label><input class="inp" id="a-title" type="text" placeholder="e.g. Physics DPP &#8212; Rotational Motion"/></div>
       <div class="fg"><label>Description</label><textarea class="inp" id="a-desc" rows="3" placeholder="Add details..."></textarea></div>
       <div class="fg"><label>Priority</label>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-ghost btn-sm" id="ap-none" onclick="setAP('none')">⚪ None</button>
-          <button class="btn btn-ghost btn-sm" id="ap-hi" onclick="setAP('high')">🔴 High</button>
-          <button class="btn btn-ghost btn-sm" id="ap-med" onclick="setAP('medium')">🟡 Medium</button>
-          <button class="btn btn-ghost btn-sm" id="ap-lo" onclick="setAP('low')">🟢 Low</button>
+          <button class="btn btn-ghost btn-sm" id="ap-none" onclick="setAP('none')">None</button>
+          <button class="btn btn-ghost btn-sm" id="ap-hi" onclick="setAP('high')">High</button>
+          <button class="btn btn-ghost btn-sm" id="ap-med" onclick="setAP('medium')">Medium</button>
+          <button class="btn btn-ghost btn-sm" id="ap-lo" onclick="setAP('low')">Low</button>
         </div>
       </div>
       <div class="fg">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="var p=document.getElementById('a-syl-wrap');p.style.display=p.style.display==='none'?'block':'none'">📚 Syllabus (optional) <span style="font-size:9px;color:var(--indigo)">▼ toggle</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="var p=document.getElementById('a-syl-wrap');p.style.display=p.style.display==='none'?'block':'none'">Syllabus (optional) <span style="font-size:9px;color:var(--accent)">&#9660; toggle</span></label>
         <div id="a-syl-wrap" style="display:none;margin-top:8px"><textarea class="inp" id="a-syl" rows="2" placeholder="e.g. Chapter 5: Rotational Motion, Chapter 7: Gravitation"></textarea></div>
       </div>
       <div class="fg">
         <label>Attachments (PDF / Images)</label>
         <label class="dz" id="a-dz" for="a-finp">
-          <div class="dz-icon">📎</div><div class="dz-title">Upload files</div>
-          <div class="dz-sub">PDF or images · max 5MB each</div>
+          <div class="dz-icon">&#128206;</div><div class="dz-title">Upload files</div>
+          <div class="dz-sub">PDF or images &#183; max 5MB each</div>
           <input type="file" id="a-finp" multiple accept=".pdf,image/*" onchange="handleAFiles(this.files)"/>
         </label>
         <div class="file-list" id="a-file-list"></div>
@@ -221,13 +220,13 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Add Test Modal -->
 <div class="mo" id="m-test">
   <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Add Test Result</div><button class="md-x" onclick="cm('m-test')">✕</button></div>
+    <div class="md-head"><div class="md-title">Add Test Result</div><button class="md-x" onclick="cm('m-test')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Test Name</label><input class="inp" id="t-name" type="text" placeholder="e.g. Full Mock Test #4"/></div>
       <div class="fg"><label>Date</label><input class="inp" id="t-date" type="date"/></div>
-      <div style="display:flex;gap:8px;margin-bottom:14px;background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:4px;">
-        <button class="btn btn-sm" id="tm-direct" onclick="setTestMode('direct')" style="flex:1;text-align:center">🎯 Direct Marks</button>
-        <button class="btn btn-ghost btn-sm" id="tm-breakdown" onclick="setTestMode('breakdown')" style="flex:1;text-align:center">🔬 Breakdown</button>
+      <div style="display:flex;gap:8px;margin-bottom:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;">
+        <button class="btn btn-sm" id="tm-direct" onclick="setTestMode('direct')" style="flex:1;text-align:center">Direct Marks</button>
+        <button class="btn btn-ghost btn-sm" id="tm-breakdown" onclick="setTestMode('breakdown')" style="flex:1;text-align:center">Breakdown</button>
       </div>
       <div id="test-mode-direct">
         <div class="fg"><label>Total Marks Obtained</label><input class="inp" id="t-direct-marks" type="number" min="0" max="300" placeholder="e.g. 184" oninput="syncDirectToBreakdown()"/></div>
@@ -237,45 +236,45 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px;">Correct / Wrong / Skipped per subject</div>
         <div class="g3">
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--phys);margin-bottom:8px;">⚡ Physics</div>
+            <div style="font-size:10px;font-weight:700;color:var(--phys);margin-bottom:8px;">Physics</div>
             <div class="fg"><label>Correct</label><input class="inp" id="tp-c" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
             <div class="fg"><label>Wrong</label><input class="inp" id="tp-w" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
             <div class="fg"><label>Skipped</label><input class="inp" id="tp-s" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
           </div>
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--chem);margin-bottom:8px;">⚗️ Chemistry</div>
+            <div style="font-size:10px;font-weight:700;color:var(--chem);margin-bottom:8px;">Chemistry</div>
             <div class="fg"><label>Correct</label><input class="inp" id="tc-c" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
             <div class="fg"><label>Wrong</label><input class="inp" id="tc-w" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
             <div class="fg"><label>Skipped</label><input class="inp" id="tc-s" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
           </div>
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--math);margin-bottom:8px;">📐 Maths</div>
+            <div style="font-size:10px;font-weight:700;color:var(--math);margin-bottom:8px;">Maths</div>
             <div class="fg"><label>Correct</label><input class="inp" id="tm-c" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
             <div class="fg"><label>Wrong</label><input class="inp" id="tm-w" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
             <div class="fg"><label>Skipped</label><input class="inp" id="tm-s" type="number" min="0" max="25" placeholder="0" oninput="syncBreakdownToDirect()"/></div>
           </div>
         </div>
-        <div style="display:flex;gap:12px;margin-top:14px;padding:12px;background:var(--glass2);border:1px solid var(--border);border-radius:10px;align-items:center;">
+        <div style="display:flex;gap:12px;margin-top:14px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;align-items:center;">
           <div style="font-size:11px;color:var(--muted)">Auto-calculated:</div>
-          <div style="font-size:18px;font-weight:700;color:var(--indigo)" id="t-calc-total">0</div>
+          <div style="font-size:18px;font-weight:700;color:var(--accent)" id="t-calc-total">0</div>
           <div style="font-size:11px;color:var(--faint)">/ <span id="t-calc-max">300</span></div>
         </div>
       </div>
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 10px">⏱️ Time Spent (Minutes)</div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 10px">Time Spent (Minutes)</div>
       <div class="g3">
         <div class="fg"><label>Physics</label><input type="number" id="test-t-p" class="inp" placeholder="0"></div>
         <div class="fg"><label>Chemistry</label><input type="number" id="test-t-c" class="inp" placeholder="0"></div>
         <div class="fg"><label>Maths</label><input type="number" id="test-t-m" class="inp" placeholder="0"></div>
       </div>
       <div class="fg"><label>Total Time</label><input type="number" id="test-t-tot" class="inp" placeholder="e.g. 180"></div>
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 10px">📚 Test Syllabus (Chapters Covered)</div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 10px">Test Syllabus (Chapters Covered)</div>
       <div class="syl-grid" id="t-syl-grid"></div>
       <div class="fg" style="margin-top:14px">
-        <label>📄 Upload Question Paper (optional)</label>
+        <label>Upload Question Paper (optional)</label>
         <label class="dz" id="t-dz" for="t-finp" style="padding:18px">
-          <div class="dz-icon" style="font-size:22px">📄</div>
+          <div class="dz-icon" style="font-size:22px">&#128196;</div>
           <div class="dz-title" style="font-size:12px">Upload Question Paper</div>
-          <div class="dz-sub">PDF or images · max 5MB each</div>
+          <div class="dz-sub">PDF or images &#183; max 5MB each</div>
           <input type="file" id="t-finp" multiple accept=".pdf,image/*" onchange="handleTFiles(this.files)"/>
         </label>
         <div class="file-list" id="t-file-list"></div>
@@ -291,7 +290,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Save Calculator Test Modal -->
 <div class="mo" id="m-save-calc-test">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">💾 Save Calculator Result</div><button class="md-x" onclick="cm('m-save-calc-test')">✕</button></div>
+    <div class="md-head"><div class="md-title">Save Calculator Result</div><button class="md-x" onclick="cm('m-save-calc-test')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Test Name</label><input class="inp" id="calc-save-name" type="text" placeholder="e.g. Full Mock Test #4"/></div>
       <div class="fg"><label>Date</label><input class="inp" id="calc-save-date" type="date"/></div>
@@ -312,26 +311,26 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   <div class="md md-xl"><div class="md-handle"></div>
     <div class="md-head">
       <div class="md-title" id="notes-chapter-name">Chapter Notes</div>
-      <button class="md-x" onclick="cm('m-notes')">✕</button>
+      <button class="md-x" onclick="cm('m-notes')">&#10005;</button>
     </div>
     <div class="md-body">
       <div style="display:flex;gap:8px;margin-bottom:14px;">
-        <button class="btn btn-sm" id="note-type-det" onclick="setNoteType('detailed')">📖 Detailed Notes</button>
-        <button class="btn btn-ghost btn-sm" id="note-type-rev" onclick="setNoteType('revision')">🔁 Revision Notes</button>
+        <button class="btn btn-sm" id="note-type-det" onclick="setNoteType('detailed')">Detailed Notes</button>
+        <button class="btn btn-ghost btn-sm" id="note-type-rev" onclick="setNoteType('revision')">Revision Notes</button>
       </div>
       <label class="dz" id="n-dz" for="n-finp">
-        <div class="dz-icon">📎</div>
+        <div class="dz-icon">&#128206;</div>
         <div class="dz-title">Upload <span id="note-type-lbl">Detailed</span> Notes</div>
-        <div class="dz-sub">PDF or images · max 5MB each</div>
+        <div class="dz-sub">PDF or images &#183; max 5MB each</div>
         <input type="file" id="n-finp" multiple accept=".pdf,image/*" onchange="handleNoteFiles(this.files)"/>
       </label>
       <div id="notes-detailed-section" style="margin-top:16px">
-        <div class="notes-sec-title" style="color:var(--indigo)">📖 Detailed Notes</div>
+        <div class="notes-sec-title" style="color:var(--accent)">Detailed Notes</div>
         <div class="file-list" id="n-det-list"></div>
         <div id="n-det-empty" style="font-size:11px;color:var(--faint);padding:6px 0">No detailed notes yet.</div>
       </div>
       <div id="notes-revision-section" style="margin-top:16px">
-        <div class="notes-sec-title" style="color:var(--phys)">🔁 Revision Notes</div>
+        <div class="notes-sec-title" style="color:var(--phys)">Revision Notes</div>
         <div class="file-list" id="n-rev-list"></div>
         <div id="n-rev-empty" style="font-size:11px;color:var(--faint);padding:6px 0">No revision notes yet.</div>
       </div>
@@ -343,7 +342,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Add Chapter Modal -->
 <div class="mo" id="m-add-ch">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title" id="addch-title">Add Chapter</div><button class="md-x" onclick="cm('m-add-ch')">✕</button></div>
+    <div class="md-head"><div class="md-title" id="addch-title">Add Chapter</div><button class="md-x" onclick="cm('m-add-ch')">&#10005;</button></div>
     <div class="md-body">
       <input type="hidden" id="addch-subj"/>
       <div class="fg"><label>Chapter Name</label><input class="inp" id="addch-name" type="text" placeholder="e.g. Electromagnetic Waves"/></div>
@@ -358,12 +357,12 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Edit Chapter Modal -->
 <div class="mo" id="m-edit-ch">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title" id="editch-title">Edit Chapter</div><button class="md-x" onclick="cm('m-edit-ch')">✕</button></div>
+    <div class="md-head"><div class="md-title" id="editch-title">Edit Chapter</div><button class="md-x" onclick="cm('m-edit-ch')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Chapter Name</label><input class="inp" id="editch-name" type="text"/></div>
     </div>
     <div class="md-foot">
-      <button class="btn btn-danger btn-sm" onclick="deleteEditCh()">🗑️ Delete</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteEditCh()">Delete</button>
       <div style="flex:1"></div>
       <button class="btn btn-ghost btn-sm" onclick="cm('m-edit-ch')">Cancel</button>
       <button class="btn btn-primary btn-sm" onclick="saveEditCh()">Save</button>
@@ -374,17 +373,17 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Study Log Modal -->
 <div class="mo" id="m-study-log">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">📚 Log Study Session</div><button class="md-x" onclick="cm('m-study-log')">✕</button></div>
+    <div class="md-head"><div class="md-title">Log Study Session</div><button class="md-x" onclick="cm('m-study-log')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Subject</label>
         <select class="inp" id="sl-subj">
-          <option value="Physics">⚡ Physics</option>
-          <option value="Chemistry">⚗️ Chemistry</option>
-          <option value="Maths">📐 Maths</option>
-          <option value="General">📖 General</option>
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Maths">Maths</option>
+          <option value="General">General</option>
         </select>
       </div>
-      <div class="fg"><label>Topic / Notes</label><input class="inp" id="sl-topic" type="text" placeholder="e.g. Rotational Motion — Numericals"/></div>
+      <div class="fg"><label>Topic / Notes</label><input class="inp" id="sl-topic" type="text" placeholder="e.g. Rotational Motion &#8212; Numericals"/></div>
       <div class="g2">
         <div class="fg"><label>Duration (hrs)</label><input class="inp" id="sl-dur" type="number" step="0.25" min="0.25" max="12" placeholder="e.g. 1.5"/></div>
         <div class="fg"><label>Date</label><input class="inp" id="sl-date" type="date"/></div>
@@ -400,7 +399,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Log Mock Test Modal -->
 <div class="mo" id="m-mocktest">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">📝 Log Mock Test</div><button class="md-x" onclick="cm('m-mocktest')">✕</button></div>
+    <div class="md-head"><div class="md-title">Log Mock Test</div><button class="md-x" onclick="cm('m-mocktest')">&#10005;</button></div>
     <div class="md-body">
       <div class="mt-form">
         <div class="fg"><label>Subject</label>
@@ -429,18 +428,18 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- Doubt Solver Settings Modal -->
 <div class="mo" id="m-ds-settings">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">⚙️ Doubt Solver Settings</div><button class="md-x" onclick="cm('m-ds-settings')">✕</button></div>
+    <div class="md-head"><div class="md-title">Doubt Solver Settings</div><button class="md-x" onclick="cm('m-ds-settings')">&#10005;</button></div>
     <div class="md-body" style="padding:16px 20px">
       <div class="fg"><label>AI Provider</label>
         <div style="display:flex;gap:6px;margin-top:4px">
-          <button class="btn btn-ghost btn-xs ds-prov-btn" data-prov="groq" onclick="dsSetProvider('groq')">☁️ Groq (Free)</button>
-          <button class="btn btn-ghost btn-xs ds-prov-btn" data-prov="ollama" onclick="dsSetProvider('ollama')">🖥️ Ollama (Local)</button>
+          <button class="btn btn-ghost btn-xs ds-prov-btn" data-prov="groq" onclick="dsSetProvider('groq')">Groq (Free)</button>
+          <button class="btn btn-ghost btn-xs ds-prov-btn" data-prov="ollama" onclick="dsSetProvider('ollama')">Ollama (Local)</button>
         </div>
       </div>
       <div id="ds-groq-section" style="margin-top:12px">
         <div class="fg"><label>API Key</label>
           <input class="inp" id="ds-openai-key" type="password" placeholder="gsk_..." style="font-size:12px" value=""/>
-          <div style="font-size:10px;color:var(--faint);margin-top:4px">Free at <a href="https://console.groq.com" target="_blank" style="color:var(--indigo)">console.groq.com</a>. Key stored locally only.</div></div>
+          <div style="font-size:10px;color:var(--faint);margin-top:4px">Free at <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">console.groq.com</a>. Key stored locally only.</div></div>
         <div class="fg" style="margin-top:10px"><label>Model</label>
           <input class="inp" id="ds-openai-model-ds" placeholder="llama-3.3-70b-versatile" style="font-size:12px" value="llama-3.3-70b-versatile"/>
           <div style="font-size:10px;color:var(--faint);margin-top:4px">Default: llama-3.3-70b-versatile (free)</div></div>
@@ -453,7 +452,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
           <select class="inp" id="ds-ollama-model" style="font-size:12px"><option value="">Loading models...</option></select>
           <div style="font-size:10px;color:var(--faint);margin-top:4px">Fetched from your Ollama server</div></div>
       </div>
-      <div class="fg" style="margin-top:12px"><label class="ds-vision-lbl" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;border-radius:8px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.12)"><input type="checkbox" id="ds-use-vision" style="width:16px;height:16px;accent-color:#8b5cf6;cursor:pointer"/> <span>🧠 Use Vision AI <span style="font-size:10px;color:var(--faint);font-weight:400">(AI reads directly from image)</span></span></label></div>
+      <div class="fg" style="margin-top:12px"><label class="ds-vision-lbl" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;border-radius:8px;background:var(--accent-bg);border:1px solid var(--border)"><input type="checkbox" id="ds-use-vision" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer"/> <span>Use Vision AI <span style="font-size:10px;color:var(--faint);font-weight:400">(AI reads directly from image)</span></span></label></div>
     </div>
     <div class="md-foot"><button class="btn btn-ghost btn-sm" onclick="cm('m-ds-settings')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveDSSettings()">Save</button></div>
   </div>
@@ -464,11 +463,11 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- CMT Config Modal -->
 <div class="mo" id="m-cmt-config">
   <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">🎯 Create Custom Mock Test</div><button class="md-x" onclick="cm('m-cmt-config')">✕</button></div>
+    <div class="md-head"><div class="md-title">Create Custom Mock Test</div><button class="md-x" onclick="cm('m-cmt-config')">&#10005;</button></div>
     <div class="md-body" id="cmt-config-body"></div>
     <div class="md-foot">
       <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-config')">Cancel</button>
-      <button class="cmt-gen-btn" id="cmt-gen-btn" onclick="cmtGenerate()">⚡ Generate Test</button>
+      <button class="cmt-gen-btn" id="cmt-gen-btn" onclick="cmtGenerate()">Generate Test</button>
     </div>
   </div>
 </div>
@@ -496,7 +495,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
       <div class="cmt-nav-grid" id="cmt-nav-grid"></div>
       <div class="cmt-nav-legend">
         <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--green)"></div>Answered</div>
-        <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--indigo)"></div>Marked</div>
+        <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--accent)"></div>Marked</div>
         <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--surface2)"></div>Skipped</div>
       </div>
       <div style="flex:1"></div>
@@ -504,18 +503,18 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
     </div>
   </div>
   <div class="cmt-player-bottom">
-    <button class="btn btn-ghost btn-sm" onclick="cmtPrevQ()">◀ Prev</button>
+    <button class="btn btn-ghost btn-sm" onclick="cmtPrevQ()">&#9664; Prev</button>
     <div style="flex:1;display:flex;justify-content:center;gap:6px;align-items:center">
-      <button class="cmt-q-mark-btn" id="cmt-mark-btn" onclick="cmtToggleMark()">📌 Mark</button>
-      <button class="cmt-q-mark-btn" onclick="cmtToggleNav()">☰ Nav</button>
-      <button class="cmt-q-mark-btn" onclick="cmtClearAnswer()">✕ Clear</button>
+      <button class="cmt-q-mark-btn" id="cmt-mark-btn" onclick="cmtToggleMark()">Mark</button>
+      <button class="cmt-q-mark-btn" onclick="cmtToggleNav()">Nav</button>
+      <button class="cmt-q-mark-btn" onclick="cmtClearAnswer()">Clear</button>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="cmtNextQ()">Next ▶</button>
+    <button class="btn btn-ghost btn-sm" onclick="cmtNextQ()">Next &#9654;</button>
   </div>
   <div class="cmt-mobile-nav" id="cmt-mobile-nav" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border)">
       <span style="font-size:11px;font-weight:700;color:var(--faint)">Question Navigator</span>
-      <button class="btn btn-ghost btn-xs" onclick="cmtToggleNav()">✕</button>
+      <button class="btn btn-ghost btn-xs" onclick="cmtToggleNav()">&#10005;</button>
     </div>
     <div style="padding:8px 14px;overflow-y:auto;max-height:50vh">
       <div class="cmt-nav-grid" id="cmt-mobile-nav-grid" style="grid-template-columns:repeat(6,1fr)"></div>
@@ -526,11 +525,11 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- CMT Results Modal -->
 <div class="mo" id="m-cmt-results">
   <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">📊 Test Results</div><button class="md-x" onclick="cm('m-cmt-results');go('mocktests')">✕</button></div>
+    <div class="md-head"><div class="md-title">Test Results</div><button class="md-x" onclick="cm('m-cmt-results');go('mocktests')">&#10005;</button></div>
     <div class="md-body" id="cmt-results-body"></div>
     <div class="md-foot">
       <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-results');go('mocktests')">Close</button>
-      <button class="btn btn-primary btn-sm" onclick="cmtSaveToHistory()">💾 Save to History</button>
+      <button class="btn btn-primary btn-sm" onclick="cmtSaveToHistory()">Save to History</button>
     </div>
   </div>
 </div>
@@ -538,7 +537,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- CMT Confirm Submit Modal -->
 <div class="mo" id="m-cmt-confirm">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Submit Test?</div><button class="md-x" onclick="cm('m-cmt-confirm')">✕</button></div>
+    <div class="md-head"><div class="md-title">Submit Test?</div><button class="md-x" onclick="cm('m-cmt-confirm')">&#10005;</button></div>
     <div class="md-body" style="text-align:center;padding:16px 20px">
       <div id="cmt-confirm-stats" style="font-size:13px;color:var(--muted);line-height:1.8"></div>
     </div>

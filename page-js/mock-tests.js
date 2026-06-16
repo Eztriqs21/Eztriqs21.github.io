@@ -47,7 +47,7 @@ function renderMockTests(el){
   const isEmpty=!tests.length;
   const sorted=[...tests].sort((a,b)=>new Date(b.date)-new Date(a.date));
   const subjOrder=['Physics','Chemistry','Maths','Full Syllabus'];
-  const subjMeta={Physics:{icon:'⚡',c:'var(--phys)'},Chemistry:{icon:'⚗️',c:'var(--chem)'},Maths:{icon:'📐',c:'var(--math)'},'Full Syllabus':{icon:'📋',c:'var(--indigo)'}};
+  const subjMeta={Physics:{icon:'⚡',c:'var(--phys)'},Chemistry:{icon:'⚗️',c:'var(--chem)'},Maths:{icon:'📐',c:'var(--math)'},'Full Syllabus':{icon:'📋',c:'var(--accent)'}};
   const grouped={};
   sorted.forEach(m=>{
     if(!grouped[m.subject])grouped[m.subject]={};
@@ -170,7 +170,7 @@ function cmtRenderConfig(){
     <div class="cmt-q-item"><label>MCQ</label><input type="number" id="cmt-mcq" min="0" max="75" value="${cmtConfig.mcq}" onchange="cmtUpdateCounts('mcq',this.value)"/></div>
     <div class="cmt-q-item"><label>Integer</label><input type="number" id="cmt-int" min="0" max="75" value="${cmtConfig.intQ}" onchange="cmtUpdateCounts('int',this.value)"/></div>
     <div class="cmt-q-item"><label>Multi</label><input type="number" id="cmt-multi" min="0" max="75" value="${cmtConfig.multiQ}" onchange="cmtUpdateCounts('multi',this.value)"/></div>
-    <div class="cmt-q-item" style="background:var(--indigo-dim)"><label style="color:var(--indigo)">Total</label><span id="cmt-total-display" style="font-size:15px;font-weight:700;color:var(--indigo);min-width:30px;text-align:center">${cmtConfig.totalQ}</span></div>
+    <div class="cmt-q-item" style="background:var(--accent-dim)"><label style="color:var(--accent)">Total</label><span id="cmt-total-display" style="font-size:15px;font-weight:700;color:var(--accent);min-width:30px;text-align:center">${cmtConfig.totalQ}</span></div>
   </div>
 
   <div class="cmt-sec-label">Source</div>
@@ -831,7 +831,7 @@ function cmtShowResults(r){
       <div class="cmt-results-stat"><div class="cmt-results-stat-val" style="color:var(--green)">${r.correct}</div><div class="cmt-results-stat-lbl">Correct</div></div>
       <div class="cmt-results-stat"><div class="cmt-results-stat-val" style="color:var(--red)">${r.incorrect}</div><div class="cmt-results-stat-lbl">Wrong</div></div>
       <div class="cmt-results-stat"><div class="cmt-results-stat-val" style="color:var(--faint)">${r.skipped}</div><div class="cmt-results-stat-lbl">Skipped</div></div>
-      <div class="cmt-results-stat"><div class="cmt-results-stat-val" style="color:var(--indigo)">${timeTaken}m</div><div class="cmt-results-stat-lbl">Time</div></div>
+      <div class="cmt-results-stat"><div class="cmt-results-stat-val" style="color:var(--accent)">${timeTaken}m</div><div class="cmt-results-stat-lbl">Time</div></div>
     </div>
   </div>
   <div class="cmt-results-subj">${subjInfo.map(s=>{
@@ -860,7 +860,7 @@ function cmtShowQDetail(idx){
   el.innerHTML=`
   <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <span style="font-weight:700;color:var(--indigo)">Q${q.num}</span>
+      <span style="font-weight:700;color:var(--accent)">Q${q.num}</span>
       <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${subjColors[q.subject]||'var(--glass2)'}20;color:${subjColors[q.subject]||'var(--muted)'}">${q.subject}</span>
       <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${statusColor}20;color:${statusColor};font-weight:600">${q.status.toUpperCase()}</span>
       <span style="font-size:10px;color:var(--faint)">${q.marks>=0?'+':''}${q.marks} marks</span>

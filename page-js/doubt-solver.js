@@ -319,7 +319,7 @@ function dsRenderAnswer(answer,parsed){
   const aa=document.getElementById('ds-answer-area');
   if(!aa)return;
   aa.style.display='block';
-  const subjColor=parsed.subject==='Physics'?'var(--phys)':parsed.subject==='Chemistry'?'var(--chem)':'var(--indigo)';
+  const subjColor=parsed.subject==='Physics'?'var(--phys)':parsed.subject==='Chemistry'?'var(--chem)':'var(--accent)';
   let html=`<div class="ds-answer gc" style="padding:18px 20px;margin-top:12px">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
       <span class="ds-subj-tag" style="background:${subjColor}15;color:${subjColor};border:1px solid ${subjColor}30">${parsed.subject}</span>
@@ -337,8 +337,8 @@ function dsRenderAnswer(answer,parsed){
     html+=`</div>`;
   }
   if(answer.noApi){
-    html+=`<div style="margin-top:14px;padding:16px;border-radius:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);font-size:12px;line-height:1.6">
-      <div style="font-weight:700;color:var(--indigo);margin-bottom:6px">⚙️ No Provider Configured</div>
+    html+=`<div style="margin-top:14px;padding:16px;border-radius:10px;background:rgba(160,160,160,.08);border:1px solid rgba(160,160,160,.15);font-size:12px;line-height:1.6">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:6px">⚙️ No Provider Configured</div>
       <p style="color:var(--muted);margin:0 0 8px">Click ⚙️ Settings to set up Groq (free) or Ollama (local).</p>
     </div>`;
   }

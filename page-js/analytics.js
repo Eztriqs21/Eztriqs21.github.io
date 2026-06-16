@@ -42,7 +42,7 @@ function renderAnalytics(el){
   el.innerHTML=`
   <div class="pg-hdr anim-up"><div class="pg-title">Statistics & Study Logs</div><div class="pg-sub">Performance insights and study tracking</div></div>
   <div class="analytics-hero anim-up d1">
-    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--indigo)">${(+weekTotal).toFixed(1)}h</div><div class="analytics-lbl">This Week Total</div></div>
+    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--accent)">${(+weekTotal).toFixed(1)}h</div><div class="analytics-lbl">This Week Total</div></div>
     <div class="gc analytics-card"><div class="analytics-val" style="color:var(--green)">${(+avgDay).toFixed(1)}h</div><div class="analytics-lbl">Avg Per Day</div></div>
     <div class="gc analytics-card"><div class="analytics-val" style="color:var(--phys)">${bestDay?((+bestDay[1]).toFixed(1)+'h'):'—'}</div><div class="analytics-lbl">Best Day ${bestDay?'('+fmtDate(bestDay[0]).slice(0,6)+')':''}</div></div>
     <div class="gc analytics-card"><div class="analytics-val" style="color:var(--chem)">${logs.length}</div><div class="analytics-lbl">Total Sessions</div></div>
@@ -75,7 +75,7 @@ function renderAnalytics(el){
     <div class="gc bar-chart">
       ${barData.map(b=>`<div class="bar-col">
         <div class="bar-val">${b.val>0?(+b.val).toFixed(1)+'h':'0h'}</div>
-        <div class="bar-track"><div class="bar-fill" style="height:${Math.min(100,b.val*10)}%;background:var(--indigo)"></div></div>
+        <div class="bar-track"><div class="bar-fill" style="height:${Math.min(100,b.val*10)}%;background:var(--accent)"></div></div>
         <div class="bar-lbl">${b.day}</div>
       </div>`).join('')}
     </div>
@@ -94,7 +94,7 @@ function renderAnalytics(el){
         const totalHours=mLogs.reduce((s,l)=>s+(l.duration||0),0);
         const studyScore=Math.min(100,Math.round(totalHours/(now.getDate()*2)*100));
         const comps=[
-          {label:'Test Score',val:testScore,color:'var(--indigo)',icon:'📝'},
+          {label:'Test Score',val:testScore,color:'var(--accent)',icon:'📝'},
           {label:'Mock Score',val:mockScore,color:'var(--green)',icon:'📋'},
           {label:'Study Hours',val:studyScore,color:'var(--phys)',icon:'📖'}
         ];
@@ -107,7 +107,7 @@ function renderAnalytics(el){
           </div>`).join('')}
         </div>
         <div style="font-size:12px;color:var(--faint);text-align:center;padding:8px;background:var(--glass);border-radius:10px;border:1px solid var(--border)">
-          <b>Composite Index:</b> <span style="color:var(--indigo);font-size:18px;font-weight:700">${((testScore*0.4+mockScore*0.3+studyScore*0.3)).toFixed(1)}%</span>
+          <b>Composite Index:</b> <span style="color:var(--accent);font-size:18px;font-weight:700">${((testScore*0.4+mockScore*0.3+studyScore*0.3)).toFixed(1)}%</span>
           <span style="font-size:10px;color:var(--muted)">  (40% Test + 30% Mock + 30% Study)</span>
           <div style="margin-top:6px;font-size:10px;color:var(--faint)">
             ${mTests.length} tests · ${mMocks.length} mocks · ${totalHours.toFixed(1)}h studied this month
@@ -143,7 +143,7 @@ function renderAnalytics(el){
             const totalH=Math.max(testH,mockH,studyH);
             return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:${barW}px">
               <div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:80px;width:100%">
-                ${testH>0?`<div style="width:${Math.min(100,barW*0.7)}px;height:${testH}px;background:var(--indigo);border-radius:2px 2px 0 0;opacity:.7;min-height:2px" title="Test: ${d.testScore}%"></div>`:''}
+                ${testH>0?`<div style="width:${Math.min(100,barW*0.7)}px;height:${testH}px;background:var(--accent);border-radius:2px 2px 0 0;opacity:.7;min-height:2px" title="Test: ${d.testScore}%"></div>`:''}
                 ${mockH>0?`<div style="width:${Math.min(100,barW*0.7)}px;height:${mockH}px;background:var(--green);border-radius:2px 2px 0 0;opacity:.7;min-height:2px" title="Mock: ${d.mockScore}%"></div>`:''}
                 ${studyH>0?`<div style="width:${Math.min(100,barW*0.7)}px;height:${studyH}px;background:var(--phys);border-radius:2px 2px 0 0;opacity:.5;min-height:2px" title="Study: ${d.hours.toFixed(1)}h"></div>`:''}
               </div>
@@ -152,7 +152,7 @@ function renderAnalytics(el){
           }).join('')}
         </div>
         <div style="display:flex;gap:16px;justify-content:center;font-size:10px;color:var(--muted);margin-top:8px">
-          <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--indigo);margin-right:4px"></span>Test</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:4px"></span>Test</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--green);margin-right:4px"></span>Mock</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--phys);margin-right:4px"></span>Study</span>
         </div>`;})()}
@@ -173,10 +173,10 @@ function renderAnalytics(el){
     const gId='pfg'+Date.now();const yTicks=[min,Math.round(min+range*0.25),Math.round(min+range*0.5),Math.round(min+range*0.75),max];
     return `<div class="section-block anim-up d3"><div class="section-title">📈 Overall Performance (${valid.length} Tests)</div><div class="gc" style="padding:16px"><svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">
       ${yTicks.map(v=>`<text x="${px-8}" y="${yScale(v)+3}" text-anchor="end" fill="var(--faint)" font-size="9">${v}</text><line x1="${px}" y1="${yScale(v)}" x2="${w-px}" y2="${yScale(v)}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`).join('')}
-      <path d="${pts.join('L')}" fill="none" stroke="var(--indigo)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${pts.join('L')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
       <path d="${area}" fill="url(#${gId})" opacity=".2"/>
-      <defs><linearGradient id="${gId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--indigo)" stop-opacity=".5"/><stop offset="100%" stop-color="var(--indigo)" stop-opacity="0"/></linearGradient></defs>
-      ${pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="3" fill="var(--indigo)" stroke="#100C10" stroke-width="1.5"/>`).join('')}
+      <defs><linearGradient id="${gId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--accent)" stop-opacity=".5"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+      ${pts.map((p,i)=>`<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="3" fill="var(--accent)" stroke="#100C10" stroke-width="1.5"/>`).join('')}
       ${valid.filter((_,i)=>i%Math.max(1,Math.floor(valid.length/6))===0||i===valid.length-1).map((t,i)=>`<text x="${xScale(i*Math.max(1,Math.floor(valid.length/6)))}" y="${h-5}" text-anchor="middle" fill="var(--faint)" font-size="8">${fmtDate(t.date).slice(0,5)}</text>`).join('')}
     </svg></div></div>`;
   })()}

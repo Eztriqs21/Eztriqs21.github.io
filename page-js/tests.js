@@ -42,7 +42,7 @@ function renderTests(el){
   filtered.map(function(t,i){return tstCard(t,i);}).join('')}</div>`;
 }
 function tstCard(t,i){
-  const p=t.maxScore>0?Math.round(t.totalScore/t.maxScore*100):0,c=p>=70?'var(--green)':p>=50?'var(--indigo)':'var(--red)';
+  const p=t.maxScore>0?Math.round(t.totalScore/t.maxScore*100):0,c=p>=70?'var(--green)':p>=50?'var(--accent)':'var(--red)';
   const phS=t.physics.correct*4-t.physics.incorrect,chS=t.chemistry.correct*4-t.chemistry.incorrect,mS=t.maths.correct*4-t.maths.incorrect;
   const pps=t.papers||[];
   const tm=t.timing||{};
@@ -82,11 +82,11 @@ function setTestMode(mode){
   const dBtn=document.getElementById('tm-direct'),bBtn=document.getElementById('tm-breakdown');
   const dSec=document.getElementById('test-mode-direct'),bSec=document.getElementById('test-mode-breakdown');
   if(mode==='direct'){
-    dBtn.className='btn btn-sm';dBtn.style.cssText='flex:1;text-align:center;background:var(--indigo);color:#fff;border-color:transparent';
+    dBtn.className='btn btn-sm';dBtn.style.cssText='flex:1;text-align:center;background:var(--accent);color:#fff;border-color:transparent';
     bBtn.className='btn btn-ghost btn-sm';bBtn.style.cssText='flex:1;text-align:center';
     dSec.style.display='block';bSec.style.display='none';
   }else{
-    bBtn.className='btn btn-sm';bBtn.style.cssText='flex:1;text-align:center;background:var(--indigo);color:#fff;border-color:transparent';
+    bBtn.className='btn btn-sm';bBtn.style.cssText='flex:1;text-align:center;background:var(--accent);color:#fff;border-color:transparent';
     dBtn.className='btn btn-ghost btn-sm';dBtn.style.cssText='flex:1;text-align:center';
     bSec.style.display='block';dSec.style.display='none';
   }

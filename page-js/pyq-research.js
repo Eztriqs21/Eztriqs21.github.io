@@ -190,9 +190,9 @@ function pyqRenderPattern(el){
     <div class="section-title">🔥 Top 5 High-Weightage Topics</div>
     <div class="gc" style="padding:16px 20px">
       ${topTopics.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;${i<topTopics.length-1?'border-bottom:1px solid var(--border)':''}">
-        <div style="width:24px;height:24px;border-radius:50%;background:var(--indigo-dim);color:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${i+1}</div>
+        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${i+1}</div>
         <div style="flex:1;font-size:12px;color:var(--txt)">${t.topic}</div>
-        <div style="font-size:12px;font-weight:700;color:var(--indigo)">${t.weight}%</div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent)">${t.weight}%</div>
         <div style="font-size:10px;color:var(--muted)">~${t.questions} Qs/paper</div>
       </div>`).join('')}
     </div>
@@ -211,7 +211,7 @@ function pyqRenderPattern(el){
   html+=`<div class="section-block anim-up d6">
     <div class="section-title">💡 Strategy Tips</div>
     <div class="gc" style="padding:16px 20px;font-size:12px;color:var(--muted);line-height:1.8">
-      <div style="margin-bottom:8px"><b style="color:var(--indigo)">High Priority (60%+ questions):</b></div>
+      <div style="margin-bottom:8px"><b style="color:var(--accent)">High Priority (60%+ questions):</b></div>
       <div>• Physics: Mechanics + Modern Physics + Magnetism = ~42% of paper</div>
       <div>• Chemistry: Organic > Physical ≈ Inorganic (equal weightage)</div>
       <div>• Maths: Calculus + Algebra = ~50% of paper</div>
@@ -252,7 +252,7 @@ function pyqRenderSearch(el){
   const decades=[{label:'2020s',years:[2026,2025,2024,2023,2022,2021,2020]},{label:'2010s',years:[2019,2018,2017,2016,2015,2014,2013,2012,2011,2010]},{label:'2000s',years:[2009,2008,2007,2006,2005,2004,2003,2002]}];
   el.innerHTML=`
   <div class="pg-sub" style="margin-bottom:16px;font-size:12px;color:var(--muted)">AI-powered PYQ research — fetches real JEE Main & Advanced questions from past papers.</div>
-  ${!hasApi?'<div style="padding:12px 16px;border-radius:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);font-size:12px;margin-bottom:16px;color:var(--txt)"><b style="color:var(--indigo)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>':''}
+  ${!hasApi?'<div style="padding:12px 16px;border-radius:10px;background:rgba(160,160,160,.08);border:1px solid rgba(160,160,160,.15);font-size:12px;margin-bottom:16px;color:var(--txt)"><b style="color:var(--accent)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>':''}
   <div class="pyq-filter-row">
     <input class="inp" type="text" id="pyq-s-q" placeholder="e.g. rotational motion, thermodynamics, coordination compounds..." value="${esc(pyqSearchQ)}" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')pyqRunSearch()">
     <select id="pyq-s-subj" style="width:110px" onchange="pyqSearchSubj=this.value">${subjOpts.map(([v,l])=>`<option value="${v}" ${v===pyqSearchSubj?'selected':''}>${l}</option>`).join('')}</select>
@@ -269,7 +269,7 @@ function pyqRenderSearch(el){
       <span style="color:var(--green);font-weight:600">Real PYQ only</span>
     </label>
     <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer">
-      <input type="checkbox" id="pyq-s-mixed" style="accent-color:var(--indigo)"> Mixed
+      <input type="checkbox" id="pyq-s-mixed" style="accent-color:var(--accent)"> Mixed
     </label>
     <div style="width:1px;height:16px;background:var(--border);margin:0 2px"></div>
     <span style="font-size:10px;color:var(--faint);font-weight:600">YEARS:</span>
@@ -388,7 +388,7 @@ async function pyqFetchSolution(idx){
   if(!hasApi){dsOpenSettings();return;}
   const solEl=document.getElementById('pyq-sol-'+idx);
   if(!solEl)return;
-  solEl.innerHTML='<div style="color:var(--indigo);font-size:11px">⏳ Generating detailed solution...</div>';
+  solEl.innerHTML='<div style="color:var(--accent);font-size:11px">⏳ Generating detailed solution...</div>';
   solEl.classList.add('show');
   const systemMsg='You are a JEE expert tutor. Provide a detailed, step-by-step solution. Use LaTeX ($...$ and $$...$$) for ALL math. Be thorough but clear. Include: 1) What the question is asking 2) Key concepts/formulas needed 3) Step-by-step derivation/calculation 4) Final answer verification.';
   const userMsg='Provide a detailed step-by-step solution for this JEE question:\n\n'+r.text+'\n\nCorrect Answer: '+r.answer+'\n\nGive a thorough solution suitable for a JEE aspirant.';
@@ -421,7 +421,7 @@ async function pyqFetchSolution(idx){
         }else throw groqErr;
       }
     }
-    solEl.innerHTML='<div style="font-weight:700;color:var(--indigo);margin-bottom:8px">📝 Detailed Solution</div><div style="white-space:pre-line;line-height:1.7">'+pyqEscapeHtml(content)+'</div>';
+    solEl.innerHTML='<div style="font-weight:700;color:var(--accent);margin-bottom:8px">📝 Detailed Solution</div><div style="white-space:pre-line;line-height:1.7">'+pyqEscapeHtml(content)+'</div>';
     pyqRenderMath(solEl);
   }catch(e){
     solEl.innerHTML='<div style="color:var(--red);font-size:11px">Failed to generate solution: '+esc(e.message)+'</div>';
@@ -460,8 +460,8 @@ function pyqRenderResults(){
     const solUid='pyq-sol-'+i;
     const srcLabel=r.source||'Unknown';
     const isRealPyq=srcLabel.toLowerCase().includes('jee');
-    const srcBg=isRealPyq?'rgba(16,185,129,.12)':'rgba(99,102,241,.12)';
-    const srcClr=isRealPyq?'var(--green)':'var(--indigo)';
+    const srcBg=isRealPyq?'rgba(16,185,129,.12)':'rgba(160,160,160,.12)';
+    const srcClr=isRealPyq?'var(--green)':'var(--accent)';
     return `<div class="pyq-q-card">
       <div class="pyq-q-num">Q${r.num||i+1}</div>
       <div class="pyq-q-text pyq-q-text-rendered">${pyqRenderImages(pyqEscapeHtml(r.text))}</div>
@@ -535,7 +535,7 @@ function pyqRenderPlannerResult(){
       <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
         <div style="font-size:12px"><span style="color:var(--muted)">Total Topics:</span> <b style="color:var(--txt)">${plan.totalTopics}</b></div>
         <div style="font-size:12px"><span style="color:var(--muted)">Topics/Day:</span> <b style="color:var(--txt)">${plan.topicsPerDay}</b></div>
-        <div style="font-size:12px"><span style="color:var(--muted)">Focus:</span> <b style="color:var(--indigo)">High-frequency topics first</b></div>
+        <div style="font-size:12px"><span style="color:var(--muted)">Focus:</span> <b style="color:var(--accent)">High-frequency topics first</b></div>
       </div>
       ${plan.daysList.map(d=>`<div class="pyq-planner-day">
         <div class="pyq-planner-day-head">

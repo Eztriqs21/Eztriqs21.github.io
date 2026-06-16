@@ -19,7 +19,7 @@ function renderDashboard(el){
   el.innerHTML=`
   <div class="pg-hdr anim-up"><div class="pg-title">Command Center</div><div class="pg-sub">Your JEE preparation intelligence dashboard</div></div>
   <div class="stats-grid">
-    <div class="gc stat-card anim-up d1"><div class="stat-icon" style="background:rgba(99,102,241,.15)">📋</div><div class="stat-val"><span data-count="${active}">0</span></div><div class="stat-label">Active Tasks</div><div class="stat-sub">Pending assignments</div></div>
+    <div class="gc stat-card anim-up d1"><div class="stat-icon" style="background:rgba(160,160,160,.15)">📋</div><div class="stat-val"><span data-count="${active}">0</span></div><div class="stat-label">Active Tasks</div><div class="stat-sub">Pending assignments</div></div>
     <div class="gc stat-card anim-up d2"><div class="stat-icon" style="background:rgba(59,130,246,.15)">📚</div><div class="stat-val"><span data-count="${done}">0</span><span style="color:var(--muted);font-size:16px">/${total}</span></div><div class="stat-label">Chapters Done</div><div class="stat-sub">${safePct(done,total)}% complete</div></div>
     <div class="gc stat-card anim-up d3"><div class="stat-icon" style="background:rgba(16,185,129,.15)">📊</div><div class="stat-val"><span data-count="${avg}">0</span>%</div><div class="stat-label">Avg Test Score</div><div class="stat-sub">Across ${tests.length} tests</div></div>
     <div class="gc stat-card anim-up d4"><div class="stat-icon" style="background:rgba(168,85,247,.15)">⏱️</div><div class="stat-val"><span data-count="${(+weekH).toFixed(1)}">0</span>h</div><div class="stat-label">This Week</div><div class="stat-sub">Today: <span data-count="${(+todayH).toFixed(1)}">0</span>h</div></div>
@@ -56,14 +56,14 @@ function renderDashboard(el){
       <div class="section-title">📊 Recent Tests</div>
       <div class="gc" style="padding:16px 18px">
         ${recTests.length===0?`<div class="empty" style="padding:28px 0"><div class="empty-icon">📊</div><div class="empty-title">No tests yet</div><div class="empty-sub">Go to Test to add</div></div>`:
-        recTests.map(t=>{const p=t.maxScore>0?Math.round(t.totalScore/t.maxScore*100):0;const c=p>=70?'var(--green)':p>=50?'var(--indigo)':'var(--red)';return`<div class="study-log-row"><div class="slr-time">${fmtDate(t.date).slice(0,6)}</div><div class="slr-sub">${esc(t.name)}</div><div class="slr-dur" style="color:${c}">${t.totalScore}/${t.maxScore}</div></div>`;}).join('')}
+        recTests.map(t=>{const p=t.maxScore>0?Math.round(t.totalScore/t.maxScore*100):0;const c=p>=70?'var(--green)':p>=50?'var(--accent)':'var(--red)';return`<div class="study-log-row"><div class="slr-time">${fmtDate(t.date).slice(0,6)}</div><div class="slr-sub">${esc(t.name)}</div><div class="slr-dur" style="color:${c}">${t.totalScore}/${t.maxScore}</div></div>`;}).join('')}
       </div>
     </div>
     <div>
       <div class="section-title">📝 Recent Mock Tests</div>
       <div class="gc" style="padding:16px 18px">
-        ${(DB.mockTests||[]).length===0?`<div class="empty" style="padding:28px 0"><div class="empty-icon">📝</div><div class="empty-title">No mock tests yet</div><div class="empty-sub"><a href="#" onclick="go('mocktests');return false" style="color:var(--indigo)">Go to Mock Tests</a> to log</div></div>`:
-        [...DB.mockTests].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4).map(m=>{const p=Math.round(m.marksScored/m.totalMarks*100);const c=p>=70?'var(--green)':p>=40?'var(--indigo)':'var(--red)';return`<div class="study-log-row"><div class="slr-time">${fmtDate(m.date).slice(0,6)}</div><div class="slr-sub">${esc(m.subject)}</div><div class="slr-dur" style="color:${c}">${m.marksScored}/${m.totalMarks}</div></div>`;}).join('')}
+        ${(DB.mockTests||[]).length===0?`<div class="empty" style="padding:28px 0"><div class="empty-icon">📝</div><div class="empty-title">No mock tests yet</div><div class="empty-sub"><a href="#" onclick="go('mocktests');return false" style="color:var(--accent)">Go to Mock Tests</a> to log</div></div>`:
+        [...DB.mockTests].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4).map(m=>{const p=Math.round(m.marksScored/m.totalMarks*100);const c=p>=70?'var(--green)':p>=40?'var(--accent)':'var(--red)';return`<div class="study-log-row"><div class="slr-time">${fmtDate(m.date).slice(0,6)}</div><div class="slr-sub">${esc(m.subject)}</div><div class="slr-dur" style="color:${c}">${m.marksScored}/${m.totalMarks}</div></div>`;}).join('')}
       </div>
     </div>
   </div>`;

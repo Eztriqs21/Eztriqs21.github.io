@@ -24,7 +24,7 @@ function renderScoreAnalytics(el){
   const recent=sorted.slice(-5);
   const recentAvg=Math.round(recent.reduce((a,b)=>a+b.totalScore,0)/recent.length);
   const trend=recentAvg>avg?'↑ Improving':recentAvg<avg-5?'↓ Needs work':'→ Steady';
-  const trendCol=recentAvg>avg?'var(--green)':recentAvg<avg-5?'#f87171':'var(--indigo)';
+  const trendCol=recentAvg>avg?'var(--green)':recentAvg<avg-5?'#f87171':'var(--accent)';
   const maxScore=Math.max(...scores,300);
   const physAvg=tests.length?Math.round(tests.reduce((s,t)=>s+(t.physics.correct*4-t.physics.incorrect),0)/tests.length):0;
   const chemAvg=tests.length?Math.round(tests.reduce((s,t)=>s+(t.chemistry.correct*4-t.chemistry.incorrect),0)/tests.length):0;
@@ -33,7 +33,7 @@ function renderScoreAnalytics(el){
   el.innerHTML=`
   <div class="pg-hdr anim-up"><div class="pg-title">📊 Score Analytics</div><div class="pg-sub">Performance insights from ${tests.length} mock test${tests.length>1?'s':''}</div></div>
   <div class="stats-grid anim-up d1">
-    <div class="gc stat-card"><div class="stat-val" style="color:var(--indigo)">${avg}</div><div class="stat-label">Average Score</div></div>
+    <div class="gc stat-card"><div class="stat-val" style="color:var(--accent)">${avg}</div><div class="stat-label">Average Score</div></div>
     <div class="gc stat-card"><div class="stat-val" style="color:var(--green)">${best}</div><div class="stat-label">Best Score</div></div>
     <div class="gc stat-card"><div class="stat-val" style="color:#f87171">${worst}</div><div class="stat-label">Lowest Score</div></div>
     <div class="gc stat-card"><div class="stat-val" style="color:${trendCol}">${trend}</div><div class="stat-label">Recent Trend</div></div>
@@ -44,7 +44,7 @@ function renderScoreAnalytics(el){
       <div style="display:flex;align-items:flex-end;gap:4px;height:140px;padding-bottom:20px;position:relative">
         ${sorted.map((t,i)=>{
           const h=Math.round(t.totalScore/maxScore*110);
-          const col=t.totalScore>=avg?'var(--green)':t.totalScore>=avg-30?'var(--indigo)':'#f87171';
+          const col=t.totalScore>=avg?'var(--green)':t.totalScore>=avg-30?'var(--accent)':'#f87171';
           const dt=new Date(t.date);
           const label=(dt.getMonth()+1)+'/'+dt.getDate();
           return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px" title="${t.totalScore} marks">

@@ -1,29 +1,31 @@
 // js/themes.js — Theme Engine for JEE HQ
+// 3 themes: Ink Wash (default), Amber Walnut Morning, Opaline (light)
+
 const THEMES = {
-  cyber: { label: 'Cyber Void', icon: '◆', desc: 'Electric indigo on deep space' },
-  linear: { label: 'Linear Dark', icon: '◇', desc: 'Sleek cyan on cool gray' },
-  obsidian: { label: 'Obsidian Gold', icon: '◈', desc: 'Warm gold on charcoal' }
+  ink:    { label: 'Ink Wash',     icon: '●', color: '#A0A0A0', desc: 'Dark monochrome' },
+  amber:  { label: 'Amber Walnut', icon: '●', color: '#BB6C43', desc: 'Warm earth tones' },
+  opaline:{ label: 'Opaline',      icon: '●', color: '#FF634A', desc: 'Clean light mode' }
 };
 
 function getSavedTheme() {
-  try { return localStorage.getItem('jeehq_theme') || 'cyber'; } catch(e) { return 'cyber'; }
+  try { return localStorage.getItem('jeehq_theme') || 'ink'; } catch(e) { return 'ink'; }
 }
 
 export function applyTheme(name) {
-  if (!THEMES[name]) name = 'cyber';
+  if (!THEMES[name]) name = 'ink';
   document.documentElement.setAttribute('data-theme', name);
   try { localStorage.setItem('jeehq_theme', name); } catch(e) {}
-  document.querySelectorAll('.theme-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.theme === name);
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    dot.classList.toggle('active', dot.dataset.theme === name);
   });
 }
 
 export function initThemes() {
   applyTheme(getSavedTheme());
-  document.querySelectorAll('.theme-btn').forEach(btn => {
-    btn.addEventListener('pointerdown', e => {
+  document.querySelectorAll('.theme-dot').forEach(dot => {
+    dot.addEventListener('pointerdown', e => {
       e.preventDefault();
-      applyTheme(btn.dataset.theme);
+      applyTheme(dot.dataset.theme);
     });
   });
 }

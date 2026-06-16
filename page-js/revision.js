@@ -51,7 +51,7 @@ function renderRevision(el){
   <div class="pg-hdr anim-up"><div class="pg-title">📋 Revision Checklist</div><div class="pg-sub">Track your JEE syllabus revision progress. Tap a topic to cycle: Not Started → In Progress → Revised.</div></div>
   <div class="stats-grid anim-up d1">
     ${subjStats.map(s=>`<div class="gc stat-card"><div class="stat-val" style="color:${subjCol[s.subj]}">${s.revised}/${s.total}</div><div class="stat-label">${subjLbl[s.subj]}</div><div style="height:4px;background:var(--glass);border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${s.pct}%;background:${subjCol[s.subj]};border-radius:4px;transition:width .3s"></div></div></div>`).join('')}
-    <div class="gc stat-card"><div class="stat-val" style="color:var(--indigo)">${overallPct}%</div><div class="stat-label">Overall</div><div style="height:4px;background:var(--glass);border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${overallPct}%;background:var(--indigo);border-radius:4px;transition:width .3s"></div></div></div>
+    <div class="gc stat-card"><div class="stat-val" style="color:var(--accent)">${overallPct}%</div><div class="stat-label">Overall</div><div style="height:4px;background:var(--glass);border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${overallPct}%;background:var(--accent);border-radius:4px;transition:width .3s"></div></div></div>
   </div>
   ${Object.keys(REV_SYLLABUS).map(subj=>`
   <div class="section-block anim-up d2">

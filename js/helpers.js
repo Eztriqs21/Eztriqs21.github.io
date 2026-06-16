@@ -318,7 +318,7 @@ export async function pvFile(data,name){
       pv.zoom=1.5;
       pdfCtrl.style.display='flex';
       footer.style.display='flex';
-      footer.innerHTML=`<a href="${esc(data.startsWith('data:')?data:data)}" target="_blank" rel="noopener" style="color:var(--indigo);text-decoration:underline">Open in new tab ⤴</a>${data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--muted);text-decoration:underline">⬇ Download</a>`:''}`;
+      footer.innerHTML=`<a href="${esc(data.startsWith('data:')?data:data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>${data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--muted);text-decoration:underline">⬇ Download</a>`:''}`;
       await pvRenderPage(1);
     }catch(e){
       console.error('PDF load error:',e);
@@ -329,7 +329,7 @@ export async function pvFile(data,name){
   pv.type='image';
   imgCtrl.style.display='flex';
   footer.style.display='flex';
-  footer.innerHTML=`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--indigo);text-decoration:underline">⬇ Download</a>`;
+  footer.innerHTML=`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent);text-decoration:underline">⬇ Download</a>`;
   body.innerHTML=`<img id="pv-img" src="${esc(data)}" style="max-width:100%;max-height:100%;object-fit:contain;cursor:grab" draggable="false" onload="pvImgFit(this)" onerror="pvFallbackLoad()"/>`;
   const img=document.getElementById('pv-img');
   if(img){
@@ -404,7 +404,7 @@ export async function pvFallbackLoad(){
     pv.type='pdf';pv.pages=pv.pdfDoc.numPages;pv.zoom=1.5;
     document.getElementById('pv-pdf-controls').style.display='flex';
     document.getElementById('pv-footer').style.display='flex';
-    document.getElementById('pv-footer').innerHTML=`<a href="${esc(pv.data)}" target="_blank" rel="noopener" style="color:var(--indigo);text-decoration:underline">Open in new tab ⤴</a>`;
+    document.getElementById('pv-footer').innerHTML=`<a href="${esc(pv.data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>`;
     document.getElementById('pv-img-controls').style.display='none';
     await pvRenderPage(1);
   }catch(e2){
@@ -444,59 +444,35 @@ window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;windo
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;
 
-/* ═══════════════ MOUSE PARALLAX ═══════════════ */
-(function(){
-  const orbs=document.querySelectorAll('.orb');
-  if(!orbs.length)return;
-  let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove',e=>{mx=(e.clientX/window.innerWidth-.5)*2;my=(e.clientY/window.innerHeight-.5)*2;},{passive:true});
-  function tick(){
-    rx+=(mx-rx)*.08;ry+=(my-ry)*.08;
-    orbs.forEach((o,i)=>{
-      const s=i===0?16:12;
-      o.style.transform='translate('+rx*s+'px,'+ry*s+'px)';
-    });
-    requestAnimationFrame(tick);
+/* ═══════════════ FAB ═══════════════ */
+let _fabOpen=false;
+window.toggleFab=function(){
+  _fabOpen=!_fabOpen;
+  const btn=document.getElementById('fab-btn');
+  const actions=document.getElementById('fab-actions');
+  if(!btn||!actions)return;
+  if(_fabOpen){
+    btn.textContent='✕';
+    actions.style.display='flex';
+    if(window.Motion&&window.Motion.animate){
+      const items=actions.querySelectorAll('.fab-action');
+      items.forEach((a,i)=>{
+        a.style.opacity='0';
+        window.Motion.animate(a,{opacity:[0,1],transform:['translateY(20px) scale(0.8)','translateY(0px) scale(1)']},{duration:.25,delay:i*.05,easing:[.34,1.56,.64,1]});
+      });
+    }
+  }else{
+    btn.textContent='+';
+    if(window.Motion&&window.Motion.animate){
+      const items=[...actions.querySelectorAll('.fab-action')];
+      items.forEach((a,i)=>{
+        window.Motion.animate(a,{opacity:[1,0],transform:['translateY(0px) scale(1)','translateY(20px) scale(0.8)']},{duration:.15,delay:(items.length-1-i)*.03,easing:[.25,1,.5,1]}).then(()=>{if(!_fabOpen)actions.style.display='none';});
+      });
+    }else{
+      actions.style.display='none';
+    }
   }
-  if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches)tick();
-})();
-
-/* ═══════════════ CARD TILT HOVER ═══════════════ */
-(function(){
-  if(!window.Motion||!window.Motion.animate)return;
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  document.addEventListener('pointermove',e=>{
-    const card=e.target.closest('.stat-card,.prep-card');
-    if(!card)return;
-    const r=card.getBoundingClientRect();
-    const x=(e.clientX-r.left)/r.width-.5;
-    const y=(e.clientY-r.top)/r.height-.5;
-    window.Motion.animate(card,{transform:'perspective(600px) rotateY('+x*6+'deg) rotateX('+(-y*6)+'deg) translateY(-3px)'},{duration:.15,easing:[.25,1,.5,1]});
-  },{passive:true});
-  document.addEventListener('pointerleave',e=>{
-    const card=e.target.closest('.stat-card,.prep-card');
-    if(card)window.Motion.animate(card,{transform:'perspective(600px) rotateY(0deg) rotateX(0deg) translateY(0px)'},{duration:.3,easing:[.34,1.56,.64,1]});
-  },true);
-})();
-
-/* ═══════════════ MOTION ONE MICRO-INTERACTIONS ═══════════════ */
-(function(){
-  const _M=window.Motion;
-  if(!_M||!_M.animate)return;
-  document.addEventListener('pointerenter',e=>{
-    const btn=e.target.closest('.btn-primary');
-    if(btn)_M.animate(btn,{transform:['translateY(0px)','translateY(-1px)']},{duration:.2,easing:[.34,1.56,.64,1]});
-  },true);
-  document.addEventListener('pointerleave',e=>{
-    const btn=e.target.closest('.btn-primary');
-    if(btn)_M.animate(btn,{transform:['translateY(-1px)','translateY(0px)']},{duration:.15,easing:[.25,1,.5,1]});
-  },true);
-  document.addEventListener('pointerdown',e=>{
-    const btn=e.target.closest('.btn');
-    if(btn)_M.animate(btn,{transform:['scale(1)','scale(.95)']},{duration:.1,easing:[.25,1,.5,1]});
-  },true);
-  document.addEventListener('pointerup',e=>{
-    const btn=e.target.closest('.btn');
-    if(btn)_M.animate(btn,{transform:['scale(.95)','scale(1)']},{duration:.2,easing:[.34,1.56,.64,1]});
-  },true);
-})();
+};
+window.closeFab=function(){
+  if(_fabOpen){_fabOpen=false;const btn=document.getElementById('fab-btn');const actions=document.getElementById('fab-actions');if(btn)btn.textContent='+';if(actions)actions.style.display='none';}
+};

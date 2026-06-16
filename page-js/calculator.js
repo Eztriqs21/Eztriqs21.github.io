@@ -74,7 +74,7 @@ function buildQMat(){
   return calcQuestions.map(q=>`<div class="q-row ${q.num===currentFocusQ?'q-focus':''}" id="qrow-${q.num}" tabindex="-1" onclick="focusQRow(${q.num})">
     <div class="q-num" style="color:${sc[q.subj]}">Q${q.num}</div>
     <div class="q-subj">${q.subjLabel}</div>
-    <div class="q-type-toggle" onclick="event.stopPropagation();toggleQType(${q.num})" style="cursor:pointer;font-size:9px;text-align:center;color:var(--indigo);font-weight:600;padding:2px 4px;border-radius:4px;background:rgba(99,102,241,.1)">${q.mode==='int'?'INT':q.mode==='multi'?'MULTI':'MCQ'}</div>
+    <div class="q-type-toggle" onclick="event.stopPropagation();toggleQType(${q.num})" style="cursor:pointer;font-size:9px;text-align:center;color:var(--accent);font-weight:600;padding:2px 4px;border-radius:4px;background:rgba(160,160,160,.1)">${q.mode==='int'?'INT':q.mode==='multi'?'MULTI':'MCQ'}</div>
     ${q.mode==='int'?`<div class="q-opt" style="grid-column:span 1"><input type="number" class="q-int-input" min="0" max="9999" value="${q.intVal||''}" onchange="setQIntResp(${q.num},this.value)" onfocus="focusQRow(${q.num})" onkeydown="intKeyHandler(event,${q.num})" placeholder="___" style="width:100%;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:14px;text-align:center;font-weight:600;outline:none"/></div>`:
     q.mode==='multi'?`<div class="q-opt" style="display:flex;gap:8px;justify-content:center;grid-column:span 1">${['A','B','C','D'].map(opt=>`<label style="display:flex;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer"><input type="checkbox" class="q-multi-cb" value="${opt}" ${q.selected&&q.selected.includes(opt)?'checked':''} onchange="setQMultiResp(${q.num})"/>${opt}</label>`).join('')}</div>`:
     `<div class="q-opt" style="display:flex;gap:8px;justify-content:center;grid-column:span 1">${['A','B','C','D'].map(opt=>`<label style="display:flex;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer"><input type="radio" class="q-radio" name="q${q.num}" value="${opt}" ${q.selected===opt&&!q.unattempted?'checked':''} onchange="setQResp(${q.num},'${opt}')"/>${opt}</label>`).join('')}</div>`}
@@ -344,7 +344,7 @@ function buildCalcRes(){
     });
     return{label:labels[si],color:colors[si],score:sc,correct:c,wrong:w,skip:sk,partial:p};
   });
-  const scoreC=tot>=200?'var(--green)':tot>=120?'var(--indigo)':'var(--red)';
+  const scoreC=tot>=200?'var(--green)':tot>=120?'var(--accent)':'var(--red)';
   const totMissing=75-qR.length;
   const {pctile,airRange}=getPerc(tot);
   const rPct=Math.max(0,Math.min(100,tot/300*100));
@@ -359,9 +359,9 @@ function buildCalcRes(){
         </svg>
         <div class="score-ring-inner"><div class="score-num" style="color:${scoreC}">${tot}</div><div class="score-sub">/ 300</div></div>
       </div>
-      <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:${rPct>=60?'var(--green)':rPct>=40?'var(--indigo)':'var(--red)'}">${rPct.toFixed(1)}% — ${totC}F · ${totP}P · ${totW}W · ${totS}S${totMissing?` · ${totMissing} no-key`:''}</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:${rPct>=60?'var(--green)':rPct>=40?'var(--accent)':'var(--red)'}">${rPct.toFixed(1)}% — ${totC}F · ${totP}P · ${totW}W · ${totS}S${totMissing?` · ${totMissing} no-key`:''}</div>
       <div class="results-badges">
-        <div class="res-badge" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25)"><div class="res-badge-val" style="color:var(--indigo)">${pctile}%</div><div class="res-badge-lbl">Predicted Percentile</div></div>
+        <div class="res-badge" style="background:rgba(160,160,160,.12);border:1px solid rgba(160,160,160,.25)"><div class="res-badge-val" style="color:var(--accent)">${pctile}%</div><div class="res-badge-lbl">Predicted Percentile</div></div>
         <div class="res-badge" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25)"><div class="res-badge-val" style="color:var(--phys)">${airRange}</div><div class="res-badge-lbl">Est. AIR Range</div></div>
         <div class="res-badge" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)"><div class="res-badge-val" style="color:var(--green)">${totC}</div><div class="res-badge-lbl">Full (+${totC*4})</div></div>
         <div class="res-badge" style="background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.25)"><div class="res-badge-val" style="color:#facc15">${totP}</div><div class="res-badge-lbl">Partial</div></div>

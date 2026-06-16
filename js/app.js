@@ -3,6 +3,7 @@ import { render } from './nav.js';
 import { load } from './data.js';
 import { loadSupaConfig } from './supabase-sync.js';
 import { initThemes } from './themes.js';
+import { initInteractions } from './animations.js';
 
 // Page modules — each registers its render function on window
 import '../page-js/dashboard.js';
@@ -22,6 +23,7 @@ import '../page-js/study-log.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemes();
+  initInteractions();
   load();
   loadSupaConfig();
   render();
