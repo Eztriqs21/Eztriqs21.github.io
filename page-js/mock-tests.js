@@ -1,7 +1,18 @@
-// page-js/mock-tests.js
+// page-js/mock-tests.js — Merged: original data layer + v2 visual style
 import { DB, sv, KEYS } from '../js/data.js';
-import { uid, esc, fmtDate, cm, om, toast } from '../js/helpers.js';
+import { uid, esc, fmtDate, cm, om, toast, safePct, animateValue } from '../js/helpers.js';
 import { go } from '../js/nav.js';
+
+function getTheme(){return document.documentElement.getAttribute('data-theme')||'nexus';}
+function pfx(){return getTheme()==='nexus'?'nx':'bl';}
+
+const SUBJ_ICONS={
+  physics:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  chemistry:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>',
+  maths:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>',
+  'Full Syllabus':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+};
+const SUBJ_COLORS={Physics:'var(--phys)',Chemistry:'var(--chem)',Maths:'var(--math)','Full Syllabus':'var(--accent)'};
 
 function openAddMockTest(){
   document.getElementById('mt-date').value=new Date().toISOString().split('T')[0];
@@ -43,12 +54,13 @@ function toggleMockTestAnalysis(id){
   const el=document.getElementById('mt-review-'+id);
   if(el)el.classList.toggle('open');
 }
+
 function renderMockTests(el){
+  const p=pfx();
   const tests=DB.mockTests||[];
   const isEmpty=!tests.length;
   const sorted=[...tests].sort((a,b)=>new Date(b.date)-new Date(a.date));
   const subjOrder=['Physics','Chemistry','Maths','Full Syllabus'];
-  const subjMeta={Physics:{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',c:'var(--phys)'},Chemistry:{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>',c:'var(--chem)'},Maths:{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>',c:'var(--math)'},'Full Syllabus':{icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',c:'var(--accent)'}};
   const grouped={};
   sorted.forEach(m=>{
     if(!grouped[m.subject])grouped[m.subject]={};
@@ -60,68 +72,112 @@ function renderMockTests(el){
     const d=new Date(ym+'-01');
     return d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
   }
+  const totalTests=tests.length;
+  const avgScore=totalTests?Math.round(tests.reduce((s,t)=>s+(t.totalMarks>0?t.marksScored/t.totalMarks*100:0),0)/totalTests):0;
+  const bestScore=totalTests?Math.max(...tests.map(t=>t.totalMarks>0?Math.round(t.marksScored/t.totalMarks*100):0)):0;
+
   el.innerHTML=`
-  <div class="pg-hdr anim-up"><div class="pg-title" data-text="Mock Tests"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Mock Tests</div><div class="pg-sub">Log and track your practice test performance</div></div>
-  <div class="cmt-hero anim-up d1" onclick="openCmtConfig()">
-    <div class="cmt-hero-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Create Custom Mock Test</div>
-    <div class="cmt-hero-sub">Generate AI-powered tests or pick from past JEE papers. Full-screen exam mode with timer, question navigator, and instant AI analysis.</div>
+  <div class="${p}-page-header anim-fade-in-up">
+    <div class="${p}-page-title" data-text="Mock Tests">Mock Tests</div>
+    <div class="${p}-page-sub">Log and track your practice test performance</div>
   </div>
-  <div class="gc section-block anim-up d1" style="padding:20px;margin-bottom:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> All Mock Tests</div>
+  <div class="${p}-stats-grid anim-fade-in-up" style="--delay:0.1s">
+    <div class="${p}-stat-card">
+      <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+      <div class="${p}-stat-val"><span data-count="${totalTests}">0</span></div>
+      <div class="${p}-stat-label">Tests Taken</div>
+      <div class="${p}-stat-sub">Practice sessions</div>
+    </div>
+    <div class="${p}-stat-card">
+      <div class="${p}-stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="${p}-stat-val" style="color:var(--accent)"><span data-count="${avgScore}">0</span>%</div>
+      <div class="${p}-stat-label">Avg Score</div>
+      <div class="${p}-stat-sub">Across all tests</div>
+    </div>
+    <div class="${p}-stat-card">
+      <div class="${p}-stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="${p}-stat-val" style="color:var(--success)"><span data-count="${bestScore}">0</span>%</div>
+      <div class="${p}-stat-label">Best Score</div>
+      <div class="${p}-stat-sub">Personal record</div>
+    </div>
+  </div>
+
+  <div class="chapter-card anim-fade-in-up" style="--delay:0.15s;cursor:pointer" onclick="openCmtConfig()">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:42px;height:42px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;color:var(--accent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600">Create Custom Mock Test</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Generate AI-powered tests or pick from past JEE papers. Full-screen exam mode with timer, question navigator, and instant AI analysis.</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+  <div class="${p}-section-block anim-fade-in-up" style="--delay:0.2s">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> All Mock Tests</div>
       <button class="btn btn-primary btn-sm" onclick="openAddMockTest()">+ New Mock Test</button>
     </div>
-    ${isEmpty?`<div class="mt-empty">No mock tests logged yet. Tap "+ New Mock Test" to get started.</div>`:
+    ${isEmpty?`<div class="${p}-empty" style="padding:48px 0"><div class="${p}-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div class="${p}-empty-title">No mock tests yet</div><div class="${p}-empty-sub">Tap "+ New Mock Test" to get started.</div></div>`:
     subjOrder.filter(s=>grouped[s]).map(subj=>{
-      const meta=subjMeta[subj]||{icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',c:'var(--muted)'};
+      const color=SUBJ_COLORS[subj]||'var(--muted)';
+      const icon=SUBJ_ICONS[subj]||SUBJ_ICONS['Full Syllabus'];
       const months=Object.keys(grouped[subj]).sort().reverse();
       const totalInSubj=months.reduce((sum,ym)=>sum+grouped[subj][ym].length,0);
-      return `<div class="mt-subj-section anim-up">
-        <div class="mt-subj-header">
-          <div class="mt-subj-icon" style="background:${meta.c}15">${meta.icon}</div>
-          <div class="mt-subj-name" style="color:${meta.c}">${esc(subj)}</div>
-          <div class="mt-subj-count">${totalInSubj} test${totalInSubj>1?'s':''}</div>
+      return `<div class="chapter-card anim-fade-in-up" style="--delay:0.25s;padding:0;overflow:hidden">
+        <div style="padding:18px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:36px;height:36px;border-radius:10px;background:${color}15;display:flex;align-items:center;justify-content:center;color:${color}">${icon}</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:600;color:${color}">${esc(subj)}</div>
+              <div style="font-size:11px;color:var(--muted)">${totalInSubj} test${totalInSubj>1?'s':''}</div>
+            </div>
+          </div>
+          ${months.map(ym=>{
+            const items=grouped[subj][ym];
+            return `<div class="mt-month" id="mtm-${subj}-${ym}">
+              <div class="mt-month-head" onclick="document.getElementById('mtm-${subj}-${ym}').classList.toggle('open')" style="display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--border);cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)">
+                <span style="font-size:10px;transition:transform .2s">▶</span>
+                <span style="flex:1">${monthLabel(ym)}</span>
+                <span style="font-size:11px;font-weight:500;background:var(--glass);padding:2px 8px;border-radius:8px">${items.length}</span>
+              </div>
+              <div class="mt-month-body" style="display:none;padding:8px 0 4px">
+                ${items.map(m=>{
+                  const pct=safePct(m.marksScored,m.totalMarks);
+                  const pctColor=pct>=70?'var(--success)':pct>=40?'var(--accent)':'var(--danger)';
+                  const ringR=22;const ringC=2*Math.PI*ringR;const ringOff=ringC-(pct/100)*ringC;
+                  return `<div class="${p}-card anim-fade-in-up" style="padding:14px;margin-bottom:8px">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                      <svg width="44" height="44" viewBox="0 0 44 44">
+                        <circle cx="22" cy="22" r="${ringR}" fill="none" stroke="var(--border)" stroke-width="4"/>
+                        <circle cx="22" cy="22" r="${ringR}" fill="none" stroke="${pctColor}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${ringC}" stroke-dashoffset="${ringOff}" transform="rotate(-90 22 22)" style="transition:stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)"/>
+                        <text x="22" y="22" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="10" font-weight="700">${pct}%</text>
+                      </svg>
+                      <div style="flex:1">
+                        <div style="font-size:13px;font-weight:600">${m.marksScored}<span style="font-size:11px;font-weight:400;opacity:0.5"> / ${m.totalMarks}</span></div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:2px">${fmtDate(m.date)}</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+                      ${m.timeTaken?`<span style="font-size:10px;padding:3px 8px;border-radius:6px;background:var(--glass);color:var(--muted);display:inline-flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${m.timeTaken}m</span>`:''}
+                      ${m.syllabus?`<span style="font-size:10px;padding:3px 8px;border-radius:6px;background:var(--accent-dim);color:var(--accent);display:inline-flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Syllabus</span>`:''}
+                    </div>
+                    ${m.syllabus?`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;display:flex;align-items:flex-start;gap:6px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> ${esc(m.syllabus)}</div>`:''}
+                    ${m.topicsToReview?`<div style="font-size:11px;color:var(--muted);margin-bottom:8px;padding:8px;background:var(--glass);border-radius:8px;display:none" id="mt-review-${m.id}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> <b>Topics to Review:</b> ${esc(m.topicsToReview)}</div>`:''}
+                    <div style="display:flex;gap:8px;justify-content:flex-end">
+                      ${m.topicsToReview?`<button class="btn btn-outline btn-xs" onclick="toggleMockTestAnalysis('${m.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analysis</button>`:''}
+                      <button class="btn btn-danger btn-xs" onclick="deleteMockTest('${m.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
+                    </div>
+                  </div>`;
+                }).join('')}
+              </div>
+            </div>`;
+          }).join('')}
         </div>
-        ${months.map(ym=>{
-          const items=grouped[subj][ym];
-          return `<div class="mt-month" id="mtm-${subj}-${ym}">
-            <div class="mt-month-head" onclick="document.getElementById('mtm-${subj}-${ym}').classList.toggle('open')">
-              <span class="mt-month-chev">▶</span>
-              <span class="mt-month-title">${monthLabel(ym)}</span>
-              <span class="mt-month-count">${items.length}</span>
-            </div>
-            <div class="mt-month-body">
-              ${items.map((m,i)=>{
-                const pct=m.totalMarks>0?Math.round(m.marksScored/m.totalMarks*100):0;
-                const pctClass=pct>=70?'good':pct>=40?'ok':'bad';
-                return `<div class="mt-card" style="margin-bottom:8px">
-                  <div class="mt-card-head">
-                    <div class="mt-card-subj" style="color:${meta.c}">${esc(subj)}</div>
-                    <div class="mt-card-date">${fmtDate(m.date)}</div>
-                  </div>
-                  <div class="mt-card-score">
-                    <span class="mt-card-num">${m.marksScored}</span>
-                    <span class="mt-card-max">/ ${m.totalMarks}</span>
-                    <span class="mt-card-pct ${pctClass}">${pct}%</span>
-                  </div>
-                  <div class="mt-card-meta">
-                    ${m.timeTaken?`<span class="chip chip-med"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${m.timeTaken}m</span>`:''}
-                    ${m.syllabus?`<span class="chip chip-hi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Syllabus</span>`:''}
-                  </div>
-                  ${m.syllabus?`<div class="mt-card-syllabus"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> ${esc(m.syllabus)}</div>`:''}
-                  ${m.topicsToReview?`<div class="mt-card-review" id="mt-review-${m.id}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> <b>Topics to Review:</b> ${esc(m.topicsToReview)}</div>`:''}
-                  <div class="mt-card-actions">
-                    ${m.topicsToReview?`<button class="btn btn-ghost btn-xs" onclick="toggleMockTestAnalysis('${m.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analysis</button>`:''}
-                    <button class="btn btn-danger btn-xs" onclick="deleteMockTest('${m.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
-                  </div>
-                </div>`;
-              }).join('')}
-            </div>
-          </div>`;
-        }).join('')}
       </div>`;
     }).join('')}
   </div>`;
+  document.querySelectorAll('.mt-month-head').forEach(h=>{h.addEventListener('click',()=>{const body=h.nextElementSibling;if(body)body.style.display=body.style.display==='none'?'block':'none';const chev=h.querySelector('span');if(chev)chev.style.transform=body&&body.style.display==='block'?'rotate(90deg)':'';});});
 }
 
 /* ═══════════════ CUSTOM MOCK TEST ═══════════════ */

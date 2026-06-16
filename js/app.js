@@ -18,6 +18,8 @@ import '../page-js/revision.js';
 import '../page-js/doubt-solver.js';
 import '../page-js/score-analytics.js';
 import '../page-js/study-log.js';
+import '../page-js/pyq-research.js';
+import '../page-js/personalized-prep.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemes();

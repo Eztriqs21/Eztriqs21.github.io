@@ -19,15 +19,15 @@ function buildChaptersList(){
     const done=chs.filter(c=>c.completed).length;
     const pct=safePct(done,chs.length);
     const isOpen=accState[s.key];
-    return `<div class="gc subj-acc ${isOpen?'open':''} section-block anim-up" style="animation-delay:${si*60}ms;overflow:hidden;margin-bottom:16px">
+    return `<div class="gc chapter-card subj-acc ${isOpen?'open':''} section-block anim-up" style="animation-delay:${si*60}ms;overflow:hidden;margin-bottom:16px">
       <div class="subj-acc-header" onclick="toggleAcc('${s.key}',this)">
-        <div style="width:36px;height:36px;border-radius:10px;background:${s.color}20;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${s.icon}</div>
+        <div style="width:36px;height:36px;border-radius:10px;background:${s.color}20;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0" class="chapter-icon">${s.icon}</div>
         <div style="flex:1"><div style="font-size:16px;font-weight:700">${s.label}</div><div style="font-size:11px;color:var(--faint);margin-top:1px">${done}/${chs.length} completed · ${pct}%</div></div>
-        <div style="text-align:right;margin-right:10px"><div style="font-size:18px;font-weight:700;color:${s.color}">${pct}%</div></div>
+        <div style="text-align:right;margin-right:10px"><div class="stat-value" style="font-size:18px;font-weight:700;color:${s.color}">${pct}%</div></div>
         <div class="subj-acc-chev">▼</div>
       </div>
       <div class="subj-acc-body">
-        <div style="padding:8px 20px;border-bottom:1px solid var(--border)"><div class="pbar-wrap" style="height:4px"><div class="subj-acc-bar" style="height:4px;width:${pct}%;background:${s.color}"></div></div></div>
+        <div style="padding:8px 20px;border-bottom:1px solid var(--border)"><div class="pbar-wrap progress-bar" style="height:4px"><div class="subj-acc-bar progress-fill" style="height:4px;width:${pct}%;background:${s.color}"></div></div></div>
         <div>${shown.length===0?`<div class="empty" style="padding:28px"><div class="empty-title">${chSearch.trim()?'No chapters match "'+esc(chSearch.trim())+'"':'No chapters match this filter'}</div>${chSearch.trim()?`<div class="empty-sub" style="margin-bottom:12px">Add a new chapter to ${s.label}?</div><button class="btn btn-primary btn-sm" onclick="setChSearch('');document.getElementById('ch-search').value='';openAddCh('${s.key}')">+ Add Chapter</button>`:''}</div>`:
         shown.map(ch=>`<div class="chapter-row" id="chrow-${s.key}-${ch.id}">
           <div class="ch-check ${ch.completed?'done':''}" onclick="event.stopPropagation();toggleChDone('${s.key}','${ch.id}')">
@@ -36,7 +36,7 @@ function buildChaptersList(){
           <span class="ch-name-txt ${ch.completed?'done':''}">${esc(ch.name)}</span>
           <span class="ch-edit-ico" onclick="event.stopPropagation();openEditCh('${s.key}','${ch.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
           <div class="strength-pills">
-            ${['strong','decent','weak','uncovered'].map(str=>`<button class="spill ${str} ${ch.strength===str?'on':''}" onclick="event.stopPropagation();setChStr('${s.key}','${ch.id}','${str}')">${str==='uncovered'?'—':str.charAt(0).toUpperCase()+str.slice(1)}</button>`).join('')}
+            ${['strong','decent','weak','uncovered'].map(str=>`<button class="spill chapter-badge ${str} ${ch.strength===str?'on':''}" onclick="event.stopPropagation();setChStr('${s.key}','${ch.id}','${str}')">${str==='uncovered'?'—':str.charAt(0).toUpperCase()+str.slice(1)}</button>`).join('')}
           </div>
           <button class="ch-notes-btn" onclick="event.stopPropagation();openNotes('${s.key}','${ch.id}')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> ${((ch.notes?.detailed?.length||0)+(ch.notes?.revision?.length||0))>0?((ch.notes?.detailed?.length||0)+(ch.notes?.revision?.length||0))+' notes':'Notes'}
@@ -60,14 +60,14 @@ function buildChaptersList(){
             <button class="btn btn-primary btn-xs" onclick="event.stopPropagation();addSubTopic('${s.key}','${ch.id}')">+ Add</button>
           </div>
         </div>`:''}`).join('')}</div>
-        <button class="add-ch-btn" onclick="openAddCh('${s.key}')"><span style="font-size:14px">+</span> Add Chapter</button>
+        <button class="add-ch-btn btn btn-primary" onclick="openAddCh('${s.key}')"><span style="font-size:14px">+</span> Add Chapter</button>
       </div>
     </div>`;}).join('');
 }
 function renderChapters(el){
   const filters=['all','strong','decent','weak','uncovered'];
   el.innerHTML=`
-  <div class="pg-hdr anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div class="pg-hdr page-header anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div><div class="pg-title" data-text="Chapters">Chapters</div><div class="pg-sub">Syllabus mastery & tracking</div></div>
   </div>
   <div id="ch-filter-bar" style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;margin-bottom:12px" class="anim-up d1">

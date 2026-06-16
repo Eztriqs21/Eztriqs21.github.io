@@ -1,4 +1,3 @@
-// page-js/pyq-research.js
 import { DB } from '../js/data.js';
 import { esc, toast } from '../js/helpers.js';
 
@@ -6,6 +5,9 @@ let pyqTab='pattern',pyqSearchSubj='physics',pyqSearchExam='mains',pyqSearchMax=
 let pyqSearchResults=[],pyqSearchLoading=false,pyqSearchQ='';
 let pyqPlannerDays=30,pyqPlannerPlan=null;
 let pyqRealOnly=true,pyqYearFilter=[];
+
+function getTheme(){return document.documentElement.getAttribute('data-theme')||'nexus';}
+function pfx(){return getTheme()==='nexus'?'nx':'bl';}
 
 const PYQ_DATA={
   physics:[
@@ -120,28 +122,35 @@ const PYQ_CHAPTER_MAP={
 };
 
 const PYQ_SITES=[
-  {name:'SATHEE (IIT Kanpur)',url:'https://sathee.iitk.ac.in/pyqs/jee/chapterwise',icon:'🏛️'},
-  {name:'MathonGo',url:'https://www.mathongo.com/iit-jee/jee-main-chapter-wise-questions-with-solutions',icon:'📘'},
-  {name:'Cracku',url:'https://cracku.in/jee-chapter-wise-pyq/',icon:'📚'},
-  {name:'JEE Archive',url:'https://jee-archive.lovable.app',icon:'🗂️'}
+  {name:'SATHEE (IIT Kanpur)',url:'https://sathee.iitk.ac.in/pyqs/jee/chapterwise'},
+  {name:'MathonGo',url:'https://www.mathongo.com/iit-jee/jee-main-chapter-wise-questions-with-solutions'},
+  {name:'Cracku',url:'https://cracku.in/jee-chapter-wise-pyq/'},
+  {name:'JEE Archive',url:'https://jee-archive.lovable.app'}
 ];
 
 function renderPYQ(el){
+  const p=pfx();
   el.innerHTML=`
-  <div class="pg-hdr anim-up">
-    <div class="pg-title">🎯 PYQ Research</div>
-    <div class="pg-sub">Analyze patterns, search questions across top PYQ sites, and build your personalized study plan.</div>
+  <div class="${p}-page-header anim-entrance">
+    <div class="${p}-page-title" data-text="PYQ Research">PYQ Research</div>
+    <div class="${p}-page-sub">Analyze patterns, search questions across top PYQ sites, and build your personalized study plan.</div>
   </div>
-  <div class="pyq-tabs anim-up d1">
-    <button class="pyq-tab ${pyqTab==='pattern'?'on':''}" onclick="pyqSwitchTab('pattern')">📊 Pattern Analyzer</button>
-    <button class="pyq-tab ${pyqTab==='search'?'on':''}" onclick="pyqSwitchTab('search')">🔍 PYQ Search</button>
-    <button class="pyq-tab ${pyqTab==='planner'?'on':''}" onclick="pyqSwitchTab('planner')">📋 Study Planner</button>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" class="anim-entrance" style="--delay:0.1s">
+    <button class="${p}-chip ${pyqTab==='pattern'?'active':''}" onclick="pyqSwitchTab('pattern')" style="padding:10px 16px;font-size:12px;font-weight:600">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Pattern Analyzer
+    </button>
+    <button class="${p}-chip ${pyqTab==='search'?'active':''}" onclick="pyqSwitchTab('search')" style="padding:10px 16px;font-size:12px;font-weight:600">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> PYQ Search
+    </button>
+    <button class="${p}-chip ${pyqTab==='planner'?'active':''}" onclick="pyqSwitchTab('planner')" style="padding:10px 16px;font-size:12px;font-weight:600">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Study Planner
+    </button>
   </div>
-  <div id="pyq-tab-content" class="anim-up d2"></div>`;
+  <div id="pyq-tab-content" class="anim-entrance" style="--delay:0.15s"></div>`;
   pyqRenderTab();
 }
 
-function pyqSwitchTab(tab){pyqTab=tab;document.querySelectorAll('.pyq-tab').forEach(t=>t.classList.toggle('on',t.textContent.toLowerCase().includes(tab==='pattern'?'pattern':tab==='search'?'search':'planner')));pyqRenderTab();}
+function pyqSwitchTab(tab){pyqTab=tab;document.querySelectorAll('[class*="chip"]').forEach(t=>{const txt=t.textContent.trim().toLowerCase();t.classList.toggle('active',txt.includes(tab==='pattern'?'pattern':tab==='search'?'search':'planner'));});pyqRenderTab();}
 
 function pyqRenderTab(){
   const c=document.getElementById('pyq-tab-content');if(!c)return;
@@ -152,27 +161,27 @@ function pyqRenderTab(){
 }
 
 function pyqRenderPattern(el){
-  const subjCol={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};
+  const p=pfx();
+  const subjCol={physics:'var(--primary)',chemistry:'var(--secondary)',maths:'var(--accent)'};
   const subjLbl={physics:'Physics',chemistry:'Chemistry',maths:'Maths'};
   const allYears=PYQ_YEARS;
   const maxCount=Math.max(...Object.values(PYQ_DATA).flatMap(s=>s.flatMap(t=>Object.values(t.years||{}))));
-  function heatColor(count){if(!count)return 'var(--glass)';const intensity=count/maxCount;const r=Math.round(59+intensity*190);const g=Math.round(130-intensity*60);const b=Math.round(246-intensity*100);return `rgba(${r},${g},${b},${.15+intensity*.6})`;}
-  let html=`<div class="pg-sub" style="margin-bottom:16px;font-size:12px;color:var(--muted)">Topic-wise question distribution across JEE Main papers (2016–2024). Heatmap shows frequency per year.</div>`;
+  function heatColor(count){if(!count)return 'var(--bg-card)';const intensity=count/maxCount;const r=Math.round(59+intensity*190);const g=Math.round(130-intensity*60);const b=Math.round(246-intensity*100);return `rgba(${r},${g},${b},${.15+intensity*.6})`;}
+  let html=`<div style="margin-bottom:16px;font-size:12px;color:var(--muted)">Topic-wise question distribution across JEE Main papers (2016–2024). Heatmap shows frequency per year.</div>`;
   Object.keys(PYQ_DATA).forEach((subj,si)=>{
     const topics=PYQ_DATA[subj];
-    const cols=1+allYears.length+1;
-    html+=`<div class="section-block anim-up d${si+1}">
-      <div class="section-title" style="color:${subjCol[subj]}">${subjLbl[subj]}</div>
-      <div class="gc" style="padding:12px;overflow-x:auto">
+    html+=`<div class="${p}-section-block anim-entrance" style="--delay:${0.1+si*0.05}s">
+      <div class="${p}-section-title" style="color:${subjCol[subj]}">${subjLbl[subj]}</div>
+      <div class="${p}-card" style="padding:12px;overflow-x:auto">
         <div class="pyq-heatmap" style="grid-template-columns:140px repeat(${allYears.length},1fr) 60px">
           <div class="pyq-heatmap-label">Topic</div>
           ${allYears.map(y=>`<div class="pyq-heatmap-label">${y}</div>`).join('')}
           <div class="pyq-heatmap-label">Total</div>
           ${topics.slice().sort((a,b)=>b.weight-a.weight).map(topic=>{
               const total=Object.values(topic.years||{}).reduce((a,b)=>a+b,0);
-              return `<div class="pyq-heatmap-label" style="text-align:left;font-weight:500;color:var(--txt)">${topic.topic}</div>
+              return `<div class="pyq-heatmap-label" style="text-align:left;font-weight:500;color:var(--text)">${topic.topic}</div>
               ${allYears.map(y=>`<div class="pyq-heatmap-cell" style="background:${heatColor((topic.years||{})[y]||0)}" title="${topic.topic} ${y}: ${(topic.years||{})[y]||0} Qs">${(topic.years||{})[y]||'-'}</div>`).join('')}
-              <div class="pyq-heatmap-cell" style="background:var(--glass2);color:var(--txt)">${total}</div>`;
+              <div class="pyq-heatmap-cell" style="background:var(--bg-surface);color:var(--text)">${total}</div>`;
           }).join('')}
         </div>
       </div>
@@ -186,36 +195,36 @@ function pyqRenderPattern(el){
     if(rec>old)risingTopics.push({topic:t.topic,growth:Math.round(((rec-old)/Math.max(old,1))*100)});
   });
   risingTopics.sort((a,b)=>b.growth-a.growth);
-  html+=`<div class="section-block anim-up d4">
-    <div class="section-title">🔥 Top 5 High-Weightage Topics</div>
-    <div class="gc" style="padding:16px 20px">
-      ${topTopics.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;${i<topTopics.length-1?'border-bottom:1px solid var(--border)':''}">
-        <div style="width:24px;height:24px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${i+1}</div>
-        <div style="flex:1;font-size:12px;color:var(--txt)">${t.topic}</div>
-        <div style="font-size:12px;font-weight:700;color:var(--accent)">${t.weight}%</div>
-        <div style="font-size:10px;color:var(--muted)">~${t.questions} Qs/paper</div>
+  html+=`<div class="${p}-section-block anim-entrance" style="--delay:0.25s">
+    <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Top 5 High-Weightage Topics</div>
+    <div class="${p}-card" style="padding:16px 20px">
+      ${topTopics.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<topTopics.length-1?'border-bottom:1px solid var(--border)':''}">
+        <div style="width:24px;height:24px;border-radius:50%;background:rgba(0,240,255,0.08);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--font-data)">${i+1}</div>
+        <div style="flex:1;font-size:12px;color:var(--text)">${t.topic}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--primary);font-family:var(--font-data)">${t.weight}%</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-data)">~${t.questions} Qs/paper</div>
       </div>`).join('')}
     </div>
   </div>`;
   if(risingTopics.length){
-    html+=`<div class="section-block anim-up d5">
-      <div class="section-title">📈 Rising Trend (Recent 3 years vs Older 3)</div>
-      <div class="gc" style="padding:16px 20px">
+    html+=`<div class="${p}-section-block anim-entrance" style="--delay:0.3s">
+      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Rising Trend (Recent 3 years vs Older 3)</div>
+      <div class="${p}-card" style="padding:16px 20px">
         ${risingTopics.slice(0,5).map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0">
-          <div style="flex:1;font-size:12px;color:var(--txt)">${t.topic}</div>
-          <div style="font-size:12px;font-weight:700;color:var(--green)">+${t.growth}%</div>
+          <div style="flex:1;font-size:12px;color:var(--text)">${t.topic}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--success);font-family:var(--font-data)">+${t.growth}%</div>
         </div>`).join('')}
       </div>
     </div>`;
   }
-  html+=`<div class="section-block anim-up d6">
-    <div class="section-title">💡 Strategy Tips</div>
-    <div class="gc" style="padding:16px 20px;font-size:12px;color:var(--muted);line-height:1.8">
-      <div style="margin-bottom:8px"><b style="color:var(--accent)">High Priority (60%+ questions):</b></div>
+  html+=`<div class="${p}-section-block anim-entrance" style="--delay:0.35s">
+    <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Strategy Tips</div>
+    <div class="${p}-card" style="padding:16px 20px;font-size:12px;color:var(--muted);line-height:1.8">
+      <div style="margin-bottom:8px"><b style="color:var(--primary)">High Priority (60%+ questions):</b></div>
       <div>• Physics: Mechanics + Modern Physics + Magnetism = ~42% of paper</div>
       <div>• Chemistry: Organic > Physical ≈ Inorganic (equal weightage)</div>
       <div>• Maths: Calculus + Algebra = ~50% of paper</div>
-      <div style="margin-top:8px"><b style="color:var(--green)">Quick Wins:</b></div>
+      <div style="margin-top:8px"><b style="color:var(--success)">Quick Wins:</b></div>
       <div>• Modern Physics & Semiconductor — scoring with less effort</div>
       <div>• Chemical Bonding & p-Block — high frequency, moderate difficulty</div>
       <div>• Probability & Statistics — guaranteed 1-2 questions, easy prep</div>
@@ -245,39 +254,42 @@ function pyqEscapeHtml(s){
 }
 
 function pyqRenderSearch(el){
+  const p=pfx();
   const subjOpts=[['physics','Physics'],['chemistry','Chemistry'],['maths','Maths']];
   const examOpts=[['mains','JEE Main'],['advanced','JEE Advanced']];
   const settings=window.dsLoadSettings();
   const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
   const decades=[{label:'2020s',years:[2026,2025,2024,2023,2022,2021,2020]},{label:'2010s',years:[2019,2018,2017,2016,2015,2014,2013,2012,2011,2010]},{label:'2000s',years:[2009,2008,2007,2006,2005,2004,2003,2002]}];
   el.innerHTML=`
-  <div class="pg-sub" style="margin-bottom:16px;font-size:12px;color:var(--muted)">AI-powered PYQ research — fetches real JEE Main & Advanced questions from past papers.</div>
-  ${!hasApi?'<div style="padding:12px 16px;border-radius:10px;background:var(--accent-dim);border:1px solid var(--border2);font-size:12px;margin-bottom:16px;color:var(--txt)"><b style="color:var(--accent)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>':''}
-  <div class="pyq-filter-row">
-    <input class="inp" type="text" id="pyq-s-q" placeholder="e.g. rotational motion, thermodynamics, coordination compounds..." value="${esc(pyqSearchQ)}" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')pyqRunSearch()">
-    <select id="pyq-s-subj" style="width:110px" onchange="pyqSearchSubj=this.value">${subjOpts.map(([v,l])=>`<option value="${v}" ${v===pyqSearchSubj?'selected':''}>${l}</option>`).join('')}</select>
-    <select id="pyq-s-exam" style="width:120px" onchange="pyqSearchExam=this.value">${examOpts.map(([v,l])=>`<option value="${v}" ${v===pyqSearchExam?'selected':''}>${l}</option>`).join('')}</select>
-    <div class="pyq-range-wrap" style="width:150px">
-      <span style="font-size:11px;color:var(--muted);white-space:nowrap">N: <b id="pyq-s-max-lbl" style="color:var(--txt)">${pyqSearchMax}</b></span>
-      <input type="range" min="5" max="30" step="5" value="${pyqSearchMax}" oninput="pyqSearchMax=+this.value;document.getElementById('pyq-s-max-lbl').textContent=this.value">
+  <div style="margin-bottom:16px;font-size:12px;color:var(--muted)">AI-powered PYQ research — fetches real JEE Main & Advanced questions from past papers.</div>
+  ${!hasApi?`<div style="padding:12px 16px;border-radius:var(--radius);background:rgba(0,240,255,0.03);border:1px solid var(--border);font-size:12px;margin-bottom:16px;color:var(--text)"><b style="color:var(--primary)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>`:''}
+  <div class="${p}-card" style="padding:16px;margin-bottom:16px">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <input class="${p}-input" type="text" id="pyq-s-q" placeholder="e.g. rotational motion, thermodynamics, coordination compounds..." value="${esc(pyqSearchQ)}" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')pyqRunSearch()">
+      <select id="pyq-s-subj" class="${p}-input" style="width:110px" onchange="pyqSearchSubj=this.value">${subjOpts.map(([v,l])=>`<option value="${v}" ${v===pyqSearchSubj?'selected':''}>${l}</option>`).join('')}</select>
+      <select id="pyq-s-exam" class="${p}-input" style="width:120px" onchange="pyqSearchExam=this.value">${examOpts.map(([v,l])=>`<option value="${v}" ${v===pyqSearchExam?'selected':''}>${l}</option>`).join('')}</select>
+      <div style="display:flex;align-items:center;gap:8px;width:150px">
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap;font-family:var(--font-data)">N: <b id="pyq-s-max-lbl" style="color:var(--text)">${pyqSearchMax}</b></span>
+        <input type="range" min="5" max="30" step="5" value="${pyqSearchMax}" oninput="pyqSearchMax=+this.value;document.getElementById('pyq-s-max-lbl').textContent=this.value" style="flex:1;accent-color:var(--primary)">
+      </div>
+      <button class="${p}-btn ${p}-btn-primary" onclick="pyqRunSearch()" ${pyqSearchLoading?'disabled':''} style="padding:8px 16px">${pyqSearchLoading?'⏳ Researching...':'🔍 Search'}</button>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="pyqRunSearch()" ${pyqSearchLoading?'disabled':''}>${pyqSearchLoading?'⏳ Researching...':'🔍 Search'}</button>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer">
+        <input type="checkbox" ${pyqRealOnly?'checked':''} onchange="pyqRealOnly=this.checked" style="accent-color:var(--success)">
+        <span style="color:var(--success);font-weight:600">Real PYQ only</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="pyq-s-mixed" style="accent-color:var(--primary)"> Mixed
+      </label>
+      <div style="width:1px;height:16px;background:var(--border);margin:0 2px"></div>
+      <span style="font-size:10px;color:var(--muted);font-weight:600;font-family:var(--font-data)">YEARS:</span>
+      ${decades.map(d=>`<span style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.05em;margin-left:4px;font-family:var(--font-data)">${d.label}</span>
+        ${d.years.map(y=>`<button class="${p}-chip ${pyqYearFilter.includes(y)?'active':''}" onclick="pyqToggleYear(${y})" style="padding:3px 8px;font-size:10px">${y}</button>`).join('')}`).join('')}
+      ${pyqYearFilter.length?`<button class="${p}-btn-ghost" onclick="pyqYearFilter=[];pyqRenderTab()" style="font-size:9px;padding:3px 10px;color:var(--danger)">✕ Clear</button>`:''}
+    </div>
   </div>
-  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px">
-    <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer">
-      <input type="checkbox" ${pyqRealOnly?'checked':''} onchange="pyqRealOnly=this.checked" style="accent-color:var(--green)">
-      <span style="color:var(--green);font-weight:600">Real PYQ only</span>
-    </label>
-    <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer">
-      <input type="checkbox" id="pyq-s-mixed" style="accent-color:var(--accent)"> Mixed
-    </label>
-    <div style="width:1px;height:16px;background:var(--border);margin:0 2px"></div>
-    <span style="font-size:10px;color:var(--faint);font-weight:600">YEARS:</span>
-    ${decades.map(d=>`<span style="font-size:9px;color:var(--faint);font-weight:700;letter-spacing:.05em;margin-left:4px">${d.label}</span>
-      ${d.years.map(y=>`<button class="pyq-yr-chip ${pyqYearFilter.includes(y)?'on':''}" onclick="pyqToggleYear(${y})">${y}</button>`).join('')}`).join('')}
-    ${pyqYearFilter.length?`<button class="btn btn-ghost btn-xs" onclick="pyqYearFilter=[];pyqRenderTab()" style="font-size:9px;padding:2px 8px;color:var(--red)">✕ Clear</button>`:''}
-  </div>
-  <div id="pyq-s-results">${pyqSearchResults.length?pyqRenderResults():'<div class="pyq-empty"><div class="pyq-empty-icon">📝</div>Enter a topic and click Search to fetch real JEE PYQ questions</div>'}</div>`;
+  <div id="pyq-s-results">${pyqSearchResults.length?pyqRenderResults():`<div class="${p}-empty" style="padding:28px"><div class="${p}-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="${p}-empty-title">Enter a topic and click Search</div><div class="${p}-empty-sub">Fetch real JEE PYQ questions</div></div>`}</div>`;
 }
 
 function pyqCleanJson(raw){
@@ -301,10 +313,10 @@ function pyqCleanJson(raw){
 
 async function pyqRunSearch(){
   const q=(document.getElementById('pyq-s-q')?.value||'').trim();
-  if(!q){toast('⚠️ Enter a search query');return;}
+  if(!q){toast('Enter a search query');return;}
   const settings=window.dsLoadSettings();
   const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
-  if(!hasApi){toast('⚠️ Configure Groq or Ollama in Doubt Solver Settings');window.dsOpenSettings();return;}
+  if(!hasApi){toast('Configure Groq or Ollama in Doubt Solver Settings');window.dsOpenSettings();return;}
   pyqSearchQ=q;pyqSearchLoading=true;pyqRenderTab();
   const mixed=document.getElementById('pyq-s-mixed')?.checked;
   const examLabel=pyqSearchExam==='mains'?'JEE Main':'JEE Advanced';
@@ -359,7 +371,7 @@ Output ONLY the JSON array.`;
       }catch(groqErr){
         const m=(groqErr.message||'').toLowerCase();
         if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('⚡ Groq limit hit — retrying with Ollama...');
+          toast('Groq limit — retrying with Ollama...');
           content=await tryOllama();
         }else throw groqErr;
       }
@@ -388,8 +400,8 @@ async function pyqFetchSolution(idx){
   if(!hasApi){window.dsOpenSettings();return;}
   const solEl=document.getElementById('pyq-sol-'+idx);
   if(!solEl)return;
-  solEl.innerHTML='<div style="color:var(--accent);font-size:11px">⏳ Generating detailed solution...</div>';
-  solEl.classList.add('show');
+  solEl.innerHTML='<div style="color:var(--primary);font-size:11px;padding:8px 0">⏳ Generating detailed solution...</div>';
+  solEl.style.display='block';
   const systemMsg='You are a JEE expert tutor. Provide a detailed, step-by-step solution. Use LaTeX ($...$ and $$...$$) for ALL math. Be thorough but clear. Include: 1) What the question is asking 2) Key concepts/formulas needed 3) Step-by-step derivation/calculation 4) Final answer verification.';
   const userMsg='Provide a detailed step-by-step solution for this JEE question:\n\n'+r.text+'\n\nCorrect Answer: '+r.answer+'\n\nGive a thorough solution suitable for a JEE aspirant.';
   try{
@@ -416,15 +428,15 @@ async function pyqFetchSolution(idx){
       }catch(groqErr){
         const m=(groqErr.message||'').toLowerCase();
         if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('⚡ Groq limit — using Ollama for solution...');
+          toast('Groq limit — using Ollama for solution...');
           content=await tryOllama();
         }else throw groqErr;
       }
     }
-    solEl.innerHTML='<div style="font-weight:700;color:var(--accent);margin-bottom:8px">📝 Detailed Solution</div><div style="white-space:pre-line;line-height:1.7">'+pyqEscapeHtml(content)+'</div>';
+    solEl.innerHTML='<div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:12px">📝 Detailed Solution</div><div style="white-space:pre-line;line-height:1.7;font-size:12px;color:var(--text)">'+pyqEscapeHtml(content)+'</div>';
     pyqRenderMath(solEl);
   }catch(e){
-    solEl.innerHTML='<div style="color:var(--red);font-size:11px">Failed to generate solution: '+esc(e.message)+'</div>';
+    solEl.innerHTML='<div style="color:var(--danger);font-size:11px;padding:4px 0">Failed to generate solution: '+esc(e.message)+'</div>';
   }
 }
 
@@ -448,40 +460,40 @@ function pyqRenderMath(el){
 }
 
 function pyqRenderResults(){
-  if(!pyqSearchResults.length)return '<div class="pyq-empty"><div class="pyq-empty-icon">📭</div>No results found. Try different keywords or year filter.</div>';
+  const p=pfx();
+  if(!pyqSearchResults.length)return `<div class="${p}-empty" style="padding:28px"><div class="${p}-empty-title">No results found</div><div class="${p}-empty-sub">Try different keywords or year filter.</div></div>`;
   return pyqSearchResults.map((r,i)=>{
     if(r.isError){
-      return `<div class="pyq-q-card" style="border-color:rgba(239,68,68,.3)">
-        <div class="pyq-q-num" style="color:var(--red)">❌ Error</div>
-        <div class="pyq-q-text" style="color:var(--red)">${esc(r.text)}</div>
+      return `<div class="${p}-card" style="border-color:rgba(239,68,68,.3);padding:16px;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:700;color:var(--danger);margin-bottom:4px">❌ Error</div>
+        <div style="font-size:12px;color:var(--danger)">${esc(r.text)}</div>
       </div>`;
     }
     const uid='pyq-ans-'+i;
     const solUid='pyq-sol-'+i;
     const srcLabel=r.source||'Unknown';
     const isRealPyq=srcLabel.toLowerCase().includes('jee');
-    const srcBg=isRealPyq?'var(--green-dim)':'var(--accent-dim)';
-    const srcClr=isRealPyq?'var(--green)':'var(--accent)';
-    return `<div class="pyq-q-card">
-      <div class="pyq-q-num">Q${r.num||i+1}</div>
-      <div class="pyq-q-text pyq-q-text-rendered">${pyqRenderImages(pyqEscapeHtml(r.text))}</div>
-      <div class="pyq-q-meta">
-        <span class="pyq-q-tag" style="background:${srcBg};color:${srcClr}">${esc(srcLabel)}</span>
+    return `<div class="${p}-card anim-entrance" style="--delay:${i*0.03}s;padding:16px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-family:var(--font-data);font-size:12px;font-weight:600;color:var(--primary)">Q${r.num||i+1}</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:var(--radius);background:${isRealPyq?'rgba(34,197,94,0.1)':'rgba(0,240,255,0.08)'};color:${isRealPyq?'var(--success)':'var(--primary)'};font-family:var(--font-data)">${esc(srcLabel)}</span>
       </div>
-      <div class="pyq-q-actions">
-        <button class="btn btn-ghost btn-xs" onclick="const a=document.getElementById('${uid}');a.classList.toggle('show');this.textContent=a.classList.contains('show')?'🙈 Hide':'👁️ View Answer'">👁️ View Answer</button>
-        <button class="btn btn-ghost btn-xs" onclick="const a=document.getElementById('${solUid}');if(!a.dataset.loaded){a.dataset.loaded='1';pyqFetchSolution(${i})}else{a.classList.toggle('show')}">📝 Detailed Solution</button>
-        <div class="pyq-q-solution" id="${uid}">
-          <div style="margin-bottom:6px"><b style="color:var(--green)">✅ Answer: ${esc(r.answer||'—')}</b></div>
-          ${r.explanation?`<div>${pyqEscapeHtml(r.explanation)}</div>`:''}
-        </div>
-        <div class="pyq-q-solution" id="${solUid}"></div>
+      <div style="font-size:13px;line-height:1.6;margin-bottom:12px">${pyqRenderImages(pyqEscapeHtml(r.text))}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button class="${p}-btn-ghost" onclick="const a=document.getElementById('${uid}');a.style.display=a.style.display==='none'?'block':'none';this.textContent=a.style.display==='none'?'👁️ View Answer':'🙈 Hide Answer'" style="padding:6px 12px;font-size:11px">👁️ View Answer</button>
+        <button class="${p}-btn-ghost" onclick="const a=document.getElementById('${solUid}');if(!a.dataset.loaded){a.dataset.loaded='1';pyqFetchSolution(${i})}else{a.style.display=a.style.display==='none'?'block':'none'}" style="padding:6px 12px;font-size:11px">📝 Detailed Solution</button>
       </div>
+      <div id="${uid}" style="display:none;margin-top:12px;padding:12px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.15);border-radius:var(--radius)">
+        <div style="margin-bottom:6px"><b style="color:var(--success);font-size:12px">✅ Answer: ${esc(r.answer||'—')}</b></div>
+        ${r.explanation?`<div style="font-size:12px;color:var(--muted);line-height:1.6">${pyqEscapeHtml(r.explanation)}</div>`:''}
+      </div>
+      <div id="${solUid}" style="display:none;margin-top:8px"></div>
     </div>`;
   }).join('');
 }
 
 function pyqRenderPlanner(el){
+  const p=pfx();
   const weakChapters=[];
   ['physics','chemistry','maths'].forEach(subj=>{
     (DB.chapters[subj]||[]).forEach(ch=>{
@@ -489,64 +501,63 @@ function pyqRenderPlanner(el){
     });
   });
   el.innerHTML=`
-  <div class="pg-sub" style="margin-bottom:16px;font-size:12px;color:var(--muted)">Select your weak chapters and set exam date to get a personalized PYQ study plan weighted by topic frequency.</div>
-  <div class="section-block">
-    <div class="gc" style="padding:20px">
-      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px">
-        <div style="flex:1;min-width:140px;max-width:200px">
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Days until exam</label>
-          <input class="inp" type="number" id="pyq-p-days" value="${pyqPlannerDays}" min="1" max="365" style="width:100%">
-        </div>
-        <div style="flex:1;min-width:140px;max-width:200px">
-          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Exam type</label>
-          <select id="pyq-p-exam" class="inp" style="width:100%;background:var(--surface);color:var(--txt);border:1px solid var(--border)">
-            <option value="mains">JEE Main</option>
-            <option value="advanced">JEE Advanced</option>
-          </select>
-        </div>
+  <div style="margin-bottom:16px;font-size:12px;color:var(--muted)">Select your weak chapters and set exam date to get a personalized PYQ study plan weighted by topic frequency.</div>
+  <div class="${p}-card" style="padding:20px">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px">
+      <div style="flex:1;min-width:140px;max-width:200px">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-family:var(--font-data)">Days until exam</label>
+        <input class="${p}-input" type="number" id="pyq-p-days" value="${pyqPlannerDays}" min="1" max="365" style="width:100%">
       </div>
-      <div style="margin-bottom:20px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <label style="font-size:11px;color:var(--muted)">Weak chapters (auto-detected from progress)</label>
-          ${weakChapters.length?`<button class="btn btn-ghost btn-xs" onclick="document.querySelectorAll('.pyq-p-chk').forEach(c=>c.checked=true)">Select All</button>`:''}
-        </div>
-        <div id="pyq-p-weak" style="display:flex;flex-wrap:wrap;gap:6px">
-          ${weakChapters.length?weakChapters.map(ch=>{
-            const col=ch.subj==='physics'?'var(--phys)':ch.subj==='chemistry'?'var(--chem)':'var(--math)';
-            return `<label style="display:flex;align-items:center;gap:4px;font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid ${col}33;background:${col}11;color:${col};cursor:pointer">
-              <input type="checkbox" class="pyq-p-chk" value="${ch.id}" data-subj="${ch.subj}" style="accent-color:${col}">
-              ${ch.name}
-            </label>`;
-          }).join(''):'<div style="font-size:12px;color:var(--muted)">No weak chapters found. Mark chapters as weak in the Chapters page first.</div>'}
-        </div>
+      <div style="flex:1;min-width:140px;max-width:200px">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-family:var(--font-data)">Exam type</label>
+        <select id="pyq-p-exam" class="${p}-input" style="width:100%">
+          <option value="mains">JEE Main</option>
+          <option value="advanced">JEE Advanced</option>
+        </select>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="pyqGeneratePlan()" ${!weakChapters.length?'disabled':''}>📋 Generate Study Plan</button>
     </div>
+    <div style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <label style="font-size:11px;color:var(--muted);font-family:var(--font-data)">Weak chapters (auto-detected from progress)</label>
+        ${weakChapters.length?`<button class="${p}-btn-ghost" onclick="document.querySelectorAll('.pyq-p-chk').forEach(c=>c.checked=true)" style="font-size:10px;padding:4px 10px">Select All</button>`:''}
+      </div>
+      <div id="pyq-p-weak" style="display:flex;flex-wrap:wrap;gap:6px">
+        ${weakChapters.length?weakChapters.map(ch=>{
+          const col=ch.subj==='physics'?'var(--primary)':ch.subj==='chemistry'?'var(--secondary)':'var(--accent)';
+          return `<label style="display:flex;align-items:center;gap:4px;font-size:11px;padding:4px 8px;border-radius:var(--radius);border:1px solid ${col}33;background:${col}11;color:${col};cursor:pointer">
+            <input type="checkbox" class="pyq-p-chk" value="${ch.id}" data-subj="${ch.subj}" style="accent-color:${col}">
+            ${ch.name}
+          </label>`;
+        }).join(''):`<div style="font-size:12px;color:var(--muted)">No weak chapters found. Mark chapters as weak in the Chapters page first.</div>`}
+      </div>
+    </div>
+    <button class="${p}-btn ${p}-btn-primary" onclick="pyqGeneratePlan()" ${!weakChapters.length?'disabled':''} style="padding:10px 20px">📋 Generate Study Plan</button>
   </div>
   <div id="pyq-p-result" style="margin-top:16px">${pyqRenderPlannerResult()}</div>`;
 }
 
 function pyqRenderPlannerResult(){
+  const p=pfx();
   if(!pyqPlannerPlan)return '';
   const plan=pyqPlannerPlan;
-  return `<div class="section-block anim-up d1">
-    <div class="section-title">📋 Your ${plan.days}-Day PYQ Study Plan</div>
-    <div class="gc" style="padding:16px 20px">
+  return `<div class="${p}-section-block anim-entrance" style="--delay:0.1s">
+    <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Your ${plan.days}-Day PYQ Study Plan</div>
+    <div class="${p}-card" style="padding:16px 20px">
       <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
-        <div style="font-size:12px"><span style="color:var(--muted)">Total Topics:</span> <b style="color:var(--txt)">${plan.totalTopics}</b></div>
-        <div style="font-size:12px"><span style="color:var(--muted)">Topics/Day:</span> <b style="color:var(--txt)">${plan.topicsPerDay}</b></div>
-        <div style="font-size:12px"><span style="color:var(--muted)">Focus:</span> <b style="color:var(--accent)">High-frequency topics first</b></div>
+        <div style="font-size:12px"><span style="color:var(--muted)">Total Topics:</span> <b style="color:var(--text);font-family:var(--font-data)">${plan.totalTopics}</b></div>
+        <div style="font-size:12px"><span style="color:var(--muted)">Topics/Day:</span> <b style="color:var(--text);font-family:var(--font-data)">${plan.topicsPerDay}</b></div>
+        <div style="font-size:12px"><span style="color:var(--muted)">Focus:</span> <b style="color:var(--primary);font-family:var(--font-data)">High-frequency topics first</b></div>
       </div>
-      ${plan.daysList.map(d=>`<div class="pyq-planner-day">
-        <div class="pyq-planner-day-head">
-          <div class="pyq-planner-day-title">Day ${d.day} ${d.day<=7?'⚡':d.day<=14?'🔥':'📅'}</div>
-          <div style="font-size:11px;color:var(--muted)">${d.topics.length} topics</div>
+      ${plan.daysList.map(d=>`<div class="${p}-card" style="padding:14px 16px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">Day ${d.day} ${d.day<=7?'⚡':d.day<=14?'🔥':'📅'}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--font-data)">${d.topics.length} topics</div>
         </div>
-        ${d.topics.map(t=>`<div class="pyq-planner-day-topic">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${t.col};margin-right:6px"></span>
-          ${t.name} <span style="font-size:10px;color:var(--muted)">(${t.weight}% weightage)</span>
+        ${d.topics.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--text)">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${t.col};flex-shrink:0"></span>
+          ${t.name} <span style="font-size:10px;color:var(--muted);font-family:var(--font-data)">(${t.weight}% weightage)</span>
         </div>`).join('')}
-        <div class="pyq-planner-day-info">Recommended: Solve ${Math.max(5,d.topics.length*3)} PYQs from these topics</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-family:var(--font-data)">Recommended: Solve ${Math.max(5,d.topics.length*3)} PYQs from these topics</div>
       </div>`).join('')}
     </div>
   </div>`;
@@ -556,7 +567,7 @@ function pyqGeneratePlan(){
   const days=parseInt(document.getElementById('pyq-p-days')?.value)||30;
   const exam=document.getElementById('pyq-p-exam')?.value||'mains';
   const checked=[...document.querySelectorAll('.pyq-p-chk:checked')].map(c=>({id:c.value,subj:c.dataset.subj}));
-  if(!checked.length){toast('⚠️ Select at least one weak chapter');return;}
+  if(!checked.length){toast('Select at least one weak chapter');return;}
   const allTopics=[];
   checked.forEach(ch=>{
     const chData=(DB.chapters[ch.subj]||[]).find(c=>c.id===ch.id);
@@ -564,14 +575,14 @@ function pyqGeneratePlan(){
     if(chData){
       chData.subTopics?.forEach(st=>{
         const matching=pyqTopics.find(pt=>pt.topic.toLowerCase().includes(st.name.toLowerCase().split(' ')[0])||st.name.toLowerCase().includes(pt.topic.toLowerCase().split(' ')[0]));
-        allTopics.push({name:`${chData.name} — ${st.name}`,weight:matching?.weight||5,col:ch.subj==='physics'?'var(--phys)':ch.subj==='chemistry'?'var(--chem)':'var(--math)'});
+        allTopics.push({name:`${chData.name} — ${st.name}`,weight:matching?.weight||5,col:ch.subj==='physics'?'var(--primary)':ch.subj==='chemistry'?'var(--secondary)':'var(--accent)'});
       });
     }
   });
   if(!allTopics.length){
     checked.forEach(ch=>{
       const pyqTopics=(PYQ_DATA[ch.subj]||[]).map(t=>({...t,subj:ch.subj}));
-      pyqTopics.forEach(t=>allTopics.push({name:`${t.topic}`,weight:t.weight,col:ch.subj==='physics'?'var(--phys)':ch.subj==='chemistry'?'var(--chem)':'var(--math)'}));
+      pyqTopics.forEach(t=>allTopics.push({name:`${t.topic}`,weight:t.weight,col:ch.subj==='physics'?'var(--primary)':ch.subj==='chemistry'?'var(--secondary)':'var(--accent)'}));
     });
   }
   allTopics.sort((a,b)=>b.weight-a.weight);
@@ -583,7 +594,7 @@ function pyqGeneratePlan(){
   pyqPlannerDays=days;
   pyqPlannerPlan={days:daysList.length,totalTopics:allTopics.length,topicsPerDay,daysList};
   pyqRenderTab();
-  toast('✅ Study plan generated!');
+  toast('Study plan generated!');
 }
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */

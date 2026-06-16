@@ -17,7 +17,27 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
-<div class="cursor-dot" id="cursor-dot"></div>
+  <!-- Preloader -->
+  <div id="app-preloader">
+    <div class="preloader-content">
+      <div class="preloader-terminal">
+        <div class="term-line">> initializing study_os v3.0...</div>
+        <div class="term-line">> loading modules...</div>
+        <div class="term-line">> calibrating neural pathways...</div>
+        <div class="term-line success">> system ready.</div>
+      </div>
+      <div class="preloader-bloom">
+        <div class="flower-center"></div>
+        <div class="bloom-text">JEE Hive</div>
+      </div>
+    </div>
+  </div>
+  <!-- Grid Background Canvas -->
+  <canvas id="grid-canvas"></canvas>
+  <!-- Cursor Effects -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+  <div class="cursor-trail" id="cursor-trail"></div>
 <button class="hamburger" id="hamburger" onclick="toggleSidebar()">&#9776;</button>
 <div class="mob-overlay" id="mob-overlay" onclick="closeSidebar()"></div>
 <div class="app">
@@ -60,9 +80,24 @@
     <button class="btn btn-ghost btn-xs" style="width:100%;justify-content:center;font-size:9px;padding:5px 8px" onclick="openSupabaseConfig()">Setup Supabase</button>
   </div>
   <div class="sfoot" style="padding:12px 16px;border-top:1px solid var(--border);">
-    <div class="theme-dots">
-      <button class="theme-dot active" data-theme="dark" title="Dark" style="background:#888888"></button>
-      <button class="theme-dot" data-theme="amber" title="Amber" style="background:#E8945A"></button>
+    <div class="theme-dropdown">
+      <button class="theme-dropdown-btn" id="theme-dropdown-btn" title="Change Theme">
+        <i class="fas fa-palette"></i>
+      </button>
+      <div class="theme-dropdown-menu" id="theme-dropdown-menu">
+        <div class="theme-dropdown-item active" data-theme="dark">
+          <span class="swatch"></span> Dark
+        </div>
+        <div class="theme-dropdown-item" data-theme="amber">
+          <span class="swatch"></span> Amber
+        </div>
+        <div class="theme-dropdown-item" data-theme="nexus">
+          <span class="swatch"></span> Nexus
+        </div>
+        <div class="theme-dropdown-item" data-theme="bloom">
+          <span class="swatch"></span> Bloom
+        </div>
+      </div>
     </div>
   </div>
   <div class="sfoot" style="font-size:9px;text-align:center;padding:10px 16px;">JEE Mains &amp; Advanced</div>
@@ -548,5 +583,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 
 <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.min.js"></script>
 <script type="module" src="js/app.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/preloader.js"></script>
+  <script src="js/grid-nexus.js"></script>
+  <script src="js/grid-bloom.js"></script>
 </body>
 </html>

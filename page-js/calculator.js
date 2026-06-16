@@ -20,24 +20,24 @@ function renderCalculator(el){
   const pend=75-ans-skp;
   const activeTab=calcActiveTab||'manual';
   el.innerHTML=`
-  <div class="pg-hdr anim-up"><div class="pg-title" data-text="Calculator">Calculator</div><div class="pg-sub">Full JEE mock evaluation engine</div></div>
+  <div class="pg-hdr page-header anim-up"><div class="pg-title" data-text="Calculator">Calculator</div><div class="pg-sub">Full JEE mock evaluation engine</div></div>
 
   <div class="ptabs anim-up d1">
     <button class="ptab ${activeTab==='manual'?'on':''}" onclick="switchCalcTab('manual')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Manual Calculator</button>
   </div>
 
   <div class="calc-mode ${activeTab==='manual'?'open':''}" id="calc-mode-manual">
-  <div class="gc section-block anim-up d2" style="padding:20px">
+  <div class="gc section-block chapter-card anim-up d2" style="padding:20px">
     <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Answer Key <span style="font-size:10px;font-weight:400;color:var(--faint)">(required)</span></div>
     <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>
     <textarea class="inp" id="calc-key-txt" rows="3" placeholder="Paste answer key...&#10;e.g. 1:A, 2:C, 3:D, 4:B, 5:A ...&#10;integer: 1:25, 2:100, 3:45 ...&#10;multi-correct: 1:ABD, 2:CD, 3:ABC"></textarea>
     <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-      <button class="btn btn-ghost btn-sm" onclick="applyAnsKey()">Apply Key</button>
+      <button class="btn btn-outline btn-sm" onclick="applyAnsKey()">Apply Key</button>
       <span id="key-status" style="font-size:11px;color:var(--green)"></span>
     </div>
   </div>
 
-  <div class="gc section-block anim-up d3" style="overflow:hidden;padding:20px">
+  <div class="gc section-block chapter-card anim-up d3" style="overflow:hidden;padding:20px">
     <div style="padding:0 0 10px;font-size:11px;color:var(--faint);margin-bottom:6px">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg> Keyboard shortcuts: <b>A/B/C/D</b> to select · <b>0-9</b> for Integer type · <b>S</b> to skip · <b>Enter</b> next question · Toggle <b>MCQ</b>/<b>INT</b>/<b>MULTI</b> per question
     </div>
@@ -52,12 +52,12 @@ function renderCalculator(el){
       </div>
     </div>
     <div style="padding:14px 0 0;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
-      <button class="btn btn-ghost btn-sm" onclick="resetCalc()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reset</button>
+      <button class="btn btn-outline btn-sm" onclick="resetCalc()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reset</button>
       <button class="btn btn-primary" onclick="evalCalc()" style="padding:10px 22px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Calculate Score</button>
     </div>
   </div>
 
-  <div id="calc-results" style="margin-top:16px;display:${calcShowResults?'block':'none'}">${calcShowResults?buildCalcRes():''}</div>
+  <div id="calc-results" class="anim-fade-in-up" style="margin-top:16px;display:${calcShowResults?'block':'none'}">${calcShowResults?buildCalcRes():''}</div>
   </div>
 
   `;
@@ -363,12 +363,12 @@ function buildCalcRes(){
         <div class="score-ring-inner"><div class="score-num" style="color:${scoreC}">${tot}</div><div class="score-sub">/ 300</div></div>
       </div>
       <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:${rPct>=60?'var(--green)':rPct>=40?'var(--accent)':'var(--red)'}">${rPct.toFixed(1)}% — ${totC}F · ${totP}P · ${totW}W · ${totS}S${totMissing?` · ${totMissing} no-key`:''}</div>
-      <div class="results-badges">
-        <div class="res-badge" style="background:var(--accent-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--accent)">${pctile}%</div><div class="res-badge-lbl">Predicted Percentile</div></div>
-        <div class="res-badge" style="background:var(--phys-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--phys)">${airRange}</div><div class="res-badge-lbl">Est. AIR Range</div></div>
-        <div class="res-badge" style="background:var(--green-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--green)">${totC}</div><div class="res-badge-lbl">Full (+${totC*4})</div></div>
-        <div class="res-badge" style="background:var(--yellow-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--yellow)">${totP}</div><div class="res-badge-lbl">Partial</div></div>
-        <div class="res-badge" style="background:var(--red-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--red)">${totW}</div><div class="res-badge-lbl">Wrong</div></div>
+      <div class="results-badges stagger">
+        <div class="res-badge stat-card" style="background:var(--accent-dim);border:1px solid var(--border2)"><div class="res-badge-val stat-icon" style="color:var(--accent)">${pctile}%</div><div class="res-badge-lbl">Predicted Percentile</div></div>
+        <div class="res-badge stat-card" style="background:var(--phys-dim);border:1px solid var(--border2)"><div class="res-badge-val stat-icon" style="color:var(--phys)">${airRange}</div><div class="res-badge-lbl">Est. AIR Range</div></div>
+        <div class="res-badge stat-card" style="background:var(--green-dim);border:1px solid var(--border2)"><div class="res-badge-val stat-icon" style="color:var(--green)">${totC}</div><div class="res-badge-lbl">Full (+${totC*4})</div></div>
+        <div class="res-badge stat-card" style="background:var(--yellow-dim);border:1px solid var(--border2)"><div class="res-badge-val stat-icon" style="color:var(--yellow)">${totP}</div><div class="res-badge-lbl">Partial</div></div>
+        <div class="res-badge stat-card" style="background:var(--red-dim);border:1px solid var(--border2)"><div class="res-badge-val stat-icon" style="color:var(--red)">${totW}</div><div class="res-badge-lbl">Wrong</div></div>
       </div>
     </div>
     <div class="subj-breakdown-grid" style="padding:18px 20px">
@@ -381,8 +381,8 @@ function buildCalcRes(){
     </div>
     <div style="padding:0 20px 18px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-primary btn-sm" onclick="saveCalcToHistory()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save to Test History</button>
-      <button class="btn btn-ghost btn-sm" onclick="saveCalcAsMockTest()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Save as Mock Test</button>
-      <button class="btn btn-ghost btn-sm" onclick="resetCalc()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reset Calculator</button>
+      <button class="btn btn-outline btn-sm" onclick="saveCalcAsMockTest()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Save as Mock Test</button>
+      <button class="btn btn-outline btn-sm" onclick="resetCalc()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reset Calculator</button>
     </div>
     <div style="padding:0 20px 20px">
       <div style="font-size:11px;font-weight:700;margin-bottom:10px;color:var(--faint);border-top:1px solid var(--border);padding-top:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Question-wise Breakdown</div>

@@ -41,15 +41,15 @@ function renderAnalytics(el){
   const subjCol={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};
   
   el.innerHTML=`
-  <div class="pg-hdr anim-up"><div class="pg-title" data-text="Statistics & Study Logs">Statistics & Study Logs</div><div class="pg-sub">Performance insights and study tracking</div></div>
-  <div class="analytics-hero anim-up d1">
-    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--accent)">${(+weekTotal).toFixed(1)}h</div><div class="analytics-lbl">This Week Total</div></div>
-    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--green)">${(+avgDay).toFixed(1)}h</div><div class="analytics-lbl">Avg Per Day</div></div>
-    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--phys)">${bestDay?((+bestDay[1]).toFixed(1)+'h'):'—'}</div><div class="analytics-lbl">Best Day ${bestDay?'('+fmtDate(bestDay[0]).slice(0,6)+')':''}</div></div>
-    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--chem)">${logs.length}</div><div class="analytics-lbl">Total Sessions</div></div>
-    <div class="gc analytics-card"><div class="analytics-val" style="color:var(--math)">${logs.reduce((s,l)=>s+(l.duration||0),0).toFixed(1)}h</div><div class="analytics-lbl">Lifetime Hours</div></div>
+  <div class="pg-hdr page-header anim-fade-in-up"><div class="pg-title" data-text="Statistics & Study Logs">Statistics & Study Logs</div><div class="pg-sub">Performance insights and study tracking</div></div>
+  <div class="analytics-hero stagger anim-fade-in-up d1">
+    <div class="gc analytics-card stat-card"><div class="analytics-val stat-icon" style="color:var(--accent)">${(+weekTotal).toFixed(1)}h</div><div class="analytics-lbl">This Week Total</div></div>
+    <div class="gc analytics-card stat-card"><div class="analytics-val stat-icon" style="color:var(--green)">${(+avgDay).toFixed(1)}h</div><div class="analytics-lbl">Avg Per Day</div></div>
+    <div class="gc analytics-card stat-card"><div class="analytics-val stat-icon" style="color:var(--phys)">${bestDay?((+bestDay[1]).toFixed(1)+'h'):'—'}</div><div class="analytics-lbl">Best Day ${bestDay?'('+fmtDate(bestDay[0]).slice(0,6)+')':''}</div></div>
+    <div class="gc analytics-card stat-card"><div class="analytics-val stat-icon" style="color:var(--chem)">${logs.length}</div><div class="analytics-lbl">Total Sessions</div></div>
+    <div class="gc analytics-card stat-card"><div class="analytics-val stat-icon" style="color:var(--math)">${logs.reduce((s,l)=>s+(l.duration||0),0).toFixed(1)}h</div><div class="analytics-lbl">Lifetime Hours</div></div>
   </div>
-  <div class="section-block anim-up d2">
+  <div class="section-block chapter-card anim-fade-in-up d2">
     <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Log Today's Study</div>
     <div class="gc" style="padding:18px 20px">
       <div class="g2" style="margin-bottom:12px">
@@ -71,7 +71,7 @@ function renderAnalytics(el){
       <button class="btn btn-primary" onclick="saveAnalyticsLog()">+ Log</button>
     </div>
   </div>
-  <div class="section-block anim-up d3">
+  <div class="section-block chapter-card anim-fade-in-up d3">
     <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Weekly Study Hours</div>
     <div class="gc bar-chart">
       ${barData.map(b=>`<div class="bar-col">
@@ -81,7 +81,7 @@ function renderAnalytics(el){
       </div>`).join('')}
     </div>
   </div>
-  <div class="section-block anim-up d4">
+  <div class="section-block chapter-card anim-fade-in-up d4">
     <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Monthly Performance Composite — ${['January','February','March','April','May','June','July','August','September','October','November','December'][now.getMonth()]} ${now.getFullYear()}</div>
     <div class="gc" style="padding:18px 20px">
       ${(()=>{
@@ -104,7 +104,7 @@ function renderAnalytics(el){
           ${comps.map(c=>`<div style="flex:1;min-width:100px;padding:14px 16px;background:var(--glass);border:1px solid var(--border);border-radius:12px;text-align:center">
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">${c.icon} ${c.label}</div>
             <div style="font-size:28px;font-weight:700;font-family:'Playfair Display',serif;color:${c.color}">${c.val.toFixed(1)}%</div>
-            <div class="pbar-wrap" style="height:5px;margin-top:8px"><div class="pbar" style="height:5px;width:${c.val}%;background:${c.color}"></div></div>
+            <div class="pbar-wrap progress-bar" style="height:5px;margin-top:8px"><div class="pbar progress-fill" style="height:5px;width:${c.val}%;background:${c.color}"></div></div>
           </div>`).join('')}
         </div>
         <div style="font-size:12px;color:var(--faint);text-align:center;padding:8px;background:var(--glass);border-radius:10px;border:1px solid var(--border)">
@@ -116,7 +116,7 @@ function renderAnalytics(el){
         </div>`;})()}
     </div>
   </div>
-  <div class="section-block anim-up d4">
+  <div class="section-block chapter-card anim-fade-in-up d4">
     <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg> Daily Performance — This Month</div>
     <div class="gc" style="padding:16px;overflow-x:auto">
       ${(()=>{
@@ -172,7 +172,7 @@ function renderAnalytics(el){
     const pts=valid.map((t,i)=>`${xScale(i).toFixed(1)},${yScale(t.totalScore).toFixed(1)}`);
     const area=`M${pts[0]}L${pts.slice(1).join('L')}L${xScale(valid.length-1).toFixed(1)},${h-py}L${xScale(0).toFixed(1)},${h-py}Z`;
     const gId='pfg'+Date.now();const yTicks=[min,Math.round(min+range*0.25),Math.round(min+range*0.5),Math.round(min+range*0.75),max];
-    return `<div class="section-block anim-up d3"><div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg> Overall Performance (${valid.length} Tests)</div><div class="gc" style="padding:16px"><svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">
+    return `<div class="section-block chapter-card anim-fade-in-up d3"><div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg> Overall Performance (${valid.length} Tests)</div><div class="gc" style="padding:16px"><svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">
       ${yTicks.map(v=>`<text x="${px-8}" y="${yScale(v)+3}" text-anchor="end" fill="var(--faint)" font-size="9">${v}</text><line x1="${px}" y1="${yScale(v)}" x2="${w-px}" y2="${yScale(v)}" stroke="var(--border)" stroke-width="1"/>`).join('')}
       <path d="${pts.join('L')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
       <path d="${area}" fill="url(#${gId})" opacity=".2"/>
@@ -181,38 +181,38 @@ function renderAnalytics(el){
       ${valid.filter((_,i)=>i%Math.max(1,Math.floor(valid.length/6))===0||i===valid.length-1).map((t,i)=>`<text x="${xScale(i*Math.max(1,Math.floor(valid.length/6)))}" y="${h-5}" text-anchor="middle" fill="var(--faint)" font-size="8">${fmtDate(t.date).slice(0,5)}</text>`).join('')}
     </svg></div></div>`;
   })()}
-  <div class="section-block anim-up d3">
+  <div class="section-block chapter-card anim-fade-in-up d3">
     <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg> Test Averages ${tests.length?`(${tests.length} Tests)`:'(0 Tests)'}</div>
-    <div class="stats-grid">
-      <div class="gc stat-card"><div class="stat-val" style="color:var(--green)">${testAvg}</div><div class="stat-label">Avg Total</div><div class="stat-sub">/300</div></div>
-      <div class="gc stat-card"><div class="stat-val" style="color:var(--phys)">${physAvg}</div><div class="stat-label">Avg Physics</div><div class="stat-sub">/100</div></div>
-      <div class="gc stat-card"><div class="stat-val" style="color:var(--chem)">${chemAvg}</div><div class="stat-label">Avg Chemistry</div><div class="stat-sub">/100</div></div>
-      <div class="gc stat-card"><div class="stat-val" style="color:var(--math)">${mathAvg}</div><div class="stat-label">Avg Maths</div><div class="stat-sub">/100</div></div>
+    <div class="stats-grid stagger">
+      <div class="gc stat-card"><div class="stat-icon stat-val" style="color:var(--green)">${testAvg}</div><div class="stat-label">Avg Total</div><div class="stat-sub">/300</div></div>
+      <div class="gc stat-card"><div class="stat-icon stat-val" style="color:var(--phys)">${physAvg}</div><div class="stat-label">Avg Physics</div><div class="stat-sub">/100</div></div>
+      <div class="gc stat-card"><div class="stat-icon stat-val" style="color:var(--chem)">${chemAvg}</div><div class="stat-label">Avg Chemistry</div><div class="stat-sub">/100</div></div>
+      <div class="gc stat-card"><div class="stat-icon stat-val" style="color:var(--math)">${mathAvg}</div><div class="stat-label">Avg Maths</div><div class="stat-sub">/100</div></div>
     </div>
   </div>
-  <div class="section-block anim-up d4">
+  <div class="section-block chapter-card anim-fade-in-up d4">
     <div class="section-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Subject-Wise Time Allocation (Averages)</div>
     <div class="subj-breakdown-grid" style="margin:0">
       <div class="gc" style="padding:16px;text-align:center">
         <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics Avg Time</div>
         <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--phys);margin-top:4px">${avgTimeP}m</div>
-        <div class="pbar-wrap" style="height:4px;margin-top:8px"><div class="pbar" style="height:4px;width:${Math.min(100,avgTimeP)}%;background:var(--phys)"></div></div>
+        <div class="pbar-wrap progress-bar" style="height:4px;margin-top:8px"><div class="pbar progress-fill" style="height:4px;width:${Math.min(100,avgTimeP)}%;background:var(--phys)"></div></div>
       </div>
       <div class="gc" style="padding:16px;text-align:center">
         <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry Avg Time</div>
         <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--chem);margin-top:4px">${avgTimeC}m</div>
-        <div class="pbar-wrap" style="height:4px;margin-top:8px"><div class="pbar" style="height:4px;width:${Math.min(100,avgTimeC)}%;background:var(--chem)"></div></div>
+        <div class="pbar-wrap progress-bar" style="height:4px;margin-top:8px"><div class="pbar progress-fill" style="height:4px;width:${Math.min(100,avgTimeC)}%;background:var(--chem)"></div></div>
       </div>
       <div class="gc" style="padding:16px;text-align:center">
         <div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths Avg Time</div>
         <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--math);margin-top:4px">${avgTimeM}m</div>
-        <div class="pbar-wrap" style="height:4px;margin-top:8px"><div class="pbar" style="height:4px;width:${Math.min(100,avgTimeM)}%;background:var(--math)"></div></div>
+        <div class="pbar-wrap progress-bar" style="height:4px;margin-top:8px"><div class="pbar progress-fill" style="height:4px;width:${Math.min(100,avgTimeM)}%;background:var(--math)"></div></div>
       </div>
     </div>
   </div>
-  <div class="section-block anim-up d4">
+  <div class="section-block chapter-card anim-fade-in-up d4">
     <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Chapter Frequency in Tests</div>
-    <div class="freq-grid">
+    <div class="freq-grid stagger">
       ${freqArr.length===0?`<div class="gc empty" style="padding:40px 20px"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="empty-title">No chapter data yet</div><div class="empty-sub">Add tests with syllabus to see chapter frequency</div></div>`:
       freqArr.map(f=>`<div class="gc freq-card">
         <div class="freq-bar" style="background:${subjCol[f.subj]}"></div>

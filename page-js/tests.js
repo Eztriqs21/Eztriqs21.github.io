@@ -30,7 +30,7 @@ function renderTests(el){
   const hasSyl=DB.tests.some(function(t){return t.syllabus&&Object.values(t.syllabus).some(function(a){return a.length;});});
   const filtered=getFilteredTests();
   el.innerHTML=`
-  <div class="pg-hdr anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div class="pg-hdr page-header anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div><div class="pg-title" data-text="Test">Test</div><div class="pg-sub">Test history and performance analysis</div></div>
     <button class="btn btn-primary" onclick="openAddTest()">+ Add Test</button>
   </div>
@@ -38,7 +38,7 @@ function renderTests(el){
     <input class="inp" type="text" id="test-search" placeholder="Search tests by name or chapter..." oninput="setTestSearch(this.value);debouncedUpdTstList()" style="flex:1;min-width:160px;font-size:13px" value="${esc(testSearch)}" autocomplete="off">
     ${hasSyl?'<span class="chip chip-med" style="font-size:10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Syllabus-wise</span>':''}
   </div>
-  <div id="test-list-container">${filtered.length===0?'<div class="gc empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div class="empty-title">'+(DB.tests.length?'No tests match your search':'No tests recorded')+'</div><div class="empty-sub">'+(DB.tests.length?'Try a different search term':'Click &quot;+ Add Test&quot;')+'</div></div>':
+  <div id="test-list-container" class="stagger">${filtered.length===0?'<div class="gc empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div class="empty-title">'+(DB.tests.length?'No tests match your search':'No tests recorded')+'</div><div class="empty-sub">'+(DB.tests.length?'Try a different search term':'Click &quot;+ Add Test&quot;')+'</div></div>':
   filtered.map(function(t,i){return tstCard(t,i);}).join('')}</div>`;
 }
 function tstCard(t,i){
@@ -46,11 +46,11 @@ function tstCard(t,i){
   const phS=t.physics.correct*4-t.physics.incorrect,chS=t.chemistry.correct*4-t.chemistry.incorrect,mS=t.maths.correct*4-t.maths.incorrect;
   const pps=t.papers||[];
   const tm=t.timing||{};
-  return `<div class="gc test-card anim-up" id="tc-${t.id}" style="margin-bottom:12px;animation-delay:${i*40}ms">
+  return `<div class="gc test-card chapter-card anim-up" id="tc-${t.id}" style="margin-bottom:12px;animation-delay:${i*40}ms">
     <div class="test-card-head" onclick="document.getElementById('tc-${t.id}').classList.toggle('expanded')">
-      <div class="tc-num">#${i+1}</div>
+      <div class="tc-num chapter-badge">#${i+1}</div>
       <div class="tc-info"><div class="tc-name">${esc(t.name)}</div><div class="tc-date">${fmtDate(t.date)}</div></div>
-      <div class="tc-score-wrap"><div class="tc-score-big" style="color:${c}">${t.totalScore}</div><div style="font-size:10px;color:var(--faint)">/${t.maxScore}</div></div>
+      <div class="tc-score-wrap stat-card"><div class="tc-score-big" style="color:${c}">${t.totalScore}</div><div style="font-size:10px;color:var(--faint)">/${t.maxScore}</div></div>
       <div class="tc-chev">▼</div>
     </div>
     <div class="test-card-body">
@@ -61,7 +61,7 @@ function tstCard(t,i){
           <div class="sbd-label" style="color:${sb.c}">${sb.l}</div>
           <div class="sbd-score" style="color:${sb.c}">${sb.s}</div>
           <div class="sbd-detail">${sb.d.correct}C / ${sb.d.incorrect}W / ${sb.d.unattempted||0}S</div>
-          <div class="pbar-wrap" style="height:3px;margin-top:6px"><div class="pbar" style="height:3px;width:${Math.max(0,sb.s)}%;background:${sb.c}"></div></div>
+          <div class="pbar-wrap progress-bar" style="height:3px;margin-top:6px"><div class="pbar progress-fill" style="height:3px;width:${Math.max(0,sb.s)}%;background:${sb.c}"></div></div>
         </div>`).join('')}
       </div>
       ${pps.length?`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Question Papers</div><div class="file-list" style="margin-bottom:12px">${pps.map((d,pi)=>fItemHTMLRaw(d,'Paper '+(pi+1))).join('')}</div>`:''}
@@ -70,7 +70,7 @@ function tstCard(t,i){
         return (t.syllabus[subj]||[]).map(cid=>{const ch=findCh(subj,cid);return ch?`<span style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;background:${col}15;color:${col};border:1px solid ${col}30">${esc(ch.name)}</span>`:'';}).join('');
       }).join('')}</div>`:''}
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="saveTestAsMockTest('${t.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Save as Mock Test</button>
+        <button class="btn btn-outline btn-sm" onclick="saveTestAsMockTest('${t.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Save as Mock Test</button>
         <button class="btn btn-danger btn-sm" onclick="delTest('${t.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
       </div>
     </div>
