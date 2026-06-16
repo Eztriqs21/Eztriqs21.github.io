@@ -1,5 +1,5 @@
-import { DB, sv } from '../js/data.js';
-import { uid, esc, cm, om, toast } from '../js/helpers.js';
+import { DB, sv, KEYS } from '../js/data.js';
+import { uid, esc, cm, om, toast, setupDZ, cfm2 } from '../js/helpers.js';
 
 // page-js/doubt-solver.js
 let dsState={step:0,imageData:null,imageFile:null,extractedText:'',textInput:'',answer:null,loading:false};

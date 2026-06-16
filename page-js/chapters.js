@@ -1,7 +1,7 @@
 // page-js/chapters.js
 /* ═══════════════ CHAPTERS ═══════════════ */
 import { DB, sv, findCh, mkCh } from '../js/data.js';
-import { uid, esc, safePct, cm, om, toast, setupDZ, debouncedUpdChList } from '../js/helpers.js';
+import { uid, esc, safePct, cm, om, toast, setupDZ, debouncedUpdChList, cfm2, fItemHTML, rdFiles } from '../js/helpers.js';
 let matrixFilter='all';
 let chSearch='';
 let accState={physics:true,chemistry:true,maths:true};

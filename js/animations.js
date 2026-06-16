@@ -458,7 +458,7 @@ export function fabPress(el) {
   });
 }
 
-export function fabCollapse(el) {
+export function fabResetIcon(el) {
   if (noMotion()) return;
   _M.animate(el, { transform: ['scale(1) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] });
 }

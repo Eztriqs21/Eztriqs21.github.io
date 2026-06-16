@@ -1,6 +1,7 @@
 // page-js/study-log.js
 import { DB, sv } from '../js/data.js';
 import { cm, om, toast } from '../js/helpers.js';
+import { go } from '../js/nav.js';
 function openStudyLog(){document.getElementById('sl-date').value=new Date().toISOString().split('T')[0];om('m-study-log');setTimeout(()=>document.getElementById('sl-topic').focus(),320);}
 function saveStudyLog(){
   const topic=document.getElementById('sl-topic').value.trim();if(!topic){toast('⚠️ Enter a topic');return;}

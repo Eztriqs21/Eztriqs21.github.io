@@ -1,6 +1,7 @@
 // page-js/mock-tests.js
-import { DB, sv } from '../js/data.js';
+import { DB, sv, KEYS } from '../js/data.js';
 import { uid, esc, fmtDate, cm, om, toast } from '../js/helpers.js';
+import { go } from '../js/nav.js';
 
 function openAddMockTest(){
   document.getElementById('mt-date').value=new Date().toISOString().split('T')[0];

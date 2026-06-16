@@ -1,5 +1,5 @@
 // page-js/analytics.js
-import { DB } from '../js/data.js';
+import { DB, sv } from '../js/data.js';
 import { esc, fmtDate, findCh } from '../js/helpers.js';
 import { pageLoadChoreography, chartChoreography, staggerIn, shouldAnimate } from '../js/animations.js';
 /* ═══════════════ ANALYTICS ═══════════════ */

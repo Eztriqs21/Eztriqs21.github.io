@@ -1,6 +1,6 @@
 // page-js/assignments.js
 import { DB, sv } from '../js/data.js';
-import { esc, cm, om, toast, setupDZ, debouncedUpdAsnList } from '../js/helpers.js';
+import { esc, cm, om, toast, setupDZ, debouncedUpdAsnList, rdFiles, cfm2, fItemHTML, fItemHTMLRaw } from '../js/helpers.js';
 /* ═══════════════ ASSIGNMENTS ═══════════════ */
 let asnSearch='';
 function updateAssignmentList(){
