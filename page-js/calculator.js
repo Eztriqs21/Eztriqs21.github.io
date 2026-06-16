@@ -66,7 +66,7 @@ function renderCalculator(el){
 }
 function switchCalcTab(tab){
   calcActiveTab=tab;
-  if(PAGE==='calculator')renderCalculator(document.getElementById('content-wrap'));
+  if(window.PAGE==='calculator')renderCalculator(document.getElementById('content-wrap'));
 }
 let calcActiveTab='manual';
 function buildQMat(){
@@ -177,7 +177,7 @@ function focusQRow(num){
 function attachCalcKeyboard(){
   if(window._calcKeyHandler)return;
   window._calcKeyHandler=function(e){
-    if(PAGE!=='calculator'||calcActiveTab!=='manual')return;
+    if(window.PAGE!=='calculator'||calcActiveTab!=='manual')return;
     if(document.getElementById('cmt-player').style.display!=='none')return;
     if(!e.key)return;
     const key=e.key.toUpperCase();

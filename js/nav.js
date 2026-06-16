@@ -21,7 +21,7 @@ export function go(page){
   else{const more=document.getElementById('bn-more');if(more)more.classList.add('on');}
   closeSidebar();
   try{localStorage.setItem(KEYS.tab,page);}catch(e){}
-  detachCalcKeyboard();
+  window.detachCalcKeyboard?.();
   pendingAFiles=[];pendingTFiles=[];
   render();
 }

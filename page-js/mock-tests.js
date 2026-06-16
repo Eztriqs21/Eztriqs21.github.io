@@ -37,7 +37,7 @@ function deleteMockTest(id){
   if(!DB.mockTests)return;
   DB.mockTests=DB.mockTests.filter(m=>m.id!==id);
   sv('mockTests');
-  if(PAGE==='mocktests')renderMockTests(document.getElementById('content-wrap'));
+  if(window.PAGE==='mocktests')renderMockTests(document.getElementById('content-wrap'));
 }
 function toggleMockTestAnalysis(id){
   const el=document.getElementById('mt-review-'+id);

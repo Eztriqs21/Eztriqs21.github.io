@@ -193,7 +193,7 @@ async function prepSendChat(){
     prepScrollBottom();
   }
   try{
-    const{provider,apiBase,openaiKey,openaiModel,ollamaUrl,ollamaModel}=dsLoadSettings();
+    const{provider,apiBase,openaiKey,openaiModel,ollamaUrl,ollamaModel}=window.dsLoadSettings();
     const notes=DB.prepChat.notes||[];
     let notesContext='';
     if(notes.length>0){

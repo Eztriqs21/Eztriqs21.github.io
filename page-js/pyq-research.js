@@ -247,7 +247,7 @@ function pyqEscapeHtml(s){
 function pyqRenderSearch(el){
   const subjOpts=[['physics','Physics'],['chemistry','Chemistry'],['maths','Maths']];
   const examOpts=[['mains','JEE Main'],['advanced','JEE Advanced']];
-  const settings=dsLoadSettings();
+  const settings=window.dsLoadSettings();
   const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
   const decades=[{label:'2020s',years:[2026,2025,2024,2023,2022,2021,2020]},{label:'2010s',years:[2019,2018,2017,2016,2015,2014,2013,2012,2011,2010]},{label:'2000s',years:[2009,2008,2007,2006,2005,2004,2003,2002]}];
   el.innerHTML=`
@@ -302,9 +302,9 @@ function pyqCleanJson(raw){
 async function pyqRunSearch(){
   const q=(document.getElementById('pyq-s-q')?.value||'').trim();
   if(!q){toast('⚠️ Enter a search query');return;}
-  const settings=dsLoadSettings();
+  const settings=window.dsLoadSettings();
   const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
-  if(!hasApi){toast('⚠️ Configure Groq or Ollama in Doubt Solver Settings');dsOpenSettings();return;}
+  if(!hasApi){toast('⚠️ Configure Groq or Ollama in Doubt Solver Settings');window.dsOpenSettings();return;}
   pyqSearchQ=q;pyqSearchLoading=true;pyqRenderTab();
   const mixed=document.getElementById('pyq-s-mixed')?.checked;
   const examLabel=pyqSearchExam==='mains'?'JEE Main':'JEE Advanced';
@@ -383,9 +383,9 @@ Output ONLY the JSON array.`;
 async function pyqFetchSolution(idx){
   const r=pyqSearchResults[idx];
   if(!r)return;
-  const settings=dsLoadSettings();
+  const settings=window.dsLoadSettings();
   const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
-  if(!hasApi){dsOpenSettings();return;}
+  if(!hasApi){window.dsOpenSettings();return;}
   const solEl=document.getElementById('pyq-sol-'+idx);
   if(!solEl)return;
   solEl.innerHTML='<div style="color:var(--accent);font-size:11px">⏳ Generating detailed solution...</div>';

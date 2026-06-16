@@ -8,9 +8,9 @@ function saveStudyLog(){
   if(!DB.studyLogs)DB.studyLogs=[];
   dur=Math.round(dur*10)/10;
   DB.studyLogs.unshift({id:'sl_'+Date.now(),subject:document.getElementById('sl-subj').value,topic,duration:dur,date:document.getElementById('sl-date').value||new Date().toISOString().split('T')[0],createdAt:new Date().toISOString()});
-  sv('studyLogs');cm('m-study-log');if(PAGE==='dashboard')renderDashboard(document.getElementById('content-wrap'));toast('✅ Session logged!');
+  sv('studyLogs');cm('m-study-log');if(window.PAGE==='dashboard')window.renderDashboard(document.getElementById('content-wrap'));toast('✅ Session logged!');
 }
-function deleteStudyLog(id){DB.studyLogs=DB.studyLogs.filter(l=>l.id!==id);sv('studyLogs');if(PAGE==='dashboard')renderDashboard(document.getElementById('content-wrap'));else if(PAGE==='analytics')renderAnalytics(document.getElementById('content-wrap'));}
+function deleteStudyLog(id){DB.studyLogs=DB.studyLogs.filter(l=>l.id!==id);sv('studyLogs');if(window.PAGE==='dashboard')window.renderDashboard(document.getElementById('content-wrap'));else if(window.PAGE==='analytics')window.renderAnalytics(document.getElementById('content-wrap'));}
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
 window.openStudyLog = openStudyLog;
