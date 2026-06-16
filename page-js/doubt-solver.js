@@ -5,18 +5,18 @@ import { uid, esc, cm, om, toast, setupDZ, cfm2 } from '../js/helpers.js';
 let dsState={step:0,imageData:null,imageFile:null,extractedText:'',textInput:'',answer:null,loading:false};
 let dsTab='quick'; // 'quick' or 'chat'
 let dsChatSubject='physics'; // current chat subject
-const DS_SUBJS={physics:{label:'⚡ Physics',color:'var(--phys)'},chemistry:{label:'⚗️ Chemistry',color:'var(--chem)'},maths:{label:'📐 Maths',color:'var(--math)'}};
+const DS_SUBJS={physics:{label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',color:'var(--phys)'},chemistry:{label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',color:'var(--chem)'},maths:{label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths',color:'var(--math)'}};
 function renderDoubtSolver(el){
   dsMigrateHistory();
   el.innerHTML=`<div class="ds-wrap anim-up">
     <div class="pg-hdr ds-header">
-      <div class="pg-title">📸 Doubt Solver</div>
+      <div class="pg-title" data-text="Doubt Solver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Doubt Solver</div>
       <div class="pg-sub">Quick one-shot answers or start a conversation with AI.</div>
     </div>
     <div class="ds-tabs">
-      <button class="ds-tab ${dsTab==='quick'?'on':''}" onclick="dsSwitchTab('quick')">⚡ Quick Ask</button>
-      <button class="ds-tab ${dsTab==='chat'?'on':''}" onclick="dsSwitchTab('chat')">💬 Chat</button>
-      <button class="btn btn-ghost btn-xs" onclick="dsOpenSettings()" style="margin-left:auto">⚙️</button>
+      <button class="ds-tab ${dsTab==='quick'?'on':''}" onclick="dsSwitchTab('quick')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Quick Ask</button>
+      <button class="ds-tab ${dsTab==='chat'?'on':''}" onclick="dsSwitchTab('chat')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Chat</button>
+      <button class="btn btn-ghost btn-xs" onclick="dsOpenSettings()" style="margin-left:auto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
     <div id="ds-tab-content">${dsTab==='quick'?dsRenderQuickAsk():dsRenderChat()}</div>
   </div>`;
@@ -35,7 +35,7 @@ function dsRenderQuickAsk(){
   return `<div class="gc section-block" style="padding:20px">
     <div id="ds-upload-area">
       <label class="dz ds-dz" id="ds-dz">
-        <div class="dz-icon">📷</div>
+        <div class="dz-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
         <div class="dz-title">Upload a photo of your doubt</div>
         <div class="dz-sub">JPG, PNG or WebP · max 5MB</div>
         <input type="file" id="ds-finp" accept="image/jpeg,image/png,image/webp" onchange="dsHandleFile(this.files)"/>
@@ -46,14 +46,14 @@ function dsRenderQuickAsk(){
         <div style="flex:1;height:1px;background:var(--border)"></div>
       </div>
       <textarea id="ds-text-inp" class="inp" rows="3" placeholder="Type or paste your doubt here..." style="font-size:13px;resize:vertical" oninput="dsOnTextInput(this.value)"></textarea>
-      <button class="btn btn-primary" id="ds-text-submit" disabled onclick="dsSolve()" style="width:100%;margin-top:10px;justify-content:center;padding:12px 22px">🔍 Solve Doubt</button>
+      <button class="btn btn-primary" id="ds-text-submit" disabled onclick="dsSolve()" style="width:100%;margin-top:10px;justify-content:center;padding:12px 22px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Solve Doubt</button>
     </div>
     <div id="ds-preview-area" style="display:none">
       <div class="ds-preview">
         <img id="ds-preview-img" src="" alt="Uploaded doubt"/>
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
           <button class="btn btn-ghost btn-sm" onclick="dsRemoveImage()">✕ Remove</button>
-          <button class="btn btn-primary" id="ds-solve-btn" disabled onclick="dsSolve()" style="padding:10px 22px">🔍 Solve Doubt</button>
+          <button class="btn btn-primary" id="ds-solve-btn" disabled onclick="dsSolve()" style="padding:10px 22px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Solve Doubt</button>
         </div>
       </div>
     </div>
@@ -67,7 +67,7 @@ function dsRenderChat(){
   const chats=DB.doubtChats||{physics:{messages:[]},chemistry:{messages:[]},maths:{messages:[]}};
   const subjBtns=Object.entries(DS_SUBJS).map(([k,v])=>`<button class="ds-chat-subj ${dsChatSubject===k?'on':''}" style="${dsChatSubject===k?'border-color:'+v.color+';color:'+v.color+';background:'+v.color+'12':''}" onclick="dsSwitchSubject('${k}')">${v.label}</button>`).join('');
   const msgs=(chats[dsChatSubject]?.messages||[]);
-  const msgHtml=msgs.length?msgs.map(m=>dsRenderChatMsg(m)):`<div class="ds-empty" style="padding:60px 20px"><div style="font-size:40px;margin-bottom:12px">💬</div>Start a conversation about ${DS_SUBJS[dsChatSubject].label.replace(/^[^\s]+\s/,'')}!<br><span style="font-size:11px;color:var(--faint)">Upload an image or type your question.</span></div>`;
+  const msgHtml=msgs.length?msgs.map(m=>dsRenderChatMsg(m)):`<div class="ds-empty" style="padding:60px 20px"><div style="font-size:40px;margin-bottom:12px"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>Start a conversation about ${DS_SUBJS[dsChatSubject].label.replace(/^[^\s]+\s/,'')}!<br><span style="font-size:11px;color:var(--faint)">Upload an image or type your question.</span></div>`;
   return `<div class="gc section-block" style="padding:0;overflow:hidden;display:flex;flex-direction:column;height:min(70dvh,600px)">
     <div class="ds-chat-subj-bar">${subjBtns}</div>
     <div class="ds-chat-msgs" id="ds-chat-msgs">${msgHtml}</div>
@@ -76,11 +76,11 @@ function dsRenderChat(){
         <div style="display:flex;align-items:center;gap:8px"><img id="ds-chat-preview-img" style="max-height:60px;border-radius:6px;object-fit:cover"/><span style="font-size:11px;color:var(--muted)">Image attached</span><button class="btn btn-ghost btn-xs" onclick="dsChatRemoveImage()">✕</button></div>
       </div>
       <div style="display:flex;gap:8px;padding:12px 14px;align-items:flex-end">
-        <label class="btn btn-ghost btn-xs" style="flex-shrink:0;cursor:pointer;padding:8px 10px">📷<input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="dsChatHandleFile(this.files)"/></label>
+        <label class="btn btn-ghost btn-xs" style="flex-shrink:0;cursor:pointer;padding:8px 10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="dsChatHandleFile(this.files)"/></label>
         <textarea id="ds-chat-inp" class="inp" rows="1" placeholder="Ask anything..." style="flex:1;resize:none;font-size:13px;max-height:120px;min-height:38px;padding:8px 12px" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();dsSendChat();}"></textarea>
         <button class="btn btn-primary btn-xs" id="ds-chat-send" onclick="dsSendChat()" style="flex-shrink:0;padding:8px 14px">Send</button>
       </div>
-      ${msgs.length>2?`<div style="padding:4px 14px 8px;text-align:center"><button class="btn btn-ghost btn-xs" onclick="dsClearChat('${dsChatSubject}')">🗑️ Clear chat</button></div>`:''}
+      ${msgs.length>2?`<div style="padding:4px 14px 8px;text-align:center"><button class="btn btn-ghost btn-xs" onclick="dsClearChat('${dsChatSubject}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Clear chat</button></div>`:''}
     </div>
   </div>`;
 }
@@ -111,8 +111,8 @@ function dsScrollChatBottom(){
 function dsHandleFile(files){
   if(!files||!files.length)return;
   const f=files[0];
-  if(!f.type.match(/^image\/(jpeg|png|webp)$/)){toast('⚠️ JPG, PNG or WebP only');return;}
-  if(f.size>5*1024*1024){toast('⚠️ Max 5MB');return;}
+  if(!f.type.match(/^image\/(jpeg|png|webp)$/)){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> JPG, PNG or WebP only');return;}
+  if(f.size>5*1024*1024){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Max 5MB');return;}
   dsState.imageFile=f;dsState.textInput='';
   const ta=document.getElementById('ds-text-inp');if(ta)ta.value='';
   const r=new FileReader();
@@ -158,13 +158,13 @@ function dsSolve(){
   if(dsState.loading)return;
   const hasImage=!!dsState.imageData;
   const hasText=!!dsState.textInput.trim();
-  if(!hasImage&&!hasText){toast('⚠️ Upload an image or type a question');return;}
+  if(!hasImage&&!hasText){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Upload an image or type a question');return;}
   const settings=dsLoadSettings();
   dsState.loading=true;
   document.getElementById('ds-text-submit').disabled=true;
   dsClearResults();
   const btn=document.getElementById('ds-solve-btn');
-  const modeLabel=hasImage?(settings.useVision?'🧠 Analyzing with Vision AI...':'🔍 Scanning & Solving...'):'🤖 Solving...';
+  const modeLabel=hasImage?(settings.useVision?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 1.5-.5 2.5-1.5 3.5A4 4 0 0 1 18 14a4 4 0 0 1-2 3.5V22h-8v-4.5A4 4 0 0 1 6 14a4 4 0 0 1 2.5-3.5A5 5 0 0 1 7 7a5 5 0 0 1 5-5z"/></svg> Analyzing with Vision AI...':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Scanning & Solving...'):'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg> Solving...';
   if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner" style="display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--txt);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span> '+modeLabel;}
   const pa=document.getElementById('ds-progress-area');
   if(pa){
@@ -224,7 +224,7 @@ async function dsRunOCR(){
     const {data}=await Tesseract.recognize(canvas.toDataURL('image/png'),'eng',{logger:function(){},preserve_interword_spaces:'1'});
     const text=(data.text||'').trim();dsState.extractedText=text;
     const ea=document.getElementById('ds-extracted-area');
-    if(ea&&text){ea.style.display='block';ea.innerHTML=`<div class="ds-extracted"><details open><summary>📝 Extracted Text (${text.length} chars)</summary><pre>${esc(text)}</pre></details></div>`;}
+    if(ea&&text){ea.style.display='block';ea.innerHTML=`<div class="ds-extracted"><details open><summary><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Extracted Text (${text.length} chars)</summary><pre>${esc(text)}</pre></details></div>`;}
     if(!text||text.length<3){dsShowError('Could not read the question clearly. Please upload a sharper image.');dsSolveDone();return;}
     dsSetStep(4);setTimeout(function(){dsSearchAnswer(text);},300);
   }catch(e){console.error('OCR error:',e);dsShowError('OCR failed: '+((e.message||e)+'').slice(0,200));dsSolveDone();}
@@ -275,9 +275,9 @@ function dsFormatError(e){
   const isCors=msg.includes('Failed to fetch')||msg.includes('NetworkError')||msg.includes('CORS');
   let fix='';
   if(isCors){
-    fix='<br><br>💡 <b>Serve this file via HTTP.</b> Browsers block API calls from <code>file://</code>.<br>Run: <code>python -m http.server 8080 --bind 127.0.0.1</code>';
+    fix='<br><br><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg> <b>Serve this file via HTTP.</b> Browsers block API calls from <code>file://</code>.<br>Run: <code>python -m http.server 8080 --bind 127.0.0.1</code>';
   }
-  return (isCors?'🌐 CORS blocked. ':'')+'Error: '+msg.slice(0,300)+fix;
+  return (isCors?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> CORS blocked. ':'')+'Error: '+msg.slice(0,300)+fix;
 }
 async function dsAskAI(text,parsed,settings,imageData){
   const systemMsg='You are a JEE expert tutor. Provide clear, step-by-step solutions. Use LaTeX notation ($$...$$ for display math, $...$ for inline math) for ALL mathematical expressions. If the user sends multiple messages, maintain context from previous questions.';
@@ -313,7 +313,7 @@ async function dsAskOllama(userMsg,systemMsg,settings){
   return{answer:content,subject:'General',question:typeof userMsg==='string'?userMsg.slice(0,200):'Image question',sources:[{title:'AI solution',snippet:'Powered by Ollama — '+model,url:''}]};
 }
 function dsLocalSearch(text,parsed){
-  return{question:parsed.question,subject:parsed.subject,sources:[{title:'Setup Required','snippet':'Go to ⚙️ Settings and configure Groq (free) or Ollama (local). Then try again.',url:''}],answer:'',noApi:true};
+  return{question:parsed.question,subject:parsed.subject,sources:[{title:'Setup Required','snippet':'Go to <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings and configure Groq (free) or Ollama (local). Then try again.',url:''}],answer:'',noApi:true};
 }
 function dsRenderAnswer(answer,parsed){
   const aa=document.getElementById('ds-answer-area');
@@ -327,7 +327,7 @@ function dsRenderAnswer(answer,parsed){
     </div>
     <div class="ds-q-text">${esc(parsed.question)}</div>`;
   if(answer.answer){
-    html+=`<div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:14px;margin:12px 0;font-size:12px;color:var(--txt);line-height:1.7;white-space:pre-wrap">${esc(answer.answer)}</div>`;
+    html+=`<div style="background:var(--green-dim);border:1px solid var(--green);border-radius:8px;padding:14px;margin:12px 0;font-size:12px;color:var(--txt);line-height:1.7;white-space:pre-wrap">${esc(answer.answer)}</div>`;
   }
   if(answer.sources&&answer.sources.length){
     html+=`<div style="margin-top:14px"><div style="font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${answer.answer?'Sources':'Top Matches'}</div>`;
@@ -338,13 +338,13 @@ function dsRenderAnswer(answer,parsed){
   }
   if(answer.noApi){
     html+=`<div style="margin-top:14px;padding:16px;border-radius:10px;background:var(--accent-dim);border:1px solid var(--border2);font-size:12px;line-height:1.6">
-      <div style="font-weight:700;color:var(--accent);margin-bottom:6px">⚙️ No Provider Configured</div>
-      <p style="color:var(--muted);margin:0 0 8px">Click ⚙️ Settings to set up Groq (free) or Ollama (local).</p>
+      <div style="font-weight:700;color:var(--accent);margin-bottom:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> No Provider Configured</div>
+      <p style="color:var(--muted);margin:0 0 8px">Click <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings to set up Groq (free) or Ollama (local).</p>
     </div>`;
   }
   html+=`<div class="ds-feedback"><span>Was this helpful?</span>
-    <button id="ds-fb-up" onclick="dsFeedback('up')">👍</button>
-    <button id="ds-fb-down" onclick="dsFeedback('down')">👎</button>
+    <button id="ds-fb-up" onclick="dsFeedback('up')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button>
+    <button id="ds-fb-down" onclick="dsFeedback('down')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg></button>
   </div></div>`;
   aa.innerHTML=html;
   if(window.renderMathInElement){try{renderMathInElement(aa,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});}catch(e){}}
@@ -357,7 +357,7 @@ function dsSolveDone(){
   dsState.loading=false;
   const hasText=!!dsState.textInput.trim();
   const ts=document.getElementById('ds-text-submit');if(ts)ts.disabled=!hasText;
-  const sb=document.getElementById('ds-solve-btn');if(sb){sb.disabled=!dsState.imageData;sb.innerHTML='🔍 Solve Doubt';}
+  const sb=document.getElementById('ds-solve-btn');if(sb){sb.disabled=!dsState.imageData;sb.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Solve Doubt';}
   dsSetStep(-1);
 }
 function dsFeedback(type){
@@ -375,8 +375,8 @@ function dsSwitchSubject(subj){
 function dsChatHandleFile(files){
   if(!files||!files.length)return;
   const f=files[0];
-  if(!f.type.match(/^image\/(jpeg|png|webp)$/)){toast('⚠️ JPG, PNG or WebP only');return;}
-  if(f.size>5*1024*1024){toast('⚠️ Max 5MB');return;}
+  if(!f.type.match(/^image\/(jpeg|png|webp)$/)){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> JPG, PNG or WebP only');return;}
+  if(f.size>5*1024*1024){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Max 5MB');return;}
   const r=new FileReader();
   r.onload=function(e){
     dsState.imageData=e.target.result;
@@ -396,7 +396,7 @@ async function dsSendChat(){
   const text=(ta?.value||'').trim();
   if(!text&&!dsState.imageData)return;
   const settings=dsLoadSettings();
-  if(!dsHasApi(settings)){toast('⚠️ Configure Groq or Ollama in Settings');dsOpenSettings();return;}
+  if(!dsHasApi(settings)){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Configure Groq or Ollama in Settings');dsOpenSettings();return;}
   if(sendBtn)sendBtn.disabled=true;
   if(ta)ta.disabled=true;
   if(!DB.doubtChats)DB.doubtChats={physics:{messages:[]},chemistry:{messages:[]},maths:{messages:[]}};
@@ -442,7 +442,7 @@ async function dsSendChat(){
         clearTimeout(tid);
         const m=(groqErr.message||'').toLowerCase();
         if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('⚡ Groq limit — switching to Ollama...');
+          toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Groq limit — switching to Ollama...');
           answer=await tryOllama();
         }else throw groqErr;
       }
@@ -461,7 +461,7 @@ async function dsSendChat(){
     console.error('Chat error:',e);
     const loadingEl=document.getElementById(loadingId);
     if(loadingEl)loadingEl.closest('.ds-chat-msg')?.remove();
-    const errMsg={id:'msg_'+uid(),role:'assistant',content:'⚠️ Error: '+(e.name==='AbortError'?'Request timed out':(e.message||'Failed to get response')).slice(0,200),ts:Date.now()};
+    const errMsg={id:'msg_'+uid(),role:'assistant',content:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Error: '+(e.name==='AbortError'?'Request timed out':(e.message||'Failed to get response')).slice(0,200),ts:Date.now()};
     chat.messages.push(errMsg);sv('doubtChats');
     if(msgsEl){msgsEl.innerHTML+=dsRenderChatMsg(errMsg);dsScrollChatBottom();}
   }
@@ -477,7 +477,7 @@ function dsClearChat(subj){
       const el=document.getElementById('ds-tab-content');
       if(el){el.innerHTML=dsRenderChat();dsScrollChatBottom();}
     }
-    toast('🗑️ Chat cleared');
+    toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Chat cleared');
   });
 }
 
@@ -551,7 +551,7 @@ async function dsFetchOllamaModels(){
 function saveDSSettings(){
   const prov=document.querySelector('.ds-prov-btn.on')?.dataset?.prov||'groq';
   const s={provider:prov,apiBase:'https://api.groq.com/openai/v1',openaiKey:document.getElementById('ds-openai-key')?.value?.trim()||'',openaiModel:document.getElementById('ds-openai-model-ds')?.value?.trim()||'llama-3.3-70b-versatile',ollamaUrl:document.getElementById('ds-ollama-url')?.value?.trim()||'http://localhost:11434',ollamaModel:document.getElementById('ds-ollama-model')?.value||'qwen2.5:3b',useVision:document.getElementById('ds-use-vision')?.checked||false};
-  dsSaveSettings(s);cm('m-ds-settings');toast('✅ Settings saved');
+  dsSaveSettings(s);cm('m-ds-settings');toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Settings saved');
 }
 function dsSaveSettings(settings){
   try{localStorage.setItem(KEYS.dsSettings,JSON.stringify(settings));}catch(e){}

@@ -2,11 +2,12 @@
 <html lang="en" data-theme="ink">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>JEE HQ — Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Satoshi:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800,900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -26,26 +27,24 @@
       <div class="brand-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/></svg>
       </div>
-      <div><div class="brand-name">JEE HQ</div><div class="brand-sub">Command Center</div></div>
+      <div><div class="brand-name" data-text="JEE HQ">JEE HQ</div><div class="brand-sub">Command Center</div></div>
     </div>
   </div>
   <nav class="snav" id="snav">
     <div class="snav-lbl">Overview</div>
-    <div class="si on" id="sn-dashboard" onclick="go('dashboard')"><div class="si-ico">⚡</div><div class="si-act"></div><span class="si-txt">Dashboard</span></div>
-    <div class="si" id="sn-chapters" onclick="go('chapters')"><div class="si-ico">📖</div><span class="si-txt">Chapters</span></div>
-    <div class="si" id="sn-revision" onclick="go('revision')"><div class="si-ico">📋</div><span class="si-txt">Revision</span></div>
+    <div class="si on" id="sn-dashboard" onclick="go('dashboard')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div><div class="si-act"></div><span class="si-txt">Dashboard</span></div>
+    <div class="si" id="sn-chapters" onclick="go('chapters')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><span class="si-txt">Chapters</span></div>
+    <div class="si" id="sn-revision" onclick="go('revision')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="si-txt">Revision</span></div>
     <div class="snav-lbl">Practice</div>
-    <div class="si" id="sn-tests" onclick="go('tests')"><div class="si-ico">📝</div><span class="si-txt">Tests</span></div>
-    <div class="si" id="sn-calculator" onclick="go('calculator')"><div class="si-ico">🧮</div><span class="si-txt">Calculator</span></div>
-    <div class="si" id="sn-mocktests" onclick="go('mocktests')"><div class="si-ico">🎯</div><span class="si-txt">Mock Tests</span></div>
-    <div class="si" id="sn-assignments" onclick="go('assignments')"><div class="si-ico">📌</div><span class="si-txt">Assignments</span></div>
+    <div class="si" id="sn-tests" onclick="go('tests')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><span class="si-txt">Tests</span></div>
+    <div class="si" id="sn-calculator" onclick="go('calculator')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg></div><span class="si-txt">Calculator</span></div>
+    <div class="si" id="sn-mocktests" onclick="go('mocktests')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><span class="si-txt">Mock Tests</span></div>
+    <div class="si" id="sn-assignments" onclick="go('assignments')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><span class="si-txt">Assignments</span></div>
     <div class="snav-lbl">Analysis</div>
-    <div class="si" id="sn-analytics" onclick="go('analytics')"><div class="si-ico">📈</div><span class="si-txt">Analytics</span></div>
-    <div class="si" id="sn-scoreanalytics" onclick="go('scoreanalytics')"><div class="si-ico">📊</div><span class="si-txt">Score Analytics</span></div>
-    <div class="si" id="sn-pyq" onclick="go('pyq')"><div class="si-ico">🎯</div><span class="si-txt">PYQ Analysis</span></div>
+    <div class="si" id="sn-analytics" onclick="go('analytics')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div><span class="si-txt">Analytics</span></div>
+    <div class="si" id="sn-scoreanalytics" onclick="go('scoreanalytics')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><span class="si-txt">Score Analytics</span></div>
     <div class="snav-lbl">AI Tools</div>
-    <div class="si" id="sn-doubtsolver" onclick="go('doubtsolver')"><div class="si-ico">💡</div><span class="si-txt">Doubt Solver</span></div>
-    <div class="si" id="sn-prep" onclick="go('prep')"><div class="si-ico">📚</div><span class="si-txt">Prep Notebook</span></div>
+    <div class="si" id="sn-doubtsolver" onclick="go('doubtsolver')"><div class="si-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span class="si-txt">Doubt Solver</span></div>
   </nav>
   <div class="sfoot sfoot-sync" style="padding:12px 16px;border-top:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
     <div id="auth-status" style="font-size:10px;color:var(--faint);margin-bottom:8px;text-align:center">No sync key set</div>
@@ -63,8 +62,8 @@
   <div class="sfoot" style="padding:12px 16px;border-top:1px solid var(--border);">
     <div class="theme-dots">
       <button class="theme-dot active" data-theme="ink" title="Ink Wash" style="background:#7C83FF"></button>
-      <button class="theme-dot" data-theme="amber" title="Amber Walnut" style="background:#D4845E"></button>
-      <button class="theme-dot" data-theme="opaline" title="Opaline" style="background:#FF5A3C"></button>
+      <button class="theme-dot" data-theme="amber" title="Amber Walnut" style="background:#C07040"></button>
+      <button class="theme-dot" data-theme="opaline" title="Opaline" style="background:#0FA4AF"></button>
     </div>
   </div>
   <div class="sfoot" style="font-size:9px;text-align:center;padding:10px 16px;">JEE Mains &amp; Advanced</div>
@@ -75,19 +74,18 @@
 </div>
 <nav class="bot-nav">
   <div class="bot-nav-inner">
-    <div class="bni on" id="bn-dashboard" onclick="go('dashboard')"><div class="bni-ico">⚡</div><div class="bni-lbl">Home</div></div>
-    <div class="bni" id="bn-analytics" onclick="go('analytics')"><div class="bni-ico">📈</div><div class="bni-lbl">Stats</div></div>
-    <div class="bni" id="bn-revision" onclick="go('revision')"><div class="bni-ico">📋</div><div class="bni-lbl">Revision</div></div>
-    <div class="bni" id="bn-pyq" onclick="go('pyq')"><div class="bni-ico">🎯</div><div class="bni-lbl">PYQ</div></div>
-    <div class="bni" id="bn-chapters" onclick="go('chapters')"><div class="bni-ico">📖</div><div class="bni-lbl">Chapters</div></div>
-    <div class="bni" id="bn-more" onclick="toggleSidebar()"><div class="bni-ico">☰</div><div class="bni-lbl">More</div></div>
+    <div class="bni on" id="bn-dashboard" onclick="go('dashboard')"><div class="bni-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div><div class="bni-lbl">Home</div></div>
+    <div class="bni" id="bn-analytics" onclick="go('analytics')"><div class="bni-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div><div class="bni-lbl">Stats</div></div>
+    <div class="bni" id="bn-revision" onclick="go('revision')"><div class="bni-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="bni-lbl">Revision</div></div>
+    <div class="bni" id="bn-chapters" onclick="go('chapters')"><div class="bni-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="bni-lbl">Chapters</div></div>
+    <div class="bni" id="bn-more" onclick="toggleSidebar()"><div class="bni-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div><div class="bni-lbl">More</div></div>
   </div>
 </nav>
 <button class="fab" id="fab-btn" onclick="toggleFab()">+</button>
 <div class="fab-actions" id="fab-actions">
   <button class="fab-action" onclick="om('m-test');closeFab()"><div class="fab-action-ico">📝</div>Add Test</button>
-  <button class="fab-action" onclick="om('m-study-log');closeFab()"><div class="fab-action-ico">📚</div>Log Study</button>
-  <button class="fab-action" onclick="om('m-asgn');closeFab()"><div class="fab-action-ico">📌</div>Add Assignment</button>
+  <button class="fab-action" onclick="om('m-study-log');closeFab()"><div class="fab-action-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>Log Study</button>
+  <button class="fab-action" onclick="om('m-asgn');closeFab()"><div class="fab-action-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>Add Assignment</button>
 </div>
 
 <!-- Device Sync Modal -->

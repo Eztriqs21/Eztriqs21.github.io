@@ -48,7 +48,7 @@ function renderRevision(el){
   });
   const overallPct=totalAll?Math.round(revisedAll/totalAll*100):0;
   el.innerHTML=`
-  <div class="pg-hdr anim-up"><div class="pg-title">📋 Revision Checklist</div><div class="pg-sub">Track your JEE syllabus revision progress. Tap a topic to cycle: Not Started → In Progress → Revised.</div></div>
+  <div class="pg-hdr anim-up"><div class="pg-title" data-text="Revision Checklist"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Revision Checklist</div><div class="pg-sub">Track your JEE syllabus revision progress. Tap a topic to cycle: Not Started → In Progress → Revised.</div></div>
   <div class="stats-grid anim-up d1">
     ${subjStats.map(s=>`<div class="gc stat-card"><div class="stat-val" style="color:${subjCol[s.subj]}">${s.revised}/${s.total}</div><div class="stat-label">${subjLbl[s.subj]}</div><div style="height:4px;background:var(--glass);border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${s.pct}%;background:${subjCol[s.subj]};border-radius:4px;transition:width .3s"></div></div></div>`).join('')}
     <div class="gc stat-card"><div class="stat-val" style="color:var(--accent)">${overallPct}%</div><div class="stat-label">Overall</div><div style="height:4px;background:var(--glass);border-radius:4px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${overallPct}%;background:var(--accent);border-radius:4px;transition:width .3s"></div></div></div>
@@ -62,9 +62,9 @@ function renderRevision(el){
       <div style="display:flex;flex-wrap:wrap;gap:6px">
         ${g.subs.map(s=>{
           const v=(st[subj]&&st[subj][s])||0;
-          const col=v===2?'var(--green)':v===1?'#fbbf24':'var(--faint)';
-          const bg=v===2?'rgba(34,197,94,.12)':v===1?'rgba(251,191,36,.12)':'var(--glass)';
-          const label=v===2?'✓ Revised':v===1?'⏳ In Progress':'○ Not Started';
+          const col=v===2?'var(--green)':v===1?'var(--orange)':'var(--faint)';
+          const bg=v===2?'var(--green-dim)':v===1?'var(--orange-dim)':'var(--glass)';
+          const label=v===2?'✓ Revised':v===1?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg> In Progress':'○ Not Started';
           return `<button class="btn btn-ghost btn-xs" onclick="revToggle('${subj}','${s.replace(/'/g,"\\'")}',${v})" style="font-size:11px;padding:4px 10px;border-radius:6px;background:${bg};color:${col};border:1px solid ${col}33;cursor:pointer;transition:all .2s">${label} ${s}</button>`;
         }).join('')}
       </div>

@@ -22,16 +22,16 @@ function saveMockTest(){
   const timeTaken=parseInt(document.getElementById('mt-time').value)||0;
   const syllabus=document.getElementById('mt-syllabus').value.trim();
   const review=document.getElementById('mt-review').value.trim();
-  if(!date){toast('⚠️ Select a date');return;}
-  if(isNaN(scored)||scored<0){toast('⚠️ Enter valid marks scored');return;}
-  if(isNaN(total)||total<=0){toast('⚠️ Enter valid total marks');return;}
-  if(scored>total){toast('⚠️ Scored marks cannot exceed total');return;}
+  if(!date){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Select a date');return;}
+  if(isNaN(scored)||scored<0){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Enter valid marks scored');return;}
+  if(isNaN(total)||total<=0){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Enter valid total marks');return;}
+  if(scored>total){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Scored marks cannot exceed total');return;}
   if(!DB.mockTests)DB.mockTests=[];
   DB.mockTests.unshift({id:'mt_'+uid(),subject:subj,date,marksScored:scored,totalMarks:total,timeTaken,syllabus:syllabus||undefined,topicsToReview:review,createdAt:new Date().toISOString()});
   sv('mockTests');
   cm('m-mocktest');
   if(PAGE==='mocktests')renderMockTests(document.getElementById('content-wrap'));
-  toast('✅ Mock test saved!');
+  toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Mock test saved!');
 }
 function deleteMockTest(id){
   if(!DB.mockTests)return;
@@ -48,7 +48,7 @@ function renderMockTests(el){
   const isEmpty=!tests.length;
   const sorted=[...tests].sort((a,b)=>new Date(b.date)-new Date(a.date));
   const subjOrder=['Physics','Chemistry','Maths','Full Syllabus'];
-  const subjMeta={Physics:{icon:'⚡',c:'var(--phys)'},Chemistry:{icon:'⚗️',c:'var(--chem)'},Maths:{icon:'📐',c:'var(--math)'},'Full Syllabus':{icon:'📋',c:'var(--accent)'}};
+  const subjMeta={Physics:{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',c:'var(--phys)'},Chemistry:{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>',c:'var(--chem)'},Maths:{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>',c:'var(--math)'},'Full Syllabus':{icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',c:'var(--accent)'}};
   const grouped={};
   sorted.forEach(m=>{
     if(!grouped[m.subject])grouped[m.subject]={};
@@ -61,19 +61,19 @@ function renderMockTests(el){
     return d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
   }
   el.innerHTML=`
-  <div class="pg-hdr anim-up"><div class="pg-title">📝 Mock Tests</div><div class="pg-sub">Log and track your practice test performance</div></div>
+  <div class="pg-hdr anim-up"><div class="pg-title" data-text="Mock Tests"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Mock Tests</div><div class="pg-sub">Log and track your practice test performance</div></div>
   <div class="cmt-hero anim-up d1" onclick="openCmtConfig()">
-    <div class="cmt-hero-title">🎯 Create Custom Mock Test</div>
+    <div class="cmt-hero-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Create Custom Mock Test</div>
     <div class="cmt-hero-sub">Generate AI-powered tests or pick from past JEE papers. Full-screen exam mode with timer, question navigator, and instant AI analysis.</div>
   </div>
   <div class="gc section-block anim-up d1" style="padding:20px;margin-bottom:16px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div class="section-title">📋 All Mock Tests</div>
+      <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> All Mock Tests</div>
       <button class="btn btn-primary btn-sm" onclick="openAddMockTest()">+ New Mock Test</button>
     </div>
     ${isEmpty?`<div class="mt-empty">No mock tests logged yet. Tap "+ New Mock Test" to get started.</div>`:
     subjOrder.filter(s=>grouped[s]).map(subj=>{
-      const meta=subjMeta[subj]||{icon:'📋',c:'var(--muted)'};
+      const meta=subjMeta[subj]||{icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',c:'var(--muted)'};
       const months=Object.keys(grouped[subj]).sort().reverse();
       const totalInSubj=months.reduce((sum,ym)=>sum+grouped[subj][ym].length,0);
       return `<div class="mt-subj-section anim-up">
@@ -105,14 +105,14 @@ function renderMockTests(el){
                     <span class="mt-card-pct ${pctClass}">${pct}%</span>
                   </div>
                   <div class="mt-card-meta">
-                    ${m.timeTaken?`<span class="chip chip-med">⏱️ ${m.timeTaken}m</span>`:''}
-                    ${m.syllabus?`<span class="chip chip-hi">📚 Syllabus</span>`:''}
+                    ${m.timeTaken?`<span class="chip chip-med"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${m.timeTaken}m</span>`:''}
+                    ${m.syllabus?`<span class="chip chip-hi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Syllabus</span>`:''}
                   </div>
-                  ${m.syllabus?`<div class="mt-card-syllabus">📚 ${esc(m.syllabus)}</div>`:''}
-                  ${m.topicsToReview?`<div class="mt-card-review" id="mt-review-${m.id}">📌 <b>Topics to Review:</b> ${esc(m.topicsToReview)}</div>`:''}
+                  ${m.syllabus?`<div class="mt-card-syllabus"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> ${esc(m.syllabus)}</div>`:''}
+                  ${m.topicsToReview?`<div class="mt-card-review" id="mt-review-${m.id}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> <b>Topics to Review:</b> ${esc(m.topicsToReview)}</div>`:''}
                   <div class="mt-card-actions">
-                    ${m.topicsToReview?`<button class="btn btn-ghost btn-xs" onclick="toggleMockTestAnalysis('${m.id}')">📊 Analysis</button>`:''}
-                    <button class="btn btn-danger btn-xs" onclick="deleteMockTest('${m.id}')">🗑️ Delete</button>
+                    ${m.topicsToReview?`<button class="btn btn-ghost btn-xs" onclick="toggleMockTestAnalysis('${m.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analysis</button>`:''}
+                    <button class="btn btn-danger btn-xs" onclick="deleteMockTest('${m.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
                   </div>
                 </div>`;
               }).join('')}
@@ -150,14 +150,14 @@ function cmtRenderConfig(){
   <div class="cmt-sec-label">Subjects</div>
   <div class="cmt-chips">${['physics','chemistry','maths'].map(s=>{
     const on=cmtConfig.subjects.includes(s);
-    const label=s==='physics'?'⚡ Physics':s==='chemistry'?'⚗️ Chemistry':'📐 Maths';
+    const label=s==='physics'?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics':s==='chemistry'?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths';
     return `<div class="cmt-chip ${on?'on':''} ${s}" onclick="cmtToggleSubject('${s}')">${label}</div>`;
   }).join('')}</div>
 
   <div class="cmt-sec-label" style="margin-top:16px">Chapters <span style="font-size:9px;color:var(--faint);font-weight:400">(leave empty = all chapters)</span></div>
   ${cmtConfig.subjects.map(s=>{
     const chapters=CMT_CHAPTERS[s]||[];
-    const label=s==='physics'?'⚡ Physics':s==='chemistry'?'⚗️ Chemistry':'📐 Maths';
+    const label=s==='physics'?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics':s==='chemistry'?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths';
     const color=s==='physics'?'var(--phys)':s==='chemistry'?'var(--chem)':'var(--math)';
     return `<div style="margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:${color};margin-bottom:4px">${label}</div>
     <div class="cmt-chapters">${chapters.map(ch=>{
@@ -177,15 +177,15 @@ function cmtRenderConfig(){
   <div class="cmt-sec-label">Source</div>
   <div class="cmt-source-opts">
     <div class="cmt-source-opt ${src==='ai'?'on':''}" onclick="cmtSetSource('ai')">
-      <div class="cmt-source-opt-title">🤖 AI Generated</div>
+      <div class="cmt-source-opt-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg> AI Generated</div>
       <div class="cmt-source-opt-sub">Fresh questions by AI</div>
     </div>
     <div class="cmt-source-opt ${src==='pyq'?'on':''}" onclick="cmtSetSource('pyq')">
-      <div class="cmt-source-opt-title">📄 Real PYQ Only</div>
+      <div class="cmt-source-opt-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Real PYQ Only</div>
       <div class="cmt-source-opt-sub">Past JEE papers only</div>
     </div>
     <div class="cmt-source-opt ${src==='mix'?'on':''}" onclick="cmtSetSource('mix')">
-      <div class="cmt-source-opt-title">🔀 Mix</div>
+      <div class="cmt-source-opt-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> Mix</div>
       <div class="cmt-source-opt-sub">PYQ + AI generated</div>
     </div>
   </div>
@@ -205,10 +205,10 @@ function cmtRenderConfig(){
   <div class="cmt-sec-label">Difficulty</div>
   <div class="cmt-source-opts">
     <div class="cmt-source-opt ${cmtConfig.difficulty==='mains'?'on':''}" onclick="cmtSetDiff('mains')" style="min-width:auto">
-      <div class="cmt-source-opt-title">🎯 JEE Mains</div>
+      <div class="cmt-source-opt-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> JEE Mains</div>
     </div>
     <div class="cmt-source-opt ${cmtConfig.difficulty==='advanced'?'on':''}" onclick="cmtSetDiff('advanced')" style="min-width:auto">
-      <div class="cmt-source-opt-title">🚀 JEE Advanced</div>
+      <div class="cmt-source-opt-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> JEE Advanced</div>
     </div>
   </div>
 
@@ -259,7 +259,7 @@ function cmtGetBatchPrompt(subject,mode,count,diff,batchNum,totalBatches){
   const yearNote=(cmtConfig.source==='pyq'||cmtConfig.source==='mix')?` Base these on real JEE questions from ${cmtConfig.yearStart}–${cmtConfig.yearEnd}.`:'';
   const modeLabel=mode==='mcq'?'single-correct MCQ (exactly 1 correct out of 4)':mode==='multi'?'multiple-correct MCQ (2 or more correct out of 4)':'integer-type (numerical answer, integer or up to 2 decimals)';
   const answerFormat=mode==='mcq'?'"answer": "B" (single letter)':mode==='multi'?'"answer": ["A","C"] (array of correct letters)':'"answer": "42" (string of the number)';
-  const pyqTopics=PYQ_DATA[subject]||[];
+  const pyqTopics=[];
   const topTopics=pyqTopics.sort((a,b)=>b.weight-a.weight).slice(0,5);
   const topicWeightNote=topTopics.length?` KEY TOPICS BY JEE WEIGHTAGE: ${topTopics.map(t=>`${t.topic} (${t.weight}% weightage, ~${t.questions} Qs/year)`).join(', ')}. Prioritize these topics.`:'';
   const exampleMCQ=mode==='mcq'?`
@@ -358,24 +358,24 @@ Return ONLY the JSON array. No markdown, no code blocks, no explanation.`;
 }
 function cmtIsMobile(){return navigator.maxTouchPoints>0&&window.innerWidth<768;}
 async function cmtGenerate(){
-  if(cmtConfig.totalQ<5){toast('⚠️ Need at least 5 questions');return;}
-  if(cmtConfig.totalQ>75){toast('⚠️ Maximum 75 questions');return;}
-  if(!cmtConfig.subjects.length){toast('⚠️ Select at least one subject');return;}
+  if(cmtConfig.totalQ<5){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Need at least 5 questions');return;}
+  if(cmtConfig.totalQ>75){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Maximum 75 questions');return;}
+  if(!cmtConfig.subjects.length){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Select at least one subject');return;}
   if(cmtConfig.source!=='ai'){
     const yrs=cmtConfig.yearEnd-cmtConfig.yearStart+1;
-    if(yrs<3){toast('⚠️ Select at least 3 years for PYQ mode');return;}
+    if(yrs<3){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Select at least 3 years for PYQ mode');return;}
   }
   const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
   const hasGroqKey=!!settings.openaiKey;
   const hasOllama=true;
-  if(!hasGroqKey&&!hasOllama){toast('⚠️ Set a Groq API key or start Ollama');return;}
+  if(!hasGroqKey&&!hasOllama){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Set a Groq API key or start Ollama');return;}
   document.getElementById('cmt-gen-btn').disabled=true;
   document.getElementById('cmt-loading').style.display='flex';
   cmtAbortController=new AbortController();
   const isMobile=cmtIsMobile();
   const totalTimeout=setTimeout(()=>{cmtAbortController.abort();},300000);
   let forceOllama=!hasGroqKey;
-  if(forceOllama&&!isMobile)toast('ℹ️ No Groq key — using Ollama');
+  if(forceOllama&&!isMobile)toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> No Groq key — using Ollama');
   try{
     const batches=cmtPlanBatches();
     const totalBatches=batches.length;
@@ -404,7 +404,7 @@ async function cmtGenerate(){
         }catch(groqErr){
           if(cmtIsRateLimitError(groqErr)){
             forceOllama=true;
-            toast('⚡ Groq limit hit — switching to Ollama for remaining batches');
+            toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Groq limit hit — switching to Ollama for remaining batches');
             document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--orange)">Rate limited</span> — Switching to Ollama...`;
             await new Promise(r=>setTimeout(r,500));
             try{
@@ -472,7 +472,7 @@ async function cmtGenerate(){
     clearTimeout(totalTimeout);
     document.getElementById('cmt-loading').style.display='none';
     document.getElementById('cmt-gen-btn').disabled=false;
-    if(err.name!=='AbortError')toast('❌ '+err.message);
+    if(err.name!=='AbortError')toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> '+err.message);
   }
 }
 function cmtIsRateLimitError(err){
@@ -670,7 +670,7 @@ function cmtRenderQuestion(){
   const q=cmtQuestions[cmtState.current];
   const main=document.getElementById('cmt-player-main');
   const subjColors={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};
-  const subjLabels={physics:'⚡ Physics',chemistry:'⚗️ Chemistry',maths:'📐 Maths'};
+  const subjLabels={physics:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',chemistry:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',maths:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths'};
   const modeLabels={mcq:'MCQ',int:'Integer',multi:'Multi-Correct'};
   const currentAns=cmtState.answers[cmtState.current];
   let optsHTML='';
@@ -818,9 +818,9 @@ function cmtShowResults(r){
   const pctColor=r.pct>=60?'var(--green)':r.pct>=30?'var(--orange)':'var(--red)';
   const circR=52;const circC=2*Math.PI*circR;const offset=circC-(r.pct/100)*circC;
   const subjInfo=[
-    {key:'physics',label:'⚡ Physics',color:'var(--phys)'},
-    {key:'chemistry',label:'⚗️ Chemistry',color:'var(--chem)'},
-    {key:'maths',label:'📐 Maths',color:'var(--math)'}
+    {key:'physics',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',color:'var(--phys)'},
+    {key:'chemistry',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',color:'var(--chem)'},
+    {key:'maths',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths',color:'var(--math)'}
   ].filter(s=>r.subjStats[s.key]&&(r.subjStats[s.key].c+r.subjStats[s.key].w+r.subjStats[s.key].s>0));
   el.innerHTML=`
   <div class="cmt-results-score">
@@ -886,7 +886,7 @@ function cmtSaveToHistory(){
   sv('mockTests');
   cm('m-cmt-results');
   go('mocktests');
-  toast('✅ Saved to history!');
+  toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Saved to history!');
 }
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */

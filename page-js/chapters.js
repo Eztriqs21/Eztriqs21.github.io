@@ -11,7 +11,7 @@ function updateChapterList(){
   if(container) container.innerHTML=buildChaptersList();
 }
 function buildChaptersList(){
-  const subjects=[{key:'physics',label:'Physics',icon:'⚡',color:'var(--phys)'},{key:'chemistry',label:'Chemistry',icon:'⚗️',color:'var(--chem)'},{key:'maths',label:'Maths',icon:'📐',color:'var(--math)'}];
+  const subjects=[{key:'physics',label:'Physics',icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',color:'var(--phys)'},{key:'chemistry',label:'Chemistry',icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>',color:'var(--chem)'},{key:'maths',label:'Maths',icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>',color:'var(--math)'}];
   return subjects.map((s,si)=>{
     const chs=DB.chapters[s.key];
     const q=chSearch.trim().toLowerCase();
@@ -34,12 +34,12 @@ function buildChaptersList(){
             ${ch.completed?'<svg width="11" height="11" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>':''}
           </div>
           <span class="ch-name-txt ${ch.completed?'done':''}">${esc(ch.name)}</span>
-          <span class="ch-edit-ico" onclick="event.stopPropagation();openEditCh('${s.key}','${ch.id}')">✏️</span>
+          <span class="ch-edit-ico" onclick="event.stopPropagation();openEditCh('${s.key}','${ch.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
           <div class="strength-pills">
             ${['strong','decent','weak','uncovered'].map(str=>`<button class="spill ${str} ${ch.strength===str?'on':''}" onclick="event.stopPropagation();setChStr('${s.key}','${ch.id}','${str}')">${str==='uncovered'?'—':str.charAt(0).toUpperCase()+str.slice(1)}</button>`).join('')}
           </div>
           <button class="ch-notes-btn" onclick="event.stopPropagation();openNotes('${s.key}','${ch.id}')">
-            📎 ${((ch.notes?.detailed?.length||0)+(ch.notes?.revision?.length||0))>0?((ch.notes?.detailed?.length||0)+(ch.notes?.revision?.length||0))+' notes':'Notes'}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> ${((ch.notes?.detailed?.length||0)+(ch.notes?.revision?.length||0))>0?((ch.notes?.detailed?.length||0)+(ch.notes?.revision?.length||0))+' notes':'Notes'}
           </button>
           <button class="pyq-badge pyq-mains ${ch.mainsPyqDone?'pyq-on':''}" onclick="event.stopPropagation();togglePyq('${s.key}','${ch.id}','mains')" title="Mains PYQ">Mains PYQ</button>
           <button class="pyq-badge pyq-adv ${ch.advPyqDone?'pyq-on':''}" onclick="event.stopPropagation();togglePyq('${s.key}','${ch.id}','adv')" title="Advanced PYQ">Adv PYQ</button>
@@ -68,13 +68,13 @@ function renderChapters(el){
   const filters=['all','strong','decent','weak','uncovered'];
   el.innerHTML=`
   <div class="pg-hdr anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div><div class="pg-title">Chapters</div><div class="pg-sub">Syllabus mastery & tracking</div></div>
+    <div><div class="pg-title" data-text="Chapters">Chapters</div><div class="pg-sub">Syllabus mastery & tracking</div></div>
   </div>
   <div id="ch-filter-bar" style="display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px;margin-bottom:12px" class="anim-up d1">
     ${filters.map(f=>`<button class="btn btn-sm ${matrixFilter===f?'btn-primary':'btn-ghost'}" onclick="setMF('${f}')">${f==='all'?'All Chapters':f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}
   </div>
   <div style="margin-bottom:16px" class="anim-up d1">
-    <input class="inp" type="text" id="ch-search" placeholder="🔍 Search chapters..." oninput="chSearch=this.value;debouncedUpdChList()" style="font-size:13px" value="${esc(chSearch)}" autocomplete="off">
+    <input class="inp" type="text" id="ch-search" placeholder="<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search chapters..." oninput="chSearch=this.value;debouncedUpdChList()" style="font-size:13px" value="${esc(chSearch)}" autocomplete="off">
   </div>
   <div id="ch-list-container">${buildChaptersList()}</div>`;
 }
@@ -122,7 +122,7 @@ function toggleChDone(subj,id){
 }
 function setChStr(subj,id,str){
   const ch=DB.chapters[subj].find(c=>c.id===id);if(!ch)return;
-  ch.strength=str;sv('chapters');toast('✅ Marked as '+str);
+  ch.strength=str;sv('chapters');toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Marked as '+str);
   const row=document.getElementById(`chrow-${subj}-${id}`);
   if(row){
     row.querySelectorAll('.spill').forEach(b=>b.classList.remove('on'));
@@ -142,7 +142,7 @@ function togglePyq(subj,id,type){
     const badge=row.querySelector(`.pyq-${type}`);
     if(badge)badge.classList.toggle('pyq-on');
   }
-  toast(type==='mains'?(ch.mainsPyqDone?'✅ Mains PYQ marked done':'⬜ Mains PYQ cleared'):(ch.advPyqDone?'✅ Advanced PYQ marked done':'⬜ Advanced PYQ cleared'));
+  toast(type==='mains'?(ch.mainsPyqDone?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Mains PYQ marked done':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg> Mains PYQ cleared'):(ch.advPyqDone?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Advanced PYQ marked done':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg> Advanced PYQ cleared'));
 }
 
 /* ═══════════════ CHAPTER MICRO-TOPIC SPLITTER ═══════════════ */
@@ -161,13 +161,13 @@ function toggleSubTopic(subj,chId,stId){
 }
 function addSubTopic(subj,chId){
   const inp=document.getElementById('sti-'+subj+'-'+chId);if(!inp)return;
-  const name=inp.value.trim();if(!name){toast('⚠️ Enter a topic name');return;}
+  const name=inp.value.trim();if(!name){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Enter a topic name');return;}
   const ch=DB.chapters[subj].find(c=>c.id===chId);if(!ch)return;
   if(!ch.subTopics)ch.subTopics=[];
   ch.subTopics.push({id:subj+'_st_'+uid(),name,completed:false});
   sv('chapters');
   updateChapterList();
-  toast('✅ Micro-topic added');
+  toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Micro-topic added');
 }
 function openAddCh(subj){
   document.getElementById('addch-subj').value=subj;
@@ -179,10 +179,10 @@ function openAddCh(subj){
 function saveAddCh(){
   const subj=document.getElementById('addch-subj').value;
   const name=document.getElementById('addch-name').value.trim();
-  if(!name){toast('⚠️ Enter chapter name');return;}
+  if(!name){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Enter chapter name');return;}
   const id=subj.charAt(0)+'_'+uid();
   DB.chapters[subj].push(mkCh(id,name));
-  sv('chapters');cm('m-add-ch');updateChapterList();toast('✅ Chapter added');
+  sv('chapters');cm('m-add-ch');updateChapterList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Chapter added');
 }
 let editChData=null;
 function openEditCh(subj,id){
@@ -196,16 +196,16 @@ function openEditCh(subj,id){
 function saveEditCh(){
   if(!editChData)return;
   const name=document.getElementById('editch-name').value.trim();
-  if(!name){toast('⚠️ Enter chapter name');return;}
+  if(!name){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Enter chapter name');return;}
   const ch=DB.chapters[editChData.subj].find(c=>c.id===editChData.id);
   if(ch){ch.name=name;sv('chapters');}
-  cm('m-edit-ch');updateChapterList();toast('✅ Chapter updated');
+  cm('m-edit-ch');updateChapterList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Chapter updated');
 }
 function deleteEditCh(){
   if(!editChData)return;
   cfm2('Delete chapter?','This cannot be undone.',()=>{
     DB.chapters[editChData.subj]=DB.chapters[editChData.subj].filter(c=>c.id!==editChData.id);
-    sv('chapters');cm('m-edit-ch');updateChapterList();toast('🗑️ Deleted');
+    sv('chapters');cm('m-edit-ch');updateChapterList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Deleted');
   });
 }
 
@@ -222,7 +222,7 @@ function setNoteType(t){
   noteType=t;
   const det=document.getElementById('note-type-det'),rev=document.getElementById('note-type-rev'),lbl=document.getElementById('note-type-lbl');
   if(det){det.className=t==='detailed'?'btn btn-sm':'btn btn-ghost btn-sm';det.style.cssText=t==='detailed'?'background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2)':'';}
-  if(rev){rev.className=t==='revision'?'btn btn-sm':'btn btn-ghost btn-sm';rev.style.cssText=t==='revision'?'background:rgba(59,130,246,.15);color:var(--phys);border:1px solid rgba(59,130,246,.3)':'';}
+  if(rev){rev.className=t==='revision'?'btn btn-sm':'btn btn-ghost btn-sm';rev.style.cssText=t==='revision'?'background:var(--phys-dim);color:var(--phys);border:1px solid var(--phys)':'';}
   if(lbl)lbl.textContent=t==='detailed'?'Detailed':'Revision';
 }
 function renderNotesList(ch){
@@ -241,7 +241,7 @@ function handleNoteFiles(files){
     if(!ch.notes)ch.notes={detailed:[],revision:[]};
     if(!ch.notes[ct])ch.notes[ct]=[];
     ch.notes[ct].push(obj);sv('chapters');renderNotesList(ch);
-    updateChapterList();toast('✅ '+ct+' note saved');
+    updateChapterList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> '+ct+' note saved');
   });
 }
 

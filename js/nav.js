@@ -48,7 +48,6 @@ function _renderSwap(el){
   if(PAGE==='dashboard')window.renderDashboard(el);
   else if(PAGE==='analytics')window.renderAnalytics(el);
   else if(PAGE==='revision')window.renderRevision(el);
-  else if(PAGE==='pyq')window.renderPYQ(el);
   else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
   else if(PAGE==='chapters')window.renderChapters(el);
   else if(PAGE==='assignments')window.renderAssignments(el);
@@ -56,7 +55,6 @@ function _renderSwap(el){
   else if(PAGE==='calculator')window.renderCalculator(el);
   else if(PAGE==='mocktests')window.renderMockTests(el);
   else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
-  else if(PAGE==='prep')window.renderPrep(el);
 
   if(shouldAnimate()){
     pageEnter(el).then(()=>{

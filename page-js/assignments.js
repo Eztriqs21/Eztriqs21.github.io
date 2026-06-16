@@ -16,7 +16,7 @@ function updateAssignmentList(){
       return false;
     });
   }
-  container.innerHTML=asns.length===0?`<div class="gc empty"><div class="empty-icon">📋</div><div class="empty-title">${DB.assignments.length?'No assignments match your search':'No assignments'}</div><div class="empty-sub">${DB.assignments.length?'Try a different search term':'Click &quot;+ Add Task&quot; to get started'}</div></div>`:
+  container.innerHTML=asns.length===0?`<div class="gc empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="empty-title">${DB.assignments.length?'No assignments match your search':'No assignments'}</div><div class="empty-sub">${DB.assignments.length?'Try a different search term':'Click &quot;+ Add Task&quot; to get started'}</div></div>`:
   asns.map((a,i)=>asnCard(a,i)).join('');
 }
 function renderAssignments(el){
@@ -33,16 +33,16 @@ function renderAssignments(el){
   const pend=asns.filter(a=>!a.completed).length;
   el.innerHTML=`
   <div class="pg-hdr anim-up" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div><div class="pg-title">Assignments</div><div class="pg-sub">Tasks and study materials</div></div>
+    <div><div class="pg-title" data-text="Assignments">Assignments</div><div class="pg-sub">Tasks and study materials</div></div>
     <button class="btn btn-primary" onclick="openAddAssign()">+ Add Task</button>
   </div>
-  <input class="inp anim-up d1" type="text" id="asn-search" placeholder="🔍 Search assignments by title, description, syllabus..." oninput="asnSearch=this.value;debouncedUpdAsnList()" style="font-size:13px;margin-bottom:12px" value="${esc(asnSearch)}" autocomplete="off">
+  <input class="inp anim-up d1" type="text" id="asn-search" placeholder="<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search assignments by title, description, syllabus..." oninput="asnSearch=this.value;debouncedUpdAsnList()" style="font-size:13px;margin-bottom:12px" value="${esc(asnSearch)}" autocomplete="off">
   <div id="asn-stats" style="display:flex;gap:10px;margin-bottom:20px" class="anim-up d2">
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px">${asns.length}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">${DB.assignments.length===asns.length?'Total':'Filtered'}</div></div>
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--accent)">${pend}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">Pending</div></div>
     <div class="gc" style="padding:14px 18px;flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--green)">${asns.length-pend}</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px">Done</div></div>
   </div>
-  <div id="asn-list-container">${asns.length===0?`<div class="gc empty"><div class="empty-icon">📋</div><div class="empty-title">${DB.assignments.length?'No assignments match your search':'No assignments'}</div><div class="empty-sub">${DB.assignments.length?'Try a different search term':'Click &quot;+ Add Task&quot; to get started'}</div></div>`:
+  <div id="asn-list-container">${asns.length===0?`<div class="gc empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="empty-title">${DB.assignments.length?'No assignments match your search':'No assignments'}</div><div class="empty-sub">${DB.assignments.length?'Try a different search term':'Click &quot;+ Add Task&quot; to get started'}</div></div>`:
   asns.map((a,i)=>asnCard(a,i)).join('')}</div>`;
 }
 function asnCard(a,i){
@@ -60,11 +60,11 @@ function asnCard(a,i){
           ${a.priority&&a.priority!=='none'?`<span class="chip ${pc[a.priority]}">${a.priority}</span>`:''}
         </div>
         ${a.description?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5">${esc(a.description)}</div>`:''}
-        ${a.syllabus?`<div style="font-size:11px;color:var(--faint);margin-bottom:8px;padding:6px 10px;background:var(--surface2);border-radius:8px">📚 ${esc(a.syllabus)}</div>`:''}
+        ${a.syllabus?`<div style="font-size:11px;color:var(--faint);margin-bottom:8px;padding:6px 10px;background:var(--surface2);border-radius:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> ${esc(a.syllabus)}</div>`:''}
         ${atts.length?`<div class="file-list" style="margin-bottom:10px">${atts.map((d,fi)=>fItemHTMLRaw(d,'Attachment '+(fi+1))).join('')}</div>`:''}
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <label class="btn btn-ghost btn-xs" style="cursor:pointer">📎 Attach<input type="file" multiple accept=".pdf,image/*" onchange="attachToAsn('${a.id}',this.files)"/></label>
-          <button class="btn btn-danger btn-xs" onclick="delAsn('${a.id}')">🗑️ Delete</button>
+          <label class="btn btn-ghost btn-xs" style="cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Attach<input type="file" multiple accept=".pdf,image/*" onchange="attachToAsn('${a.id}',this.files)"/></label>
+          <button class="btn btn-danger btn-xs" onclick="delAsn('${a.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button>
         </div>
       </div>
     </div>
@@ -82,10 +82,10 @@ function setAP(p){
 function handleAFiles(files){rdFiles(files,obj=>{window.pendingAFiles.push(obj);refreshAFileList();});}
 function refreshAFileList(){const el=document.getElementById('a-file-list');if(!el)return;el.innerHTML=window.pendingAFiles.map((f,i)=>fItemHTML(f)+`<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingAFiles.splice(${i},1);refreshAFileList()">✕</button></div>`).join('');}
 function saveAssignment(){
-  const t=document.getElementById('a-title').value.trim();if(!t){toast('⚠️ Enter a title');return;}
+  const t=document.getElementById('a-title').value.trim();if(!t){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Enter a title');return;}
   DB.assignments.unshift({id:'a_'+Date.now(),title:t,description:document.getElementById('a-desc').value.trim(),priority:window.aPriority||'none',completed:false,attachments:window.pendingAFiles.map(f=>({d:f.url||f.data,n:f.name})),syllabus:document.getElementById('a-syl').value.trim()||undefined,createdAt:new Date().toISOString()});
   if(!sv('assignments')){DB.assignments.shift();return;}
-  cm('m-asgn');updateAssignmentList();toast('✅ Task added!');
+  cm('m-asgn');updateAssignmentList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Task added!');
 }
 function toggleAsnDone(id){
   const a=DB.assignments.find(x=>x.id===id);if(!a)return;
@@ -100,8 +100,8 @@ function toggleAsnDone(id){
     if(titleEl)titleEl.style.textDecoration=a.completed?'line-through':'none';
   }
 }
-function delAsn(id){cfm2('Delete task?','This cannot be undone.',()=>{DB.assignments=DB.assignments.filter(x=>x.id!==id);sv('assignments');updateAssignmentList();toast('🗑️ Deleted');});}
-function attachToAsn(id,files){rdFiles(files,obj=>{const a=DB.assignments.find(x=>x.id===id);if(!a)return;if(!a.attachments)a.attachments=[];a.attachments.push({d:obj.url||obj.data,n:obj.name});if(!sv('assignments')){a.attachments.pop();return;}updateAssignmentList();toast('📎 Attached!');});}
+function delAsn(id){cfm2('Delete task?','This cannot be undone.',()=>{DB.assignments=DB.assignments.filter(x=>x.id!==id);sv('assignments');updateAssignmentList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Deleted');});}
+function attachToAsn(id,files){rdFiles(files,obj=>{const a=DB.assignments.find(x=>x.id===id);if(!a)return;if(!a.attachments)a.attachments=[];a.attachments.push({d:obj.url||obj.data,n:obj.name});if(!sv('assignments')){a.attachments.pop();return;}updateAssignmentList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Attached!');});}
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
 window.renderAssignments=renderAssignments;
 window.updateAssignmentList=updateAssignmentList;

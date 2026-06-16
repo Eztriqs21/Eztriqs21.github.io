@@ -14,7 +14,7 @@ function setNoteType(t){
   window.noteType=t;
   const det=document.getElementById('note-type-det'),rev=document.getElementById('note-type-rev'),lbl=document.getElementById('note-type-lbl');
   if(det){det.className=t==='detailed'?'btn btn-sm':'btn btn-ghost btn-sm';det.style.cssText=t==='detailed'?'background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2)':'';}
-  if(rev){rev.className=t==='revision'?'btn btn-sm':'btn btn-ghost btn-sm';rev.style.cssText=t==='revision'?'background:rgba(59,130,246,.15);color:var(--phys);border:1px solid rgba(59,130,246,.3)':'';}
+  if(rev){rev.className=t==='revision'?'btn btn-sm':'btn btn-ghost btn-sm';rev.style.cssText=t==='revision'?'background:var(--phys-dim);color:var(--phys);border:1px solid var(--phys)':'';}
   if(lbl)lbl.textContent=t==='detailed'?'Detailed':'Revision';
 }
 function renderNotesList(ch){
@@ -33,7 +33,7 @@ function handleNoteFiles(files){
     if(!ch.notes)ch.notes={detailed:[],revision:[]};
     if(!ch.notes[ct])ch.notes[ct]=[];
     ch.notes[ct].push(obj);sv('chapters');renderNotesList(ch);
-    window.updateChapterList();toast('✅ '+ct+' note saved');
+    window.updateChapterList();toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> '+ct+' note saved');
   });
 }
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
