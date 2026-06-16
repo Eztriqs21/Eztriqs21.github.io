@@ -178,7 +178,7 @@ function attachCalcKeyboard(){
   if(window._calcKeyHandler)return;
   window._calcKeyHandler=function(e){
     if(window.PAGE!=='calculator'||calcActiveTab!=='manual')return;
-    if(document.getElementById('cmt-player').style.display!=='none')return;
+    if(document.getElementById('cmt-player')?.style.display!=='none')return;
     if(!e.key)return;
     const key=e.key.toUpperCase();
     const isModCtrl=e.ctrlKey||e.metaKey||e.altKey;
@@ -232,7 +232,7 @@ function evalCalc(){
 }
 function scoreQ(q,k){
   if(q.unattempted||!q.selected||k===undefined||k===null)return 0;
-  if(q.mode==='int'){const iv=parseInt(q.selected,10);if(isNaN(iv))return 0;return iv===k?4:-1;}
+  if(q.mode==='int'){const iv=Number(q.selected);if(isNaN(iv)||!Number.isInteger(iv))return 0;return iv===k?4:-1;}
   if(q.mode==='multi'){
     const ks=String(k).toUpperCase(),ss=q.selected.toUpperCase();
     let hasWrong=false,allCorrect=true;
@@ -258,7 +258,8 @@ function saveCalcToHistory(){
     if(Number.isNaN(sc))return;
     totalScore+=sc;
     const cat=q.subj==='physics'?p:q.subj==='chemistry'?c:m;
-    if(sc===0)cat.unattempted++;
+    if(sc===0&&q.mode==='multi'&&q.selected)cat.partial++;
+    else if(sc===0)cat.unattempted++;
     else if(sc>=4)cat.correct++;
     else if(sc>0)cat.partial++;
     else cat.incorrect++;
@@ -283,7 +284,8 @@ function saveCalcTestFromModal(){
     if(Number.isNaN(sc))return;
     totalScore+=sc;
     const cat=q.subj==='physics'?p:q.subj==='chemistry'?c:m;
-    if(sc===0)cat.unattempted++;
+    if(sc===0&&q.mode==='multi'&&q.selected)cat.partial++;
+    else if(sc===0)cat.unattempted++;
     else if(sc>=4)cat.correct++;
     else if(sc>0)cat.partial++;
     else cat.incorrect++;
@@ -331,6 +333,7 @@ function buildCalcRes(){
     if(unatt||noKey)totS++;
     else if(sc>=4)totC++;
     else if(sc>0)totP++;
+    else if(sc===0&&q.mode==='multi'&&q.selected)totP++;
     else totW++;
   });
   const sd=subjs.map((s,si)=>{

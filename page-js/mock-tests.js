@@ -30,7 +30,7 @@ function saveMockTest(){
   DB.mockTests.unshift({id:'mt_'+uid(),subject:subj,date,marksScored:scored,totalMarks:total,timeTaken,syllabus:syllabus||undefined,topicsToReview:review,createdAt:new Date().toISOString()});
   sv('mockTests');
   cm('m-mocktest');
-  if(PAGE==='mocktests')renderMockTests(document.getElementById('content-wrap'));
+  if(window.PAGE==='mocktests')renderMockTests(document.getElementById('content-wrap'));
   toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Mock test saved!');
 }
 function deleteMockTest(id){
@@ -92,7 +92,7 @@ function renderMockTests(el){
             </div>
             <div class="mt-month-body">
               ${items.map((m,i)=>{
-                const pct=Math.round(m.marksScored/m.totalMarks*100);
+                const pct=m.totalMarks>0?Math.round(m.marksScored/m.totalMarks*100):0;
                 const pctClass=pct>=70?'good':pct>=40?'ok':'bad';
                 return `<div class="mt-card" style="margin-bottom:8px">
                   <div class="mt-card-head">
@@ -365,7 +365,7 @@ async function cmtGenerate(){
     const yrs=cmtConfig.yearEnd-cmtConfig.yearStart+1;
     if(yrs<3){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Select at least 3 years for PYQ mode');return;}
   }
-  const settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
+  let settings;try{settings=JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');}catch(e){settings={};}
   const hasGroqKey=!!settings.openaiKey;
   const hasOllama=true;
   if(!hasGroqKey&&!hasOllama){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Set a Groq API key or start Ollama');return;}
@@ -579,7 +579,7 @@ function cmtCancelGeneration(){
   document.getElementById('cmt-gen-btn').disabled=false;
 }
 async function cmtCallAI(prompt,provider,settings){
-  settings=settings||JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');
+  settings=settings||(function(){try{return JSON.parse(localStorage.getItem(KEYS.dsSettings)||'{}');}catch(e){return {};}})();
   const controller=new AbortController();
   const perTimeout=provider==='ollama'?90000:45000;
   const timer=setTimeout(()=>controller.abort(),perTimeout);

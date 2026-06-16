@@ -6,7 +6,7 @@
 /* ── RESET ─────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;height:100%;}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;min-height:100dvh;line-height:1.6;font-size:13px;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;min-height:100dvh;line-height:1.6;font-size:13px;position:relative;}
 a{color:var(--accent);text-decoration:none;}
 a:hover{text-decoration:underline;}
 button{font-family:inherit;}
@@ -463,10 +463,6 @@ input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-even
 .ds-tab.on{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
 .ds-progress{margin:var(--sp-4) 0;padding:var(--sp-4);border-radius:var(--r);background:var(--surface2);border:1px solid var(--border);}
 
-/* ── SCORE RING (SVG) ─────────────────────────────────────── */
-.score-ring{width:100px;height:100px;margin:0 auto var(--sp-3);}
-.score-ring svg{transform:rotate(-90deg);}
-
 /* ── SIDEBAR BRAND ────────────────────────────────────────── */
 .brand-row{display:flex;align-items:center;gap:var(--sp-3);}
 .si-act{position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:1px;background:var(--accent);}
@@ -893,7 +889,7 @@ a,button,.si,.bni,.fab,.fab-action,.theme-dot,.cmt-chip,.cmt-source-opt,.cmt-tim
 ::selection{background:var(--accent-dim);color:var(--text);}
 
 /* ── SCALING FIXES ─────────────────────────────────────────── */
-@media(max-width:1024px){.sidebar{display:none;}.main{margin-left:0;}}
+@media(max-width:1024px){.sidebar{width:60px!important;}.sidebar:hover{width:var(--sb-expanded)!important;}.sidebar .brand-name,.sidebar .snav-lbl,.sidebar .si .si-txt,.sidebar .sfoot-sync{opacity:0;width:0;overflow:hidden;pointer-events:none;}.sidebar:hover .brand-name,.sidebar:hover .snav-lbl,.sidebar:hover .si .si-txt,.sidebar:hover .sfoot-sync{opacity:1;width:auto;pointer-events:auto;}.main{margin-left:60px;}.hamburger{display:flex;}}
 @media(max-width:480px){.pg-title{font-size:20px;}.stat-val{font-size:20px;}.stat-card{padding:12px;}}
 @media(max-width:360px){.pg-title{font-size:18px;}body{font-size:13px;}}
 

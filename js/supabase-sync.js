@@ -209,7 +209,7 @@ export async function pullFromSupabase(){
     window.resetEphemeralUiState();
     window.persistAllLocal({skipBudgetCheck:true});
     requestAnimationFrame(()=>{
-      window.detachCalcKeyboard();
+      window.detachCalcKeyboard?.();
       if(window.PAGE==='calculator')window.initCalcQ();
       window.render();
     });
@@ -222,7 +222,6 @@ function autoSync(){
 }
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
-window.supaClient=supaClient;window.supaConfig=supaConfig;window.currentSyncKey=currentSyncKey;
 window.saveSyncKey=saveSyncKey;window.clearSyncKey=clearSyncKey;
 window.pushToSupabase=pushToSupabase;window.pullFromSupabase=pullFromSupabase;
 window.openSupabaseConfig=openSupabaseConfig;window.saveSupabaseConfig=saveSupabaseConfig;

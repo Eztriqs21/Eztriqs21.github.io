@@ -34,7 +34,7 @@ function revLoad(){
   });
   return st;
 }
-function revSave(st){try{localStorage.setItem(KEYS.rev,JSON.stringify(st));}catch(e){}}
+function revSave(st){DB.revision=st;sv('revision');}
 function renderRevision(el){
   const st=revLoad();
   const subjCol={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};

@@ -61,7 +61,7 @@ function _renderSwap(el){
     else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
   }catch(err){
     console.error('Render error for page:',PAGE,err);
-    el.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:18px;font-weight:700;margin-bottom:8px">Something went wrong</div><div style="font-size:13px">'+err.message+'</div></div>';
+    el.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:18px;font-weight:700;margin-bottom:8px">Something went wrong</div><div style="font-size:13px">'+(err.message||'').replace(/</g,'&lt;')+'</div></div>';
   }
 
   if(shouldAnimate()){
@@ -101,10 +101,9 @@ export function closeSidebar(){
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('mob-overlay');
   const ham=document.getElementById('hamburger');
-  sb.classList.remove('open');
-  ov.classList.remove('open');
-  ov.style.display='none';
-  ham.innerHTML='&#9776;';
+  if(sb)sb.classList.remove('open');
+  if(ov){ov.classList.remove('open');ov.style.display='none';}
+  if(ham)ham.innerHTML='&#9776;';
   document.body.style.overflow='';
 }
 (function(){

@@ -12,7 +12,7 @@ export function oneShotURL(subj,id,name){
   if(!subjCfg)return null;
   return subjCfg[id]||'https://youtube.com/results?search_query='+encodeURIComponent('JEE '+name+' One Shot '+subjCfg.teacher);
 }
-export const DB={chapters:null,assignments:null,tests:null,studyLogs:null,mockTests:null,doubtHistory:null,doubtChats:null,prepChat:null};
+export const DB={chapters:null,assignments:null,tests:null,studyLogs:null,mockTests:null,doubtHistory:null,doubtChats:null,prepChat:null,revision:null};
 export function load(){
   try{DB.chapters=JSON.parse(localStorage.getItem(KEYS.ch))||null;}catch(e){DB.chapters=null;}
   if(!DB.chapters)DB.chapters=defaultChapters();
@@ -27,6 +27,7 @@ export function load(){
   if(!DB.doubtChats)DB.doubtChats={physics:{messages:[],createdAt:null,updatedAt:null},chemistry:{messages:[],createdAt:null,updatedAt:null},maths:{messages:[],createdAt:null,updatedAt:null}};
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
   if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
+  try{DB.revision=JSON.parse(localStorage.getItem(KEYS.rev))||null;}catch(e){DB.revision=null;}
   if(window.cmtLoadHashes)window.cmtLoadHashes();
 }
 export const LS_SAFE_BUDGET=4*1024*1024;
@@ -41,7 +42,9 @@ export function sv(key,opts){
   opts=opts||{};
   const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,studyLogs:KEYS.sl,mockTests:KEYS.mt,doubtHistory:KEYS.ds,doubtChats:KEYS.dchat,prepChat:KEYS.prepChat,revision:KEYS.rev};
   const lsKey=m[key];
-  const serialized=JSON.stringify(DB[key]);
+  if(!lsKey)return false;
+  let serialized;
+  try{serialized=JSON.stringify(DB[key]);}catch(e){return false;}
   if(!opts.skipBudgetCheck&&!usesCloudStorage()){
     const prev=(localStorage.getItem(lsKey)||'').length*2;
     const projected=lsBytesUsed()-prev+serialized.length*2;
@@ -75,8 +78,8 @@ export function persistAllLocal(opts){
   ['chapters','assignments','tests','studyLogs','mockTests','doubtHistory','doubtChats','prepChat','revision'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
 }
 export function resetEphemeralUiState(){
-  pendingAFiles=[];pendingTFiles=[];
-  notesChapterId=null;calcShowResults=false;calcAnsKey={};
+  window.pendingAFiles=[];window.pendingTFiles=[];
+  window.notesChapterId=null;window.calcShowResults=false;window.calcAnsKey={};
 }
 export function applyCloudPayload(parsed){
   if(!parsed||typeof parsed!=='object')return false;

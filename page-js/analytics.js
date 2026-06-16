@@ -238,7 +238,7 @@ function saveAnalyticsLog(){
   if(!DB.studyLogs)DB.studyLogs=[];
   dur=Math.round(dur*10)/10;
   DB.studyLogs.unshift({id:'sl_'+Date.now(),subject:subj,topic:note||'Study Session',duration:dur,date,createdAt:new Date().toISOString()});
-  sv('studyLogs');renderAnalytics(document.getElementById('content-wrap'));toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Session logged!');
+  sv('studyLogs');window.renderAnalytics(document.getElementById('content-wrap'));toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Session logged!');
 }
 
 /* ═══════════════ WRAPPER WITH CHOREOGRAPHY ═══════════════ */
