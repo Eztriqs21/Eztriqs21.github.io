@@ -1,5 +1,6 @@
 // js/helpers.js
 import { usesCloudStorage, lsBytesUsed, LS_HARD_LIMIT, LS_SAFE_BUDGET, findCh } from './data.js';
+import { modalOpenMobile, modalOpenDesktop, modalClose, toastSlideIn, toastSlideOut, shouldAnimate } from './animations.js';
 
 /* ═══════════════ ANIMATED COUNTER ═══════════════ */
 export function animateValue(el,target,dur=500){
@@ -25,29 +26,26 @@ export function animateAllCounters(scope){
 }
 
 /* ═══════════════ CHART ANIMATIONS ═══════════════ */
-const _M=window.Motion;
+import { barChartGrow, svgLineDraw, svgCirclePop, progressBarFill as animProgressBar } from './animations.js';
+
 export function animateBarCharts(scope){
-  if(!_M||!_M.animate)return;
+  if(!shouldAnimate())return;
   scope.querySelectorAll('.bar-fill').forEach((bar,i)=>{
-    const h=bar.style.height;bar.style.height='0%';
-    setTimeout(()=>_M.animate(bar,{height:['0%',h]},{duration:.6,easing:[.34,1.56,.64,1],delay:i*.06}),80);
+    const h=bar.style.height;
+    barChartGrow(bar,h,i*.06);
   });
   scope.querySelectorAll('.pbar').forEach((bar,i)=>{
-    const w=bar.style.width;bar.style.width='0%';
-    setTimeout(()=>_M.animate(bar,{width:['0%',w]},{duration:.7,easing:[.34,1.56,.64,1],delay:i*.08+100}),120);
+    const w=bar.style.width;
+    animProgressBar(bar,w);
   });
 }
 export function animateSVGDraw(scope){
-  if(!_M||!_M.animate)return;
+  if(!shouldAnimate())return;
   scope.querySelectorAll('svg path[stroke]').forEach(path=>{
-    const len=path.getTotalLength?.()||0;
-    if(!len)return;
-    path.style.strokeDasharray=len;path.style.strokeDashoffset=len;
-    _M.animate(path,{strokeDashoffset:[len,0]},{duration:1.2,easing:[.25,1,.5,1],delay:.2});
+    svgLineDraw(path);
   });
   scope.querySelectorAll('svg circle').forEach((c,i)=>{
-    c.style.opacity='0';c.style.transformOrigin='center';
-    _M.animate(c,{opacity:['0','1'],transform:['scale(0)','scale(1)']},{duration:.3,easing:[.34,1.56,.64,1],delay:.3+i*.04});
+    svgCirclePop(c,i);
   });
 }
 export function animateChartBars(scope){
@@ -213,38 +211,40 @@ export function fmtDate(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(d
 export function fmt12(t){if(!t||!t.includes(':'))return t;const[h,m]=t.split(':').map(Number);const ap=h>=12?'PM':'AM';const h12=h%12||12;return`${h12}:${String(m).padStart(2,'0')} ${ap}`;}
 
 /* MODAL */
-const _Motion=window.Motion;
 export function om(id){
   const m=document.getElementById(id);
   if(!m)return;
   m.classList.add('open');
   const md=m.querySelector('.md');
-  if(md&&_Motion&&_Motion.animate){
-    _Motion.animate(md,{opacity:[0,1],transform:['translateY(24px) scale(.97)','translateY(0px) scale(1)']},{duration:.35,easing:[.34,1.56,.64,1]});
-  }
-  if(md&&!md._swipeInit){
-    md._swipeInit=true;
-    let sy=0,swiping=false;
-    md.addEventListener('touchstart',e=>{if(e.touches.length===1){sy=e.touches[0].clientY;swiping=true;}},{passive:true});
-    md.addEventListener('touchmove',e=>{
-      if(!swiping||e.touches.length!==1)return;
-      const dy=e.touches[0].clientY-sy;
-      if(dy>0){md.style.transform='translateY('+dy+'px)';md.style.transition='none';}
-    },{passive:true});
-    md.addEventListener('touchend',e=>{
-      if(!swiping)return;swiping=false;
-      const dy=e.changedTouches[0].clientY-sy;
-      md.style.transform='';md.style.transition='';
-      if(dy>80)m.classList.remove('open');
-    },{passive:true});
+  if(md){
+    const isMobile=window.innerWidth<600;
+    if(shouldAnimate()){
+      if(isMobile)modalOpenMobile(md);else modalOpenDesktop(md);
+    }
+    if(!md._swipeInit){
+      md._swipeInit=true;
+      let sy=0,swiping=false;
+      md.addEventListener('touchstart',e=>{if(e.touches.length===1){sy=e.touches[0].clientY;swiping=true;}},{passive:true});
+      md.addEventListener('touchmove',e=>{
+        if(!swiping||e.touches.length!==1)return;
+        const dy=e.touches[0].clientY-sy;
+        if(dy>0){md.style.transform='translateY('+dy+'px)';md.style.transition='none';}
+      },{passive:true});
+      md.addEventListener('touchend',e=>{
+        if(!swiping)return;swiping=false;
+        const dy=e.changedTouches[0].clientY-sy;
+        md.style.transform='';md.style.transition='';
+        if(dy>80)m.classList.remove('open');
+      },{passive:true});
+    }
   }
 }
 export function cm(id){
   const m=document.getElementById(id);
   if(!m)return;
   const md=m.querySelector('.md');
-  if(md&&_Motion&&_Motion.animate){
-    _Motion.animate(md,{opacity:[1,0],transform:['translateY(0px) scale(1)','translateY(16px) scale(.98)']},{duration:.2,easing:[.25,1,.5,1]}).then(()=>m.classList.remove('open'));
+  if(md&&shouldAnimate()){
+    modalClose(md).then(()=>m.classList.remove('open'));
   }else{
     m.classList.remove('open');
   }
@@ -261,7 +261,20 @@ export function cfm2(title,sub,cb){
 
 /* TOAST */
 let toastT;
-export function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2800);}
+export function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  if(shouldAnimate()){
+    toastSlideIn(el);
+  }else{
+    el.classList.add('on');
+  }
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>{
+    if(shouldAnimate())toastSlideOut(el);
+    else el.classList.remove('on');
+  },2800);
+}
 
 /* ═══════════════ FILE CACHE ═══════════════ */
 const _fileCache={};let _fcacheOrder=[];const _FCACHE_MAX=80;const _FCACHE_MAX_BYTES=20*1024*1024;

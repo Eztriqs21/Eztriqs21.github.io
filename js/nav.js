@@ -1,6 +1,7 @@
-// js/nav.js
+// js/nav.js — Navigation with Motion One page transitions
 import { KEYS } from './data.js';
 import { animateAllCounters } from './helpers.js';
+import { pageExit, pageEnter, shouldAnimate } from './animations.js';
 
 /* ═══════════════ NAV ═══════════════ */
 export let PAGE='dashboard';
@@ -28,21 +29,17 @@ export function go(page){
 let _renderLock=false;
 let _lastPage=null;
 
-const _Motion=window.Motion;
-
 export function render(){
   if(_renderLock)return;
   _renderLock=true;
   const el=document.getElementById('content-wrap');
 
-  if(_Motion&&_Motion.animate){
-    _Motion.animate(el,{opacity:[1,0],filter:['blur(0px)','blur(4px)'],transform:['translateY(0px)','translateY(12px)']},{duration:.18,easing:[.25,1,.5,1]}).then(()=>{
+  if(shouldAnimate()){
+    pageExit(el).then(()=>{
       _renderSwap(el);
     });
   }else{
-    el.style.transition='opacity .18s var(--ease-out), transform .18s var(--ease-out)';
-    el.style.opacity='0';el.style.transform='translateY(8px)';
-    setTimeout(()=>_renderSwap(el),180);
+    _renderSwap(el);
   }
 }
 
@@ -61,14 +58,12 @@ function _renderSwap(el){
   else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
   else if(PAGE==='prep')window.renderPrep(el);
 
-  if(_Motion&&_Motion.animate){
-    _Motion.animate(el,{opacity:[0,1],filter:['blur(4px)','blur(0px)'],transform:['translateY(12px)','translateY(0px)']},{duration:.3,easing:[.34,1.56,.64,1]}).then(()=>{
+  if(shouldAnimate()){
+    pageEnter(el).then(()=>{
       _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
     });
   }else{
     el.offsetHeight;
-    el.style.opacity='1';el.style.transform='translateY(0)';
-    el.style.transition='opacity .25s var(--ease-out), transform .25s var(--ease-out)';
     _renderLock=false;_lastPage=PAGE;setTimeout(()=>animateAllCounters(el),50);
   }
 }
@@ -83,8 +78,8 @@ export function toggleSidebar(){
   if(_sbOpen){
     sb.classList.add('open');
     ov.classList.add('open');
-    ov.style.cssText='display:block;position:fixed;inset:0;background:rgba(4,6,10,.55);z-index:195;backdrop-filter:blur(4px);';
-    ham.textContent='✕';
+    ov.style.cssText='display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:195;backdrop-filter:blur(4px);';
+    ham.innerHTML='&#10005;';
     document.body.style.overflow='hidden';
   }else{
     closeSidebar();
@@ -98,7 +93,7 @@ export function closeSidebar(){
   sb.classList.remove('open');
   ov.classList.remove('open');
   ov.style.display='none';
-  ham.textContent='☰';
+  ham.innerHTML='&#9776;';
   document.body.style.overflow='';
 }
 (function(){
