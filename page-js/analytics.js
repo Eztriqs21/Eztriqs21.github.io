@@ -173,7 +173,7 @@ function renderAnalytics(el){
     const area=`M${pts[0]}L${pts.slice(1).join('L')}L${xScale(valid.length-1).toFixed(1)},${h-py}L${xScale(0).toFixed(1)},${h-py}Z`;
     const gId='pfg'+Date.now();const yTicks=[min,Math.round(min+range*0.25),Math.round(min+range*0.5),Math.round(min+range*0.75),max];
     return `<div class="section-block anim-up d3"><div class="section-title">📈 Overall Performance (${valid.length} Tests)</div><div class="gc" style="padding:16px"><svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">
-      ${yTicks.map(v=>`<text x="${px-8}" y="${yScale(v)+3}" text-anchor="end" fill="var(--faint)" font-size="9">${v}</text><line x1="${px}" y1="${yScale(v)}" x2="${w-px}" y2="${yScale(v)}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`).join('')}
+      ${yTicks.map(v=>`<text x="${px-8}" y="${yScale(v)+3}" text-anchor="end" fill="var(--faint)" font-size="9">${v}</text><line x1="${px}" y1="${yScale(v)}" x2="${w-px}" y2="${yScale(v)}" stroke="var(--border)" stroke-width="1"/>`).join('')}
       <path d="${pts.join('L')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
       <path d="${area}" fill="url(#${gId})" opacity=".2"/>
       <defs><linearGradient id="${gId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--accent)" stop-opacity=".5"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>

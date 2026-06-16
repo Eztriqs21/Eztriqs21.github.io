@@ -20,10 +20,10 @@ function renderDashboard(el){
   el.innerHTML=`
   <div class="pg-hdr anim-up"><div class="pg-title">Command Center</div><div class="pg-sub">Your JEE preparation intelligence dashboard</div></div>
   <div class="stats-grid">
-    <div class="gc stat-card anim-up d1"><div class="stat-icon" style="background:rgba(160,160,160,.15)">📋</div><div class="stat-val"><span data-count="${active}">0</span></div><div class="stat-label">Active Tasks</div><div class="stat-sub">Pending assignments</div></div>
-    <div class="gc stat-card anim-up d2"><div class="stat-icon" style="background:rgba(59,130,246,.15)">📚</div><div class="stat-val"><span data-count="${done}">0</span><span style="color:var(--muted);font-size:16px">/${total}</span></div><div class="stat-label">Chapters Done</div><div class="stat-sub">${safePct(done,total)}% complete</div></div>
-    <div class="gc stat-card anim-up d3"><div class="stat-icon" style="background:rgba(16,185,129,.15)">📊</div><div class="stat-val"><span data-count="${avg}">0</span>%</div><div class="stat-label">Avg Test Score</div><div class="stat-sub">Across ${tests.length} tests</div></div>
-    <div class="gc stat-card anim-up d4"><div class="stat-icon" style="background:rgba(168,85,247,.15)">⏱️</div><div class="stat-val"><span data-count="${(+weekH).toFixed(1)}">0</span>h</div><div class="stat-label">This Week</div><div class="stat-sub">Today: <span data-count="${(+todayH).toFixed(1)}">0</span>h</div></div>
+    <div class="gc stat-card anim-up d1"><div class="stat-icon" style="background:var(--accent-dim)">📋</div><div class="stat-val"><span data-count="${active}">0</span></div><div class="stat-label">Active Tasks</div><div class="stat-sub">Pending assignments</div></div>
+    <div class="gc stat-card anim-up d2"><div class="stat-icon" style="background:var(--phys-dim)">📚</div><div class="stat-val"><span data-count="${done}">0</span><span style="color:var(--muted);font-size:16px">/${total}</span></div><div class="stat-label">Chapters Done</div><div class="stat-sub">${safePct(done,total)}% complete</div></div>
+    <div class="gc stat-card anim-up d3"><div class="stat-icon" style="background:var(--green-dim)">📊</div><div class="stat-val"><span data-count="${avg}">0</span>%</div><div class="stat-label">Avg Test Score</div><div class="stat-sub">Across ${tests.length} tests</div></div>
+    <div class="gc stat-card anim-up d4"><div class="stat-icon" style="background:var(--chem-dim)">⏱️</div><div class="stat-val"><span data-count="${(+weekH).toFixed(1)}">0</span>h</div><div class="stat-label">This Week</div><div class="stat-sub">Today: <span data-count="${(+todayH).toFixed(1)}">0</span>h</div></div>
   </div>
   <div class="section-block anim-up d2">
     <div class="section-title">📖 Subject Progress</div>

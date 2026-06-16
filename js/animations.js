@@ -11,21 +11,23 @@ function noMotion() { return !_M || !_M.animate || _reduced; }
 
 export function pageExit(el) {
   if (noMotion()) return Promise.resolve();
-  return _M.animate(el, {
-    opacity: [1, 0],
-    filter: ['blur(0px)', 'blur(4px)'],
-    transform: ['translateY(0px)', 'translateY(12px)']
-  }, { duration: 0.15, easing: [0.25, 1, 0.5, 1] });
+  try {
+    return _M.animate(el, {
+      opacity: [1, 0],
+      transform: ['translateY(0px)', 'translateY(8px)']
+    }, { duration: 0.12, easing: [0.25, 1, 0.5, 1] }) || Promise.resolve();
+  } catch(e) { return Promise.resolve(); }
 }
 
 export function pageEnter(el) {
   if (noMotion()) { el.style.opacity = '1'; return Promise.resolve(); }
   el.style.opacity = '0';
-  return _M.animate(el, {
-    opacity: [0, 1],
-    filter: ['blur(4px)', 'blur(0px)'],
-    transform: ['translateY(12px)', 'translateY(0px)']
-  }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+  try {
+    return _M.animate(el, {
+      opacity: [0, 1],
+      transform: ['translateY(8px)', 'translateY(0px)']
+    }, { duration: 0.25, easing: [0.34, 1.56, 0.64, 1] }) || Promise.resolve();
+  } catch(e) { el.style.opacity = '1'; return Promise.resolve(); }
 }
 
 export function sidebarExpand(sb) {
@@ -46,9 +48,12 @@ export function sidebarMobileOpen(sb) {
 
 export function bottomNavSwitch(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['scale(1)', 'scale(0.92)'] }, { duration: 0.1, easing: [0.25, 1, 0.5, 1] }).then(() => {
-    _M.animate(el, { transform: ['scale(0.92)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
-  });
+  try {
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.92)'] }, { duration: 0.1, easing: [0.25, 1, 0.5, 1] });
+    if (p && p.then) p.then(() => {
+      _M.animate(el, { transform: ['scale(0.92)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
+    });
+  } catch(e) {}
 }
 
 export function fabExpand(actions) {
@@ -184,9 +189,12 @@ export function tiltCardReset(el) {
 
 export function buttonPress(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['scale(1)', 'scale(0.95)'] }, { duration: 0.1, easing: [0.25, 1, 0.5, 1] }).then(() => {
-    _M.animate(el, { transform: ['scale(0.95)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
-  });
+  try {
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.95)'] }, { duration: 0.1, easing: [0.25, 1, 0.5, 1] });
+    if (p && p.then) p.then(() => {
+      _M.animate(el, { transform: ['scale(0.95)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
+    });
+  } catch(e) {}
 }
 
 export function buttonHoverLift(el) {
@@ -201,16 +209,22 @@ export function buttonHoverReset(el) {
 
 export function chipSelect(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['scale(1)', 'scale(0.95)'] }, { duration: 0.1 }).then(() => {
-    _M.animate(el, { transform: ['scale(0.95)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
-  });
+  try {
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.95)'] }, { duration: 0.1 });
+    if (p && p.then) p.then(() => {
+      _M.animate(el, { transform: ['scale(0.95)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
+    });
+  } catch(e) {}
 }
 
 export function navItemActive(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['scale(1)', 'scale(0.96)'] }, { duration: 0.1 }).then(() => {
-    _M.animate(el, { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
-  });
+  try {
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.96)'] }, { duration: 0.1 });
+    if (p && p.then) p.then(() => {
+      _M.animate(el, { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
+    });
+  } catch(e) {}
 }
 
 /* ═══════════════ D: MODAL & OVERLAY ═══════════════ */
@@ -233,10 +247,12 @@ export function modalOpenDesktop(md) {
 
 export function modalClose(md) {
   if (noMotion()) return Promise.resolve();
-  return _M.animate(md, {
-    opacity: [1, 0],
-    transform: ['translateY(0px) scale(1)', 'translateY(16px) scale(0.98)']
-  }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] });
+  try {
+    return _M.animate(md, {
+      opacity: [1, 0],
+      transform: ['translateY(0px) scale(1)', 'translateY(16px) scale(0.98)']
+    }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] }) || Promise.resolve();
+  } catch(e) { return Promise.resolve(); }
 }
 
 export function backdropBlurIn(el) {
@@ -453,9 +469,12 @@ export function fabArcCollapse(actions) {
 
 export function fabPress(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['scale(1) rotate(0deg)', 'scale(0.9) rotate(45deg)'] }, { duration: 0.15, easing: [0.25, 1, 0.5, 1] }).then(() => {
-    _M.animate(el, { transform: ['scale(0.9) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.25, easing: [0.34, 1.56, 0.64, 1] });
-  });
+  try {
+    const p = _M.animate(el, { transform: ['scale(1) rotate(0deg)', 'scale(0.9) rotate(45deg)'] }, { duration: 0.15, easing: [0.25, 1, 0.5, 1] });
+    if (p && p.then) p.then(() => {
+      _M.animate(el, { transform: ['scale(0.9) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.25, easing: [0.34, 1.56, 0.64, 1] });
+    });
+  } catch(e) {}
 }
 
 export function fabResetIcon(el) {
@@ -588,9 +607,57 @@ export function initPerformance() {
   };
 }
 
+/* ═══════════════ CUSTOM CURSOR ═══════════════ */
+
+export function initCustomCursor() {
+  const dot = document.getElementById('cursor-dot');
+  if (!dot || !window.matchMedia('(pointer:fine)').matches) return;
+
+  let mouseX = 0, mouseY = 0;
+  let dotX = 0, dotY = 0;
+
+  document.addEventListener('pointermove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }, { passive: true });
+
+  function updateDot() {
+    dotX += (mouseX - dotX) * 0.25;
+    dotY += (mouseY - dotY) * 0.25;
+    dot.style.left = dotX + 'px';
+    dot.style.top = dotY + 'px';
+    requestAnimationFrame(updateDot);
+  }
+  requestAnimationFrame(updateDot);
+
+  // Hover state on interactive elements
+  const interactives = 'a, button, .si, .bni, .fab, .fab-action, .theme-dot, .cmt-chip, .cmt-source-opt, .cmt-time-btn, .pyq-tab, .ds-tab, .chip, .mt-month-head, .mt-subj-header, .test-card-head, [onclick]';
+  document.addEventListener('pointerenter', e => {
+    if (e.target.closest(interactives)) dot.classList.add('hover');
+  }, true);
+  document.addEventListener('pointerleave', e => {
+    if (e.target.closest(interactives)) dot.classList.remove('hover');
+  }, true);
+
+  // Click feedback
+  document.addEventListener('pointerdown', () => dot.classList.add('click'));
+  document.addEventListener('pointerup', () => dot.classList.remove('click'));
+
+  // Hide on scroll, show after scroll stops
+  let scrollTimer;
+  document.addEventListener('scroll', () => {
+    dot.style.opacity = '0';
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { dot.style.opacity = '1'; }, 150);
+  }, { passive: true });
+}
+
 /* ═══════════════ INITIALIZATION ═══════════════ */
 
 export function initInteractions() {
+  // Custom cursor (works regardless of reduced motion)
+  initCustomCursor();
+
   if (noMotion()) return;
 
   // Button hover lift

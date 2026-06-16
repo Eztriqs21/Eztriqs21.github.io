@@ -60,7 +60,7 @@ function asnCard(a,i){
           ${a.priority&&a.priority!=='none'?`<span class="chip ${pc[a.priority]}">${a.priority}</span>`:''}
         </div>
         ${a.description?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5">${esc(a.description)}</div>`:''}
-        ${a.syllabus?`<div style="font-size:11px;color:var(--faint);margin-bottom:8px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:8px">📚 ${esc(a.syllabus)}</div>`:''}
+        ${a.syllabus?`<div style="font-size:11px;color:var(--faint);margin-bottom:8px;padding:6px 10px;background:var(--surface2);border-radius:8px">📚 ${esc(a.syllabus)}</div>`:''}
         ${atts.length?`<div class="file-list" style="margin-bottom:10px">${atts.map((d,fi)=>fItemHTMLRaw(d,'Attachment '+(fi+1))).join('')}</div>`:''}
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <label class="btn btn-ghost btn-xs" style="cursor:pointer">📎 Attach<input type="file" multiple accept=".pdf,image/*" onchange="attachToAsn('${a.id}',this.files)"/></label>
@@ -76,7 +76,7 @@ function setAP(p){
   ['none','high','medium','low'].forEach(pri=>{
     const id={none:'ap-none',high:'ap-hi',medium:'ap-med',low:'ap-lo'}[pri];
     const btn=document.getElementById(id);if(!btn)return;
-    btn.style.cssText=pri===p?'background:var(--accent-dim);color:var(--accent);border:1px solid rgba(160,160,160,.3)':'';
+    btn.style.cssText=pri===p?'background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2)':'';
   });
 }
 function handleAFiles(files){rdFiles(files,obj=>{window.pendingAFiles.push(obj);refreshAFileList();});}

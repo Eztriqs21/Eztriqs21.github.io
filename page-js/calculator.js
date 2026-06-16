@@ -29,7 +29,7 @@ function renderCalculator(el){
   <div class="calc-mode ${activeTab==='manual'?'open':''}" id="calc-mode-manual">
   <div class="gc section-block anim-up d2" style="padding:20px">
     <div class="section-title">🗝️ Answer Key <span style="font-size:10px;font-weight:400;color:var(--faint)">(required)</span></div>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>
     <textarea class="inp" id="calc-key-txt" rows="3" placeholder="Paste answer key...&#10;e.g. 1:A, 2:C, 3:D, 4:B, 5:A ...&#10;integer: 1:25, 2:100, 3:45 ...&#10;multi-correct: 1:ABD, 2:CD, 3:ABC"></textarea>
     <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
       <button class="btn btn-ghost btn-sm" onclick="applyAnsKey()">Apply Key</button>
@@ -41,7 +41,7 @@ function renderCalculator(el){
     <div style="padding:0 0 10px;font-size:11px;color:var(--faint);margin-bottom:6px">
       💡 Keyboard shortcuts: <b>A/B/C/D</b> to select · <b>0-9</b> for Integer type · <b>S</b> to skip · <b>Enter</b> next question · Toggle <b>MCQ</b>/<b>INT</b>/<b>MULTI</b> per question
     </div>
-    <div style="padding:0 0 12px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div style="padding:0 0 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div style="font-size:13px;font-weight:700">📋 Response Sheet — 75 Questions</div>
       <div style="font-size:11px;color:var(--muted)">${ans} answered · ${skp} skipped · ${pend} remaining</div>
     </div>
@@ -51,7 +51,7 @@ function renderCalculator(el){
         <div id="q-mat-body" style="max-height:440px;overflow-y:auto;-webkit-overflow-scrolling:touch">${buildQMat()}</div>
       </div>
     </div>
-    <div style="padding:14px 0 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    <div style="padding:14px 0 0;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
       <button class="btn btn-ghost btn-sm" onclick="resetCalc()">🔄 Reset</button>
       <button class="btn btn-primary" onclick="evalCalc()" style="padding:10px 22px">🧮 Calculate Score</button>
     </div>
@@ -74,8 +74,8 @@ function buildQMat(){
   return calcQuestions.map(q=>`<div class="q-row ${q.num===currentFocusQ?'q-focus':''}" id="qrow-${q.num}" tabindex="-1" onclick="focusQRow(${q.num})">
     <div class="q-num" style="color:${sc[q.subj]}">Q${q.num}</div>
     <div class="q-subj">${q.subjLabel}</div>
-    <div class="q-type-toggle" onclick="event.stopPropagation();toggleQType(${q.num})" style="cursor:pointer;font-size:9px;text-align:center;color:var(--accent);font-weight:600;padding:2px 4px;border-radius:4px;background:rgba(160,160,160,.1)">${q.mode==='int'?'INT':q.mode==='multi'?'MULTI':'MCQ'}</div>
-    ${q.mode==='int'?`<div class="q-opt" style="grid-column:span 1"><input type="number" class="q-int-input" min="0" max="9999" value="${q.intVal||''}" onchange="setQIntResp(${q.num},this.value)" onfocus="focusQRow(${q.num})" onkeydown="intKeyHandler(event,${q.num})" placeholder="___" style="width:100%;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:14px;text-align:center;font-weight:600;outline:none"/></div>`:
+    <div class="q-type-toggle" onclick="event.stopPropagation();toggleQType(${q.num})" style="cursor:pointer;font-size:9px;text-align:center;color:var(--accent);font-weight:600;padding:2px 4px;border-radius:4px;background:var(--accent-dim)">${q.mode==='int'?'INT':q.mode==='multi'?'MULTI':'MCQ'}</div>
+    ${q.mode==='int'?`<div class="q-opt" style="grid-column:span 1"><input type="number" class="q-int-input" min="0" max="9999" value="${q.intVal||''}" onchange="setQIntResp(${q.num},this.value)" onfocus="focusQRow(${q.num})" onkeydown="intKeyHandler(event,${q.num})" placeholder="___" style="width:100%;padding:6px 8px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--txt);font-size:14px;text-align:center;font-weight:600;outline:none"/></div>`:
     q.mode==='multi'?`<div class="q-opt" style="display:flex;gap:8px;justify-content:center;grid-column:span 1">${['A','B','C','D'].map(opt=>`<label style="display:flex;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer"><input type="checkbox" class="q-multi-cb" value="${opt}" ${q.selected&&q.selected.includes(opt)?'checked':''} onchange="setQMultiResp(${q.num})"/>${opt}</label>`).join('')}</div>`:
     `<div class="q-opt" style="display:flex;gap:8px;justify-content:center;grid-column:span 1">${['A','B','C','D'].map(opt=>`<label style="display:flex;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer"><input type="radio" class="q-radio" name="q${q.num}" value="${opt}" ${q.selected===opt&&!q.unattempted?'checked':''} onchange="setQResp(${q.num},'${opt}')"/>${opt}</label>`).join('')}</div>`}
     <div class="q-skip-btn"><button class="${q.unattempted?'on':''}" onclick="event.stopPropagation();toggleQSkip(${q.num})">${q.unattempted?'Skipped':'Skip'}</button></div>
@@ -354,18 +354,18 @@ function buildCalcRes(){
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px">Score Based on Answer Key</div>
       <div class="score-ring">
         <svg viewBox="0 0 100 100" style="transform:rotate(-90deg)">
-          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="7"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface2)" stroke-width="7"/>
           <circle cx="50" cy="50" r="42" fill="none" stroke="${scoreC}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${sd2} 264" style="transition:stroke-dasharray 1.2s ease"/>
         </svg>
         <div class="score-ring-inner"><div class="score-num" style="color:${scoreC}">${tot}</div><div class="score-sub">/ 300</div></div>
       </div>
       <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:${rPct>=60?'var(--green)':rPct>=40?'var(--accent)':'var(--red)'}">${rPct.toFixed(1)}% — ${totC}F · ${totP}P · ${totW}W · ${totS}S${totMissing?` · ${totMissing} no-key`:''}</div>
       <div class="results-badges">
-        <div class="res-badge" style="background:rgba(160,160,160,.12);border:1px solid rgba(160,160,160,.25)"><div class="res-badge-val" style="color:var(--accent)">${pctile}%</div><div class="res-badge-lbl">Predicted Percentile</div></div>
-        <div class="res-badge" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25)"><div class="res-badge-val" style="color:var(--phys)">${airRange}</div><div class="res-badge-lbl">Est. AIR Range</div></div>
-        <div class="res-badge" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)"><div class="res-badge-val" style="color:var(--green)">${totC}</div><div class="res-badge-lbl">Full (+${totC*4})</div></div>
-        <div class="res-badge" style="background:rgba(250,204,21,.12);border:1px solid rgba(250,204,21,.25)"><div class="res-badge-val" style="color:#facc15">${totP}</div><div class="res-badge-lbl">Partial</div></div>
-        <div class="res-badge" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25)"><div class="res-badge-val" style="color:var(--red)">${totW}</div><div class="res-badge-lbl">Wrong</div></div>
+        <div class="res-badge" style="background:var(--accent-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--accent)">${pctile}%</div><div class="res-badge-lbl">Predicted Percentile</div></div>
+        <div class="res-badge" style="background:var(--phys-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--phys)">${airRange}</div><div class="res-badge-lbl">Est. AIR Range</div></div>
+        <div class="res-badge" style="background:var(--green-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--green)">${totC}</div><div class="res-badge-lbl">Full (+${totC*4})</div></div>
+        <div class="res-badge" style="background:var(--yellow-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--yellow)">${totP}</div><div class="res-badge-lbl">Partial</div></div>
+        <div class="res-badge" style="background:var(--red-dim);border:1px solid var(--border2)"><div class="res-badge-val" style="color:var(--red)">${totW}</div><div class="res-badge-lbl">Wrong</div></div>
       </div>
     </div>
     <div class="subj-breakdown-grid" style="padding:18px 20px">
@@ -382,7 +382,7 @@ function buildCalcRes(){
       <button class="btn btn-ghost btn-sm" onclick="resetCalc()">🔄 Reset Calculator</button>
     </div>
     <div style="padding:0 20px 20px">
-      <div style="font-size:11px;font-weight:700;margin-bottom:10px;color:var(--faint);border-top:1px solid rgba(255,255,255,.05);padding-top:14px">📊 Question-wise Breakdown</div>
+      <div style="font-size:11px;font-weight:700;margin-bottom:10px;color:var(--faint);border-top:1px solid var(--border);padding-top:14px">📊 Question-wise Breakdown</div>
       <div class="qr-grid">
         ${qR.map(r=>{
           let cls='qr-na',ico='—',scStr='—';

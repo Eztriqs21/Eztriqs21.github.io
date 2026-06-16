@@ -165,7 +165,7 @@ function dsSolve(){
   dsClearResults();
   const btn=document.getElementById('ds-solve-btn');
   const modeLabel=hasImage?(settings.useVision?'🧠 Analyzing with Vision AI...':'🔍 Scanning & Solving...'):'🤖 Solving...';
-  if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner" style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span> '+modeLabel;}
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner" style="display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--txt);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px"></span> '+modeLabel;}
   const pa=document.getElementById('ds-progress-area');
   if(pa){
     pa.style.display='block';
@@ -337,7 +337,7 @@ function dsRenderAnswer(answer,parsed){
     html+=`</div>`;
   }
   if(answer.noApi){
-    html+=`<div style="margin-top:14px;padding:16px;border-radius:10px;background:rgba(160,160,160,.08);border:1px solid rgba(160,160,160,.15);font-size:12px;line-height:1.6">
+    html+=`<div style="margin-top:14px;padding:16px;border-radius:10px;background:var(--accent-dim);border:1px solid var(--border2);font-size:12px;line-height:1.6">
       <div style="font-weight:700;color:var(--accent);margin-bottom:6px">⚙️ No Provider Configured</div>
       <p style="color:var(--muted);margin:0 0 8px">Click ⚙️ Settings to set up Groq (free) or Ollama (local).</p>
     </div>`;

@@ -252,7 +252,7 @@ function pyqRenderSearch(el){
   const decades=[{label:'2020s',years:[2026,2025,2024,2023,2022,2021,2020]},{label:'2010s',years:[2019,2018,2017,2016,2015,2014,2013,2012,2011,2010]},{label:'2000s',years:[2009,2008,2007,2006,2005,2004,2003,2002]}];
   el.innerHTML=`
   <div class="pg-sub" style="margin-bottom:16px;font-size:12px;color:var(--muted)">AI-powered PYQ research — fetches real JEE Main & Advanced questions from past papers.</div>
-  ${!hasApi?'<div style="padding:12px 16px;border-radius:10px;background:rgba(160,160,160,.08);border:1px solid rgba(160,160,160,.15);font-size:12px;margin-bottom:16px;color:var(--txt)"><b style="color:var(--accent)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>':''}
+  ${!hasApi?'<div style="padding:12px 16px;border-radius:10px;background:var(--accent-dim);border:1px solid var(--border2);font-size:12px;margin-bottom:16px;color:var(--txt)"><b style="color:var(--accent)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>':''}
   <div class="pyq-filter-row">
     <input class="inp" type="text" id="pyq-s-q" placeholder="e.g. rotational motion, thermodynamics, coordination compounds..." value="${esc(pyqSearchQ)}" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')pyqRunSearch()">
     <select id="pyq-s-subj" style="width:110px" onchange="pyqSearchSubj=this.value">${subjOpts.map(([v,l])=>`<option value="${v}" ${v===pyqSearchSubj?'selected':''}>${l}</option>`).join('')}</select>
@@ -460,7 +460,7 @@ function pyqRenderResults(){
     const solUid='pyq-sol-'+i;
     const srcLabel=r.source||'Unknown';
     const isRealPyq=srcLabel.toLowerCase().includes('jee');
-    const srcBg=isRealPyq?'rgba(16,185,129,.12)':'rgba(160,160,160,.12)';
+    const srcBg=isRealPyq?'var(--green-dim)':'var(--accent-dim)';
     const srcClr=isRealPyq?'var(--green)':'var(--accent)';
     return `<div class="pyq-q-card">
       <div class="pyq-q-num">Q${r.num||i+1}</div>

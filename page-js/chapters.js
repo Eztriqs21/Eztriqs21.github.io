@@ -27,7 +27,7 @@ function buildChaptersList(){
         <div class="subj-acc-chev">▼</div>
       </div>
       <div class="subj-acc-body">
-        <div style="padding:8px 20px;border-bottom:1px solid rgba(255,255,255,.03)"><div class="pbar-wrap" style="height:4px"><div class="subj-acc-bar" style="height:4px;width:${pct}%;background:${s.color}"></div></div></div>
+        <div style="padding:8px 20px;border-bottom:1px solid var(--border)"><div class="pbar-wrap" style="height:4px"><div class="subj-acc-bar" style="height:4px;width:${pct}%;background:${s.color}"></div></div></div>
         <div>${shown.length===0?`<div class="empty" style="padding:28px"><div class="empty-title">${chSearch.trim()?'No chapters match "'+esc(chSearch.trim())+'"':'No chapters match this filter'}</div>${chSearch.trim()?`<div class="empty-sub" style="margin-bottom:12px">Add a new chapter to ${s.label}?</div><button class="btn btn-primary btn-sm" onclick="chSearch='';document.getElementById('ch-search').value='';openAddCh('${s.key}')">+ Add Chapter</button>`:''}</div>`:
         shown.map(ch=>`<div class="chapter-row" id="chrow-${s.key}-${ch.id}">
           <div class="ch-check ${ch.completed?'done':''}" onclick="event.stopPropagation();toggleChDone('${s.key}','${ch.id}')">
@@ -221,7 +221,7 @@ function openNotes(subj,id){
 function setNoteType(t){
   noteType=t;
   const det=document.getElementById('note-type-det'),rev=document.getElementById('note-type-rev'),lbl=document.getElementById('note-type-lbl');
-  if(det){det.className=t==='detailed'?'btn btn-sm':'btn btn-ghost btn-sm';det.style.cssText=t==='detailed'?'background:var(--accent-dim);color:var(--accent);border:1px solid rgba(160,160,160,.3)':'';}
+  if(det){det.className=t==='detailed'?'btn btn-sm':'btn btn-ghost btn-sm';det.style.cssText=t==='detailed'?'background:var(--accent-dim);color:var(--accent);border:1px solid var(--border2)':'';}
   if(rev){rev.className=t==='revision'?'btn btn-sm':'btn btn-ghost btn-sm';rev.style.cssText=t==='revision'?'background:rgba(59,130,246,.15);color:var(--phys);border:1px solid rgba(59,130,246,.3)':'';}
   if(lbl)lbl.textContent=t==='detailed'?'Detailed':'Revision';
 }

@@ -2,9 +2,9 @@
 // 3 themes: Ink Wash (default), Amber Walnut Morning, Opaline (light)
 
 const THEMES = {
-  ink:    { label: 'Ink Wash',     icon: '●', color: '#A0A0A0', desc: 'Dark monochrome' },
-  amber:  { label: 'Amber Walnut', icon: '●', color: '#BB6C43', desc: 'Warm earth tones' },
-  opaline:{ label: 'Opaline',      icon: '●', color: '#FF634A', desc: 'Clean light mode' }
+  ink:    { label: 'Ink Wash',     icon: '●', color: '#7C83FF', desc: 'Deep navy-charcoal' },
+  amber:  { label: 'Amber Walnut', icon: '●', color: '#D4845E', desc: 'Rich warm brown' },
+  opaline:{ label: 'Opaline',      icon: '●', color: '#FF5A3C', desc: 'Clean bright light' }
 };
 
 function getSavedTheme() {
