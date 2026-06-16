@@ -417,6 +417,177 @@ export function chartChoreography(scope) {
   });
 }
 
+/* ═══════════════ STEP 11: FAB ARC FAN-OUT ═══════════════ */
+
+export function fabArcExpand(actions) {
+  if (noMotion()) { actions.forEach(a => a.style.display = 'flex'); return; }
+  const count = actions.length;
+  actions.forEach((a, i) => {
+    a.style.display = 'flex';
+    a.style.opacity = '0';
+    const angle = -90 + (i / (count - 1 || 1)) * 45;
+    const rad = angle * Math.PI / 180;
+    const dist = 60 + i * 8;
+    const tx = Math.cos(rad) * dist;
+    const ty = Math.sin(rad) * dist - 20;
+    _M.animate(a, {
+      opacity: [0, 1],
+      transform: [`translate(${tx}px, ${ty + 20}px) scale(0.5)`, `translate(${tx}px, ${ty}px) scale(1)`]
+    }, { duration: 0.3, delay: i * 0.06, easing: [0.34, 1.56, 0.64, 1] });
+  });
+}
+
+export function fabArcCollapse(actions) {
+  if (noMotion()) { actions.forEach(a => a.style.display = 'none'); return; }
+  const count = actions.length;
+  actions.forEach((a, i) => {
+    _M.animate(a, {
+      opacity: [1, 0],
+      transform: ['translate(0px, 0px) scale(1)', 'translate(0px, 20px) scale(0.5)']
+    }, { duration: 0.15, delay: (count - 1 - i) * 0.04, easing: [0.25, 1, 0.5, 1] }).then(() => {
+      a.style.display = 'none';
+      a.style.transform = '';
+    });
+  });
+}
+
+export function fabPress(el) {
+  if (noMotion()) return;
+  _M.animate(el, { transform: ['scale(1) rotate(0deg)', 'scale(0.9) rotate(45deg)'] }, { duration: 0.15, easing: [0.25, 1, 0.5, 1] }).then(() => {
+    _M.animate(el, { transform: ['scale(0.9) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.25, easing: [0.34, 1.56, 0.64, 1] });
+  });
+}
+
+export function fabCollapse(el) {
+  if (noMotion()) return;
+  _M.animate(el, { transform: ['scale(1) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] });
+}
+
+/* ═══════════════ STEP 12: SCROLL-LINKED ═══════════════ */
+
+export function initScrollAnimations() {
+  if (noMotion()) return;
+
+  // Section reveal on scroll
+  const sections = document.querySelectorAll('.section-block, .gc');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        el.style.opacity = '0';
+        _M.animate(el, {
+          opacity: [0, 1],
+          transform: ['translateY(20px)', 'translateY(0px)']
+        }, { duration: 0.5, easing: [0.34, 1.56, 0.64, 1] });
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Parallax on page title
+  const contentWrap = document.getElementById('content-wrap');
+  if (contentWrap) {
+    let ticking = false;
+    contentWrap.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = contentWrap.scrollTop;
+          const pgTitle = contentWrap.querySelector('.pg-title');
+          if (pgTitle && scrollY < 200) {
+            pgTitle.style.transform = `translateY(${scrollY * -0.15}px)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+}
+
+/* ═══════════════ STEP 13: LOADING STATES ═══════════════ */
+
+export function skeletonPulse(el) {
+  if (noMotion()) return;
+  _M.animate(el, {
+    opacity: [0.4, 0.8, 0.4]
+  }, { duration: 1.5, easing: 'ease-in-out', repeat: Infinity });
+}
+
+export function showSkeleton(container, count = 3) {
+  container.innerHTML = Array(count).fill(0).map(() =>
+    `<div class="skeleton" style="height:60px;margin-bottom:8px"></div>`
+  ).join('');
+}
+
+export function removeSkeleton(container) {
+  container.querySelectorAll('.skeleton').forEach(s => {
+    if (noMotion()) { s.remove(); return; }
+    _M.animate(s, { opacity: [1, 0], height: ['60px', '0px'] }, { duration: 0.2 }).then(() => s.remove());
+  });
+}
+
+/* ═══════════════ STEP 14: ACCESSIBILITY ═══════════════ */
+
+export function initAccessibility() {
+  // Listen for preference changes
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mq.addEventListener('change', () => {
+    if (mq.matches) {
+      // Disable all running animations
+      document.querySelectorAll('[style*="transform"]').forEach(el => {
+        el.style.transform = '';
+      });
+    }
+  });
+
+  // Add aria-hidden to decorative elements
+  document.querySelectorAll('.orb, .noise, .ambient').forEach(el => {
+    el.setAttribute('aria-hidden', 'true');
+  });
+
+  // Add sr-only class for screen readers
+  const style = document.createElement('style');
+  style.textContent = `.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}`;
+  document.head.appendChild(style);
+}
+
+/* ═══════════════ STEP 15: PERFORMANCE ═══════════════ */
+
+export function initPerformance() {
+  // Will-change cleanup: add on hover, remove after animation
+  document.addEventListener('pointerenter', e => {
+    const card = e.target.closest('.stat-card, .prep-card, .test-card, .mt-card');
+    if (card) card.style.willChange = 'transform';
+  }, true);
+  document.addEventListener('pointerleave', e => {
+    const card = e.target.closest('.stat-card, .prep-card, .test-card, .mt-card');
+    if (card) {
+      setTimeout(() => { card.style.willChange = 'auto'; }, 300);
+    }
+  }, true);
+
+  // Batch DOM reads
+  window.batchRead = function(fn) {
+    requestAnimationFrame(() => {
+      fn();
+    });
+  };
+
+  // Throttle scroll handlers
+  window.throttledScroll = function(fn, ms = 16) {
+    let last = 0;
+    return function(...args) {
+      const now = Date.now();
+      if (now - last >= ms) {
+        last = now;
+        fn.apply(this, args);
+      }
+    };
+  };
+}
+
 /* ═══════════════ INITIALIZATION ═══════════════ */
 
 export function initInteractions() {
@@ -436,6 +607,12 @@ export function initInteractions() {
   document.addEventListener('pointerdown', e => {
     const btn = e.target.closest('.btn');
     if (btn) buttonPress(btn);
+  }, true);
+
+  // FAB press feedback
+  document.addEventListener('pointerdown', e => {
+    const fab = e.target.closest('.fab');
+    if (fab) fabPress(fab);
   }, true);
 
   // 3D tilt on stat-cards and prep-cards
@@ -460,6 +637,11 @@ export function initInteractions() {
   document.addEventListener('focusout', e => {
     if (e.target.classList.contains('inp')) inputBlurRing(e.target);
   }, true);
+
+  // Init scroll, accessibility, performance
+  initScrollAnimations();
+  initAccessibility();
+  initPerformance();
 }
 
 /* ═══════════════ PREFERS-REDUCED-MOTION ═══════════════ */
