@@ -445,7 +445,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
         <div id="n-rev-empty" style="font-size:11px;color:var(--faint);padding:6px 0">No revision notes yet.</div>
       </div>
     </div>
-    <div class="md-foot"><button class="btn btn-ghost btn-sm" onclick="cm('m-notes')">Done</button></div>
+    <div class="md-foot"><button class="btn btn-ghost btn-sm" onclick="closeNotesModal()">Done</button></div>
   </div>
 </div>
 
@@ -638,10 +638,10 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 <!-- CMT Results Modal -->
 <div class="mo" id="m-cmt-results">
   <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Test Results</div><button class="md-x" onclick="cm('m-cmt-results');go('mocktests')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Test Results</div><button class="md-x" onclick="cm('m-cmt-results');go('mock-tests')">&#10005;</button></div>
     <div class="md-body" id="cmt-results-body"></div>
     <div class="md-foot">
-      <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-results');go('mocktests')">Close</button>
+      <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-results');go('mock-tests')">Close</button>
       <button class="btn btn-primary btn-sm" onclick="cmtSaveToHistory()">Save to History</button>
     </div>
   </div>

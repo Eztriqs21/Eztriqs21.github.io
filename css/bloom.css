@@ -63,6 +63,11 @@
   border-color: var(--primary);
   transform: translateY(-1px);
 }
+.bl-btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+}
 
 /* Inputs */
 .bl-input {

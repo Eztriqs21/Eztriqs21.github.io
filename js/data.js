@@ -80,7 +80,7 @@ export function persistAllLocal(opts){
 }
 export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];
-  window.notesChapterId=null;window.calcShowResults=false;window.calcAnsKey={};
+  window._pendingNoteFiles=[];
 }
 export function applyCloudPayload(parsed){
   if(!parsed||typeof parsed!=='object')return false;
@@ -92,6 +92,8 @@ export function applyCloudPayload(parsed){
   if(parsed.doubtChats&&typeof parsed.doubtChats==='object')DB.doubtChats=parsed.doubtChats;
   if(parsed.prepChat&&typeof parsed.prepChat==='object')DB.prepChat=parsed.prepChat;
   if(parsed.revision&&typeof parsed.revision==='object')DB.revision=parsed.revision;
+  if(parsed.doubtHistory&&Array.isArray(parsed.doubtHistory))DB.doubtHistory=parsed.doubtHistory;
+  if(parsed.notes&&typeof parsed.notes==='object')DB.notes=parsed.notes;
   resetEphemeralUiState();
   return true;
 }

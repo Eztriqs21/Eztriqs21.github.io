@@ -165,8 +165,19 @@
 
     var msgs = [];
     var sysPrompt = 'You are a JEE (Joint Entrance Examination) tutor. Answer the student\'s doubt clearly, step by step. Use LaTeX for math formulas where appropriate (wrap in $$). Be concise but thorough. Focus on concepts and problem-solving approach.';
-    if (text) msgs.push({ role: 'user', content: text });
-    if (dsImageData) msgs.unshift({ role: 'user', content: 'What is shown in this image? Please solve or explain the doubt shown.' });
+    if (text && dsImageData) {
+      msgs.push({ role: 'user', content: [
+        { type: 'image_url', image_url: { url: dsImageData } },
+        { type: 'text', text: text }
+      ]});
+    } else if (dsImageData) {
+      msgs.push({ role: 'user', content: [
+        { type: 'image_url', image_url: { url: dsImageData } },
+        { type: 'text', text: 'What is shown in this image? Please solve or explain the doubt shown.' }
+      ]});
+    } else if (text) {
+      msgs.push({ role: 'user', content: text });
+    }
 
     try {
       var settings = aiSvc.loadSettings();

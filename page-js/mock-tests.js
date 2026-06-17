@@ -32,7 +32,7 @@
 
   function mockCard(t, i) {
     const p = pfx();
-    const total = (t.physics || {}).correct * 4 - (t.physics || {}).incorrect + (t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect + (t.maths || {}).correct * 4 - (t.maths || {}).incorrect;
+    const total = ((t.physics || {}).correct * 4 - (t.physics || {}).incorrect) + ((t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect) + ((t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
     const maxScore = t.total || 300;
     const pct = safePct(Math.max(0, total), maxScore);
     const color = pct >= 70 ? 'var(--success)' : pct >= 50 ? 'var(--accent)' : 'var(--danger)';

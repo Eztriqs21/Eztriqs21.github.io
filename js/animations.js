@@ -10,6 +10,7 @@ function noMotion() { return !_M || !_M.animate || _reduced; }
 /* ═══════════════ A: PAGE & NAVIGATION ═══════════════ */
 
 export function pageExit(el) {
+  if (!el) return Promise.resolve();
   if (noMotion()) return Promise.resolve();
   try {
     return _M.animate(el, {
@@ -20,6 +21,7 @@ export function pageExit(el) {
 }
 
 export function pageEnter(el) {
+  if (!el) return Promise.resolve();
   if (noMotion()) { el.style.opacity = '1'; return Promise.resolve(); }
   el.style.opacity = '0';
   try {
@@ -115,15 +117,6 @@ export function counterSpring(el, target, opts = {}) {
   const diff = target - start;
   if (!diff) { el.textContent = target; return; }
   const isInt = Number.isInteger(target);
-  _M.animate({ val: start }, {
-    val: target
-  }, {
-    duration,
-    easing: [0.80, 1.56, 0.40, 1]
-  }).onFinished = () => {
-    el.textContent = target;
-  };
-  // Fallback: animate manually
   const startTime = performance.now();
   function tick(now) {
     const t = Math.min((now - startTime) / (duration * 1000), 1);

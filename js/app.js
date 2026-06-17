@@ -5,6 +5,7 @@ import { initThemes } from './themes.js';
 import { initInteractions } from './animations.js';
 import { go, getPage, render } from './nav.js';
 import { om, cm, toast, pvFile, animateAllCounters } from './helpers.js';
+import './ai-service.js';
 
 // Bridge: expose data layer to window for page module IIFEs
 window.DB = DB;

@@ -209,8 +209,6 @@ export async function pullFromSupabase(){
     window.resetEphemeralUiState();
     window.persistAllLocal({skipBudgetCheck:true});
     requestAnimationFrame(()=>{
-      window.detachCalcKeyboard?.();
-      if(window.PAGE==='calculator')window.initCalcQ();
       window.render();
     });
     toast('☁️ Merged! ('+mergedCount+' entities updated)');

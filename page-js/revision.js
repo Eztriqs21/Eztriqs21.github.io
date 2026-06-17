@@ -1,10 +1,11 @@
 // page-js/revision.js — Revision page (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
-  const REV_SYLLABUS = {
+  var REV_SYLLABUS = {
     physics: [
       { topic: 'Mechanics', subs: ['Units & Measurements', 'Kinematics', 'Laws of Motion', 'Work Energy & Power', 'Rotational Motion', 'Gravitation', 'Properties of Solids & Liquids', 'Thermodynamics', 'Kinetic Theory of Gases'] },
       { topic: 'Electrostatics', subs: ['Electric Charges & Fields', 'Electrostatic Potential & Capacitance'] },
@@ -30,14 +31,15 @@
     ]
   };
 
-  const SUBJ_META = {
+  var SUBJ_META = {
     physics: { label: 'Physics', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' },
     chemistry: { label: 'Chemistry', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>' },
     maths: { label: 'Mathematics', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>' }
   };
 
   function revLoad() {
-    try { var r = localStorage.getItem('jeehq3_rev'); if (r) return JSON.parse(r); } catch (e) {}
+    var DB = window.DB;
+    if (DB && DB.revision && typeof DB.revision === 'object' && Object.keys(DB.revision).length > 0) return DB.revision;
     var st = {};
     Object.keys(REV_SYLLABUS).forEach(function(subj) {
       st[subj] = {};
@@ -47,45 +49,49 @@
   }
 
   function revSave(st) {
-    try { localStorage.setItem('jeehq3_rev', JSON.stringify(st)); } catch (e) {}
+    var DB = window.DB;
+    if (DB) DB.revision = st;
+    if (window.sv) window.sv('revision');
   }
 
   window.renderRevision = function(el) {
-    const p = pfx();
-    const rev = revLoad();
+    var p = pfx();
+    var rev = revLoad();
 
-    el.innerHTML = `
-    <div class="${p}-page-header anim-entrance">
-      <div class="${p}-page-title" data-text="Revision">Revision</div>
-      <div class="${p}-page-sub">Quick revision & formula sheets — tap to toggle status</div>
-    </div>
-    ${['physics', 'chemistry', 'maths'].map(subjKey => {
-      const info = SUBJ_META[subjKey];
-      const groups = REV_SYLLABUS[subjKey];
-      const allSubs = groups.reduce((acc, g) => acc.concat(g.subs), []);
-      const done = allSubs.filter(s => (rev[subjKey] || {})[s] === 1).length;
-      const total = allSubs.length;
-      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    el.innerHTML =
+    '<div class="' + p + '-page-header anim-entrance">' +
+      '<div class="' + p + '-page-title" data-text="Revision">Revision</div>' +
+      '<div class="' + p + '-page-sub">Quick revision & formula sheets — tap to toggle status</div>' +
+    '</div>' +
+    ['physics', 'chemistry', 'maths'].map(function(subjKey) {
+      var info = SUBJ_META[subjKey];
+      var groups = REV_SYLLABUS[subjKey];
+      var allSubs = groups.reduce(function(acc, g) { return acc.concat(g.subs); }, []);
+      var done = allSubs.filter(function(s) { return (rev[subjKey] || {})[s] === 1; }).length;
+      var total = allSubs.length;
+      var pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
-      return `<div class="${p}-section-block anim-entrance">
-        <div class="${p}-section-title">${info.icon} ${info.label} <span style="font-size:11px;color:var(--muted);margin-left:auto">${done}/${total} (${pct}%)</span></div>
-        <div class="${p}-progress-wrap" style="height:4px;margin-bottom:12px"><div class="${p}-progress-bar" style="height:4px;width:${pct}%"></div></div>
-        ${groups.map(g => {
-          const gDone = g.subs.filter(s => (rev[subjKey] || {})[s] === 1).length;
-          return `<div style="margin-bottom:12px">
-            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">${esc(g.topic)} <span style="font-size:10px;color:var(--muted)">(${gDone}/${g.subs.length})</span></div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px">
-              ${g.subs.map(s => {
-                const done = (rev[subjKey] || {})[s] === 1;
-                return `<button class="${p}-btn" style="font-size:11px;padding:4px 10px;${done ? 'background:rgba(34,197,94,0.15);color:var(--success);border:1px solid rgba(34,197,94,0.3)' : 'background:var(--border-card);color:var(--muted);border:1px solid var(--border)'}" onclick="window._revToggle('${subjKey}','${esc(s)}')">
-                  ${done ? '<svg width="10" height="10" viewBox="0 0 12 12" style="vertical-align:-1px"><polyline points="2,6 5,9 10,3" stroke="currentColor" stroke-width="2" fill="none"/></svg> ' : ''}${esc(s)}
-                </button>`;
-              }).join('')}
-            </div>
-          </div>`;
-        }).join('')}
-      </div>`;
-    }).join('')}`;
+      return '<div class="' + p + '-section-block anim-entrance">' +
+        '<div class="' + p + '-section-title">' + info.icon + ' ' + info.label + ' <span style="font-size:11px;color:var(--muted);margin-left:auto">' + done + '/' + total + ' (' + pct + '%)</span></div>' +
+        '<div class="' + p + '-progress-wrap" style="height:4px;margin-bottom:12px"><div class="' + p + '-progress-bar" style="height:4px;width:' + pct + '%"></div></div>' +
+        groups.map(function(g) {
+          var gDone = g.subs.filter(function(s) { return (rev[subjKey] || {})[s] === 1; }).length;
+          return '<div style="margin-bottom:12px">' +
+            '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">' + esc(g.topic) + ' <span style="font-size:10px;color:var(--muted)">(' + gDone + '/' + g.subs.length + ')</span></div>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:6px">' +
+              g.subs.map(function(s) {
+                var isDone = (rev[subjKey] || {})[s] === 1;
+                var attrSubj = escAttr(subjKey);
+                var attrTopic = escAttr(s);
+                return '<button class="' + p + '-btn" style="font-size:11px;padding:4px 10px;' + (isDone ? 'background:rgba(34,197,94,0.15);color:var(--success);border:1px solid rgba(34,197,94,0.3)' : 'background:var(--border-card);color:var(--muted);border:1px solid var(--border)') + '" onclick="window._revToggle(\'' + attrSubj + '\',\'' + attrTopic + '\')">' +
+                  (isDone ? '<svg width="10" height="10" viewBox="0 0 12 12" style="vertical-align:-1px"><polyline points="2,6 5,9 10,3" stroke="currentColor" stroke-width="2" fill="none"/></svg> ' : '') + esc(s) +
+                '</button>';
+              }).join('') +
+            '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+    }).join('');
   };
 
   window._revToggle = function(subj, topic) {

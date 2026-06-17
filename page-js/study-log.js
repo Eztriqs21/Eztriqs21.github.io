@@ -114,7 +114,7 @@
               <div class="${p}-empty-title">No sessions logged</div>
               <div class="${p}-empty-sub">Tap + to start tracking your study time</div>
             </div>`
-          : logs.sort((a, b) => new Date(b.date) - new Date(a.date)).map((l, i) => logRow(l, i)).join('')}
+          : [...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).map((l, i) => logRow(l, i)).join('')}
       </div>
     </div>`;
   };

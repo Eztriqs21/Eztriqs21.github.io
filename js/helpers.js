@@ -454,9 +454,9 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
-window.uid=uid;window.esc=esc;window.fmtDate=fmtDate;window.fmtSz=fmtSz;window.fmt12=fmt12;
-window.safePct=safePct;window.cm=cm;window.om=om;window.cfm2=cfm2;window.toast=toast;
-window.handleFiles=rdFiles;window.rdFiles=rdFiles;window.setupDZ=setupDZ;
+window.uid=uid;window.fmtDate=fmtDate;window.fmtSz=fmtSz;window.fmt12=fmt12;
+window.safePct=safePct;window.cm=cm;window.om=om;window.toast=toast;
+window.handleFiles=rdFiles;window.rdFiles=rdFiles;
 window.fileIcon=fileIcon;window.isPdfFile=isPdfFile;window.isImageFile=isImageFile;window.isAllowedUpload=isAllowedUpload;
 window.compressImageToDataUrl=compressImageToDataUrl;window.readFileLocal=readFileLocal;
 window.uploadToSupabaseStorage=uploadToSupabaseStorage;window.uploadPrereqError=uploadPrereqError;
@@ -467,7 +467,6 @@ window.debounce=debounce;
 window.debouncedUpdChList=debouncedUpdChList;window.debouncedUpdAsnList=debouncedUpdAsnList;window.debouncedUpdTstList=debouncedUpdTstList;
 window.fileExt=fileExt;
 window._fcache=_fcache;window._fget=_fget;
-window.fItemHTML=fItemHTML;window.fItemHTMLRaw=fItemHTMLRaw;
 window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;window.pvZoom=pvZoom;
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;

@@ -47,6 +47,24 @@
     window._openNotesChId = chId;
   }
 
+  window._saveNoteFiles = function() {
+    var subj = window._openNotesSubj;
+    var chId = window._openNotesChId;
+    if (!subj || !chId) return;
+    var DB = window.DB;
+    if (!DB) return;
+    if (!DB.notes) DB.notes = {};
+    var key = subj + '_' + chId;
+    var noteData = DB.notes[key] || { type: window._currentNoteType || 'detailed', files: [] };
+    var pending = window._pendingNoteFiles || [];
+    if (pending.length > 0) {
+      noteData.files = (noteData.files || []).concat(pending);
+      DB.notes[key] = noteData;
+      if (window.sv) window.sv('notes');
+      window._pendingNoteFiles = [];
+    }
+  };
+
   window.renderNotes = function(el) {
     const p = pfx();
     const DB = window.DB;

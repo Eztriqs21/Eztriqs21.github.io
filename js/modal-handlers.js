@@ -73,7 +73,7 @@ function refreshAFileList() {
   var el = document.getElementById('a-file-list');
   if (!el) return;
   el.innerHTML = window.pendingAFiles.map(function (f, i) {
-    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingAFiles.splice(' + i + ',1);refreshAFileList()">✕</button></div>';
+    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingAFiles.splice(' + i + ',1);window.refreshAFileList()">✕</button></div>';
   }).join('');
 }
 
@@ -121,18 +121,20 @@ function setTestMode(mode) {
 }
 
 function syncBreakdownToDirect() {
-  var gn = function (id) { return parseInt(document.getElementById(id).value) || 0; };
+  var gn = function (id) { var el = document.getElementById(id); return el ? (parseInt(el.value) || 0) : 0; };
   var total = (gn('tp-c') + gn('tc-c') + gn('tm-c')) * 4 - (gn('tp-w') + gn('tc-w') + gn('tm-w'));
   var max = (gn('tp-c') + gn('tp-w') + gn('tp-s') + gn('tc-c') + gn('tc-w') + gn('tc-s') + gn('tm-c') + gn('tm-w') + gn('tm-s')) * 4;
   var ct = document.getElementById('t-calc-total'); if (ct) ct.textContent = Math.max(0, total);
   var cm = document.getElementById('t-calc-max'); if (cm) cm.textContent = max > 0 ? max : 300;
-  document.getElementById('t-direct-marks').value = Math.max(0, total);
-  document.getElementById('t-direct-max').value = max > 0 ? max : 300;
+  var dm = document.getElementById('t-direct-marks'); if (dm) dm.value = Math.max(0, total);
+  var dx = document.getElementById('t-direct-max'); if (dx) dx.value = max > 0 ? max : 300;
 }
 
 function syncDirectToBreakdown() {
-  var marks = parseInt(document.getElementById('t-direct-marks').value) || 0;
-  var max = parseInt(document.getElementById('t-direct-max').value) || 300;
+  var dm = document.getElementById('t-direct-marks');
+  var dx = document.getElementById('t-direct-max');
+  var marks = dm ? (parseInt(dm.value) || 0) : 0;
+  var max = dx ? (parseInt(dx.value) || 0) : 300;
   var ct = document.getElementById('t-calc-total'); if (ct) ct.textContent = marks;
   var cm = document.getElementById('t-calc-max'); if (cm) cm.textContent = max;
 }
@@ -145,7 +147,7 @@ function refreshTFileList() {
   var el = document.getElementById('t-file-list');
   if (!el) return;
   el.innerHTML = window.pendingTFiles.map(function (f, i) {
-    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="pendingTFiles.splice(' + i + ',1);refreshTFileList()">✕</button></div>';
+    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingTFiles.splice(' + i + ',1);window.refreshTFileList()">✕</button></div>';
   }).join('');
 }
 
@@ -196,11 +198,11 @@ function saveTest() {
 
 /* ═══════════════ CALCULATOR ═══════════════ */
 /* ═══════════════ NOTES ═══════════════ */
-var pendingNoteFiles = [];
-var currentNoteType = 'detailed';
+window._pendingNoteFiles = [];
+window._currentNoteType = 'detailed';
 
 function setNoteType(t) {
-  currentNoteType = t;
+  window._currentNoteType = t;
   var detBtn = document.getElementById('note-type-det');
   var revBtn = document.getElementById('note-type-rev');
   var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
@@ -209,7 +211,12 @@ function setNoteType(t) {
 }
 
 function handleNoteFiles(files) {
-  rdFiles(files, function (obj) { pendingNoteFiles.push(obj); });
+  rdFiles(files, function (obj) { window._pendingNoteFiles.push(obj); });
+}
+
+function closeNotesModal() {
+  if (window._saveNoteFiles) window._saveNoteFiles();
+  window.cm('m-notes');
 }
 
 /* ═══════════════ CHAPTERS ═══════════════ */
@@ -373,6 +380,7 @@ window.saveTest = saveTest;
 window.saveCalcTestFromModal = saveCalcTestFromModal;
 window.setNoteType = setNoteType;
 window.handleNoteFiles = handleNoteFiles;
+window.closeNotesModal = closeNotesModal;
 window.saveAddCh = saveAddCh;
 window.saveEditCh = saveEditCh;
 window.deleteEditCh = deleteEditCh;
@@ -395,6 +403,3 @@ window.fItemHTML = fItemHTML;
 window.fItemHTMLRaw = fItemHTMLRaw;
 window.setupDZ = setupDZ;
 window.esc = esc;
-window.scoreQ = scoreQ;
-window.getPerc = getPerc;
-window.initCalcQ = initCalcQ;

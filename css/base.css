@@ -51,6 +51,11 @@ ul, ol { list-style: none; }
   --scrollbar-track: rgba(0, 240, 255, 0.05);
   --sidebar-width: 240px;
   --topbar-height: 70px;
+  --hover: rgba(0, 240, 255, 0.06);
+  --yellow: #eab308;
+  --yellow-dim: rgba(234, 179, 8, 0.1);
+  --green-dim: rgba(34, 197, 94, 0.1);
+  --glass: rgba(10, 10, 18, 0.8);
 }
 
 /* ═══════════════ BLOOM THEME ═══════════════ */
@@ -85,6 +90,11 @@ ul, ol { list-style: none; }
   --scrollbar-track: rgba(196, 168, 130, 0.1);
   --sidebar-width: 240px;
   --topbar-height: 70px;
+  --hover: rgba(107, 144, 128, 0.08);
+  --yellow: #a16207;
+  --yellow-dim: rgba(161, 98, 7, 0.08);
+  --green-dim: rgba(107, 144, 128, 0.08);
+  --glass: rgba(250, 247, 240, 0.85);
 }
 
 /* ═══════════════ SCROLLBAR ═══════════════ */
@@ -541,3 +551,17 @@ input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-even
 .sbd-detail{font-size:10px;color:var(--muted);margin-top:2px;}
 .pbar-wrap{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
 .pbar{height:100%;border-radius:2px;transition:width .4s var(--ease);}
+
+/* ═══════════════ TABS ═══════════════ */
+.tabs-wrap,.nx-tabs,.bl-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.tab-btn,.nx-tab-btn,.bl-tab-btn{padding:6px 14px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .15s var(--ease);}
+.tab-btn-on,.tab-btn.on,.nx-tab-btn-on,.nx-tab-btn.on,.bl-tab-btn-on,.bl-tab-btn.on{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
+
+/* ═══════════════ STAGGER ═══════════════ */
+.stagger>*{opacity:0;animation:staggerIn .3s ease forwards;}
+.stagger>*:nth-child(1){animation-delay:.05s;}
+.stagger>*:nth-child(2){animation-delay:.1s;}
+.stagger>*:nth-child(3){animation-delay:.15s;}
+.stagger>*:nth-child(4){animation-delay:.2s;}
+.stagger>*:nth-child(5){animation-delay:.25s;}
+@keyframes staggerIn{to{opacity:1;}}

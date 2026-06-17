@@ -39,13 +39,19 @@ export function render() {
   _renderLock = true;
   const el = document.getElementById('content-wrap');
 
+  // Safety: reset lock after 5s if something goes wrong
+  const safetyTimer = setTimeout(() => { _renderLock = false; }, 5000);
+
   if (shouldAnimate()) {
     pageExit(el).then(() => {
+      clearTimeout(safetyTimer);
       _renderSwap(el);
     }).catch(() => {
+      clearTimeout(safetyTimer);
       _renderSwap(el);
     });
   } else {
+    clearTimeout(safetyTimer);
     _renderSwap(el);
   }
 }
@@ -68,6 +74,7 @@ function _renderSwap(el) {
       _lastPage = PAGE;
       setTimeout(() => animateAllCounters(el), 50);
     }).catch(() => {
+      el.style.opacity = '1';
       animateAllEntrance(el);
       _renderLock = false;
       _lastPage = PAGE;
@@ -75,6 +82,7 @@ function _renderSwap(el) {
     });
   } else {
     el.offsetHeight;
+    el.style.opacity = '1';
     animateAllEntrance(el);
     _renderLock = false;
     _lastPage = PAGE;
