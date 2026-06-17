@@ -304,12 +304,16 @@ let pv={type:null,data:null,name:null,pdfDoc:null,page:1,pages:0,zoom:1.5,imgZoo
 export async function pvFile(data,name){
   if(!data){toast('⚠️ File data not available');return;}
   pv={type:null,data:data,name:name||'Preview',pdfDoc:null,page:1,pages:0,zoom:1.5,imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
-  document.getElementById('pv-title').textContent=pv.name;
+  const titleEl=document.getElementById('pv-title');
   const body=document.getElementById('pv-body');
   const pdfCtrl=document.getElementById('pv-pdf-controls');
   const imgCtrl=document.getElementById('pv-img-controls');
   const footer=document.getElementById('pv-footer');
-  pdfCtrl.style.display='none';imgCtrl.style.display='none';footer.style.display='none';
+  if(!body){return;}
+  if(titleEl)titleEl.textContent=pv.name;
+  if(pdfCtrl)pdfCtrl.style.display='none';
+  if(imgCtrl)imgCtrl.style.display='none';
+  if(footer)footer.style.display='none';
   body.innerHTML='<div class="pv-empty">⏳ Loading...</div>';
   body.onscroll=null;
   om('m-preview');
@@ -329,9 +333,9 @@ export async function pvFile(data,name){
       pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
       pv.pages=pv.pdfDoc.numPages;
       pv.zoom=1.5;
-      pdfCtrl.style.display='flex';
-      footer.style.display='flex';
-      footer.innerHTML=`<a href="${esc(data.startsWith('data:')?data:data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>${data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--muted);text-decoration:underline">⬇ Download</a>`:''}`;
+      if(pdfCtrl)pdfCtrl.style.display='flex';
+      if(footer){footer.style.display='flex';
+      footer.innerHTML=`<a href="${esc(data.startsWith('data:')?data:data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>${data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--muted);text-decoration:underline">⬇ Download</a>`:''}`;}
       await pvRenderPage(1);
     }catch(e){
       console.error('PDF load error:',e);
@@ -340,9 +344,9 @@ export async function pvFile(data,name){
     return;
   }
   pv.type='image';
-  imgCtrl.style.display='flex';
-  footer.style.display='flex';
-  footer.innerHTML=`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent);text-decoration:underline">⬇ Download</a>`;
+  if(imgCtrl)imgCtrl.style.display='flex';
+  if(footer){footer.style.display='flex';
+  footer.innerHTML=`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent);text-decoration:underline">⬇ Download</a>`;}
   body.innerHTML=`<img id="pv-img" src="${esc(data)}" style="max-width:100%;max-height:100%;object-fit:contain;cursor:grab" draggable="false" onload="pvImgFit(this)" onerror="pvFallbackLoad()"/>`;
   const img=document.getElementById('pv-img');
   if(img){
@@ -370,17 +374,24 @@ export async function pvRenderPage(num){
   num=Math.max(1,Math.min(pv.pages,num));
   pv.page=num;
   const body=document.getElementById('pv-body');
-  const page=await pv.pdfDoc.getPage(num);
-  const viewport=page.getViewport({scale:pv.zoom*window.devicePixelRatio});
-  const cssViewport=page.getViewport({scale:pv.zoom});
-  const canvas=document.createElement('canvas');
-  canvas.width=viewport.width;canvas.height=viewport.height;
-  canvas.style.width=cssViewport.width+'px';canvas.style.height=cssViewport.height+'px';
-  await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
-  body.innerHTML='';
-  body.appendChild(canvas);
-  document.getElementById('pv-page-info').textContent=pv.page+' / '+pv.pages;
-  document.getElementById('pv-zoom-label').textContent=Math.round(pv.zoom*100)+'%';
+  if(!body)return;
+  try{
+    const page=await pv.pdfDoc.getPage(num);
+    const viewport=page.getViewport({scale:pv.zoom*window.devicePixelRatio});
+    const cssViewport=page.getViewport({scale:pv.zoom});
+    const canvas=document.createElement('canvas');
+    canvas.width=viewport.width;canvas.height=viewport.height;
+    canvas.style.width=cssViewport.width+'px';canvas.style.height=cssViewport.height+'px';
+    await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+    body.innerHTML='';
+    body.appendChild(canvas);
+    const infoEl=document.getElementById('pv-page-info');
+    const zoomEl=document.getElementById('pv-zoom-label');
+    if(infoEl)infoEl.textContent=pv.page+' / '+pv.pages;
+    if(zoomEl)zoomEl.textContent=Math.round(pv.zoom*100)+'%';
+  }catch(e){
+    if(e.name!=='AbortError')console.debug('pvRenderPage:',e);
+  }
 }
 export function pvPage(d){pvRenderPage(pv.page+d);}
 export function pvZoom(d){
@@ -391,7 +402,8 @@ export function pvImgFit(img){
   if(!img||!img.naturalWidth)return;
   pv.imgZoom=1;pv.imgPanX=0;pv.imgPanY=0;
   pvImgApplyTransform();
-  document.getElementById('pv-img-zoom-label').textContent='100%';
+  const lbl=document.getElementById('pv-img-zoom-label');
+  if(lbl)lbl.textContent='100%';
 }
 export function pvZoomImg(d){
   pv.imgZoom=Math.max(0.2,Math.min(5,pv.imgZoom+d));
@@ -415,13 +427,16 @@ export async function pvFallbackLoad(){
     }else{binary=pv.data;}
     pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
     pv.type='pdf';pv.pages=pv.pdfDoc.numPages;pv.zoom=1.5;
-    document.getElementById('pv-pdf-controls').style.display='flex';
-    document.getElementById('pv-footer').style.display='flex';
-    document.getElementById('pv-footer').innerHTML=`<a href="${esc(pv.data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>`;
-    document.getElementById('pv-img-controls').style.display='none';
+    const pdfCtrl=document.getElementById('pv-pdf-controls');
+    const imgCtrl=document.getElementById('pv-img-controls');
+    const footer=document.getElementById('pv-footer');
+    if(pdfCtrl)pdfCtrl.style.display='flex';
+    if(footer){footer.style.display='flex';footer.innerHTML=`<a href="${esc(pv.data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>`;}
+    if(imgCtrl)imgCtrl.style.display='none';
     await pvRenderPage(1);
   }catch(e2){
-    document.getElementById('pv-body').innerHTML=`<div class="pv-empty" style="flex-direction:column;gap:12px"><div style="font-size:40px">⚠️</div><div style="font-weight:600;color:#fff">Unable to load file</div><div style="font-size:12px;color:var(--muted)">${esc(e2.message||'Not a valid image or PDF')}</div><a class="btn btn-primary btn-xs" href="${esc(pv.data)}" download="${esc(pv.name)}">⬇ Download</a></div>`;
+    const body=document.getElementById('pv-body');
+    if(body)body.innerHTML=`<div class="pv-empty" style="flex-direction:column;gap:12px"><div style="font-size:40px">⚠️</div><div style="font-weight:600;color:#fff">Unable to load file</div><div style="font-size:12px;color:var(--muted)">${esc(e2.message||'Not a valid image or PDF')}</div><a class="btn btn-primary btn-xs" href="${esc(pv.data)}" download="${esc(pv.name)}">⬇ Download</a></div>`;
   }
 }
 document.addEventListener('keydown',e=>{

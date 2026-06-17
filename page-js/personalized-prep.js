@@ -269,6 +269,4 @@ window.prepHandleFiles=prepHandleFiles;
 window.prepExtractPdfText=prepExtractPdfText;
 window.prepOcrPdf=prepOcrPdf;
 window.prepSendChat=prepSendChat;
-window.prepOllamaChat=prepOllamaChat;
-window.prepGroqChat=prepGroqChat;
 window.prepClearChat=prepClearChat;

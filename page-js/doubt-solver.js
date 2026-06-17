@@ -324,7 +324,6 @@ function dsParseQuestion(text){
 }
 
 const dsHasApi = hasApi;
-const dsHasApiKey = hasApiKey;
 
 function dsFormatError(e){
   const msg=e.message||String(e);
@@ -579,8 +578,6 @@ function saveDSSettings(){
   saveSettings(s);cm('m-ds-settings');toast('Settings saved');
 }
 
-const dsSaveSettings = saveSettings;
-
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
 window.renderDoubtSolver=renderDoubtSolver;
 window.dsSwitchTab=dsSwitchTab;
@@ -599,10 +596,8 @@ window.dsRunOCR=dsRunOCR;
 window.dsSearchAnswer=dsSearchAnswer;
 window.dsParseQuestion=dsParseQuestion;
 window.dsHasApi=dsHasApi;
-window.dsHasApiKey=dsHasApiKey;
 window.dsFormatError=dsFormatError;
 window.dsAskAI=dsAskAI;
-window.dsAskOllama=dsAskOllama;
 window.dsLocalSearch=dsLocalSearch;
 window.dsRenderAnswer=dsRenderAnswer;
 window.dsShowError=dsShowError;
@@ -619,4 +614,3 @@ window.dsOpenSettings=dsOpenSettings;
 window.dsSetProvider=dsSetProvider;
 window.dsFetchOllamaModels=dsFetchOllamaModels;
 window.saveDSSettings=saveDSSettings;
-window.dsSaveSettings=dsSaveSettings;
