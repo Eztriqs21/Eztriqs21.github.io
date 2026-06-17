@@ -1,5 +1,6 @@
 import { DB, sv, KEYS } from '../js/data.js';
 import { uid, esc, cm, om, toast, setupDZ, cfm2 } from '../js/helpers.js';
+import { loadSettings, saveSettings, hasApi, hasApiKey, callAI } from '../js/ai-service.js';
 
 let dsState={step:0,imageData:null,imageFile:null,extractedText:'',textInput:'',answer:null,loading:false};
 let dsTab='quick';
@@ -322,13 +323,8 @@ function dsParseQuestion(text){
   return{question:question.slice(0,500),subject,lines:cleanLines};
 }
 
-function dsHasApi(settings){
-  return !!(settings.openaiKey||(settings.provider==='ollama'&&settings.ollamaUrl));
-}
-
-function dsHasApiKey(settings){
-  return !!(settings.openaiKey);
-}
+const dsHasApi = hasApi;
+const dsHasApiKey = hasApiKey;
 
 function dsFormatError(e){
   const msg=e.message||String(e);
@@ -344,35 +340,15 @@ async function dsAskAI(text,parsed,settings,imageData){
   const systemMsg='You are a JEE expert tutor. Provide clear, step-by-step solutions. Use LaTeX notation ($$...$$ for display math, $...$ for inline math) for ALL mathematical expressions. If the user sends multiple messages, maintain context from previous questions.';
   let userMsg;
   if(imageData&&settings.useVision){
-    userMsg=[{type:'text',text:'Solve this JEE question step-by-step. Use LaTeX for ALL math expressions.'},{type:'image_url',image_url:{url:imageData}}];
+    userMsg=[{role:'user',content:[{type:'text',text:'Solve this JEE question step-by-step. Use LaTeX for ALL math expressions.'},{type:'image_url',image_url:{url:imageData}}]}];
   }else{
     userMsg='Solve the following '+parsed.subject+' question step-by-step with clear reasoning.\n\nQuestion: '+parsed.question+'\n\nProvide:\n1. The correct answer\n2. A step-by-step solution\n3. Key concepts tested\n\nUse LaTeX ($$...$$ and $...$) for all math.';
   }
-  if(settings.provider==='ollama'){
-    return dsAskOllama(userMsg,systemMsg,settings);
-  }
+  const messages=[{role:'system',content:systemMsg},{role:'user',content:userMsg}];
+  const content=await callAI(messages,settings,{maxTokens:2048});
   const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
-  const apiUrl=base+'/chat/completions';
-  const headers={'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey};
-  const body=JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],max_tokens:2048});
-  const resp=await fetch(apiUrl,{method:'POST',headers,body});
-  if(!resp.ok){const e=await resp.text();throw new Error('API error ('+resp.status+'): '+e.slice(0,200));}
-  const j=await resp.json();
-  const content=j.choices?.[0]?.message?.content||'No answer generated.';
-  const provider=base.includes('groq')?'Groq':base.includes('openrouter')?'OpenRouter':base;
+  const provider=settings.provider==='ollama'?'Ollama':base.includes('groq')?'Groq':base.includes('openrouter')?'OpenRouter':base;
   return{answer:content,subject:parsed.subject,question:parsed.question,sources:[{title:'AI solution',snippet:'Powered by '+provider+' — '+settings.openaiModel,url:''}]};
-}
-
-async function dsAskOllama(userMsg,systemMsg,settings){
-  const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-  const model=settings.ollamaModel||'qwen2.5:3b';
-  let prompt=typeof userMsg==='string'?userMsg:(userMsg.find(m=>m.type==='text')?.text||'Solve this question.');
-  const messages=[{role:'system',content:systemMsg},{role:'user',content:prompt}];
-  const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages,stream:false})});
-  if(!resp.ok){const e=await resp.text();throw new Error('Ollama error ('+resp.status+'): '+e.slice(0,200));}
-  const j=await resp.json();
-  const content=j.message?.content||'No answer generated.';
-  return{answer:content,subject:'General',question:typeof userMsg==='string'?userMsg.slice(0,200):'Image question',sources:[{title:'AI solution',snippet:'Powered by Ollama — '+model,url:''}]};
 }
 
 function dsLocalSearch(text,parsed){
@@ -481,8 +457,8 @@ async function dsSendChat(){
   const sendBtn=document.getElementById('ds-chat-send');
   const text=(ta?.value||'').trim();
   if(!text&&!dsState.imageData)return;
-  const settings=dsLoadSettings();
-  if(!dsHasApi(settings)){toast('Configure Groq or Ollama in Settings');dsOpenSettings();return;}
+  const settings=loadSettings();
+  if(!hasApi(settings)){toast('Configure Groq or Ollama in Settings');dsOpenSettings();return;}
   if(sendBtn)sendBtn.disabled=true;
   if(ta)ta.disabled=true;
   if(!DB.doubtChats)DB.doubtChats={physics:{messages:[]},chemistry:{messages:[]},maths:{messages:[]}};
@@ -498,41 +474,11 @@ async function dsSendChat(){
   const loadingId='msg_loading_'+uid();
   const loadingMsg={id:loadingId,role:'assistant',content:'Thinking...',ts:Date.now()};
   if(msgsEl){msgsEl.innerHTML+=dsRenderChatMsg(loadingMsg);dsScrollChatBottom();}
-  const ctrl=new AbortController();
-  const tid=setTimeout(()=>ctrl.abort(),settings.provider==='ollama'?120000:60000);
   try{
     const history=chat.messages.filter(m=>!m.id.startsWith('msg_loading')).map(m=>({role:m.role,content:m.content}));
     const systemMsg='You are a JEE expert tutor. Provide clear, step-by-step solutions. Use LaTeX notation ($$...$$ for display math, $...$ for inline math) for ALL mathematical expressions. Maintain context from previous messages in this conversation.';
     const messages=[{role:'system',content:systemMsg},...history];
-    let answer;
-    const tryGroq=async()=>{
-      const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
-      const resp=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey},signal:ctrl.signal,body:JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages,max_tokens:2048})});
-      if(!resp.ok)throw new Error('API error '+resp.status);
-      const j=await resp.json();
-      return j.choices?.[0]?.message?.content||'No answer generated.';
-    };
-    const tryOllama=async()=>{
-      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages,stream:false})});
-      if(!resp.ok)throw new Error('Ollama error '+resp.status);
-      const j=await resp.json();
-      return j.message?.content||'No answer generated.';
-    };
-    if(settings.provider==='ollama'){
-      answer=await tryOllama();
-    }else{
-      try{
-        answer=await tryGroq();
-      }catch(groqErr){
-        clearTimeout(tid);
-        const m=(groqErr.message||'').toLowerCase();
-        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('Groq limit — switching to Ollama...');
-          answer=await tryOllama();
-        }else throw groqErr;
-      }
-    }
+    const answer=await callAI(messages,settings,{maxTokens:2048});
     const aiMsg={id:'msg_'+uid(),role:'assistant',content:answer,ts:Date.now()};
     chat.messages.push(aiMsg);
     chat.updatedAt=Date.now();
@@ -543,7 +489,6 @@ async function dsSendChat(){
     if(msgsEl){msgsEl.innerHTML+=dsRenderChatMsg(aiMsg);dsScrollChatBottom();}
     if(window.renderMathInElement){try{renderMathInElement(msgsEl,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});}catch(e){}}
   }catch(e){
-    clearTimeout(tid);
     console.error('Chat error:',e);
     const loadingEl=document.getElementById(loadingId);
     if(loadingEl)loadingEl.closest('[style*="display:flex"]')?.remove();
@@ -574,23 +519,11 @@ function dsMigrateHistory(){
 }
 
 /* ═══════════════ SETTINGS ═══════════════ */
-function dsLoadSettings(){
-  const defaults={provider:'groq',apiBase:'https://api.groq.com/openai/v1',openaiKey:'',openaiModel:'llama-3.3-70b-versatile',ollamaUrl:'http://localhost:11434',ollamaModel:'qwen2.5:3b',ollamaModels:[],useVision:false};
-  try{
-    const raw=localStorage.getItem(KEYS.dsSettings);
-    if(raw){
-      const saved=JSON.parse(raw);
-      const merged=Object.assign({},defaults,saved);
-      if(!saved.provider&&saved.apiBase&&saved.apiBase.includes('11434')){merged.provider='ollama';merged.ollamaUrl=saved.apiBase;}
-      return merged;
-    }
-  }catch(e){}
-  return defaults;
-}
+const dsLoadSettings = loadSettings;
 
 function dsOpenSettings(){
   const p=pfx();
-  const s=dsLoadSettings();
+  const s=loadSettings();
   const el=function(id){return document.getElementById(id);};
   dsSetProvider(s.provider||'groq');
   if(el('ds-openai-key'))el('ds-openai-key').value=s.openaiKey||'';
@@ -633,7 +566,7 @@ async function dsFetchOllamaModels(){
     const models=(j.models||[]).map(m=>m.name);
     if(sel&&models.length){
       sel.innerHTML=models.map(m=>`<option value="${esc(m)}" ${m===current?'selected':''}>${esc(m)}</option>`).join('');
-      const s=dsLoadSettings();s.ollamaModels=models;dsSaveSettings(s);
+      const s=loadSettings();s.ollamaModels=models;saveSettings(s);
     }
   }catch(e){
     if(sel&&!sel.options.length)sel.innerHTML=`<option value="${esc(current||'qwen2.5:3b')}">${esc(current||'qwen2.5:3b')}</option>`;
@@ -643,12 +576,10 @@ async function dsFetchOllamaModels(){
 function saveDSSettings(){
   const prov=document.querySelector('.ds-prov-btn.on')?.dataset?.prov||'groq';
   const s={provider:prov,apiBase:'https://api.groq.com/openai/v1',openaiKey:document.getElementById('ds-openai-key')?.value?.trim()||'',openaiModel:document.getElementById('ds-openai-model-ds')?.value?.trim()||'llama-3.3-70b-versatile',ollamaUrl:document.getElementById('ds-ollama-url')?.value?.trim()||'http://localhost:11434',ollamaModel:document.getElementById('ds-ollama-model')?.value||'qwen2.5:3b',useVision:document.getElementById('ds-use-vision')?.checked||false};
-  dsSaveSettings(s);cm('m-ds-settings');toast('Settings saved');
+  saveSettings(s);cm('m-ds-settings');toast('Settings saved');
 }
 
-function dsSaveSettings(settings){
-  try{localStorage.setItem(KEYS.dsSettings,JSON.stringify(settings));}catch(e){}
-}
+const dsSaveSettings = saveSettings;
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */
 window.renderDoubtSolver=renderDoubtSolver;

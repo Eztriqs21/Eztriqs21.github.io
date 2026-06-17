@@ -1,6 +1,7 @@
 // page-js/personalized-prep.js
 import { DB, sv, KEYS } from '../js/data.js';
 import { uid, esc, toast } from '../js/helpers.js';
+import { loadSettings, callAI } from '../js/ai-service.js';
 
 let prepTab='notebook';
 function renderPrep(el){
@@ -200,7 +201,7 @@ async function prepSendChat(){
     prepScrollBottom();
   }
   try{
-    const{provider,apiBase,openaiKey,openaiModel,ollamaUrl,ollamaModel}=window.dsLoadSettings();
+    const settings=loadSettings();
     const notes=DB.prepChat.notes||[];
     let notesContext='';
     if(notes.length>0){
@@ -221,20 +222,8 @@ Be thorough, detailed, and explain concepts clearly.
 When generating quizzes, use MCQ format with 4 options and indicate the correct answer.
 When referencing uploaded notes, mention which note you're referring to.${notesContext}`;
     const msgs=DB.prepChat.messages.map(m=>({role:m.role,content:m.content}));
-    let reply='';
-    if(provider==='ollama'){
-      reply=await prepOllamaChat(sysPrompt,msgs,ollamaUrl,ollamaModel);
-    }else{
-      try{
-        reply=await prepGroqChat(sysPrompt,msgs,apiBase,openaiKey,openaiModel);
-      }catch(groqErr){
-        const m=(groqErr.message||'').toLowerCase();
-        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('⚡ Groq limit — switching to Ollama...');
-          reply=await prepOllamaChat(sysPrompt,msgs,ollamaUrl,ollamaModel);
-        }else throw groqErr;
-      }
-    }
+    const allMsgs=[{role:'system',content:sysPrompt},...msgs];
+    const reply=await callAI(allMsgs,settings,{maxTokens:4096,temperature:0.3});
     DB.prepChat.messages.push({id:uid(),role:'assistant',content:reply,ts:Date.now()});
     DB.prepChat.updatedAt=Date.now();
     sv('prepChat');
@@ -258,58 +247,6 @@ When referencing uploaded notes, mention which note you're referring to.${notesC
   }
   btn.disabled=false;
   input.focus();
-}
-async function prepOllamaChat(systemPrompt,messages,url,model){
-  const ollamaUrl=(url||'http://localhost:11434').replace(/\/+$/,'');
-  const ollamaModels=DB.prepChat&&DB.prepChat._settings?DB.prepChat._settings.ollamaModels:null;
-  let mdl=model;
-  if((!mdl||mdl==='custom')&&ollamaModels&&ollamaModels.length>0)mdl=ollamaModels[0];
-  if(!mdl)mdl='qwen2.5:3b';
-  const allMsgs=[{role:'system',content:systemPrompt},...messages];
-  const ctrl=new AbortController();
-  const tid=setTimeout(()=>ctrl.abort(),120000);
-  try{
-    const res=await fetch(ollamaUrl+'/api/chat',{
-      method:'POST',headers:{'Content-Type':'application/json'},signal:ctrl.signal,
-      body:JSON.stringify({model:mdl,messages:allMsgs,stream:false})
-    });
-    clearTimeout(tid);
-    if(!res.ok)throw new Error('Ollama error '+res.status);
-    const data=await res.json();
-    return(data.message&&data.message.content)||'No response from Ollama';
-  }catch(e){
-    clearTimeout(tid);
-    if(e.name==='AbortError')throw new Error('Ollama request timed out (2 min). The model may be loading — try again in a moment.');
-    throw e;
-  }
-}
-async function prepGroqChat(systemPrompt,messages,apiBase,apiKey,model){
-  const base=(apiBase||'https://api.groq.com/openai/v1').replace(/\/$/,'');
-  const key=apiKey||localStorage.getItem(KEYS.openaiKey)||'';
-  const mdl=model||'llama-3.1-8b-instant';
-  if(!key)throw new Error('No API key. Set it in Doubt Solver settings or paste a Groq key.');
-  const allMsgs=[{role:'system',content:systemPrompt},...messages];
-  const ctrl=new AbortController();
-  const tid=setTimeout(()=>ctrl.abort(),60000);
-  try{
-    const res=await fetch(base+'/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      signal:ctrl.signal,
-      body:JSON.stringify({model:mdl,messages:allMsgs,temperature:0.3})
-    });
-    clearTimeout(tid);
-    if(!res.ok){
-      const errBody=await res.text().catch(()=>'');
-      throw new Error('API error '+res.status+(errBody.includes('rate_limit')?' — Rate limited. Wait a few seconds.'+errBody.slice(0,120):' '+errBody.slice(0,120)));
-    }
-    const data=await res.json();
-    return(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'No response from API';
-  }catch(e){
-    clearTimeout(tid);
-    if(e.name==='AbortError')throw new Error('API request timed out (60s).');
-    throw e;
-  }
 }
 function prepClearChat(){
   if(!DB.prepChat)return;

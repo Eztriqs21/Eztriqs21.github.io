@@ -1,5 +1,6 @@
 import { DB } from '../js/data.js';
 import { esc, toast } from '../js/helpers.js';
+import { loadSettings, hasApi, callAI } from '../js/ai-service.js';
 
 let pyqTab='pattern',pyqSearchSubj='physics',pyqSearchExam='mains',pyqSearchMax=20;
 let pyqSearchResults=[],pyqSearchLoading=false,pyqSearchQ='';
@@ -257,12 +258,12 @@ function pyqRenderSearch(el){
   const p=pfx();
   const subjOpts=[['physics','Physics'],['chemistry','Chemistry'],['maths','Maths']];
   const examOpts=[['mains','JEE Main'],['advanced','JEE Advanced']];
-  const settings=window.dsLoadSettings();
-  const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
+  const settings=loadSettings();
+  const apiAvail=hasApi(settings);
   const decades=[{label:'2020s',years:[2026,2025,2024,2023,2022,2021,2020]},{label:'2010s',years:[2019,2018,2017,2016,2015,2014,2013,2012,2011,2010]},{label:'2000s',years:[2009,2008,2007,2006,2005,2004,2003,2002]}];
   el.innerHTML=`
   <div style="margin-bottom:16px;font-size:12px;color:var(--muted)">AI-powered PYQ research — fetches real JEE Main & Advanced questions from past papers.</div>
-  ${!hasApi?`<div style="padding:12px 16px;border-radius:var(--radius);background:rgba(0,240,255,0.03);border:1px solid var(--border);font-size:12px;margin-bottom:16px;color:var(--text)"><b style="color:var(--primary)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>`:''}
+  ${!apiAvail?`<div style="padding:12px 16px;border-radius:var(--radius);background:rgba(0,240,255,0.03);border:1px solid var(--border);font-size:12px;margin-bottom:16px;color:var(--text)"><b style="color:var(--primary)">⚙️ No AI provider configured.</b> Go to Doubt Solver → Settings and set up Groq (free) or Ollama (local) to use PYQ Search.</div>`:''}
   <div class="${p}-card" style="padding:16px;margin-bottom:16px">
     <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
       <input class="${p}-input" type="text" id="pyq-s-q" placeholder="e.g. rotational motion, thermodynamics, coordination compounds..." value="${esc(pyqSearchQ)}" style="flex:1;min-width:180px" onkeydown="if(event.key==='Enter')pyqRunSearch()">
@@ -314,9 +315,9 @@ function pyqCleanJson(raw){
 async function pyqRunSearch(){
   const q=(document.getElementById('pyq-s-q')?.value||'').trim();
   if(!q){toast('Enter a search query');return;}
-  const settings=window.dsLoadSettings();
-  const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
-  if(!hasApi){toast('Configure Groq or Ollama in Doubt Solver Settings');window.dsOpenSettings();return;}
+  const settings=loadSettings();
+  const apiAvail=hasApi(settings);
+  if(!apiAvail){toast('Configure Groq or Ollama in Doubt Solver Settings');return;}
   pyqSearchQ=q;pyqSearchLoading=true;pyqRenderTab();
   const mixed=document.getElementById('pyq-s-mixed')?.checked;
   const examLabel=pyqSearchExam==='mains'?'JEE Main':'JEE Advanced';
@@ -348,34 +349,8 @@ Return ONLY a JSON array like:
 Output ONLY the JSON array.`;
 
   try{
-    let content;
-    const tryGroq=async()=>{
-      const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
-      const resp=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey},body:JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],max_tokens:8192,temperature:0.15})});
-      if(!resp.ok){const errBody=await resp.text().catch(()=>'');throw new Error('API error '+resp.status+': '+errBody.slice(0,200));}
-      const j=await resp.json();
-      return j.choices?.[0]?.message?.content||'';
-    };
-    const tryOllama=async()=>{
-      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],stream:false,options:{num_predict:8192}})});
-      if(!resp.ok)throw new Error('Ollama error: '+resp.status);
-      const j=await resp.json();
-      return j.message?.content||'';
-    };
-    if(settings.provider==='ollama'){
-      content=await tryOllama();
-    }else{
-      try{
-        content=await tryGroq();
-      }catch(groqErr){
-        const m=(groqErr.message||'').toLowerCase();
-        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('Groq limit — retrying with Ollama...');
-          content=await tryOllama();
-        }else throw groqErr;
-      }
-    }
+    const messages=[{role:'system',content:systemMsg},{role:'user',content:userMsg}];
+    const content=await callAI(messages,settings,{maxTokens:8192,temperature:0.15});
     const questions=pyqCleanJson(content);
     if(!questions||!Array.isArray(questions)||!questions.length)throw new Error('AI returned invalid data. Try again.');
     pyqSearchResults=questions.slice(0,pyqSearchMax).map((q,i)=>({
@@ -395,9 +370,9 @@ Output ONLY the JSON array.`;
 async function pyqFetchSolution(idx){
   const r=pyqSearchResults[idx];
   if(!r)return;
-  const settings=window.dsLoadSettings();
-  const hasApi=(settings.provider==='groq'&&settings.openaiKey)||(settings.provider==='ollama');
-  if(!hasApi){window.dsOpenSettings();return;}
+  const settings=loadSettings();
+  const apiAvail=hasApi(settings);
+  if(!apiAvail){toast('Configure Groq or Ollama in Doubt Solver Settings');return;}
   const solEl=document.getElementById('pyq-sol-'+idx);
   if(!solEl)return;
   solEl.innerHTML='<div style="color:var(--primary);font-size:11px;padding:8px 0">⏳ Generating detailed solution...</div>';
@@ -405,34 +380,8 @@ async function pyqFetchSolution(idx){
   const systemMsg='You are a JEE expert tutor. Provide a detailed, step-by-step solution. Use LaTeX ($...$ and $$...$$) for ALL math. Be thorough but clear. Include: 1) What the question is asking 2) Key concepts/formulas needed 3) Step-by-step derivation/calculation 4) Final answer verification.';
   const userMsg='Provide a detailed step-by-step solution for this JEE question:\n\n'+r.text+'\n\nCorrect Answer: '+r.answer+'\n\nGive a thorough solution suitable for a JEE aspirant.';
   try{
-    let content;
-    const tryGroq=async()=>{
-      const base=(settings.apiBase||'https://api.groq.com/openai/v1').replace(/\/+$/,'');
-      const resp=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.openaiKey},body:JSON.stringify({model:settings.openaiModel||'llama-3.3-70b-versatile',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],max_tokens:4096,temperature:0.2})});
-      if(!resp.ok)throw new Error('API error '+resp.status);
-      const j=await resp.json();
-      return j.choices?.[0]?.message?.content||'No solution generated.';
-    };
-    const tryOllama=async()=>{
-      const ollamaUrl=(settings.ollamaUrl||'http://localhost:11434').replace(/\/+$/,'');
-      const resp=await fetch(ollamaUrl+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:settings.ollamaModel||'qwen2.5:3b',messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}],stream:false,options:{num_predict:4096}})});
-      if(!resp.ok)throw new Error('Ollama error');
-      const j=await resp.json();
-      return j.message?.content||'No solution generated.';
-    };
-    if(settings.provider==='ollama'){
-      content=await tryOllama();
-    }else{
-      try{
-        content=await tryGroq();
-      }catch(groqErr){
-        const m=(groqErr.message||'').toLowerCase();
-        if(m.includes('429')||m.includes('rate')||m.includes('limit')||m.includes('quota')||m.includes('tokens per')){
-          toast('Groq limit — using Ollama for solution...');
-          content=await tryOllama();
-        }else throw groqErr;
-      }
-    }
+    const messages=[{role:'system',content:systemMsg},{role:'user',content:userMsg}];
+    const content=await callAI(messages,settings,{maxTokens:4096,temperature:0.2});
     solEl.innerHTML='<div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:12px">📝 Detailed Solution</div><div style="white-space:pre-line;line-height:1.7;font-size:12px;color:var(--text)">'+pyqEscapeHtml(content)+'</div>';
     pyqRenderMath(solEl);
   }catch(e){
