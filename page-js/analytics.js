@@ -242,7 +242,7 @@ function saveAnalyticsLog(){
 }
 
 /* ═══════════════ WRAPPER WITH CHOREOGRAPHY ═══════════════ */
-window.renderAnalytics=function(el){
+function renderAnalyticsWrapper(el){
   renderAnalytics(el);
   if(shouldAnimate()){
     setTimeout(()=>{
@@ -251,5 +251,6 @@ window.renderAnalytics=function(el){
       staggerIn(el.querySelectorAll('.section-block'),{delay:0.2});
     },60);
   }
-};
+}
+window.renderAnalytics=renderAnalyticsWrapper;
 window.saveAnalyticsLog=saveAnalyticsLog;

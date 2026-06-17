@@ -213,7 +213,14 @@ function attachCalcKeyboard(){
       if(q&&q.mode==='int'){
         e.preventDefault();
         const inp=document.querySelector('#qrow-'+currentFocusQ+' .q-int-input');
-        if(inp){inp.value='';inp.focus();const sel=window.getSelection?window.getSelection():document.selection;if(sel){sel.removeAllRanges();}}
+        if(inp){
+          const cursorPos = inp.selectionStart;
+          inp.value = inp.value.slice(0, cursorPos) + e.key + inp.value.slice(inp.selectionEnd);
+          inp.focus();
+          inp.setSelectionRange(cursorPos + 1, cursorPos + 1);
+          const sel=window.getSelection?window.getSelection():document.selection;
+          if(sel){sel.removeAllRanges();}
+        }
       }
     }
   };
@@ -232,17 +239,27 @@ function evalCalc(){
 }
 function scoreQ(q,k){
   if(q.unattempted||!q.selected||k===undefined||k===null)return 0;
-  if(q.mode==='int'){const iv=Number(q.selected);if(isNaN(iv)||!Number.isInteger(iv))return 0;return iv===k?4:-1;}
+  if(q.mode==='int'){
+    const iv=Number(q.selected);
+    if(isNaN(iv)||!Number.isInteger(iv))return 0;
+    return iv===k?4:0;
+  }
   if(q.mode==='multi'){
     const ks=String(k).toUpperCase(),ss=q.selected.toUpperCase();
-    let hasWrong=false,allCorrect=true;
+    let correctCount=0, wrongCount=0, totalCorrect=0;
     for(const o of['A','B','C','D']){
-      const inK=ks.includes(o),inS=ss.includes(o);
-      if(inS&&!inK)hasWrong=true;
-      if(inK&&!inS)allCorrect=false;
+      const inK=ks.includes(o), inS=ss.includes(o);
+      if(inK)totalCorrect++;
+      if(inS){
+        if(inK)correctCount++;
+        else wrongCount++;
+      }
     }
-    if(hasWrong)return -2;
-    if(allCorrect)return 4;
+    if(wrongCount>0)return -2;
+    if(correctCount===totalCorrect)return 4;
+    if(correctCount===totalCorrect-1)return 3;
+    if(correctCount===totalCorrect-2)return 2;
+    if(correctCount===totalCorrect-3)return 1;
     return 0;
   }
   return q.selected===k?4:-1;
@@ -303,7 +320,7 @@ function saveCalcTestFromModal(){
 function saveCalcAsMockTest(){
   const tot=calcQuestions.reduce(function(s,q){
     const sc=scoreQ(q,calcAnsKey[q.num]);
-    if(Number.isNaN(sc)||sc===0)return s;
+    if(Number.isNaN(sc))return s;
     return s+sc;
   },0);
   document.getElementById('mt-scored').value=Math.max(0,tot);
@@ -326,11 +343,12 @@ function buildCalcRes(){
     const k=calcAnsKey[q.num];
     const unatt=q.unattempted||!q.selected;
     const noKey=k===undefined||k===null;
-    const sc=unatt||noKey?0:scoreQ(q,k);
+    const sc=noKey?0:(unatt?0:scoreQ(q,k));
     if(Number.isNaN(sc))return;
     tot+=sc;
     qR.push({num:q.num,subj:q.subj,mode:q.mode,selected:q.selected,key:k,score:sc,skipped:unatt,noKey});
-    if(unatt||noKey)totS++;
+    if(unatt)totS++;
+    else if(noKey)totS++;
     else if(sc>=4)totC++;
     else if(sc>0)totP++;
     else if(sc===0&&q.mode==='multi'&&q.selected)totP++;
@@ -339,12 +357,16 @@ function buildCalcRes(){
   const sd=subjs.map((s,si)=>{
     let sc=0,c=0,w=0,sk=0,p=0;
     qR.filter(r=>r.subj===s).forEach(r=>{
-      if(r.skipped||r.noKey)sk++;
+      if(r.skipped)sk++;
+      else if(r.noKey)sk++;
       else if(r.score>=4)c++;
       else if(r.score>0)p++;
+      else if(r.score===0&&r.mode==='multi'&&r.selected)p++;
       else w++;
       sc+=r.score;
     });
+    return{label:labels[si],color:colors[si],score:sc,correct:c,wrong:w,skip:sk,partial:p};
+  });
     return{label:labels[si],color:colors[si],score:sc,correct:c,wrong:w,skip:sk,partial:p};
   });
   const scoreC=tot>=200?'var(--green)':tot>=120?'var(--accent)':'var(--red)';

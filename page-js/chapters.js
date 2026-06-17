@@ -1,6 +1,6 @@
 // page-js/chapters.js
 /* ═══════════════ CHAPTERS ═══════════════ */
-import { DB, sv, findCh, mkCh } from '../js/data.js';
+import { DB, sv, findCh, mkCh, oneShotURL, ONE_SHOT_LINKS } from '../js/data.js';
 import { uid, esc, safePct, cm, om, toast, setupDZ, debouncedUpdChList, cfm2, fItemHTML, rdFiles } from '../js/helpers.js';
 let matrixFilter='all';
 let chSearch='';

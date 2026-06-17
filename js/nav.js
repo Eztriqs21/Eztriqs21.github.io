@@ -14,6 +14,7 @@ export function go(page){
   if(PAGE==='mocktests'&&page!=='mocktests'&&window.cmtCleanup)window.cmtCleanup();
   PAGE=page;
   window.PAGE=page;
+  document.documentElement.setAttribute('data-page',page);
   document.querySelectorAll('.si,.bni').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.si .si-act').forEach(el=>el.remove());
   const si=document.getElementById('sn-'+page),bn=document.getElementById('bn-'+page);
@@ -54,11 +55,15 @@ function _renderSwap(el){
     else if(PAGE==='revision')window.renderRevision(el);
     else if(PAGE==='scoreanalytics')window.renderScoreAnalytics(el);
     else if(PAGE==='chapters')window.renderChapters(el);
+    else if(PAGE==='notes')window.renderNotes(el);
     else if(PAGE==='assignments')window.renderAssignments(el);
     else if(PAGE==='tests')window.renderTests(el);
     else if(PAGE==='calculator')window.renderCalculator(el);
     else if(PAGE==='mocktests')window.renderMockTests(el);
     else if(PAGE==='doubtsolver')window.renderDoubtSolver(el);
+    else if(PAGE==='pyq')window.renderPYQ(el);
+    else if(PAGE==='prep')window.renderPrep(el);
+    else if(PAGE==='studylog')window.openStudyLog();
   }catch(err){
     console.error('Render error for page:',PAGE,err);
     el.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:18px;font-weight:700;margin-bottom:8px">Something went wrong</div><div style="font-size:13px">'+(err.message||'').replace(/</g,'&lt;')+'</div></div>';

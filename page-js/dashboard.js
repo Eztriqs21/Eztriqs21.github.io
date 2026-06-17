@@ -1,5 +1,5 @@
 // page-js/dashboard.js
-import { DB } from '../js/data.js';
+import { DB, oneShotURL, ONE_SHOT_LINKS } from '../js/data.js';
 import { safePct, fmtDate, esc } from '../js/helpers.js';
 import { pageLoadChoreography, chartChoreography, staggerIn, shouldAnimate } from '../js/animations.js';
 /* ═══════════════ DASHBOARD ═══════════════ */
@@ -71,7 +71,7 @@ function renderDashboard(el){
 }
 
 /* ═══════════════ WRAPPER WITH CHOREOGRAPHY ═══════════════ */
-window.renderDashboard=function(el){
+function renderDashboardWrapper(el){
   renderDashboard(el);
   if(shouldAnimate()){
     setTimeout(()=>{
@@ -80,4 +80,5 @@ window.renderDashboard=function(el){
       staggerIn(el.querySelectorAll('.section-block'),{delay:0.15});
     },60);
   }
-};
+}
+window.renderDashboard=renderDashboardWrapper;

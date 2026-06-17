@@ -1,8 +1,28 @@
 // page-js/score-analytics.js
 import { DB } from '../js/data.js';
+import { esc, fmtDate } from '../js/helpers.js';
 
 function renderScoreAnalytics(el){
-  const tests=DB.tests||[];
+  const rawTests=DB.tests||[];
+  const rawMocks=DB.mockTests||[];
+  const allTests=[...rawTests.map(t=>({
+    id:t.id,name:t.name,date:t.date,
+    totalScore:t.totalScore,maxScore:t.maxScore||300,
+    subject:'Full Syllabus',
+    physics:t.physics||{correct:0,incorrect:0,unattempted:0},
+    chemistry:t.chemistry||{correct:0,incorrect:0,unattempted:0},
+    maths:t.maths||{correct:0,incorrect:0,unattempted:0},
+    source:'tests'
+  })),...rawMocks.map(m=>({
+    id:m.id,name:m.subject,date:m.date,
+    totalScore:m.marksScored,maxScore:m.totalMarks||300,
+    subject:m.subject||'Full Syllabus',
+    physics:{correct:0,incorrect:0,unattempted:0},
+    chemistry:{correct:0,incorrect:0,unattempted:0},
+    maths:{correct:0,incorrect:0,unattempted:0},
+    source:'mocks'
+  }))];
+  const tests=allTests.filter(t=>t.date&&t.totalScore!=null);
   if(!tests.length){
     el.innerHTML=`
     <div class="pg-hdr anim-up">
@@ -34,9 +54,18 @@ function renderScoreAnalytics(el){
   const trend=recentAvg>avg?'↑ Improving':recentAvg<avg-5?'↓ Needs work':'→ Steady';
   const trendCol=recentAvg>avg?'var(--green)':recentAvg<avg-5?'var(--red)':'var(--accent)';
   const maxScore=Math.max(...scores,300);
-  const physAvg=tests.length?Math.round(tests.reduce((s,t)=>s+(t.physics.correct*4-t.physics.incorrect),0)/tests.length):0;
-  const chemAvg=tests.length?Math.round(tests.reduce((s,t)=>s+(t.chemistry.correct*4-t.chemistry.incorrect),0)/tests.length):0;
-  const mathAvg=tests.length?Math.round(tests.reduce((s,t)=>s+(t.maths.correct*4-t.maths.incorrect),0)/tests.length):0;
+  const physAvg=tests.length?Math.round(tests.reduce((s,t)=>{
+    const p=t.physics;
+    return s+(p.correct*4-p.incorrect);
+  },0)/tests.length):0;
+  const chemAvg=tests.length?Math.round(tests.reduce((s,t)=>{
+    const c=t.chemistry;
+    return s+(c.correct*4-c.incorrect);
+  },0)/tests.length):0;
+  const mathAvg=tests.length?Math.round(tests.reduce((s,t)=>{
+    const m=t.maths;
+    return s+(m.correct*4-m.incorrect);
+  },0)/tests.length):0;
   const weakSubj=physAvg<=chemAvg&&physAvg<=mathAvg?'physics':chemAvg<=mathAvg?'chemistry':'maths';
 
   const svgChart=sorted.length>=2?buildSvgChart(sorted,avg,maxScore):'';
@@ -102,7 +131,6 @@ function renderScoreAnalytics(el){
         <tbody>
           ${sorted.slice(-8).reverse().map(t=>{
             const dt=new Date(t.date);
-            const pct=t.totalScore>=avg?100:Math.round(t.totalScore/avg*100);
             return `<tr style="border-bottom:1px solid var(--glass);transition:background .15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
               <td style="padding:8px 12px;color:var(--muted)">${dt.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td>
               <td style="padding:8px 12px;font-weight:700;color:${t.totalScore>=avg?'var(--green)':'var(--txt)'}">${t.totalScore}</td>
@@ -118,11 +146,12 @@ function renderScoreAnalytics(el){
 }
 
 function buildSvgChart(sorted,avg,maxScore){
+  if(sorted.length<2)return '';
   const w=500,h=160,pad=32;
   const maxVal=Math.max(...sorted.map(t=>t.totalScore),maxScore);
   const minVal=0;
   const range=maxVal-minVal||1;
-  const step=(w-pad*2)/(sorted.length-1);
+  const step=sorted.length>1?(w-pad*2)/(sorted.length-1):0;
   const pts=sorted.map((t,i)=>{
     const x=pad+i*step;
     const y=h-pad-((t.totalScore-minVal)/range)*(h-pad*2);
@@ -149,5 +178,4 @@ function buildSvgChart(sorted,avg,maxScore){
   </svg>`;
 }
 
-/* ═══════════════ WINDOW EXPORTS ═══════════════ */
 window.renderScoreAnalytics=renderScoreAnalytics;
