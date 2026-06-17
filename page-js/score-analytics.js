@@ -25,7 +25,7 @@
     const w = 400, h = 140, pad = 24;
     if (data.length < 2) return '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Need more data points</div>';
 
-    const pcts = data.map(d => safePct(d.total, d.max));
+    const pcts = data.map(d => safePct(d.totalScore || d.total, d.maxScore || d.max));
     const maxPct = Math.max(...pcts, 100);
     const minPct = 0;
     const range = maxPct - minPct || 1;

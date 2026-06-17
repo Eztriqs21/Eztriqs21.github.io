@@ -7,6 +7,12 @@
 
   let _testSearch = '';
 
+  function _anim() {
+    var el = document.getElementById('content-wrap');
+    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
+    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
+  }
+
   function tstCard(t, i) {
     const p = pfx();
     const pct = t.maxScore > 0 ? Math.round(t.totalScore / t.maxScore * 100) : 0;
@@ -14,6 +20,7 @@
     const phS = (t.physics || {}).correct * 4 - (t.physics || {}).incorrect;
     const chS = (t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect;
     const mS = (t.maths || {}).correct * 4 - (t.maths || {}).incorrect;
+    const papers = t.papers || [];
 
     return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden">
       <div style="padding:16px 18px">
@@ -42,6 +49,7 @@
             <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Maths</div>
           </div>
         </div>
+        ${papers.length ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">' + papers.map((d, fi) => '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--border-card);color:var(--text-muted);cursor:pointer" onclick="window.pvFile(\'' + (d.data || '') + '\',\'' + esc(d.name || 'Paper') + '\')">' + esc(d.name || 'File ' + (fi + 1)) + '</span>').join('') + '</div>' : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="${p}-btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="window.delTest('${t.id}')">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
@@ -101,6 +109,9 @@
 
   /* CRUD */
   window.openAddTest = function() {
+    window.pendingTFiles = [];
+    var fl = document.getElementById('t-file-list'); if (fl) fl.innerHTML = '';
+    if (window.setupDZ) window.setupDZ('t-dz', 't-finp', window.handleTFiles);
     if (window.om) window.om('m-test');
     setTimeout(function() { var t = document.getElementById('t-name'); if (t) t.focus(); }, 320);
   };
@@ -113,17 +124,20 @@
         DB.tests = DB.tests.filter(t => t.id !== id);
         if (window.sv) window.sv('tests');
         window.renderTests(document.getElementById('content-wrap'));
+        _anim();
         if (window.toast) window.toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Test deleted');
       });
     } else {
       DB.tests = DB.tests.filter(t => t.id !== id);
       if (window.sv) window.sv('tests');
       window.renderTests(document.getElementById('content-wrap'));
+      _anim();
     }
   };
 
   window._testSearchFn = function(val) {
     _testSearch = val || '';
     window.renderTests(document.getElementById('content-wrap'));
+    _anim();
   };
 })();

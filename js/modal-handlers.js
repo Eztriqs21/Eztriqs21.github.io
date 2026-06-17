@@ -7,6 +7,12 @@ function esc(s) { var d = document.createElement('div'); d.textContent = s; retu
 function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
 function fmtDateTime(d) { return new Date(d).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
+function _animPage() {
+  var el = document.getElementById('content-wrap');
+  if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
+  if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
+}
+
 function cfm2(title, msg, onConfirm) {
   var existing = document.querySelector('.cfm-overlay');
   if (existing) existing.remove();
@@ -98,6 +104,7 @@ function saveAssignment() {
   toast('Task added!');
   if (window.PAGE === 'assignments') window.renderAssignments(document.getElementById('content-wrap'));
   if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+  _animPage();
 }
 
 /* ═══════════════ TESTS ═══════════════ */
@@ -194,6 +201,7 @@ function saveTest() {
   toast('Test saved!');
   if (window.PAGE === 'tests') window.renderTests(document.getElementById('content-wrap'));
   if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+  _animPage();
 }
 
 /* ═══════════════ CALCULATOR ═══════════════ */
@@ -234,6 +242,7 @@ function saveAddCh() {
   toast('Chapter added!');
   if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
   if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+  _animPage();
 }
 
 function saveEditCh() {
@@ -249,6 +258,7 @@ function saveEditCh() {
   window.cm('m-edit-ch');
   toast('Updated!');
   if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
+  _animPage();
 }
 
 function deleteEditCh() {
@@ -262,6 +272,7 @@ function deleteEditCh() {
     toast('Deleted');
     if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
     if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+    _animPage();
   });
 }
 
@@ -281,6 +292,7 @@ function saveStudyLog() {
   toast('Session logged!');
   if (window.PAGE === 'study-log') window.renderStudyLog(document.getElementById('content-wrap'));
   if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+  _animPage();
 }
 
 /* ═══════════════ MOCK TEST ═══════════════ */
@@ -311,6 +323,7 @@ function saveMockTest() {
   toast('Mock test saved!');
   if (window.PAGE === 'mock-tests') window.renderMockTests(document.getElementById('content-wrap'));
   if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+  _animPage();
 }
 
 /* ═══════════════ DOUBT SOLVER ═══════════════ */

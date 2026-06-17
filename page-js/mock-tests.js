@@ -12,6 +12,12 @@
     maths: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>'
   };
 
+  function _anim() {
+    var el = document.getElementById('content-wrap');
+    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
+    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
+  }
+
   function subjectBreakdown(test, key) {
     const p = pfx();
     const data = test[key] || { correct: 0, incorrect: 0, unattempted: 0 };
@@ -125,12 +131,14 @@
         DB.mockTests = DB.mockTests.filter(t => t.id !== id);
         if (window.sv) window.sv('mockTests');
         window.renderMockTests(document.getElementById('content-wrap'));
+        _anim();
         if (window.toast) window.toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Mock test deleted');
       });
     } else {
       DB.mockTests = DB.mockTests.filter(t => t.id !== id);
       if (window.sv) window.sv('mockTests');
       window.renderMockTests(document.getElementById('content-wrap'));
+      _anim();
     }
   };
 })();

@@ -10,7 +10,6 @@ export const PAGE_RENDERERS = {
   doubts: 'renderDoubts',
   notes: 'renderNotes',
   pyq: 'renderPYQ',
-  prep: 'renderPrep',
   'score-analytics': 'renderScoreAnalytics',
   'study-log': 'renderStudyLog'
 };
@@ -27,7 +26,6 @@ export const PAGE_TITLES = {
   doubts: { title: 'Doubt Solver', sub: 'AI-powered doubt resolution' },
   notes: { title: 'Notes', sub: 'Chapter-wise notes & resources' },
   pyq: { title: 'PYQ Research', sub: 'Previous year question analysis' },
-  prep: { title: 'Prep Chat', sub: 'Personalized study planning' },
   'score-analytics': { title: 'Score Analytics', sub: 'Detailed performance breakdown' },
   'study-log': { title: 'Study Log', sub: 'Track your study sessions' }
 };

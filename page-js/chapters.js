@@ -17,6 +17,12 @@
   let _chFilter = 'all';
   let _chSearch = '';
 
+  function _anim() {
+    var el = document.getElementById('content-wrap');
+    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
+    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
+  }
+
   function chapterRow(ch, subj, index) {
     const p = pfx();
     const str = ch.strength || 'none';
@@ -126,6 +132,7 @@
     ch.completedAt = ch.completed ? new Date().toISOString() : null;
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
+    _anim();
     if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
   };
 
@@ -138,6 +145,7 @@
     ch.strength = STRENGTH[(idx + 1) % STRENGTH.length];
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
+    _anim();
   };
 
   window.togglePyq = function(subj, id) {
@@ -148,10 +156,12 @@
     ch.pyq = !ch.pyq;
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
+    _anim();
   };
 
   window._chSearchFn = function(val) {
     _chSearch = val || '';
     window.renderChapters(document.getElementById('content-wrap'));
+    _anim();
   };
 })();

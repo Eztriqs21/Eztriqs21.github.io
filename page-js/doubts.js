@@ -35,7 +35,7 @@
     return '<div style="display:flex;gap:8px;align-items:flex-start;max-width:85%;align-self:' + (isUser ? 'flex-end;flex-direction:row-reverse' : 'flex-start') + '">'
       + '<div style="width:28px;height:28px;border-radius:50%;background:var(--border-card);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)">' + avatar + '</div>'
       + '<div style="padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;' + (isUser ? 'background:var(--accent);color:#fff;border-bottom-right-radius:4px' : 'background:var(--border-card);color:var(--text);border-bottom-left-radius:4px') + '">' + content + '</div>'
-    '</div>';
+      + '</div>';
   }
 
   function quickAskHtml() {

@@ -68,6 +68,11 @@ export function initThemes() {
       e.preventDefault();
       toggleTheme();
     }
+    const shortcuts = { '1': 'dashboard', '2': 'chapters', '3': 'tests', '4': 'analytics', '5': 'calculator' };
+    if (shortcuts[e.key]) {
+      e.preventDefault();
+      window.location.hash = '#/' + shortcuts[e.key];
+    }
   });
 }
 

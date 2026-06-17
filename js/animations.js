@@ -702,10 +702,11 @@ export function initInteractions() {
     if (fab) fabPress(fab);
   }, true);
 
-  // 3D tilt on stat-cards and prep-cards
+  // 3D tilt on cards
+  const tiltSelector = '.nx-card, .nx-stat-card, .nx-hero-stat, .bl-card, .bl-stat-card, .bl-hero-stat, .stat-card, .prep-card';
   document.addEventListener('pointermove', e => {
     if (!(e.target instanceof Element)) return;
-    const card = e.target.closest('.stat-card, .prep-card');
+    const card = e.target.closest(tiltSelector);
     if (!card) return;
     const r = card.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width - 0.5;
@@ -715,9 +716,85 @@ export function initInteractions() {
 
   document.addEventListener('pointerleave', e => {
     if (!(e.target instanceof Element)) return;
-    const card = e.target.closest('.stat-card, .prep-card');
+    const card = e.target.closest(tiltSelector);
     if (card) tiltCardReset(card);
   }, true);
+
+  // Magnetic buttons on [data-interactive]
+  document.addEventListener('pointermove', e => {
+    if (!(e.target instanceof Element)) return;
+    document.querySelectorAll('[data-interactive]').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 80) {
+        const force = (1 - dist / 80) * 0.3;
+        el.style.transform = 'translate(' + (dx * force) + 'px,' + (dy * force) + 'px)';
+      } else {
+        el.style.transform = '';
+      }
+    });
+  }, { passive: true });
+
+  // Ripple on buttons/chips
+  document.addEventListener('pointerdown', e => {
+    const target = e.target.closest('.nx-btn, .bl-btn, .nx-chip, .bl-chip');
+    if (!target) return;
+    const ripple = document.createElement('span');
+    const rect = target.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;border-radius:50%;background:rgba(255,255,255,0.2);transform:scale(0);animation:ripple-expand 0.6s ease-out;pointer-events:none;';
+    target.style.position = 'relative';
+    target.style.overflow = 'hidden';
+    target.appendChild(ripple);
+    setTimeout(function() { ripple.remove(); }, 600);
+  }, true);
+
+  // Bloom parallax cards
+  let _parallaxTick = false;
+  document.addEventListener('pointermove', e => {
+    if (_parallaxTick) return;
+    _parallaxTick = true;
+    requestAnimationFrame(function() {
+      const theme = document.documentElement.getAttribute('data-theme');
+      if (theme === 'bloom') {
+        document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat').forEach(function(card) {
+          const rect = card.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const offsetX = (e.clientX - centerX) * 0.015;
+          const offsetY = (e.clientY - centerY) * 0.015;
+          if (Math.abs(e.clientX - centerX) < 300 && Math.abs(e.clientY - centerY) < 300) {
+            card.style.transform = 'translate(' + (-offsetX) + 'px,' + (-offsetY) + 'px) translateY(-2px)';
+            card.style.willChange = 'transform';
+          } else {
+            card.style.transform = '';
+            card.style.willChange = '';
+          }
+        });
+      }
+      _parallaxTick = false;
+    });
+  }, { passive: true });
+
+  // Easter egg: long-press logo
+  const logo = document.querySelector('.sidebar-logo');
+  const overlay = document.getElementById('easter-egg-overlay');
+  if (logo && overlay) {
+    let pressTimer = null;
+    logo.addEventListener('mousedown', function() {
+      pressTimer = setTimeout(function() {
+        overlay.classList.add('active');
+        setTimeout(function() { overlay.classList.remove('active'); }, 2500);
+      }, 2000);
+    });
+    logo.addEventListener('mouseup', function() { clearTimeout(pressTimer); });
+    logo.addEventListener('mouseleave', function() { clearTimeout(pressTimer); });
+    overlay.addEventListener('click', function() { overlay.classList.remove('active'); });
+  }
 
   // Input focus ring
   document.addEventListener('focusin', e => {
