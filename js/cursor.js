@@ -57,6 +57,8 @@
   var lastParticleTime = 0;
   var speed = 0;
   var animating = false;
+  var rafId = null;
+  var listeners = [];
 
   // ── Apply theme to elements ─────────────────────────────────
   function applyThemeStyles() {
@@ -80,19 +82,21 @@
   }
 
   // ── Mouse tracking ──────────────────────────────────────────
-  document.addEventListener('mousemove', function (e) {
+  function onMouseMove(e) {
     var dx = e.clientX - mouseX;
     var dy = e.clientY - mouseY;
     speed = Math.sqrt(dx * dx + dy * dy);
     mouseX = e.clientX;
     mouseY = e.clientY;
     if (!animating) { animating = true; animate(); }
-  }, { passive: true });
+  }
+  document.addEventListener('mousemove', onMouseMove, { passive: true });
+  listeners.push(['mousemove', onMouseMove, false]);
 
   // ── Hover detection ─────────────────────────────────────────
   var INTERACTIVE_SEL = 'a,button,.si,.bni,.fab,.fab-action,.theme-dot,.cmt-chip,.cmt-source-opt,.cmt-time-btn,.pyq-tab,.ds-tab,.chip,.mt-month-head,.mt-subj-header,[onclick],[data-interactive]';
 
-  document.addEventListener('mouseover', function (e) {
+  function onMouseOver(e) {
     if (e.target.closest(INTERACTIVE_SEL)) {
       if (!isHovering) {
         isHovering = true;
@@ -100,36 +104,47 @@
         document.body.classList.add('cursor-hover');
       }
     }
-  }, true);
-
-  document.addEventListener('mouseout', function (e) {
+  }
+  function onMouseOut(e) {
     if (e.target.closest(INTERACTIVE_SEL)) {
       isHovering = false;
       targetHoverScale = 1;
       document.body.classList.remove('cursor-hover');
     }
-  }, true);
+  }
+  document.addEventListener('mouseover', onMouseOver, true);
+  document.addEventListener('mouseout', onMouseOut, true);
+  listeners.push(['mouseover', onMouseOver, true]);
+  listeners.push(['mouseout', onMouseOut, true]);
 
   // ── Click feedback ──────────────────────────────────────────
-  document.addEventListener('mousedown', function () {
+  function onMouseDown() {
     document.body.classList.add('cursor-click');
     spawnClickParticles();
-  });
-  document.addEventListener('mouseup', function () {
+  }
+  function onMouseUp() {
     setTimeout(function () { document.body.classList.remove('cursor-click'); }, 400);
-  });
+  }
+  document.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('mouseup', onMouseUp);
+  listeners.push(['mousedown', onMouseDown, false]);
+  listeners.push(['mouseup', onMouseUp, false]);
 
   // ── Visibility on leave/enter ───────────────────────────────
-  document.addEventListener('mouseleave', function () {
+  function onMouseLeave() {
     ring.style.opacity = '0';
     dot.style.opacity = '0';
     trail.style.opacity = '0';
-  });
-  document.addEventListener('mouseenter', function () {
+  }
+  function onMouseEnter() {
     ring.style.opacity = '1';
     dot.style.opacity = '1';
     trail.style.opacity = '1';
-  });
+  }
+  document.addEventListener('mouseleave', onMouseLeave);
+  document.addEventListener('mouseenter', onMouseEnter);
+  listeners.push(['mouseleave', onMouseLeave, false]);
+  listeners.push(['mouseenter', onMouseEnter, false]);
 
   // ── Particle system ─────────────────────────────────────────
   function spawnClickParticles() {
@@ -213,7 +228,7 @@
 
     spawnTrailParticles();
     updateParticles();
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
   }
 
   // ── Expose to window ────────────────────────────────────────
@@ -229,6 +244,17 @@
     updateParticles: updateParticles,
     reinit: function () {
       applyThemeStyles();
+    },
+    destroy: function () {
+      animating = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      listeners.forEach(function (l) { document.removeEventListener(l[0], l[1], l[2]); });
+      listeners = [];
+      particles = [];
+      if (ring.parentNode) ring.parentNode.removeChild(ring);
+      if (trail.parentNode) trail.parentNode.removeChild(trail);
+      if (pulse.parentNode) pulse.parentNode.removeChild(pulse);
+      document.body.classList.remove('cursor-hover', 'cursor-click');
     }
   };
 

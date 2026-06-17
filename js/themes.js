@@ -22,15 +22,15 @@ export function applyTheme(i) {
 
   const gridCanvas = document.getElementById('grid-canvas');
   if (gridCanvas) {
-    if (t === 'nexus' && window.NexusGrid) {
-      window.NexusGrid.start();
+    if (t === 'nexus' && window.gridNexus) {
+      window.gridNexus.start();
       gridCanvas.classList.add('active');
-    } else if (t === 'bloom' && window.BloomGrid) {
-      window.BloomGrid.start();
+    } else if (t === 'bloom' && window.gridBloom) {
+      window.gridBloom.start();
       gridCanvas.classList.add('active');
     } else {
-      if (window.NexusGrid) window.NexusGrid.stop();
-      if (window.BloomGrid) window.BloomGrid.stop();
+      if (window.gridNexus) window.gridNexus.stop();
+      if (window.gridBloom) window.gridBloom.stop();
       gridCanvas.classList.remove('active');
     }
   }
