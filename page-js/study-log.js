@@ -1,6 +1,6 @@
 // page-js/study-log.js — Study Log page with live timer (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
@@ -199,8 +199,10 @@
   };
 
   window._startSession = function() {
-    var subj = document.getElementById('ss-subj').value;
-    var topic = document.getElementById('ss-topic').value.trim();
+    var subjEl = document.getElementById('ss-subj');
+    var subj = subjEl ? subjEl.value : 'Physics';
+    var topicEl = document.getElementById('ss-topic');
+    var topic = topicEl ? topicEl.value.trim() : '';
     if (!topic) { if (window.toast) window.toast('Enter a topic'); return; }
     _session = { status: 'running', subject: subj, topic: topic, startTime: Date.now(), pausedAt: 0, totalPausedMs: 0 };
     saveSession();

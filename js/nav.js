@@ -100,9 +100,8 @@ export function toggleSidebar() {
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('mob-overlay');
   if (_sbOpen) {
-    sb.classList.add('open');
-    ov.classList.add('open');
-    ov.style.cssText = 'display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);';
+    if (sb) sb.classList.add('open');
+    if (ov) { ov.classList.add('open'); ov.style.cssText = 'display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);'; }
     document.body.style.overflow = 'hidden';
   } else {
     closeSidebar();

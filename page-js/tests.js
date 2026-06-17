@@ -1,6 +1,6 @@
 // page-js/tests.js — Tests page (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
@@ -111,7 +111,24 @@
   window.openAddTest = function() {
     window.pendingTFiles = [];
     var fl = document.getElementById('t-file-list'); if (fl) fl.innerHTML = '';
-    if (window.setupDZ) window.setupDZ('t-dz', 't-finp', window.handleTFiles);
+    ['t-name', 't-direct-marks', 't-direct-max', 'tp-c', 'tp-w', 'tp-s', 'tc-c', 'tc-w', 'tc-s', 'tm-c', 'tm-w', 'tm-s', 'test-t-p', 'test-t-c', 'test-t-m', 'test-t-tot'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    var dateEl = document.getElementById('t-date');
+    if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+    var grid = document.getElementById('t-syl-grid');
+    if (grid) {
+      var DB = window.DB;
+      var html = '';
+      ['physics', 'chemistry', 'maths'].forEach(function(subj) {
+        var chapters = (DB.chapters || {})[subj] || [];
+        chapters.forEach(function(ch) {
+          html += '<label style="display:flex;align-items:center;gap:4px;font-size:11px;padding:3px 6px;border-radius:4px;border:1px solid var(--border);cursor:pointer"><input type="checkbox" class="t-syl-cb" data-subj="' + subj + '" value="' + esc(ch.name) + '"/> ' + esc(ch.name) + '</label>';
+        });
+      });
+      grid.innerHTML = html || '<div style="font-size:11px;color:var(--muted)">No chapters added yet</div>';
+    }
     if (window.om) window.om('m-test');
     setTimeout(function() { var t = document.getElementById('t-name'); if (t) t.focus(); }, 320);
   };

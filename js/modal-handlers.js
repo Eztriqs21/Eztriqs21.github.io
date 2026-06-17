@@ -3,7 +3,7 @@
 // They rely on window.DB, window.sv, window.cm, window.om, window.toast, window.findCh
 
 /* ═══════════════ SHARED HELPERS ═══════════════ */
-function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
 function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
 function fmtDateTime(d) { return new Date(d).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
@@ -18,8 +18,9 @@ function cfm2(title, msg, onConfirm) {
   if (existing) existing.remove();
   var el = document.createElement('div');
   el.className = 'cfm-overlay';
-  el.innerHTML = '<div class="cfm-box"><div class="cfm-title">' + esc(title) + '</div><div class="cfm-sub">' + esc(msg) + '</div><div class="cfm-btns"><button class="btn btn-ghost btn-sm" onclick="document.querySelector(\'.cfm-overlay\').remove()">Cancel</button><button class="btn btn-danger btn-sm" id="cfm-ok-btn">Confirm</button></div></div>';
+  el.innerHTML = '<div class="cfm-box"><div class="cfm-title">' + esc(title) + '</div><div class="cfm-sub">' + esc(msg) + '</div><div class="cfm-btns"><button class="btn btn-ghost btn-sm" id="cfm-cancel-btn">Cancel</button><button class="btn btn-danger btn-sm" id="cfm-ok-btn">Confirm</button></div></div>';
   document.body.appendChild(el);
+  document.getElementById('cfm-cancel-btn').addEventListener('click', function () { el.remove(); });
   document.getElementById('cfm-ok-btn').addEventListener('click', function () { el.remove(); if (onConfirm) onConfirm(); });
 }
 
@@ -298,17 +299,21 @@ function saveStudyLog() {
 /* ═══════════════ MOCK TEST ═══════════════ */
 function saveMockTest() {
   var DB = window.DB;
-  var name = document.getElementById('mt-name').value.trim();
+  var nameEl = document.getElementById('mt-name');
+  var name = nameEl ? nameEl.value.trim() : '';
   if (!name) { toast('Enter test name'); return; }
-  var subj = document.getElementById('mt-subj')?.value || 'physics';
-  var scored = parseInt(document.getElementById('mt-scored').value) || 0;
-  var total = parseInt(document.getElementById('mt-total').value) || 300;
+  var subjEl = document.getElementById('mt-subj');
+  var subj = subjEl ? subjEl.value : 'Full Syllabus';
+  var scoredEl = document.getElementById('mt-scored');
+  var scored = parseInt(scoredEl ? scoredEl.value : '0') || 0;
+  var totalEl = document.getElementById('mt-total');
+  var total = parseInt(totalEl ? totalEl.value : '0') || 300;
   var correct = Math.round(scored / 4);
   var incorrect = Math.max(0, Math.round((total - scored) / 4));
   var unattempted = Math.max(0, 75 - correct - incorrect);
   if (!DB.mockTests) DB.mockTests = [];
   DB.mockTests.unshift({
-    id: 'mt_' + Date.now(), name: name,
+    id: 'mt_' + Date.now(), name: name, subject: subj,
     date: document.getElementById('mt-date').value || new Date().toISOString().split('T')[0],
     total: total,
     physics: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
@@ -319,6 +324,14 @@ function saveMockTest() {
     review: document.getElementById('mt-review').value.trim()
   });
   window.sv('mockTests');
+  ['mt-name', 'mt-scored', 'mt-total', 'mt-time', 'mt-syllabus', 'mt-review'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  var sd = document.getElementById('mt-date');
+  if (sd) sd.value = new Date().toISOString().split('T')[0];
+  var sj = document.getElementById('mt-subj');
+  if (sj) sj.value = 'Full Syllabus';
   window.cm('m-mocktest');
   toast('Mock test saved!');
   if (window.PAGE === 'mock-tests') window.renderMockTests(document.getElementById('content-wrap'));
@@ -334,6 +347,27 @@ function dsSetProvider(prov) {
   var ollamaSec = document.getElementById('ds-ollama-section');
   if (groqSec) groqSec.style.display = prov === 'groq' ? 'block' : 'none';
   if (ollamaSec) ollamaSec.style.display = prov === 'ollama' ? 'block' : 'none';
+  if (prov === 'ollama') fetchOllamaModels();
+}
+
+function fetchOllamaModels() {
+  var sel = document.getElementById('ds-ollama-model');
+  var urlEl = document.getElementById('ds-ollama-url');
+  var baseUrl = urlEl ? urlEl.value.trim() : 'http://localhost:11434';
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Loading models...</option>';
+  fetch(baseUrl + '/api/tags', { method: 'GET', signal: AbortSignal.timeout(5000) })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var models = (data.models || []).map(function (m) { return m.name; });
+      if (!models.length) { sel.innerHTML = '<option value="">No models found</option>'; return; }
+      sel.innerHTML = models.map(function (m) { return '<option value="' + esc(m) + '">' + esc(m) + '</option>'; }).join('');
+      var currentModel = document.getElementById('ds-ollama-model')?.getAttribute('data-current');
+      if (currentModel) sel.value = currentModel;
+    })
+    .catch(function () {
+      sel.innerHTML = '<option value="qwen2.5:3b">qwen2.5:3b (default)</option><option value="llama3.2:3b">llama3.2:3b</option>';
+    });
 }
 
 function saveDSSettings() {
@@ -400,6 +434,7 @@ window.deleteEditCh = deleteEditCh;
 window.saveStudyLog = saveStudyLog;
 window.saveMockTest = saveMockTest;
 window.dsSetProvider = dsSetProvider;
+window.fetchOllamaModels = fetchOllamaModels;
 window.saveDSSettings = saveDSSettings;
 window.cmtGenerate = cmtGenerate;
 window.cmtCancelGeneration = cmtCancelGeneration;

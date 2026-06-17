@@ -404,17 +404,24 @@ export function animateAllEntrance(scope) {
     return;
   }
   const els = scope.querySelectorAll('.anim-entrance, .anim-up');
+  const BATCH = 12;
   els.forEach((el, i) => {
     el.style.opacity = '0';
-    _M.animate(el, {
-      opacity: [0, 1],
-      transform: ['translateY(16px)', 'translateY(0px)']
-    }, { duration: 0.4, delay: i * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(() => {
-      el.classList.add('visible');
-    }).catch(() => {
-      el.classList.add('visible');
-    });
   });
+  for (let b = 0; b < els.length; b += BATCH) {
+    const batch = Array.from(els).slice(b, b + BATCH);
+    batch.forEach((el, j) => {
+      const idx = b + j;
+      _M.animate(el, {
+        opacity: [0, 1],
+        transform: ['translateY(16px)', 'translateY(0px)']
+      }, { duration: 0.4, delay: idx * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(() => {
+        el.classList.add('visible');
+      }).catch(() => {
+        el.classList.add('visible');
+      });
+    });
+  }
 }
 
 export function pageLoadChoreography(scope) {
@@ -584,96 +591,9 @@ export function initAccessibility() {
   document.head.appendChild(style);
 }
 
-/* ═══════════════ STEP 15: PERFORMANCE ═══════════════ */
-
-export function initPerformance() {
-  // Will-change cleanup: add on hover, remove after animation
-  document.addEventListener('pointerenter', e => {
-    if (!(e.target instanceof Element)) return;
-    const card = e.target.closest('.stat-card, .prep-card, .test-card, .mt-card');
-    if (card) card.style.willChange = 'transform';
-  }, true);
-  document.addEventListener('pointerleave', e => {
-    if (!(e.target instanceof Element)) return;
-    const card = e.target.closest('.stat-card, .prep-card, .test-card, .mt-card');
-    if (card) {
-      setTimeout(() => { card.style.willChange = 'auto'; }, 300);
-    }
-  }, true);
-
-  // Batch DOM reads
-  window.batchRead = function(fn) {
-    requestAnimationFrame(() => {
-      fn();
-    });
-  };
-
-  // Throttle scroll handlers
-  window.throttledScroll = function(fn, ms = 16) {
-    let last = 0;
-    return function(...args) {
-      const now = Date.now();
-      if (now - last >= ms) {
-        last = now;
-        fn.apply(this, args);
-      }
-    };
-  };
-}
-
-/* ═══════════════ CUSTOM CURSOR ═══════════════ */
-
-export function initCustomCursor() {
-  const dot = document.getElementById('cursor-dot');
-  if (!dot || !window.matchMedia('(pointer:fine)').matches) return;
-
-  let mouseX = 0, mouseY = 0;
-  let dotX = 0, dotY = 0;
-
-  document.addEventListener('pointermove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  }, { passive: true });
-
-  function updateDot() {
-    dotX += (mouseX - dotX) * 0.25;
-    dotY += (mouseY - dotY) * 0.25;
-    dot.style.left = dotX + 'px';
-    dot.style.top = dotY + 'px';
-    requestAnimationFrame(updateDot);
-  }
-  requestAnimationFrame(updateDot);
-
-  // Hover state on interactive elements
-  const interactives = 'a, button, .si, .bni, .fab, .fab-action, .theme-dot, .cmt-chip, .cmt-source-opt, .cmt-time-btn, .pyq-tab, .ds-tab, .chip, .mt-month-head, .mt-subj-header, .test-card-head, [onclick]';
-  document.addEventListener('pointerenter', e => {
-    if (!(e.target instanceof Element)) return;
-    if (e.target.closest(interactives)) dot.classList.add('hover');
-  }, true);
-  document.addEventListener('pointerleave', e => {
-    if (!(e.target instanceof Element)) return;
-    if (e.target.closest(interactives)) dot.classList.remove('hover');
-  }, true);
-
-  // Click feedback
-  document.addEventListener('pointerdown', () => dot.classList.add('click'));
-  document.addEventListener('pointerup', () => dot.classList.remove('click'));
-
-  // Hide on scroll, show after scroll stops
-  let scrollTimer;
-  document.addEventListener('scroll', () => {
-    dot.style.opacity = '0';
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => { dot.style.opacity = '1'; }, 150);
-  }, { passive: true });
-}
-
 /* ═══════════════ INITIALIZATION ═══════════════ */
 
 export function initInteractions() {
-  // Custom cursor (works regardless of reduced motion)
-  initCustomCursor();
-
   if (noMotion()) return;
 
   // Button hover lift
@@ -720,23 +640,23 @@ export function initInteractions() {
     if (card) tiltCardReset(card);
   }, true);
 
-  // Magnetic buttons on [data-interactive]
+  // Magnetic buttons on [data-interactive] — only target element under cursor
   document.addEventListener('pointermove', e => {
     if (!(e.target instanceof Element)) return;
-    document.querySelectorAll('[data-interactive]').forEach(el => {
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 80) {
-        const force = (1 - dist / 80) * 0.3;
-        el.style.transform = 'translate(' + (dx * force) + 'px,' + (dy * force) + 'px)';
-      } else {
-        el.style.transform = '';
-      }
-    });
+    const el = e.target.closest('[data-interactive]');
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 80) {
+      const force = (1 - dist / 80) * 0.3;
+      el.style.transform = 'translate(' + (dx * force) + 'px,' + (dy * force) + 'px)';
+    } else {
+      el.style.transform = '';
+    }
   }, { passive: true });
 
   // Ripple on buttons/chips
@@ -744,24 +664,30 @@ export function initInteractions() {
     const target = e.target.closest('.nx-btn, .bl-btn, .nx-chip, .bl-chip');
     if (!target) return;
     const ripple = document.createElement('span');
-    const rect = target.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;border-radius:50%;background:rgba(255,255,255,0.2);transform:scale(0);animation:ripple-expand 0.6s ease-out;pointer-events:none;';
+    const size = Math.max(target.offsetWidth, target.offsetHeight);
+    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.offsetX - size / 2) + 'px;top:' + (e.offsetY - size / 2) + 'px;border-radius:50%;background:rgba(255,255,255,0.2);transform:scale(0);animation:ripple-expand 0.6s ease-out;pointer-events:none;';
     target.style.position = 'relative';
     target.style.overflow = 'hidden';
     target.appendChild(ripple);
     setTimeout(function() { ripple.remove(); }, 600);
   }, true);
 
-  // Bloom parallax cards
+  // Bloom parallax cards — cached
   let _parallaxTick = false;
+  let _bloomCards = null;
+  let _bloomCardsTime = 0;
   document.addEventListener('pointermove', e => {
     if (_parallaxTick) return;
     _parallaxTick = true;
     requestAnimationFrame(function() {
       const theme = document.documentElement.getAttribute('data-theme');
       if (theme === 'bloom') {
-        document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat').forEach(function(card) {
+        const now = Date.now();
+        if (!_bloomCards || now - _bloomCardsTime > 2000) {
+          _bloomCards = document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat');
+          _bloomCardsTime = now;
+        }
+        _bloomCards.forEach(function(card) {
           const rect = card.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
@@ -769,10 +695,8 @@ export function initInteractions() {
           const offsetY = (e.clientY - centerY) * 0.015;
           if (Math.abs(e.clientX - centerX) < 300 && Math.abs(e.clientY - centerY) < 300) {
             card.style.transform = 'translate(' + (-offsetX) + 'px,' + (-offsetY) + 'px) translateY(-2px)';
-            card.style.willChange = 'transform';
           } else {
             card.style.transform = '';
-            card.style.willChange = '';
           }
         });
       }
@@ -804,10 +728,9 @@ export function initInteractions() {
     if (e.target.classList.contains('inp')) inputBlurRing(e.target);
   }, true);
 
-  // Init scroll, accessibility, performance
+  // Init scroll and accessibility
   initScrollAnimations();
   initAccessibility();
-  initPerformance();
 }
 
 /* ═══════════════ PREFERS-REDUCED-MOTION ═══════════════ */

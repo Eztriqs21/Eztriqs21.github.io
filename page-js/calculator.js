@@ -16,7 +16,7 @@
   var currentFocusQ = 1;
   var calcActiveTab = 'manual';
 
-  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
@@ -319,17 +319,21 @@
       else cat.incorrect++;
     });
     var nameEl = document.getElementById('calc-save-name');
-    nameEl.value = 'Mock Test ' + new Date().toLocaleDateString();
-    document.getElementById('calc-save-date').value = new Date().toISOString().split('T')[0];
-    document.getElementById('calc-save-scored').value = Math.max(0, totalScore);
-    document.getElementById('calc-save-max').value = 300;
+    if (nameEl) nameEl.value = 'Mock Test ' + new Date().toLocaleDateString();
+    var dateEl = document.getElementById('calc-save-date');
+    if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+    var scoredEl = document.getElementById('calc-save-scored');
+    if (scoredEl) scoredEl.value = Math.max(0, totalScore);
+    var maxEl = document.getElementById('calc-save-max');
+    if (maxEl) maxEl.value = 300;
     window.om('m-save-calc-test');
-    setTimeout(function () { nameEl.focus(); }, 320);
+    setTimeout(function () { if (nameEl) nameEl.focus(); }, 320);
   }
 
   function saveCalcTestFromModal() {
     if (!calcQuestions || !calcQuestions.length) { toast('No calculator data. Solve a test first!'); return; }
-    var name = document.getElementById('calc-save-name').value.trim();
+    var nameEl = document.getElementById('calc-save-name');
+    var name = nameEl ? nameEl.value.trim() : '';
     if (!name) { toast('Enter a test name'); return; }
     var DB = window.DB;
     if (!DB) return;
