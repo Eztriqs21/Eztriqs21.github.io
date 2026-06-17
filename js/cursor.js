@@ -1,5 +1,6 @@
 (function() {
   function initCursor() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
   const ring = document.getElementById('cursor-ring');
   const dot = document.getElementById('cursor-dot');
   const trail = document.getElementById('cursor-trail');

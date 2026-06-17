@@ -23,7 +23,7 @@
     return '<div style="display:flex;gap:8px;align-items:flex-start;max-width:85%;align-self:' + (isUser ? 'flex-end;flex-direction:row-reverse' : 'flex-start') + '">'
       + '<div style="width:28px;height:28px;border-radius:50%;background:var(--border-card);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)">' + avatar + '</div>'
       + '<div style="padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;' + (isUser ? 'background:var(--accent);color:#fff;border-bottom-right-radius:4px' : 'background:var(--border-card);color:var(--text);border-bottom-left-radius:4px') + '">' + content + '</div>'
-    '</div>';
+    + '</div>';
   }
 
   window.renderPrep = function(el) {
@@ -36,7 +36,7 @@
 
     el.innerHTML = '<div class="anim-entrance">'
       + '<div class="' + p + '-page-header"><div class="' + p + '-page-title" data-text="Prep Chat">Prep Chat</div><div class="' + p + '-page-sub">AI study companion — ask questions, upload notes, prepare smarter</div></div>'
-      + '<div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;height:calc(100vh - 200px);min-height:400px">'
+      + '<div class="prep-layout" style="display:grid;gap:16px;height:calc(100vh - 200px);min-height:400px">'
       // Left: Notes panel
       + '<div class="' + p + '-card anim-entrance" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
       + '<div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;justify-content:space-between"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Notes</span>'

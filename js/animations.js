@@ -130,6 +130,7 @@ export function counterSpring(el, target, opts = {}) {
 }
 
 export function progressBarFill(bar, width) {
+  if (!bar) return;
   if (noMotion()) { bar.style.width = width; return; }
   bar.style.width = '0%';
   _M.animate(bar, { width: ['0%', width] }, {

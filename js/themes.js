@@ -25,8 +25,8 @@ export function applyTheme(i) {
     }
   }
 
-  if (window.cursorEngine && window.cursorEngine.reinit) {
-    window.cursorEngine.reinit();
+  if (window.cursorEngine && typeof window.cursorEngine.morph === 'function') {
+    window.cursorEngine.morph();
   }
 }
 

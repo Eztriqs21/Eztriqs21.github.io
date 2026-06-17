@@ -103,7 +103,7 @@
     </div>
     <div class="${p}-section-block anim-entrance" style="--delay:0.75s">
       <div class="${p}-section-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Subject-Wise Time Allocation</div>
-      <div class="${p}-grid" style="grid-template-columns:repeat(3,1fr);gap:16px">
+      <div class="${p}-grid subj-responsive-grid" style="gap:16px">
         ${subjectTimeCard('Physics', avgTimeP, 'var(--primary)', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>')}
         ${subjectTimeCard('Chemistry', avgTimeC, 'var(--secondary)', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>')}
         ${subjectTimeCard('Maths', avgTimeM, 'var(--accent)', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>')}

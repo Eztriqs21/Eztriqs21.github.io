@@ -90,7 +90,7 @@
 
     el.innerHTML = '<div class="anim-entrance">'
       + '<div class="' + p + '-page-header"><div class="' + p + '-page-title" data-text="Doubt Solver">Doubt Solver</div><div class="' + p + '-page-sub">Quick one-shot answers or chat with AI</div></div>'
-      + '<div class="' + p + '-card anim-entrance" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px">'
+      + '<div class="' + p + '-card anim-entrance ds-card-responsive" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px">'
       + '<div style="display:flex;border-bottom:1px solid var(--border);padding:0 4px">'
       + '<button class="' + p + '-tab-btn" onclick="window._dsTab(\'quick\')" style="flex:1;padding:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:600;border:none;background:transparent;color:' + (dsTab === 'quick' ? 'var(--accent)' : 'var(--muted)') + ';cursor:pointer;border-bottom:2px solid ' + (dsTab === 'quick' ? 'var(--accent)' : 'transparent') + ';transition:all 0.2s"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Quick Ask</button>'
       + '<button class="' + p + '-tab-btn" onclick="window._dsTab(\'chat\')" style="flex:1;padding:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:600;border:none;background:transparent;color:' + (dsTab === 'chat' ? 'var(--accent)' : 'var(--muted)') + ';cursor:pointer;border-bottom:2px solid ' + (dsTab === 'chat' ? 'var(--accent)' : 'transparent') + ';transition:all 0.2s"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Chat</button>'
@@ -100,7 +100,7 @@
       + (dsTab === 'quick' ? quickAskHtml() : chatHtml())
       + '</div></div></div>';
 
-    if (dsTab === 'quick') setTimeout(scrollChat, 50);
+    if (dsTab === 'chat') setTimeout(scrollChat, 50);
   };
 
   window._dsTab = function(tab) {

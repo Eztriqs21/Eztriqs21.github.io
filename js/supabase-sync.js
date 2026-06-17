@@ -14,7 +14,7 @@ function loadSyncTimestamps(){
   try{return JSON.parse(localStorage.getItem(SYNC_TS_KEY))||{};}catch(e){return{};}
 }
 function saveSyncTimestamps(ts){try{localStorage.setItem(SYNC_TS_KEY,JSON.stringify(ts));}catch(e){}}
-const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','doubtChats','prepChat','rev'];
+const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','doubtChats','prepChat','revision'];
 
 /* Offline sync queue */
 const SYNC_QUEUE_KEY='jeehq3_sync_q';
@@ -84,6 +84,7 @@ export function openSupabaseConfig(){
   const keyEl=document.getElementById('supa-key');
   const tableEl=document.getElementById('supa-table');
   const bucketEl=document.getElementById('supa-bucket');
+  if(!urlEl||!keyEl||!tableEl) return;
   if(supaConfig){
     urlEl.value=supaConfig.url||'';
     keyEl.value=supaConfig.key||'';
@@ -97,9 +98,13 @@ export function openSupabaseConfig(){
   om('m-supa-config');
 }
 export function saveSupabaseConfig(){
-  const url=document.getElementById('supa-url').value.trim();
-  const key=document.getElementById('supa-key').value.trim();
-  const table=document.getElementById('supa-table').value.trim()||'jeehq_data';
+  const urlEl=document.getElementById('supa-url');
+  const keyEl=document.getElementById('supa-key');
+  const tableEl=document.getElementById('supa-table');
+  if(!urlEl||!keyEl||!tableEl) return;
+  const url=urlEl.value.trim();
+  const key=keyEl.value.trim();
+  const table=tableEl.value.trim()||'jeehq_data';
   const bucket=(document.getElementById('supa-bucket')?.value.trim())||getStorageBucket();
   if(!url||!key){localStorage.removeItem(SUPA_KEY);supaConfig=null;supaClient=null;updateSupaStatus();cm('m-supa-config');toast('☁️ Cleared');return;}
   if(!url.startsWith('https://')||!url.includes('.supabase.co')){toast('⚠️ Invalid Supabase URL');return;}

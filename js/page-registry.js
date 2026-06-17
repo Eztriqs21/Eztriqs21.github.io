@@ -11,7 +11,8 @@ export const PAGE_RENDERERS = {
   notes: 'renderNotes',
   pyq: 'renderPYQ',
   'score-analytics': 'renderScoreAnalytics',
-  'study-log': 'renderStudyLog'
+  'study-log': 'renderStudyLog',
+  prep: 'renderPrep'
 };
 
 export const PAGE_TITLES = {
@@ -27,7 +28,8 @@ export const PAGE_TITLES = {
   notes: { title: 'Notes', sub: 'Chapter-wise notes & resources' },
   pyq: { title: 'PYQ Research', sub: 'Previous year question analysis' },
   'score-analytics': { title: 'Score Analytics', sub: 'Detailed performance breakdown' },
-  'study-log': { title: 'Study Log', sub: 'Track your study sessions' }
+  'study-log': { title: 'Study Log', sub: 'Track your study sessions' },
+  prep: { title: 'Prep Chat', sub: 'AI study companion' }
 };
 
 export function callPageRenderer(page, el) {

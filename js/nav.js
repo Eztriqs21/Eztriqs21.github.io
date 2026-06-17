@@ -13,7 +13,6 @@ export function getPage() {
 }
 
 export function go(page) {
-  if (PAGE === page && _lastPage === page) return;
   PAGE = page;
   window.PAGE = page;
 
@@ -57,6 +56,7 @@ export function render() {
 }
 
 function _renderSwap(el) {
+  if (!el) return;
   el.innerHTML = '';
   try {
     if (!callPageRenderer(PAGE, el)) {
@@ -99,6 +99,8 @@ export function toggleSidebar() {
   _sbOpen = !_sbOpen;
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('mob-overlay');
+  const hamburger = document.getElementById('hamburger');
+  if (hamburger) hamburger.setAttribute('aria-expanded', _sbOpen);
   if (_sbOpen) {
     if (sb) sb.classList.add('open');
     if (ov) { ov.classList.add('open'); ov.style.cssText = 'display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);'; }

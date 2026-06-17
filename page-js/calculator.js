@@ -357,7 +357,7 @@
     });
     DB.tests.unshift({
       id: 't_' + Date.now(), name: name,
-      date: document.getElementById('calc-save-date').value || new Date().toISOString(),
+      date: (document.getElementById('calc-save-date') || {}).value || new Date().toISOString().split('T')[0],
       physics: p, chemistry: c, maths: m,
       totalScore: Math.max(0, totalScore), maxScore: 300,
       papers: [], syllabus: { physics: [], chemistry: [], maths: [] }

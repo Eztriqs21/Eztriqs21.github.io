@@ -263,6 +263,7 @@ export function cfm2(title,sub,cb){
 let toastT;
 export function toast(msg){
   const el=document.getElementById('toast');
+  if(!el) return;
   el.innerHTML=msg;
   if(shouldAnimate()){
     toastSlideIn(el);
