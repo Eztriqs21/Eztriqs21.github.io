@@ -4,6 +4,9 @@ import { esc, om, toast } from '../js/helpers.js';
 
 /* ═══════════════ CALCULATOR ═══════════════ */
 let calcQuestions=[],calcShowResults=false,calcAnsKey={};
+const CALC_SUBJS=['physics','chemistry','maths'];
+const CALC_LABELS=['Physics','Chemistry','Maths'];
+const CALC_COLORS=['var(--phys)','var(--chem)','var(--math)'];
 
 function initCalcQ(){
   calcQuestions=[];
@@ -97,13 +100,12 @@ function setQResp(num,opt){
 function toggleQSkip(num){
   const q=calcQuestions.find(x=>x.num===num);if(!q)return;
   q.unattempted=!q.unattempted;
-    if(q.unattempted){
-      q.selected=null;q.intVal='';q.multiVal='';
-      const row=document.getElementById('qrow-'+num);
-      if(row){row.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);row.querySelectorAll('.q-multi-cb').forEach(c=>c.checked=false);const inp=row.querySelector('.q-int-input');if(inp)inp.value='';}
-    }
   const row=document.getElementById('qrow-'+num);
   if(row){
+    if(q.unattempted){
+      q.selected=null;q.intVal='';q.multiVal='';
+      row.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);row.querySelectorAll('.q-multi-cb').forEach(c=>c.checked=false);const inp=row.querySelector('.q-int-input');if(inp)inp.value='';
+    }
     row.querySelectorAll('.q-skip-btn button').forEach(b=>{b.className=q.unattempted?'on':'';b.textContent=q.unattempted?'Skipped':'Skip';});
     if(!q.unattempted&&q.selected){if(q.mode==='mcq')row.querySelectorAll('.q-radio').forEach(r=>{r.checked=r.value===q.selected;});}
     row.classList.remove('q-focus');
@@ -281,12 +283,13 @@ function saveCalcToHistory(){
     else if(sc>0)cat.partial++;
     else cat.incorrect++;
   });
-  document.getElementById('calc-save-name').value='Mock Test '+new Date().toLocaleDateString();
+  const nameEl=document.getElementById('calc-save-name');
+  nameEl.value='Mock Test '+new Date().toLocaleDateString();
   document.getElementById('calc-save-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('calc-save-scored').value=Math.max(0,totalScore);
   document.getElementById('calc-save-max').value=300;
   om('m-save-calc-test');
-  setTimeout(function(){document.getElementById('calc-save-name').focus();},320);
+  setTimeout(function(){nameEl.focus();},320);
 }
 function saveCalcTestFromModal(){
   if(!calcQuestions||!calcQuestions.length){toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> No calculator data. Solve a test first!');return;}
@@ -334,9 +337,6 @@ function saveCalcAsMockTest(){
   setTimeout(function(){document.getElementById('mt-scored').focus();},320);
 }
 function buildCalcRes(){
-  const subjs=['physics','chemistry','maths'];
-  const labels=['Physics','Chemistry','Maths'];
-  const colors=['var(--phys)','var(--chem)','var(--math)'];
   let tot=0,totC=0,totW=0,totS=0,totP=0;
   const qR=[];
   calcQuestions.forEach(q=>{
@@ -354,7 +354,7 @@ function buildCalcRes(){
     else if(sc===0&&q.mode==='multi'&&q.selected)totP++;
     else totW++;
   });
-  const sd=subjs.map((s,si)=>{
+  const sd=CALC_SUBJS.map((s,si)=>{
     let sc=0,c=0,w=0,sk=0,p=0;
     qR.filter(r=>r.subj===s).forEach(r=>{
       if(r.skipped)sk++;
@@ -365,9 +365,7 @@ function buildCalcRes(){
       else w++;
       sc+=r.score;
     });
-    return{label:labels[si],color:colors[si],score:sc,correct:c,wrong:w,skip:sk,partial:p};
-  });
-    return{label:labels[si],color:colors[si],score:sc,correct:c,wrong:w,skip:sk,partial:p};
+    return{label:CALC_LABELS[si],color:CALC_COLORS[si],score:sc,correct:c,wrong:w,skip:sk,partial:p};
   });
   const scoreC=tot>=200?'var(--green)':tot>=120?'var(--accent)':'var(--red)';
   const totMissing=75-qR.length;

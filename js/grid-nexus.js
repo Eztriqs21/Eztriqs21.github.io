@@ -265,5 +265,10 @@
     resize: resize
   };
 
-  window.addEventListener('resize', function() { if (active) resize(); });
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    if (!active) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 100);
+  });
 })();

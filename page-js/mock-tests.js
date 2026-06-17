@@ -13,17 +13,27 @@ const SUBJ_ICONS={
   'Full Syllabus':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
 };
 const SUBJ_COLORS={Physics:'var(--phys)',Chemistry:'var(--chem)',Maths:'var(--math)','Full Syllabus':'var(--accent)'};
+const CMT_SUBJ_COLORS={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};
+const CMT_SUBJ_LABELS={physics:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',chemistry:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',maths:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths'};
+const CMT_MODE_LABELS={mcq:'MCQ',int:'Integer',multi:'Multi-Correct'};
+const CMT_SUBJ_INFO=[
+  {key:'physics',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',color:'var(--phys)'},
+  {key:'chemistry',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',color:'var(--chem)'},
+  {key:'maths',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths',color:'var(--math)'}
+];
+const SUBJ_ORDER=['Physics','Chemistry','Maths','Full Syllabus'];
 
 function openAddMockTest(){
   document.getElementById('mt-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('mt-scored').value='';
+  const scoredEl=document.getElementById('mt-scored');
+  scoredEl.value='';
   document.getElementById('mt-total').value='';
   document.getElementById('mt-time').value='';
   document.getElementById('mt-syllabus').value='';
   document.getElementById('mt-review').value='';
   document.getElementById('mt-subj').value='Physics';
   om('m-mocktest');
-  setTimeout(()=>document.getElementById('mt-scored').focus(),320);
+  setTimeout(()=>scoredEl.focus(),320);
 }
 function saveMockTest(){
   const subj=document.getElementById('mt-subj').value;
@@ -60,7 +70,7 @@ function renderMockTests(el){
   const tests=DB.mockTests||[];
   const isEmpty=!tests.length;
   const sorted=[...tests].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const subjOrder=['Physics','Chemistry','Maths','Full Syllabus'];
+  const subjOrder=SUBJ_ORDER;
   const grouped={};
   sorted.forEach(m=>{
     if(!grouped[m.subject])grouped[m.subject]={};
@@ -432,20 +442,24 @@ async function cmtGenerate(){
   const totalTimeout=setTimeout(()=>{cmtAbortController.abort();},300000);
   let forceOllama=!hasGroqKey;
   if(forceOllama&&!isMobile)toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> No Groq key — using Ollama');
+  const genBtn=document.getElementById('cmt-gen-btn');
+  const loadingEl=document.getElementById('cmt-loading');
+  const loadSub=document.getElementById('cmt-loading-sub');
+  const loadFill=document.getElementById('cmt-loading-fill');
   try{
     const batches=cmtPlanBatches();
     const totalBatches=batches.length;
     document.getElementById('cmt-loading-title').textContent=`Generating ${cmtConfig.totalQ} Questions...`;
-    document.getElementById('cmt-loading-sub').textContent='Starting...';
-    document.getElementById('cmt-loading-fill').style.width='3%';
+    loadSub.textContent='Starting...';
+    loadFill.style.width='3%';
     let allQuestions=[];
     let errors=[];
     for(let i=0;i<batches.length;i++){
       if(cmtAbortController.signal.aborted)throw new Error('Cancelled');
       const b=batches[i];
       const pct=Math.round(3+((i)/totalBatches)*94);
-      document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — ${b.subject} ${b.mode.toUpperCase()} (${b.count}Q)`;
-      document.getElementById('cmt-loading-fill').style.width=pct+'%';
+      loadSub.innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — ${b.subject} ${b.mode.toUpperCase()} (${b.count}Q)`;
+      loadFill.style.width=pct+'%';
       const prompt=cmtGetBatchPrompt(b.subject,b.mode,b.count,cmtConfig.difficulty,i+1,totalBatches);
       let parsed=[];
       if(forceOllama){
@@ -461,7 +475,7 @@ async function cmtGenerate(){
           if(cmtIsRateLimitError(groqErr)){
             forceOllama=true;
             toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Groq limit hit — switching to Ollama for remaining batches');
-            document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--orange)">Rate limited</span> — Switching to Ollama...`;
+            loadSub.innerHTML=`<span style="color:var(--orange)">Rate limited</span> — Switching to Ollama...`;
             await new Promise(r=>setTimeout(r,500));
             try{
               const raw=await cmtCallAI(prompt,'ollama',settings);
@@ -469,7 +483,7 @@ async function cmtGenerate(){
             }catch(ollamaErr){errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${ollamaErr.message}`);}
           }else if(!isMobile){
             try{
-              document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — Retrying on Ollama...`;
+              loadSub.innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — Retrying on Ollama...`;
               const raw=await cmtCallAI(prompt,'ollama',settings);
               parsed=cmtParseBatchResponse(raw,b);
             }catch(ollamaErr){errors.push(`Batch ${i+1}: ${b.subject} ${b.mode} — ${groqErr.message}`);}
@@ -480,13 +494,13 @@ async function cmtGenerate(){
       }
       allQuestions=allQuestions.concat(parsed);
       if(errors.length&&i<batches.length-1){
-        document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — ${errors.length} failed, continuing...`;
+        loadSub.innerHTML=`<span style="color:var(--txt)">Batch ${i+1}/${totalBatches}</span> — ${errors.length} failed, continuing...`;
       }
     }
     clearTimeout(totalTimeout);
     if(!allQuestions.length)throw new Error(forceOllama?'Ollama not responding — make sure it\'s running':'No questions generated. Check your API key and try again.');
-    document.getElementById('cmt-loading-sub').innerHTML='<span style="color:var(--txt)">Deduplicating questions...</span>';
-    document.getElementById('cmt-loading-fill').style.width='97%';
+    loadSub.innerHTML='<span style="color:var(--txt)">Deduplicating questions...</span>';
+    loadFill.style.width='97%';
     let seen=new Set();
     allQuestions=allQuestions.filter(q=>{
       const h=cmtQuestionHash(q);
@@ -501,7 +515,7 @@ async function cmtGenerate(){
     const MAX_RETRIES=3;
     while(allQuestions.length<target&&retries<MAX_RETRIES){
       retries++;
-      document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--txt)">Regenerating ${target-allQuestions.length} missing questions (attempt ${retries}/${MAX_RETRIES})...</span>`;
+      loadSub.innerHTML=`<span style="color:var(--txt)">Regenerating ${target-allQuestions.length} missing questions (attempt ${retries}/${MAX_RETRIES})...</span>`;
       const need=target-allQuestions.length;
       const regenBatches=[];
       for(let i=0;i<need;i+=5)regenBatches.push({subject:cmtConfig.subjects[i%cmtConfig.subjects.length],mode:'mcq',count:Math.min(5,need-i)});
@@ -519,15 +533,15 @@ async function cmtGenerate(){
     allQuestions.forEach((q,i)=>{q.num=i+1;});
     cmtQuestions=allQuestions;
     cmtSaveNewHashes(allQuestions);
-    document.getElementById('cmt-loading-fill').style.width='100%';
+    loadFill.style.width='100%';
     const errNote=errors.length?` (${errors.length} batch${errors.length>1?'es':''} failed)`:'';
     const retryNote=retries?` (${retries} regeneration round${retries>1?'s':''})`:'';
-    document.getElementById('cmt-loading-sub').innerHTML=`<span style="color:var(--green)">✓ ${allQuestions.length} questions ready!</span>${errNote}${retryNote}`;
-    setTimeout(()=>{document.getElementById('cmt-loading').style.display='none';document.getElementById('cmt-gen-btn').disabled=false;cmtStartTest();},500);
+    loadSub.innerHTML=`<span style="color:var(--green)">✓ ${allQuestions.length} questions ready!</span>${errNote}${retryNote}`;
+    setTimeout(()=>{loadingEl.style.display='none';genBtn.disabled=false;cmtStartTest();},500);
   }catch(err){
     clearTimeout(totalTimeout);
-    document.getElementById('cmt-loading').style.display='none';
-    document.getElementById('cmt-gen-btn').disabled=false;
+    loadingEl.style.display='none';
+    genBtn.disabled=false;
     if(err.name!=='AbortError')toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> '+err.message);
   }
 }
@@ -725,9 +739,6 @@ function cmtRenderNav(){
 function cmtRenderQuestion(){
   const q=cmtQuestions[cmtState.current];
   const main=document.getElementById('cmt-player-main');
-  const subjColors={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};
-  const subjLabels={physics:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',chemistry:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',maths:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths'};
-  const modeLabels={mcq:'MCQ',int:'Integer',multi:'Multi-Correct'};
   const currentAns=cmtState.answers[cmtState.current];
   let optsHTML='';
   if(q.mode==='mcq'){
@@ -753,8 +764,8 @@ function cmtRenderQuestion(){
     <div class="cmt-q-header">
       <div class="cmt-q-num">Q${q.num}</div>
       <div class="cmt-q-meta">
-        <span class="cmt-player-subj" style="background:${subjColors[q.subject]}20;color:${subjColors[q.subject]}">${subjLabels[q.subject]||q.subject}</span>
-        <span style="padding:2px 6px;background:var(--glass2);border-radius:4px">${modeLabels[q.mode]||q.mode}</span>
+        <span class="cmt-player-subj" style="background:${CMT_SUBJ_COLORS[q.subject]}20;color:${CMT_SUBJ_COLORS[q.subject]}">${CMT_SUBJ_LABELS[q.subject]||q.subject}</span>
+        <span style="padding:2px 6px;background:var(--glass2);border-radius:4px">${CMT_MODE_LABELS[q.mode]||q.mode}</span>
         ${q.chapter?`<span style="padding:2px 6px;background:var(--glass2);border-radius:4px">${esc(q.chapter)}</span>`:''}
       </div>
     </div>
@@ -873,11 +884,7 @@ function cmtShowResults(r){
   const timeTaken=Math.round(cmtState.elapsed/60);
   const pctColor=r.pct>=60?'var(--green)':r.pct>=30?'var(--orange)':'var(--red)';
   const circR=52;const circC=2*Math.PI*circR;const offset=circC-(r.pct/100)*circC;
-  const subjInfo=[
-    {key:'physics',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Physics',color:'var(--phys)'},
-    {key:'chemistry',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg> Chemistry',color:'var(--chem)'},
-    {key:'maths',label:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg> Maths',color:'var(--math)'}
-  ].filter(s=>r.subjStats[s.key]&&(r.subjStats[s.key].c+r.subjStats[s.key].w+r.subjStats[s.key].s>0));
+  const subjInfo=CMT_SUBJ_INFO.filter(s=>r.subjStats[s.key]&&(r.subjStats[s.key].c+r.subjStats[s.key].w+r.subjStats[s.key].s>0));
   el.innerHTML=`
   <div class="cmt-results-score">
     <div class="cmt-results-ring">
@@ -912,13 +919,12 @@ function cmtShowQDetail(idx){
   const q=r.qResults[idx];
   const el=document.getElementById('cmt-q-detail');
   const statusColor=q.status==='correct'?'var(--green)':q.status==='wrong'?'var(--red)':'var(--faint)';
-  const subjColors={physics:'var(--phys)',chemistry:'var(--chem)',maths:'var(--math)'};
   el.style.display='block';
   el.innerHTML=`
   <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <span style="font-weight:700;color:var(--accent)">Q${q.num}</span>
-      <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${subjColors[q.subject]||'var(--glass2)'}20;color:${subjColors[q.subject]||'var(--muted)'}">${q.subject}</span>
+      <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${CMT_SUBJ_COLORS[q.subject]||'var(--glass2)'}20;color:${CMT_SUBJ_COLORS[q.subject]||'var(--muted)'}">${q.subject}</span>
       <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${statusColor}20;color:${statusColor};font-weight:600">${q.status.toUpperCase()}</span>
       <span style="font-size:10px;color:var(--faint)">${q.marks>=0?'+':''}${q.marks} marks</span>
     </div>
