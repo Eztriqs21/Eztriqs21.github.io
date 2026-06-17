@@ -1,5 +1,4 @@
 /* themes.js – 4-theme engine (dark, amber, nexus, bloom) + dropdown switcher */
-import { callPageRenderer, PAGE_RENDERERS } from './page-registry.js';
 const themes = ['dark', 'amber', 'nexus', 'bloom'];
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
@@ -34,12 +33,6 @@ export function applyTheme(i) {
       if (window.gridBloom) window.gridBloom.stop();
       gridCanvas.classList.remove('active');
     }
-  }
-
-  const page = html.getAttribute('data-page') || 'dashboard';
-  const mainEl = document.getElementById('content-wrap');
-  if (mainEl) {
-    callPageRenderer(page, mainEl);
   }
 }
 

@@ -19,6 +19,14 @@
   var bloomScreen = null;
   var hasRun = false;
 
+  function hideAppPreloader() {
+    var ap = document.getElementById('app-preloader');
+    if (ap) {
+      ap.classList.add('hidden');
+      setTimeout(function () { ap.remove(); }, 600);
+    }
+  }
+
   // ── Create preloader DOM ────────────────────────────────────
   function createPreloader() {
     if (preloader) return;
@@ -70,6 +78,7 @@
           preloader.style.opacity = '0';
           setTimeout(function () {
             preloader.style.display = 'none';
+            hideAppPreloader();
             onComplete && onComplete();
           }, 400);
         }, 300);
@@ -120,6 +129,7 @@
       preloader.style.opacity = '0';
       setTimeout(function () {
         preloader.style.display = 'none';
+        hideAppPreloader();
         onComplete && onComplete();
       }, 400);
     }, 2000);
@@ -136,6 +146,7 @@
       preloader.style.opacity = '0';
       setTimeout(function () {
         preloader.style.display = 'none';
+        hideAppPreloader();
         onComplete && onComplete();
       }, 400);
     }, 600);
