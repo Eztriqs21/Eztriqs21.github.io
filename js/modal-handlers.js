@@ -78,22 +78,23 @@ function refreshAFileList() {
 
 function saveAssignment() {
   var t = document.getElementById('a-title').value.trim();
-  if (!t) { toast('⚠️ Enter a title'); return; }
+  if (!t) { toast('Enter a title'); return; }
   var DB = window.DB;
+  if (!DB.assignments) DB.assignments = [];
   DB.assignments.unshift({
     id: 'a_' + Date.now(), title: t,
     description: document.getElementById('a-desc').value.trim(),
-    priority: aPriority || 'none',
+    priority: window.aPriority || 'none',
     completed: false,
-    attachments: pendingAFiles.map(function (f) { return { d: f.url || f.data, n: f.name }; }),
+    attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name }; }),
     syllabus: document.getElementById('a-syl').value.trim() || undefined,
     createdAt: new Date().toISOString()
   });
-  if (!window.sv('assignments')) { DB.assignments.shift(); return; }
+  window.sv('assignments');
   window.cm('m-asgn');
-  if (typeof updateAssignmentList === 'function') updateAssignmentList();
-  else if (typeof renderAssignments === 'function') renderAssignments(document.getElementById('content-wrap'));
-  toast('✅ Task added!');
+  toast('Task added!');
+  if (window.PAGE === 'assignments') window.renderAssignments(document.getElementById('content-wrap'));
+  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
 }
 
 /* ═══════════════ TESTS ═══════════════ */
@@ -147,7 +148,7 @@ function refreshTFileList() {
 function saveTest() {
   var DB = window.DB;
   var name = document.getElementById('t-name').value.trim();
-  if (!name) { toast('⚠️ Enter test name'); return; }
+  if (!name) { toast('Enter test name'); return; }
   var p, c, m, total, maxScore;
   var gn = function (id) { return parseInt(document.getElementById(id).value) || 0; };
 
@@ -171,18 +172,21 @@ function saveTest() {
     var subj = cb.dataset.subj;
     if (subj && syllabus[subj]) syllabus[subj].push(cb.value);
   });
+  if (!DB.tests) DB.tests = [];
   DB.tests.unshift({
     id: 't_' + Date.now(), name: name,
-    date: document.getElementById('t-date').value || new Date().toISOString(),
+    date: document.getElementById('t-date').value || new Date().toISOString().split('T')[0],
     physics: p, chemistry: c, maths: m,
     totalScore: Math.max(0, total), maxScore: maxScore,
     timing: timing,
-    papers: pendingTFiles.map(function (f) { return { d: f.url || f.data, n: f.name }; }),
+    papers: (window.pendingTFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name }; }),
     syllabus: syllabus
   });
-  if (!window.sv('tests')) { DB.tests.shift(); return; }
+  window.sv('tests');
   window.cm('m-test');
-  toast('✅ Test saved!');
+  toast('Test saved!');
+  if (window.PAGE === 'tests') window.renderTests(document.getElementById('content-wrap'));
+  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
 }
 
 /* ═══════════════ CALCULATOR ═══════════════ */
@@ -253,13 +257,16 @@ function saveAddCh() {
   var DB = window.DB;
   var subj = document.getElementById('addch-subj').value;
   var name = document.getElementById('addch-name').value.trim();
-  if (!name) { toast('⚠️ Enter chapter name'); return; }
-  var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'uncovered', notes: { detailed: [], revision: [] }, mainsPyqDone: false, advPyqDone: false, subTopics: [] };
+  if (!name) { toast('Enter chapter name'); return; }
+  var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'none' };
+  if (!DB.chapters) DB.chapters = {};
   if (!DB.chapters[subj]) DB.chapters[subj] = [];
   DB.chapters[subj].push(newCh);
   window.sv('chapters');
   window.cm('m-add-ch');
-  toast('✅ Chapter added!');
+  toast('Chapter added!');
+  if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
+  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
 }
 
 function saveEditCh() {
@@ -267,13 +274,14 @@ function saveEditCh() {
   var subj = document.getElementById('editch-subj').value;
   var id = document.getElementById('editch-id').value;
   var name = document.getElementById('editch-name').value.trim();
-  if (!name) { toast('⚠️ Enter chapter name'); return; }
+  if (!name) { toast('Enter chapter name'); return; }
   var ch = DB.chapters[subj] && DB.chapters[subj].find(function (c) { return c.id === id; });
-  if (!ch) { toast('⚠️ Chapter not found'); return; }
+  if (!ch) { toast('Chapter not found'); return; }
   ch.name = name;
   window.sv('chapters');
   window.cm('m-edit-ch');
-  toast('✅ Updated!');
+  toast('Updated!');
+  if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
 }
 
 function deleteEditCh() {
@@ -284,7 +292,10 @@ function deleteEditCh() {
     if (DB.chapters[subj]) DB.chapters[subj] = DB.chapters[subj].filter(function (c) { return c.id !== id; });
     window.sv('chapters');
     window.cm('m-edit-ch');
-    toast('🗑️ Deleted');
+    toast('Deleted');
+    if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
+    if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
+  });
   });
 }
 
@@ -292,28 +303,48 @@ function deleteEditCh() {
 function saveStudyLog() {
   var DB = window.DB;
   var topic = document.getElementById('sl-topic').value.trim();
-  var subj = document.getElementById('sl-subject').value;
-  var dur = parseFloat(document.getElementById('sl-duration').value) || 0;
+  var subj = document.getElementById('sl-subj').value;
+  var dur = parseFloat(document.getElementById('sl-dur').value) || 0;
   var date = document.getElementById('sl-date').value;
-  if (!topic) { toast('⚠️ Enter a topic'); return; }
-  if (dur <= 0) { toast('⚠️ Enter valid duration'); return; }
-  DB.studyLogs.push({ id: 'sl_' + Date.now(), subject: subj, topic: topic, duration: dur, date: date || new Date().toISOString().split('T')[0] });
+  if (!topic) { toast('Enter a topic'); return; }
+  if (dur <= 0) { toast('Enter valid duration'); return; }
+  if (!DB.studyLogs) DB.studyLogs = [];
+  DB.studyLogs.unshift({ id: 'sl_' + Date.now(), subject: subj, topic: topic, duration: Math.round(dur * 10) / 10, date: date || new Date().toISOString().split('T')[0], createdAt: new Date().toISOString() });
   window.sv('studyLogs');
   window.cm('m-study-log');
-  toast('✅ Session logged!');
+  toast('Session logged!');
+  if (window.PAGE === 'study-log') window.renderStudyLog(document.getElementById('content-wrap'));
+  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
 }
 
 /* ═══════════════ MOCK TEST ═══════════════ */
 function saveMockTest() {
   var DB = window.DB;
   var name = document.getElementById('mt-name').value.trim();
-  if (!name) { toast('⚠️ Enter test name'); return; }
+  if (!name) { toast('Enter test name'); return; }
+  var subj = document.getElementById('mt-subj')?.value || 'physics';
   var scored = parseInt(document.getElementById('mt-scored').value) || 0;
   var total = parseInt(document.getElementById('mt-total').value) || 300;
-  DB.mockTests.push({ id: 'mt_' + Date.now(), name: name, date: document.getElementById('mt-date').value || new Date().toISOString(), scored: scored, total: total, syllabus: document.getElementById('mt-syllabus').value.trim(), time: document.getElementById('mt-time').value.trim(), review: document.getElementById('mt-review').value.trim() });
+  var correct = Math.round(scored / 4);
+  var incorrect = Math.max(0, Math.round((total - scored) / 4));
+  var unattempted = Math.max(0, 75 - correct - incorrect);
+  if (!DB.mockTests) DB.mockTests = [];
+  DB.mockTests.unshift({
+    id: 'mt_' + Date.now(), name: name,
+    date: document.getElementById('mt-date').value || new Date().toISOString().split('T')[0],
+    total: total,
+    physics: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
+    chemistry: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
+    maths: { correct: correct - Math.round(correct * 0.33) * 2, incorrect: incorrect - Math.round(incorrect * 0.33) * 2, unattempted: unattempted - Math.round(unattempted * 0.33) * 2 },
+    syllabus: document.getElementById('mt-syllabus').value.trim(),
+    time: document.getElementById('mt-time').value.trim(),
+    review: document.getElementById('mt-review').value.trim()
+  });
   window.sv('mockTests');
   window.cm('m-mocktest');
-  toast('✅ Mock test saved!');
+  toast('Mock test saved!');
+  if (window.PAGE === 'mock-tests') window.renderMockTests(document.getElementById('content-wrap'));
+  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
 }
 
 /* ═══════════════ DOUBT SOLVER ═══════════════ */
@@ -323,10 +354,13 @@ function dsSetProvider(prov) {
 }
 
 function saveDSSettings() {
-  var settings = { provider: document.querySelector('.ds-prov-btn.on')?.dataset.prov || 'ollama', apiKey: document.getElementById('ds-api-key')?.value || '', model: document.getElementById('ds-model')?.value || '' };
-  localStorage.setItem('jeehq3_ds_settings', JSON.stringify(settings));
+  var provider = document.querySelector('.ds-prov-btn.on')?.dataset.prov || 'ollama';
+  var apiKey = document.getElementById('ds-openai-key')?.value || '';
+  var model = provider === 'ollama' ? (document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b') : (document.getElementById('ds-openai-model-ds')?.value || 'llama-3.3-70b-versatile');
+  var settings = { provider: provider, openaiKey: apiKey, openaiModel: model, ollamaUrl: document.getElementById('ds-ollama-url')?.value || 'http://localhost:11434', ollamaModel: document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b' };
+  if (window.aiService) window.aiService.saveSettings(settings);
   window.cm('m-ds-settings');
-  toast('✅ Settings saved!');
+  toast('Settings saved!');
 }
 
 /* ═══════════════ CMT (Chapter Mock Test) ═══════════════ */
