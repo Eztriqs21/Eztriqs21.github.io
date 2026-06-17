@@ -1,94 +1,136 @@
-// js/pages/prep.js — Prep Chat page renderer (Nexus & Bloom)
+// page-js/prep.js — Personalized Prep with AI Chat
 (function() {
   function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-  function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
-  function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
-  const MOCK_CHAT = [
-    { from: 'ai', text: 'Welcome! I\'m your JEE prep assistant. Based on your current progress, I\'ve analyzed your performance and created a personalized study plan. Let me show you what I recommend.', time: new Date(Date.now() - 7200000).toISOString() },
-    { from: 'user', text: 'What should I focus on this week?', time: new Date(Date.now() - 7100000).toISOString() },
-    { from: 'ai', text: 'Looking at your data:\n\n• Physics: You\'re weakest in Rotational Motion (30% mastery). Prioritize this.\n• Chemistry: Chemical Bonding needs revision (70% mastery).\n• Maths: Trigonometric Functions are strong (88%) — maintain with quick reviews.\n\nI recommend spending 2.5h/day on Physics, 1.5h on Chemistry, and 1h on Maths.', time: new Date(Date.now() - 7000000).toISOString() }
-  ];
-
-  const STUDY_PLANS = [
-    { subject: 'Physics', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', topic: 'Rotational Motion', hours: 2.5, priority: 'high', reason: 'Weakest area — 30% mastery' },
-    { subject: 'Chemistry', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v11l4 5H5l4-5V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>', topic: 'Chemical Bonding', hours: 1.5, priority: 'medium', reason: 'Needs revision — 70% mastery' },
-    { subject: 'Maths', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>', topic: 'Permutations & Combinations', hours: 1.0, priority: 'medium', reason: 'Advanced problems need practice' }
-  ];
-
-  function chatBubble(msg) {
-    const p = pfx();
-    const isUser = msg.from === 'user';
-    return `<div class="${p}-chat-bubble ${isUser ? 'user' : 'ai'}" style="align-self:${isUser ? 'flex-end' : 'flex-start'};max-width:85%">
-      <div style="font-size:13px;line-height:1.6;white-space:pre-line">${esc(msg.text)}</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:${isUser ? 'right' : 'left'}">${new Date(msg.time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</div>
-    </div>`;
+  function renderMd(text) {
+    if (!text) return '';
+    var s = esc(text);
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    s = s.replace(/`([^`]+)`/g, '<code style="background:var(--border-card);padding:1px 4px;border-radius:3px;font-size:12px">$1</code>');
+    s = s.replace(/\n/g, '<br>');
+    return s;
   }
 
-  function planCard(plan, index) {
-    const p = pfx();
-    const priColors = { high: 'var(--danger)', medium: 'var(--accent)', low: 'var(--success)' };
-    const priBg = { high: 'rgba(239,68,68,0.1)', medium: 'rgba(245,158,11,0.1)', low: 'rgba(34,197,94,0.1)' };
-    return `<div class="${p}-card anim-entrance" style="--delay:${index * 0.08}s;padding:14px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <div style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center">${plan.icon}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:600">${esc(plan.topic)}</div>
-          <div style="font-size:11px;color:var(--muted)">${esc(plan.subject)}</div>
-        </div>
-        <div style="font-size:10px;padding:2px 8px;border-radius:12px;background:${priBg[plan.priority]};color:${priColors[plan.priority]};font-weight:600">${plan.priority}</div>
-      </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${esc(plan.reason)}</div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent)">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        ${plan.hours}h recommended
-      </div>
-    </div>`;
+  function chatBubble(msg, p) {
+    var isUser = msg.role === 'user';
+    var avatar = isUser
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
+    var content = isUser ? esc(msg.content) : renderMd(msg.content);
+    return '<div style="display:flex;gap:8px;align-items:flex-start;max-width:85%;align-self:' + (isUser ? 'flex-end;flex-direction:row-reverse' : 'flex-start') + '">'
+      + '<div style="width:28px;height:28px;border-radius:50%;background:var(--border-card);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)">' + avatar + '</div>'
+      + '<div style="padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;' + (isUser ? 'background:var(--accent);color:#fff;border-bottom-right-radius:4px' : 'background:var(--border-card);color:var(--text);border-bottom-left-radius:4px') + '">' + content + '</div>'
+    '</div>';
   }
 
   window.renderPrep = function(el) {
-    const p = pfx();
-    const totalHours = STUDY_PLANS.reduce((s, plan) => s + plan.hours, 0);
+    var p = pfx();
+    var DB = window.DB;
+    if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
+    var chat = DB.prepChat || { messages: [], notes: [] };
+    var msgs = chat.messages || [];
+    var notes = chat.notes || [];
 
-    el.innerHTML = `
-    <div class="${p}-page-header anim-entrance">
-      <div class="${p}-page-title" data-text="Prep Chat">Prep Chat</div>
-      <div class="${p}-page-sub">Personalized study planning</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 300px;gap:16px" class="${p}-prep-layout anim-entrance">
-      <div class="${p}-card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px">
-        <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>
-          <span style="font-size:13px;font-weight:600">AI Study Planner</span>
-          <span style="font-size:11px;color:var(--muted);margin-left:auto">Online</span>
-        </div>
-        <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
-          ${MOCK_CHAT.map(m => chatBubble(m)).join('')}
-        </div>
-        <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px">
-          <input class="${p}-input" type="text" placeholder="Ask about your study plan..." style="flex:1" disabled>
-          <button class="${p}-btn" style="opacity:0.5" disabled>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
-        </div>
-      </div>
-      <div>
-        <div class="${p}-card anim-entrance" style="--delay:0.2s;padding:16px;margin-bottom:12px">
-          <div style="font-size:13px;font-weight:600;margin-bottom:10px">Today's Plan</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span style="font-size:22px;font-weight:700;color:var(--accent)">${totalHours}h</span>
-            <span style="font-size:12px;color:var(--muted)">total study</span>
-          </div>
-          <div class="${p}-progress-wrap" style="height:5px"><div class="${p}-progress-bar" style="height:5px;width:${safePct(totalHours, 8) * 100 / 100}%"></div></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">${safePct(totalHours, 8)}% of daily 8h target</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          ${STUDY_PLANS.map((plan, i) => planCard(plan, i)).join('')}
-        </div>
-      </div>
-    </div>`;
+    el.innerHTML = '<div class="anim-entrance">'
+      + '<div class="' + p + '-page-header"><div class="' + p + '-page-title" data-text="Prep Chat">Prep Chat</div><div class="' + p + '-page-sub">AI study companion — ask questions, upload notes, prepare smarter</div></div>'
+      + '<div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;height:calc(100vh - 200px);min-height:400px">'
+      // Left: Notes panel
+      + '<div class="' + p + '-card anim-entrance" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
+      + '<div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;justify-content:space-between"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Notes</span>'
+      + '<button class="' + p + '-btn-ghost" style="font-size:10px;padding:4px 8px" onclick="document.getElementById(\'prep-file-input\').click()">+ Upload</button></div>'
+      + '<div style="flex:1;overflow-y:auto;padding:12px" id="prep-notes">'
+      + (notes.length === 0
+        ? '<div style="text-align:center;padding:20px;font-size:11px;color:var(--muted)">No notes uploaded yet. Upload PDFs to give the AI context about your study material.</div>'
+        : notes.map(function(n, i) { return '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;margin-bottom:4px;background:var(--border-card)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(n.name) + '</span><button class="' + p + '-btn-ghost" style="font-size:10px;padding:2px 6px;color:var(--danger)" onclick="window._prepDelNote(' + i + ')">✕</button></div>'; }).join(''))
+      + '</div>'
+      + '<input type="file" id="prep-file-input" accept=".pdf" multiple style="display:none" onchange="window._prepHandleFiles(this.files)">'
+      + '</div>'
+      // Right: Chat panel
+      + '<div class="' + p + '-card anim-entrance" style="--delay:0.15s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
+      + '<div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div> AI Study Planner</div>'
+      + '<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px" id="prep-chat-msgs">'
+      + (msgs.length === 0
+        ? '<div class="' + p + '-empty" style="padding:40px;margin:auto"><div class="' + p + '-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="' + p + '-empty-title">Start a conversation!</div><div class="' + p + '-empty-sub">Ask about any topic or upload notes for context.</div></div>'
+        : msgs.map(function(m) { return chatBubble(m, p); }).join(''))
+      + '</div>'
+      + '<div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">'
+      + '<input class="' + p + '-input" type="text" id="prep-chat-input" placeholder="Ask anything about your notes..." style="flex:1;font-size:13px" onkeydown="if(event.key===\'Enter\')window._prepSend()">'
+      + '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="window._prepSend()" style="padding:10px 16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'
+      + '</div></div></div></div>';
+  };
+
+  window._prepSend = async function() {
+    var inp = document.getElementById('prep-chat-input');
+    var text = inp ? inp.value.trim() : '';
+    if (!text) return;
+
+    var aiSvc = window.aiService;
+    if (!aiSvc || !aiSvc.hasApi(aiSvc.loadSettings())) {
+      if (window.toast) window.toast('Configure AI settings first (Doubt Solver → Settings)');
+      return;
+    }
+
+    var DB = window.DB;
+    if (!DB.prepChat) DB.prepChat = { messages: [], notes: [] };
+    var msgs = DB.prepChat.messages;
+    msgs.push({ role: 'user', content: text, time: new Date().toISOString() });
+    if (window.sv) window.sv('prepChat');
+    inp.value = '';
+
+    var chatEl = document.getElementById('prep-chat-msgs');
+    if (chatEl) chatEl.scrollTop = chatEl.scrollHeight;
+
+    // Loading bubble
+    if (chatEl) {
+      var ld = document.createElement('div');
+      ld.id = 'prep-loading';
+      ld.style.cssText = 'display:flex;gap:8px;align-items:flex-start;max-width:85%';
+      ld.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:var(--border-card);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>'
+        + '<div style="padding:10px 14px;border-radius:12px;border-bottom-left-radius:4px;background:var(--border-card);color:var(--muted);font-size:13px">Thinking...</div>';
+      chatEl.appendChild(ld);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    try {
+      var settings = aiSvc.loadSettings();
+      var sysPrompt = 'You are a JEE study planner and tutor. Help the student with their preparation. Be concise, clear, and encouraging. Use LaTeX for math ($$formula$$). Give actionable advice.';
+      var noteContext = (DB.prepChat.notes || []).map(function(n) { return 'Note: ' + n.name + ' — ' + (n.text || '').substring(0, 500); }).join('\n');
+      if (noteContext) sysPrompt += '\n\nStudent\'s uploaded notes:\n' + noteContext;
+      var chatHistory = msgs.slice(-10).map(function(m) { return { role: m.role, content: m.content }; });
+      var response = await aiSvc.callAI([{ role: 'system', content: sysPrompt }, ...chatHistory], settings, { maxTokens: 2048 });
+      msgs.push({ role: 'assistant', content: response, time: new Date().toISOString() });
+    } catch (err) {
+      msgs.push({ role: 'assistant', content: 'Error: ' + (err.message || 'Failed to get response'), time: new Date().toISOString() });
+    }
+
+    if (window.sv) window.sv('prepChat');
+    window.renderPrep(document.getElementById('content-wrap'));
+  };
+
+  window._prepHandleFiles = function(files) {
+    if (!files || !files.length) return;
+    var DB = window.DB;
+    if (!DB.prepChat) DB.prepChat = { messages: [], notes: [] };
+    Array.from(files).forEach(function(file) {
+      if (file.type !== 'application/pdf') { if (window.toast) window.toast('Only PDF files supported'); return; }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        DB.prepChat.notes.push({ name: file.name, data: e.target.result, text: 'PDF uploaded: ' + file.name, id: 'pn_' + Date.now() });
+        if (window.sv) window.sv('prepChat');
+        window.renderPrep(document.getElementById('content-wrap'));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  window._prepDelNote = function(index) {
+    var DB = window.DB;
+    if (!DB.prepChat || !DB.prepChat.notes) return;
+    DB.prepChat.notes.splice(index, 1);
+    if (window.sv) window.sv('prepChat');
+    window.renderPrep(document.getElementById('content-wrap'));
   };
 })();
