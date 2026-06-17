@@ -93,14 +93,14 @@
     const p = pfx();
     const data = ANALYTICS_DATA.tests;
     const DB = window.DB;
-    const allTests = DB.tests.length > 0 ? DB.tests : data;
+    const allTests = (DB && DB.tests && DB.tests.length > 0) ? DB.tests : data;
     const avgPct = allTests.length ? safePct(allTests.reduce((s, t) => s + (t.totalScore || t.total), 0), allTests.reduce((s, t) => s + (t.maxScore || t.max), 0)) : 0;
     const bestPct = allTests.length ? Math.max(...allTests.map(t => safePct(t.totalScore || t.total, t.maxScore || t.max))) : 0;
     const improvement = allTests.length >= 2 ? safePct(allTests[allTests.length - 1].totalScore || allTests[allTests.length - 1].total, allTests[allTests.length - 1].maxScore || allTests[allTests.length - 1].max) - safePct(allTests[0].totalScore || allTests[0].total, allTests[0].maxScore || allTests[0].max) : 0;
 
-    const physicsScores = allTests.map(t => safePct(t.physics?.correct * 4 - (t.physics?.incorrect || 0), 100));
-    const chemScores = allTests.map(t => safePct(t.chemistry?.correct * 4 - (t.chemistry?.incorrect || 0), 100));
-    const mathsScores = allTests.map(t => safePct(t.maths?.correct * 4 - (t.maths?.incorrect || 0), 100));
+    const physicsScores = allTests.map(t => safePct((t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0), 100));
+    const chemScores = allTests.map(t => safePct((t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0), 100));
+    const mathsScores = allTests.map(t => safePct((t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0), 100));
 
     el.innerHTML = `
     <div class="${p}-page-header anim-entrance">

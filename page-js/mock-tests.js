@@ -56,7 +56,7 @@
 
   function subjectBreakdown(test, key) {
     const p = pfx();
-    const data = test[key];
+    const data = test[key] || { correct: 0, incorrect: 0, unattempted: 0 };
     const total = data.correct + data.incorrect + data.unattempted;
     const score = data.correct * 4 - data.incorrect;
     const maxS = total * 4;
@@ -102,11 +102,11 @@
           </div>
           <div style="flex:1;text-align:center">
             <div style="font-weight:600;margin-bottom:4px">Accuracy</div>
-            <div style="font-size:18px;font-weight:700">${safePct(t.physics.correct + t.chemistry.correct + t.maths.correct, t.physics.correct + t.physics.incorrect + t.physics.unattempted + t.chemistry.correct + t.chemistry.incorrect + t.chemistry.unattempted + t.maths.correct + t.maths.incorrect + t.maths.unattempted)}%</div>
+            <div style="font-size:18px;font-weight:700">${safePct((t.physics?.correct||0) + (t.chemistry?.correct||0) + (t.maths?.correct||0), (t.physics?.correct||0) + (t.physics?.incorrect||0) + (t.physics?.unattempted||0) + (t.chemistry?.correct||0) + (t.chemistry?.incorrect||0) + (t.chemistry?.unattempted||0) + (t.maths?.correct||0) + (t.maths?.incorrect||0) + (t.maths?.unattempted||0))}%</div>
           </div>
           <div style="flex:1;text-align:center">
             <div style="font-weight:600;margin-bottom:4px">Attempted</div>
-            <div style="font-size:18px;font-weight:700">${t.physics.correct + t.physics.incorrect + t.chemistry.correct + t.chemistry.incorrect + t.maths.correct + t.maths.incorrect}/75</div>
+            <div style="font-size:18px;font-weight:700">${(t.physics?.correct||0) + (t.physics?.incorrect||0) + (t.chemistry?.correct||0) + (t.chemistry?.incorrect||0) + (t.maths?.correct||0) + (t.maths?.incorrect||0)}/75</div>
           </div>
         </div>
       </div>

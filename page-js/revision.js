@@ -65,9 +65,9 @@
   window.renderRevision = function(el) {
     const p = pfx();
     const keys = ['physics', 'chemistry', 'maths'];
-    const totalFormulas = keys.reduce((s, k) => s + REVISION_DATA[k].reduce((s2, d) => s2 + d.formulaCount, 0), 0);
-    const allTopics = keys.reduce((s, k) => s + REVISION_DATA[k].length, 0);
-    const revised = keys.reduce((s, k) => s + REVISION_DATA[k].filter(d => d.lastRevised).length, 0);
+    const totalFormulas = keys.reduce((s, k) => s + (REVISION_DATA[k]||[]).reduce((s2, d) => s2 + d.formulaCount, 0), 0);
+    const allTopics = keys.reduce((s, k) => s + (REVISION_DATA[k]||[]).length, 0);
+    const revised = keys.reduce((s, k) => s + (REVISION_DATA[k]||[]).filter(d => d.lastRevised).length, 0);
 
     el.innerHTML = `
     <div class="${p}-page-header anim-entrance">
@@ -94,6 +94,6 @@
         <div class="${p}-stat-sub">${allTopics > 0 ? safePct(revised, allTopics) : 0}% complete</div>
       </div>
     </div>
-    ${keys.map((k, i) => subjectSection(k, REVISION_DATA[k], i)).join('')}`;
+    ${keys.map((k, i) => subjectSection(k, REVISION_DATA[k] || [], i)).join('')}`;
   };
 })();

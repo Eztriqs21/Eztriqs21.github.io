@@ -46,9 +46,9 @@
   function subjectAccordion(key, chapters, index) {
     const p = pfx();
     const info = SUBJECTS[key];
-    const totalNotes = chapters.reduce((s, c) => s + c.notes.length, 0);
+    const totalNotes = chapters.reduce((s, c) => s + (c.notes?.length || 0), 0);
     const lastUpdated = chapters.reduce((latest, c) => {
-      const dates = c.notes.map(n => new Date(n.date).getTime());
+      const dates = (c.notes || []).map(n => new Date(n.date).getTime());
       const max = Math.max(...dates, 0);
       return max > latest ? max : latest;
     }, 0);
@@ -66,10 +66,10 @@
         ${chapters.map((ch, ci) => `<div style="padding:8px 0">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:600">
             <span>${esc(ch.chapter)}</span>
-            <span style="font-size:11px;color:var(--muted)">${ch.notes.length} note${ch.notes.length !== 1 ? 's' : ''}</span>
+            <span style="font-size:11px;color:var(--muted)">${(ch.notes||[]).length} note${(ch.notes||[]).length !== 1 ? 's' : ''}</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:2px">
-            ${ch.notes.map((n, ni) => noteItem(n, ni)).join('')}
+            ${(ch.notes||[]).map((n, ni) => noteItem(n, ni)).join('')}
           </div>
         </div>`).join('')}
       </div>
@@ -79,8 +79,8 @@
   window.renderNotes = function(el) {
     const p = pfx();
     const keys = ['physics', 'chemistry', 'maths'];
-    const totalNotes = keys.reduce((s, k) => s + NOTES_DATA[k].reduce((s2, c) => s2 + c.notes.length, 0), 0);
-    const totalChapters = keys.reduce((s, k) => s + NOTES_DATA[k].length, 0);
+    const totalNotes = keys.reduce((s, k) => s + (NOTES_DATA[k]||[]).reduce((s2, c) => s2 + (c.notes?.length || 0), 0), 0);
+    const totalChapters = keys.reduce((s, k) => s + (NOTES_DATA[k]||[]).length, 0);
 
     el.innerHTML = `
     <div class="${p}-page-header anim-entrance">
@@ -102,7 +102,7 @@
       </div>
     </div>
     <div class="${p}-accordion-list">
-      ${keys.map((k, i) => subjectAccordion(k, NOTES_DATA[k], i)).join('')}
+      ${keys.map((k, i) => subjectAccordion(k, NOTES_DATA[k] || [], i)).join('')}
     </div>`;
   };
 })();

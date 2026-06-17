@@ -8,9 +8,9 @@
   function testCard(t, index) {
     const p = pfx();
     const pct = t.maxScore > 0 ? Math.round(t.totalScore / t.maxScore * 100) : 0;
-    const phS = t.physics.correct * 4 - t.physics.incorrect;
-    const chS = t.chemistry.correct * 4 - t.chemistry.incorrect;
-    const mS = t.maths.correct * 4 - t.maths.incorrect;
+    const phS = (t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0);
+    const chS = (t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0);
+    const mS = (t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0);
     const tm = t.timing || {};
 
     return `<div class="${p}-test-card anim-entrance" style="--delay:${index * 0.05}s" onclick="this.classList.toggle('expanded')">
@@ -41,7 +41,7 @@
           ].map(sb => `<div class="${p}-test-card-subject">
             <div class="${p}-test-card-subject-label">${sb.label}</div>
             <div class="${p}-test-card-subject-score">${sb.score}</div>
-            <div class="${p}-test-card-subject-detail">${sb.data.correct}C / ${sb.data.incorrect}W / ${sb.data.unattempted || 0}S</div>
+            <div class="${p}-test-card-subject-detail">${(sb.data?.correct||0)}C / ${(sb.data?.incorrect||0)}W / ${(sb.data?.unattempted||0)}S</div>
             <div class="${p}-progress-wrap" style="height:3px;margin-top:6px"><div class="${p}-progress-bar ${sb.color}" style="height:3px;width:${Math.max(0, sb.score)}%"></div></div>
           </div>`).join('')}
         </div>
@@ -51,7 +51,7 @@
 
   window.renderTests = function(el) {
     const p = pfx();
-    const tests = window.DB.tests;
+    const tests = window.DB.tests || [];
 
     el.innerHTML = `
     <div class="${p}-page-header anim-entrance">

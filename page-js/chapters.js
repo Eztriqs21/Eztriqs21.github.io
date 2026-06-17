@@ -37,7 +37,7 @@
 
   function subjectAccordion(subj, index) {
     const p = pfx();
-    const chs = window.DB.chapters[subj.key];
+    const chs = (window.DB && window.DB.chapters && window.DB.chapters[subj.key]) || [];
     const q = searchQuery.trim().toLowerCase();
     const filtered = (currentFilter === 'all' ? chs : chs.filter(c => c.strength === currentFilter))
       .filter(c => !q || c.name.toLowerCase().includes(q));

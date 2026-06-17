@@ -71,11 +71,12 @@
   window.renderDashboard = function(el) {
     const p = pfx();
     const DB = window.DB;
-    const all = [...DB.chapters.physics, ...DB.chapters.chemistry, ...DB.chapters.maths];
+    if (!DB || !DB.chapters) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
+    const all = [...(DB.chapters.physics||[]), ...(DB.chapters.chemistry||[]), ...(DB.chapters.maths||[])];
     const done = all.filter(c => c.completed).length;
     const total = all.length;
-    const active = DB.assignments.filter(a => !a.completed).length;
-    const tests = DB.tests;
+    const active = (DB.assignments || []).filter(a => !a.completed).length;
+    const tests = DB.tests || [];
     const avg = tests.length ? Math.round(tests.reduce((s, t) => s + (t.maxScore > 0 ? (t.totalScore / t.maxScore) * 100 : 0), 0) / tests.length) : 0;
     const logs = DB.studyLogs || [];
     const today = new Date().toISOString().split('T')[0];
@@ -98,9 +99,9 @@
     <div class="${p}-section-block anim-entrance" style="--delay:0.2s">
       <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Subject Progress</div>
       <div class="${p}-grid" style="grid-template-columns:repeat(3,1fr);gap:16px">
-        ${subjectCard(DB.chapters.physics, 'physics')}
-        ${subjectCard(DB.chapters.chemistry, 'chemistry')}
-        ${subjectCard(DB.chapters.maths, 'maths')}
+        ${subjectCard(DB.chapters.physics || [], 'physics')}
+        ${subjectCard(DB.chapters.chemistry || [], 'chemistry')}
+        ${subjectCard(DB.chapters.maths || [], 'maths')}
       </div>
     </div>
     <div class="${p}-recent-grid anim-entrance" style="--delay:0.3s">

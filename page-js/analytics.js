@@ -35,8 +35,8 @@
 
   window.renderAnalytics = function(el) {
     const p = pfx();
-    const logs = window.DB.studyLogs || [];
-    const tests = window.DB.tests || [];
+    const logs = (window.DB && window.DB.studyLogs) || [];
+    const tests = (window.DB && window.DB.tests) || [];
     const now = new Date();
 
     // Weekly data
@@ -64,9 +64,9 @@
 
     // Test averages
     const testAvg = tests.length ? Math.round(tests.reduce((s, t) => s + t.totalScore, 0) / tests.length) : 0;
-    const physAvg = tests.length ? Math.round(tests.reduce((s, t) => s + (t.physics.correct * 4 - t.physics.incorrect), 0) / tests.length) : 0;
-    const chemAvg = tests.length ? Math.round(tests.reduce((s, t) => s + (t.chemistry.correct * 4 - t.chemistry.incorrect), 0) / tests.length) : 0;
-    const mathAvg = tests.length ? Math.round(tests.reduce((s, t) => s + (t.maths.correct * 4 - t.maths.incorrect), 0) / tests.length) : 0;
+    const physAvg = tests.length ? Math.round(tests.reduce((s, t) => s + ((t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0)), 0) / tests.length) : 0;
+    const chemAvg = tests.length ? Math.round(tests.reduce((s, t) => s + ((t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0)), 0) / tests.length) : 0;
+    const mathAvg = tests.length ? Math.round(tests.reduce((s, t) => s + ((t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0)), 0) / tests.length) : 0;
 
     // Timing averages
     const testsWithTiming = tests.filter(t => t.timing && t.timing.total);
