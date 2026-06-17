@@ -426,10 +426,10 @@ export function animateAllEntrance(scope) {
 
 export function pageLoadChoreography(scope) {
   if (noMotion()) {
-    scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card, .prep-card, .freq-card').forEach(c => c.style.opacity = '1');
+    scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card').forEach(c => c.style.opacity = '1');
     return;
   }
-  const cards = scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card, .prep-card, .freq-card');
+  const cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card');
   cards.forEach((card, i) => {
     card.style.opacity = '0';
     _M.animate(card, {
@@ -507,7 +507,7 @@ export function initScrollAnimations() {
   if (noMotion()) return;
 
   // Section reveal on scroll
-  const sections = document.querySelectorAll('.section-block, .gc');
+  const sections = document.querySelectorAll('.nx-section-block, .nx-card, .section-block, .gc');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {

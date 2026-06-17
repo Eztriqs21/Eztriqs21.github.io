@@ -51,28 +51,29 @@ function setupDZ(dzId, inputId, handler) {
 }
 
 /* ═══════════════ ASSIGNMENTS ═══════════════ */
-var pendingAFiles = [];
+window.pendingAFiles = [];
 var aPriority = 'none';
 
-function setAP(p) {
-  aPriority = p;
-  ['none', 'high', 'medium', 'low'].forEach(function (pri) {
-    var id = { none: 'ap-none', high: 'ap-hi', medium: 'ap-med', low: 'ap-lo' }[pri];
+function setAP(pri) {
+  aPriority = pri;
+  var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
+  ['none', 'high', 'medium', 'low'].forEach(function (p2) {
+    var id = { none: 'ap-none', high: 'ap-hi', medium: 'ap-med', low: 'ap-lo' }[p2];
     var btn = document.getElementById(id);
     if (!btn) return;
-    btn.style.cssText = pri === p ? 'background:var(--primary);color:#fff;' : '';
+    btn.className = p2 === pri ? p + '-btn ' + p + '-btn-primary' : p + '-btn ' + p + '-btn-ghost';
   });
 }
 
 function handleAFiles(files) {
-  rdFiles(files, function (obj) { pendingAFiles.push(obj); refreshAFileList(); });
+  rdFiles(files, function (obj) { window.pendingAFiles.push(obj); refreshAFileList(); });
 }
 
 function refreshAFileList() {
   var el = document.getElementById('a-file-list');
   if (!el) return;
-  el.innerHTML = pendingAFiles.map(function (f, i) {
-    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="pendingAFiles.splice(' + i + ',1);refreshAFileList()">✕</button></div>';
+  el.innerHTML = window.pendingAFiles.map(function (f, i) {
+    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingAFiles.splice(' + i + ',1);refreshAFileList()">✕</button></div>';
   }).join('');
 }
 
@@ -80,17 +81,19 @@ function saveAssignment() {
   var t = document.getElementById('a-title').value.trim();
   if (!t) { toast('Enter a title'); return; }
   var DB = window.DB;
+  if (!DB) return;
   if (!DB.assignments) DB.assignments = [];
   DB.assignments.unshift({
     id: 'a_' + Date.now(), title: t,
     description: document.getElementById('a-desc').value.trim(),
-    priority: window.aPriority || 'none',
+    priority: aPriority || 'none',
     completed: false,
     attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name }; }),
     syllabus: document.getElementById('a-syl').value.trim() || undefined,
     createdAt: new Date().toISOString()
   });
   window.sv('assignments');
+  window.pendingAFiles = [];
   window.cm('m-asgn');
   toast('Task added!');
   if (window.PAGE === 'assignments') window.renderAssignments(document.getElementById('content-wrap'));
@@ -98,20 +101,21 @@ function saveAssignment() {
 }
 
 /* ═══════════════ TESTS ═══════════════ */
-var pendingTFiles = [];
+window.pendingTFiles = [];
 var testEntryMode = 'direct';
 
 function setTestMode(mode) {
   testEntryMode = mode;
   var dBtn = document.getElementById('tm-direct'), bBtn = document.getElementById('tm-breakdown');
   var dSec = document.getElementById('test-mode-direct'), bSec = document.getElementById('test-mode-breakdown');
+  var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
   if (mode === 'direct') {
-    if (dBtn) { dBtn.className = 'btn btn-sm'; dBtn.style.cssText = 'flex:1;text-align:center;background:var(--primary);color:#fff'; }
-    if (bBtn) { bBtn.className = 'btn btn-ghost btn-sm'; bBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-primary'; dBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-ghost'; bBtn.style.cssText = 'flex:1;text-align:center'; }
     if (dSec) dSec.style.display = 'block'; if (bSec) bSec.style.display = 'none';
   } else {
-    if (bBtn) { bBtn.className = 'btn btn-sm'; bBtn.style.cssText = 'flex:1;text-align:center;background:var(--primary);color:#fff'; }
-    if (dBtn) { dBtn.className = 'btn btn-ghost btn-sm'; dBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-primary'; bBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-ghost'; dBtn.style.cssText = 'flex:1;text-align:center'; }
     if (bSec) bSec.style.display = 'block'; if (dSec) dSec.style.display = 'none';
   }
 }
@@ -134,13 +138,13 @@ function syncDirectToBreakdown() {
 }
 
 function handleTFiles(files) {
-  rdFiles(files, function (obj) { pendingTFiles.push(obj); refreshTFileList(); });
+  rdFiles(files, function (obj) { window.pendingTFiles.push(obj); refreshTFileList(); });
 }
 
 function refreshTFileList() {
   var el = document.getElementById('t-file-list');
   if (!el) return;
-  el.innerHTML = pendingTFiles.map(function (f, i) {
+  el.innerHTML = window.pendingTFiles.map(function (f, i) {
     return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="pendingTFiles.splice(' + i + ',1);refreshTFileList()">✕</button></div>';
   }).join('');
 }
@@ -183,6 +187,7 @@ function saveTest() {
     syllabus: syllabus
   });
   window.sv('tests');
+  window.pendingTFiles = [];
   window.cm('m-test');
   toast('Test saved!');
   if (window.PAGE === 'tests') window.renderTests(document.getElementById('content-wrap'));
@@ -190,50 +195,6 @@ function saveTest() {
 }
 
 /* ═══════════════ CALCULATOR ═══════════════ */
-var calcQuestions = [], calcShowResults = false, calcAnsKey = {}, currentFocusQ = 1, calcActiveTab = 'manual';
-
-function initCalcQ() {
-  calcQuestions = [];
-  ['physics', 'chemistry', 'maths'].forEach(function (subj, si) {
-    for (var i = 1; i <= 25; i++) {
-      calcQuestions.push({ num: si * 25 + i, subj: subj, subjLabel: ['Physics', 'Chemistry', 'Maths'][si], selected: null, unattempted: false, mode: 'mcq', intVal: '', multiVal: '' });
-    }
-  });
-}
-
-function saveCalcTestFromModal() {
-  var DB = window.DB;
-  if (!calcQuestions || !calcQuestions.length) { toast('⚠️ No calculator data'); return; }
-  var name = document.getElementById('calc-save-name').value.trim();
-  if (!name) { toast('⚠️ Enter a test name'); return; }
-  var p = { correct: 0, incorrect: 0, unattempted: 0 }, c = { correct: 0, incorrect: 0, unattempted: 0 }, m = { correct: 0, incorrect: 0, unattempted: 0 };
-  var totalScore = 0;
-  calcQuestions.forEach(function (q) {
-    var k = calcAnsKey[q.num]; if (k === undefined || k === null) return;
-    var sc = scoreQ(q, k); if (isNaN(sc)) return;
-    totalScore += sc;
-    var cat = q.subj === 'physics' ? p : q.subj === 'chemistry' ? c : m;
-    if (sc === 0) cat.unattempted++; else if (sc >= 4) cat.correct++; else cat.incorrect++;
-  });
-  DB.tests.unshift({ id: 't_' + Date.now(), name: name, date: document.getElementById('calc-save-date').value || new Date().toISOString(), physics: p, chemistry: c, maths: m, totalScore: Math.max(0, totalScore), maxScore: 300, papers: [], syllabus: { physics: [], chemistry: [], maths: [] } });
-  if (!window.sv('tests')) { DB.tests.shift(); return; }
-  window.cm('m-save-calc-test');
-  toast('✅ Test saved!');
-}
-
-function scoreQ(q, k) {
-  if (q.unattempted || !q.selected || k === undefined || k === null) return 0;
-  if (q.mode === 'int') { var iv = parseInt(q.selected, 10); return isNaN(iv) ? 0 : iv === k ? 4 : -1; }
-  if (q.mode === 'multi') { var ks = String(k).toUpperCase(), ss = q.selected.toUpperCase(); var hasWrong = false, allCorrect = true; ['A', 'B', 'C', 'D'].forEach(function (o) { if (ss.includes(o) && !ks.includes(o)) hasWrong = true; if (ks.includes(o) && !ss.includes(o)) allCorrect = false; }); return hasWrong ? -2 : allCorrect ? 4 : 0; }
-  return q.selected === k ? 4 : -1;
-}
-
-function getPerc(score) {
-  var map = [{ min: 285, p: 99.99, a: '1-50' }, { min: 270, p: 99.9, a: '200-600' }, { min: 250, p: 99.7, a: '1200-2500' }, { min: 230, p: 99.5, a: '4000-6000' }, { min: 210, p: 99.0, a: '10000-15000' }, { min: 190, p: 97.5, a: '25000-40000' }, { min: 170, p: 95.0, a: '55000-75000' }, { min: 140, p: 89.0, a: '100000-150000' }, { min: 100, p: 74.0, a: '220000-320000' }, { min: 60, p: 47.0, a: '480000-650000' }, { min: 0, p: 10.0, a: '840000+' }];
-  for (var i = 0; i < map.length; i++) { if (score >= map[i].min) return { pctile: map[i].p, airRange: map[i].a }; }
-  return { pctile: 5.0, airRange: '900000+' };
-}
-
 /* ═══════════════ NOTES ═══════════════ */
 var pendingNoteFiles = [];
 var currentNoteType = 'detailed';
@@ -242,10 +203,9 @@ function setNoteType(t) {
   currentNoteType = t;
   var detBtn = document.getElementById('note-type-det');
   var revBtn = document.getElementById('note-type-rev');
-  var lbl = document.getElementById('note-type-lbl');
-  if (detBtn) detBtn.className = t === 'detailed' ? 'btn btn-sm' : 'btn btn-ghost btn-sm';
-  if (revBtn) revBtn.className = t === 'revision' ? 'btn btn-sm' : 'btn btn-ghost btn-sm';
-  if (lbl) lbl.textContent = t === 'detailed' ? 'Detailed' : 'Revision';
+  var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
+  if (detBtn) detBtn.className = p + '-btn ' + (t === 'detailed' ? p + '-btn-primary' : p + '-btn-ghost');
+  if (revBtn) revBtn.className = p + '-btn ' + (t === 'revision' ? p + '-btn-primary' : p + '-btn-ghost');
 }
 
 function handleNoteFiles(files) {
@@ -295,7 +255,6 @@ function deleteEditCh() {
     toast('Deleted');
     if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
     if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-  });
   });
 }
 
@@ -351,6 +310,10 @@ function saveMockTest() {
 function dsSetProvider(prov) {
   var btns = document.querySelectorAll('.ds-prov-btn');
   btns.forEach(function (b) { b.classList.toggle('on', b.dataset.prov === prov); });
+  var groqSec = document.getElementById('ds-groq-section');
+  var ollamaSec = document.getElementById('ds-ollama-section');
+  if (groqSec) groqSec.style.display = prov === 'groq' ? 'block' : 'none';
+  if (ollamaSec) ollamaSec.style.display = prov === 'ollama' ? 'block' : 'none';
 }
 
 function saveDSSettings() {

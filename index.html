@@ -469,6 +469,8 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   <div class="md"><div class="md-handle"></div>
     <div class="md-head"><div class="md-title" id="editch-title">Edit Chapter</div><button class="md-x" onclick="cm('m-edit-ch')">&#10005;</button></div>
     <div class="md-body">
+      <input type="hidden" id="editch-subj"/>
+      <input type="hidden" id="editch-id"/>
       <div class="fg"><label>Chapter Name</label><input class="inp" id="editch-name" type="text"/></div>
     </div>
     <div class="md-foot">
@@ -512,6 +514,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
     <div class="md-head"><div class="md-title">Log Mock Test</div><button class="md-x" onclick="cm('m-mocktest')">&#10005;</button></div>
     <div class="md-body">
       <div class="mt-form">
+        <div class="fg"><label>Test Name</label><input class="inp" id="mt-name" type="text" placeholder="e.g. Allen Mock Test 3"/></div>
         <div class="fg"><label>Subject</label>
           <select class="inp" id="mt-subj">
             <option value="Physics">Physics</option>

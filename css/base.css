@@ -492,3 +492,52 @@ input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-even
 
 /* ═══════════════ PREVIEW ═══════════════ */
 .pv-empty{display:flex;align-items:center;justify-content:center;width:100%;min-height:200px;color:var(--muted);font-size:14px;text-align:center;}
+
+/* ═══════════════ CALCULATOR ═══════════════ */
+.q-matrix-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.q-matrix{width:100%;min-width:500px;}
+.q-matrix-header{display:grid;grid-template-columns:50px 80px 70px 1fr 60px;gap:4px;padding:6px 8px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);border-bottom:1px solid var(--border);}
+.q-row{display:grid;grid-template-columns:50px 80px 70px 1fr 60px;gap:4px;align-items:center;padding:6px 8px;border-radius:var(--r-sm);transition:background .12s var(--ease),box-shadow .12s var(--ease);cursor:pointer;font-size:11px;}
+.q-row:hover{background:var(--hover);}
+.q-row.q-focus{background:var(--accent-dim);box-shadow:inset 2px 0 0 var(--accent);}
+.q-num{font-weight:700;font-size:12px;}
+.q-subj{color:var(--muted);font-size:10px;}
+.q-type-toggle{font-size:9px;text-align:center;color:var(--accent);font-weight:600;padding:2px 4px;border-radius:4px;background:var(--accent-dim);cursor:pointer;}
+.q-opt{display:flex;gap:6px;justify-content:center;}
+.q-opt label{display:flex;align-items:center;gap:2px;font-size:10px;color:var(--muted);cursor:pointer;}
+.q-skip-btn button{background:transparent;border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:9px;color:var(--muted);cursor:pointer;transition:all .15s var(--ease);}
+.q-skip-btn button.on{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
+.q-radio,.q-multi-cb{accent-color:var(--accent);cursor:pointer;}
+.q-int-input{width:100%;padding:6px 8px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--txt);font-size:14px;text-align:center;font-weight:600;outline:none;transition:border-color .15s var(--ease);}
+.q-int-input:focus{border-color:var(--accent);}
+
+/* Calculator results */
+.results-hero{text-align:center;padding:24px 20px;}
+.score-ring{position:relative;width:120px;height:120px;margin:0 auto 16px;}
+.score-ring svg{width:100%;height:100%;}
+.score-ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-num{font-size:32px;font-weight:800;line-height:1;}
+.score-sub{font-size:12px;color:var(--muted);}
+.results-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
+.res-badge{padding:10px 14px;border-radius:var(--r);text-align:center;min-width:70px;}
+.res-badge-val{font-size:16px;font-weight:800;}
+.res-badge-lbl{font-size:9px;color:var(--muted);margin-top:2px;}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:6px;}
+.qr-item{padding:6px 4px;border-radius:var(--r-sm);border:1px solid var(--border);text-align:center;font-size:10px;transition:transform .12s var(--ease);}
+.qr-item:hover{transform:scale(1.05);}
+.qr-num{font-weight:700;font-size:11px;margin-bottom:2px;}
+.qr-ans{color:var(--txt);font-weight:600;}
+.qr-key{color:var(--muted);font-size:9px;}
+.qr-score{font-size:9px;margin-top:2px;}
+.qr-correct{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--success);}
+.qr-wrong{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:var(--danger);}
+.qr-skip{background:var(--surface2);color:var(--muted);}
+.qr-partial{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--accent);}
+.qr-na{background:var(--surface2);color:var(--muted);}
+.subj-breakdown-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.sbd-item{text-align:center;}
+.sbd-label{font-size:11px;font-weight:700;margin-bottom:4px;}
+.sbd-score{font-size:20px;font-weight:800;}
+.sbd-detail{font-size:10px;color:var(--muted);margin-top:2px;}
+.pbar-wrap{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.pbar{height:100%;border-radius:2px;transition:width .4s var(--ease);}
