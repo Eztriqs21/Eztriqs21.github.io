@@ -103,10 +103,16 @@
     });
   }
 
+  let particleCanvas = null;
+  let particleCtx = null;
+
   function updateParticles() {
-    const canvas = document.getElementById('grid-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    if (!particleCanvas) {
+      particleCanvas = document.getElementById('grid-canvas');
+      if (particleCanvas) particleCtx = particleCanvas.getContext('2d');
+    }
+    if (!particleCanvas || !particleCtx) return;
+    const ctx = particleCtx;
 
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
@@ -152,13 +158,14 @@
   }
 
   animate();
+  document.body.classList.add('cursor-active');
 
   window.cursorEngine = {
     morph: function() {
       ringX = mouseX; ringY = mouseY;
       trailX = mouseX; trailY = mouseY;
-      document.documentElement.classList.add('data-theme-transitioning');
-      setTimeout(() => document.documentElement.classList.remove('data-theme-transitioning'), 400);
+      document.documentElement.setAttribute('data-theme-transitioning', '');
+      setTimeout(() => document.documentElement.removeAttribute('data-theme-transitioning'), 400);
     },
     updateParticles: updateParticles
   };

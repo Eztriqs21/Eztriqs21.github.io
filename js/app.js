@@ -33,5 +33,5 @@ document.addEventListener('DOMContentLoaded', () => {
       window.gridBloom?.start();
     }
     go(getPage());
-  });
+  }) ?? go(getPage());
 });

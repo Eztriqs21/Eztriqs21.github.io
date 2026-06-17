@@ -28,6 +28,7 @@ export function load(){
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
   if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
   try{DB.revision=JSON.parse(localStorage.getItem(KEYS.rev))||null;}catch(e){DB.revision=null;}
+  if(!DB.revision)DB.revision={topics:[],history:[]};
   try{DB.notes=JSON.parse(localStorage.getItem(KEYS.notes))||{};}catch(e){DB.notes={}}
   try{DB.pyqs=JSON.parse(localStorage.getItem(KEYS.pyqs))||[];}catch(e){DB.pyqs=[];}
   if(window.cmtLoadHashes)window.cmtLoadHashes();

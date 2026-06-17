@@ -1,7 +1,9 @@
 (function() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
   const canvas = document.getElementById('grid-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
   let width, height;
   let mouseX = -1000, mouseY = -1000;
@@ -111,14 +113,17 @@
       ctx.fill();
     }
 
-    // Organic connections between nearby dots
+    // Organic connections between nearby dots (with early exit optimization)
+    const maxDist = SPACING * 1.2;
     for (let i = 0; i < dots.length; i++) {
       for (let j = i + 1; j < dots.length; j++) {
         const dx = dots[i].x - dots[j].x;
+        if (Math.abs(dx) > maxDist) continue;
         const dy = dots[i].y - dots[j].y;
+        if (Math.abs(dy) > maxDist) continue;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < SPACING * 1.2) {
-          const alpha = (1 - dist / (SPACING * 1.2)) * 0.04;
+        if (dist < maxDist) {
+          const alpha = (1 - dist / maxDist) * 0.04;
           ctx.beginPath();
           ctx.moveTo(dots[i].x, dots[i].y);
           ctx.lineTo(dots[j].x, dots[j].y);

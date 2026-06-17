@@ -1,4 +1,7 @@
 /* ═══════════════ CUSTOM CURSORS ═══════════════ */
+body.cursor-active, body.cursor-active * {
+  cursor: none !important;
+}
 .custom-cursor {
   position: fixed;
   pointer-events: none;

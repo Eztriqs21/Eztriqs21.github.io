@@ -112,7 +112,7 @@
               <div class="${p}-empty-title">No mock tests yet</div>
               <div class="${p}-empty-sub">Tap + to log your first mock test</div>
             </div>`
-          : tests.sort((a, b) => new Date(b.date) - new Date(a.date)).map((t, i) => mockCard(t, i)).join('')}
+          : [...tests].sort((a, b) => new Date(b.date) - new Date(a.date)).map((t, i) => mockCard(t, i)).join('')}
       </div>
     </div>`;
   };

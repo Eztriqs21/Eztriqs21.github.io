@@ -48,7 +48,7 @@
     const barData = days.map((d, i) => {
       const dt = new Date(weekStart);
       dt.setDate(weekStart.getDate() + i);
-      const ds = dt.toISOString().split('T')[0];
+      const ds = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
       return { day: d, val: dayMap[ds] || 0 };
     });
     const maxVal = Math.max(...barData.map(b => b.val), 2);

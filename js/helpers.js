@@ -69,7 +69,7 @@ export function fileExt(name){return (String(name||'').split('.').pop()||'').toL
 const PDF_MIMES=['application/pdf','application/x-pdf'];
 const IMG_EXTS=['jpg','jpeg','png','gif','webp','bmp','heic','heif'];
 export function isPdfFile(file){if(!file||!file.name)return false;const ext=fileExt(file.name);const typ=(file.type||'').toLowerCase();return PDF_MIMES.includes(typ)||ext==='pdf';}
-export function isImageFile(file){const ext=fileExt(file.name);return (file.type&&file.type.startsWith('image/'))||IMG_EXTS.includes(ext);}
+export function isImageFile(file){if(!file||!file.name)return false;const ext=fileExt(file.name);return (file.type&&file.type.startsWith('image/'))||IMG_EXTS.includes(ext);}
 export function isAllowedUpload(file){return isImageFile(file)||isPdfFile(file);}
 export function fileIcon(f){return (f&&(isImageFile(f)||(f.type&&f.type.startsWith('image/'))||(f.name&&isImageFile({name:f.name,type:f.type||''}))))?'🖼️':'📄';}
 export function compressImageToDataUrl(file,maxDim,quality){

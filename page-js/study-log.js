@@ -140,8 +140,8 @@
     const weekH = logs.filter(l => { const d = new Date(l.date); return (new Date() - d) / 86400000 <= 7; }).reduce((s, l) => s + l.duration, 0);
     const uniqueDays = new Set(logs.map(l => l.date)).size || 1;
     const avgPerDay = totalHours / uniqueDays;
-    const subjectHours = { Physics: 0, Chemistry: 0, Maths: 0 };
-    logs.forEach(l => { if (subjectHours[l.subject] !== undefined) subjectHours[l.subject] += l.duration; });
+    const subjectHours = { physics: 0, chemistry: 0, maths: 0 };
+    logs.forEach(l => { var k = (l.subject || '').toLowerCase(); if (subjectHours[k] !== undefined) subjectHours[k] += l.duration; });
     const topSubject = Object.entries(subjectHours).sort((a, b) => b[1] - a[1])[0];
 
     el.innerHTML = ''
@@ -175,7 +175,7 @@
       + '<div class="' + p + '-stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>'
       + '<div class="' + p + '-stat-val" style="color:var(--success)"><span data-count="' + (+weekH).toFixed(1) + '" data-float="true">0</span>h</div>'
       + '<div class="' + p + '-stat-label">This Week</div>'
-      + '<div class="' + p + '-stat-sub">' + (topSubject && topSubject[1] > 0 ? topSubject[0] : 'No data') + '</div>'
+      + '<div class="' + p + '-stat-sub">' + (topSubject && topSubject[1] > 0 ? topSubject[0].charAt(0).toUpperCase() + topSubject[0].slice(1) : 'No data') + '</div>'
       + '</div>'
       + '</div>'
       + '<div class="' + p + '-section-block anim-entrance" style="--delay:0.2s">'

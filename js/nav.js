@@ -7,12 +7,14 @@ export let PAGE = 'dashboard';
 
 let _renderLock = false;
 let _lastPage = null;
+let _pendingPage = null;
 
 export function getPage() {
   return window.location.hash.replace('#/', '') || 'dashboard';
 }
 
 export function go(page) {
+  if (_renderLock) { _pendingPage = page; return; }
   PAGE = page;
   window.PAGE = page;
 
@@ -58,6 +60,7 @@ export function render() {
 function _renderSwap(el) {
   if (!el) return;
   el.innerHTML = '';
+  _renderLock = false;
   try {
     if (!callPageRenderer(PAGE, el)) {
       el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">Page not found</div>';
@@ -73,12 +76,14 @@ function _renderSwap(el) {
       _renderLock = false;
       _lastPage = PAGE;
       setTimeout(() => animateAllCounters(el), 50);
+      if (_pendingPage && _pendingPage !== PAGE) { var pp = _pendingPage; _pendingPage = null; go(pp); }
     }).catch(() => {
       el.style.opacity = '1';
       animateAllEntrance(el);
       _renderLock = false;
       _lastPage = PAGE;
       setTimeout(() => animateAllCounters(el), 50);
+      if (_pendingPage && _pendingPage !== PAGE) { var pp = _pendingPage; _pendingPage = null; go(pp); }
     });
   } else {
     el.offsetHeight;

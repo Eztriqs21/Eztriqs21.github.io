@@ -1,6 +1,5 @@
 /* CSS Reset */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-*, *::before, *::after { cursor: none !important; }
 html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
@@ -373,14 +372,14 @@ ul, ol { list-style: none; }
   --r: var(--radius); --r-sm: 4px; --r-lg: 8px;
   --surface: var(--bg-surface); --surface2: var(--bg-card); --surface3: rgba(0, 240, 255, 0.06);
   --border: var(--border-card); --border2: var(--border-hover);
-  --accent: var(--primary); --accent-dim: rgba(0, 240, 255, 0.08);
+  --accent-dim: rgba(0, 240, 255, 0.08);
   --txt: var(--text); --ghost: rgba(0, 240, 255, 0.15); --faint: rgba(255, 255, 255, 0.3);
   --red: var(--danger); --red-dim: rgba(239, 68, 68, 0.1); --green: var(--success); --orange: #f59e0b;
   --ease: cubic-bezier(0.25, 1, 0.5, 1); --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3); --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --bh: 64px; --fab-size: 56px;
-  --bg: var(--bg-surface); --phys: var(--primary); --chem: var(--secondary); --math: var(--accent);
+  --phys: var(--primary); --chem: var(--secondary); --math: var(--accent);
 }
 [data-theme="bloom"] {
   --surface3: rgba(107, 144, 128, 0.08);

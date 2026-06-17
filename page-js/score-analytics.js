@@ -25,7 +25,7 @@
     const w = 400, h = 140, pad = 24;
     if (data.length < 2) return '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Need more data points</div>';
 
-    const pcts = data.map(d => safePct(d.totalScore || d.total, d.maxScore || d.max));
+    const pcts = data.map(d => safePct(d.totalScore ?? d.total ?? 0, d.maxScore ?? d.max ?? 300));
     const maxPct = Math.max(...pcts, 100);
     const minPct = 0;
     const range = maxPct - minPct || 1;
@@ -93,10 +93,23 @@
     const p = pfx();
     const data = ANALYTICS_DATA.tests;
     const DB = window.DB;
-    const allTests = (DB && DB.tests && DB.tests.length > 0) ? DB.tests : data;
-    const avgPct = allTests.length ? safePct(allTests.reduce((s, t) => s + (t.totalScore || t.total), 0), allTests.reduce((s, t) => s + (t.maxScore || t.max), 0)) : 0;
-    const bestPct = allTests.length ? Math.max(...allTests.map(t => safePct(t.totalScore || t.total, t.maxScore || t.max))) : 0;
-    const improvement = allTests.length >= 2 ? safePct(allTests[allTests.length - 1].totalScore || allTests[allTests.length - 1].total, allTests[allTests.length - 1].maxScore || allTests[allTests.length - 1].max) - safePct(allTests[0].totalScore || allTests[0].total, allTests[0].maxScore || allTests[0].max) : 0;
+    const allTests = (DB && DB.tests && DB.tests.length > 0) ? DB.tests : [];
+    if (allTests.length === 0) {
+      el.innerHTML = `
+      <div class="${p}-page-header anim-entrance">
+        <div class="${p}-page-title" data-text="Score Analytics">Score Analytics</div>
+        <div class="${p}-page-sub">Detailed performance breakdown</div>
+      </div>
+      <div class="${p}-empty anim-entrance" style="--delay:0.1s;padding:48px">
+        <div class="${p}-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="${p}-empty-title">No test data yet</div>
+        <div class="${p}-empty-sub">Record some tests to see your score analytics</div>
+      </div>`;
+      return;
+    }
+    const avgPct = allTests.length ? safePct(allTests.reduce((s, t) => s + (t.totalScore ?? t.total ?? 0), 0), allTests.reduce((s, t) => s + (t.maxScore ?? t.max ?? 300), 0)) : 0;
+    const bestPct = allTests.length ? Math.max(...allTests.map(t => safePct(t.totalScore ?? t.total ?? 0, t.maxScore ?? t.max ?? 300))) : 0;
+    const improvement = allTests.length >= 2 ? safePct(allTests[allTests.length - 1].totalScore ?? allTests[allTests.length - 1].total ?? 0, allTests[allTests.length - 1].maxScore ?? allTests[allTests.length - 1].max ?? 300) - safePct(allTests[0].totalScore ?? allTests[0].total ?? 0, allTests[0].maxScore ?? allTests[0].max ?? 300) : 0;
 
     const physicsScores = allTests.map(t => safePct((t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0), 100));
     const chemScores = allTests.map(t => safePct((t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0), 100));

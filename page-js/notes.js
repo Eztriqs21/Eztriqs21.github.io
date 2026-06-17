@@ -38,7 +38,7 @@
       var isPdf = (f.name || '').toLowerCase().endsWith('.pdf');
       var icon = isPdf ? '📄' : '🖼️';
       var isPending = i >= savedCount;
-      return '<div class="' + p + '-list-item" style="padding:8px 12px;margin-bottom:4px;cursor:pointer" onclick="window.pvFile(\'' + (f.data || f.url || '') + '\',\'' + esc(f.name || 'File') + '\')">'
+      return '<div class="' + p + '-list-item" style="padding:8px 12px;margin-bottom:4px;cursor:pointer" onclick="window.pvFile(\'' + esc(f.data || f.url || '') + '\',\'' + esc(f.name || 'File') + '\')">'
         + '<div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">'
         + '<div style="font-size:14px">' + icon + '</div>'
         + '<div style="flex:1;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(f.name || 'File ' + (i + 1)) + '</div>'

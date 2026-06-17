@@ -185,7 +185,7 @@
 
   function applyAnsKey() {
     var txt = document.getElementById('calc-key-txt').value.trim();
-    if (!txt) { toast('Paste an answer key first'); return; }
+    if (!txt) { window.toast('Paste an answer key first'); return; }
     calcAnsKey = {};
     var matches = txt.match(/(\d{1,2})\s*[:.)\s]\s*([A-Da-d]+|\d{1,4})/g);
     if (matches) matches.forEach(function (m) {
@@ -201,7 +201,7 @@
     var cnt = Object.keys(calcAnsKey).length;
     var st = document.getElementById('key-status');
     if (st) st.textContent = cnt + ' answers loaded';
-    toast('Key applied: ' + cnt + ' questions');
+    window.toast('Key applied: ' + cnt + ' questions');
   }
 
   function focusQRow(num) {
@@ -268,7 +268,7 @@
   }
 
   function evalCalc() {
-    if (Object.keys(calcAnsKey).length === 0) { toast('Answer key is required. Paste the key above and click Apply Key first.'); return; }
+    if (Object.keys(calcAnsKey).length === 0) { window.toast('Answer key is required. Paste the key above and click Apply Key first.'); return; }
     calcShowResults = true;
     var el = document.getElementById('calc-results');
     if (!el) return;
@@ -300,7 +300,7 @@
   }
 
   function saveCalcToHistory() {
-    if (!calcQuestions || !calcQuestions.length) { toast('No calculator data. Solve a test first!'); return; }
+    if (!calcQuestions || !calcQuestions.length) { window.toast('No calculator data. Solve a test first!'); return; }
     var p = { correct: 0, incorrect: 0, unattempted: 0, partial: 0 };
     var c = { correct: 0, incorrect: 0, unattempted: 0, partial: 0 };
     var m = { correct: 0, incorrect: 0, unattempted: 0, partial: 0 };
@@ -331,10 +331,10 @@
   }
 
   function saveCalcTestFromModal() {
-    if (!calcQuestions || !calcQuestions.length) { toast('No calculator data. Solve a test first!'); return; }
+    if (!calcQuestions || !calcQuestions.length) { window.toast('No calculator data. Solve a test first!'); return; }
     var nameEl = document.getElementById('calc-save-name');
     var name = nameEl ? nameEl.value.trim() : '';
-    if (!name) { toast('Enter a test name'); return; }
+    if (!name) { window.toast('Enter a test name'); return; }
     var DB = window.DB;
     if (!DB) return;
     if (!DB.tests) DB.tests = [];
@@ -362,9 +362,9 @@
       totalScore: Math.max(0, totalScore), maxScore: 300,
       papers: [], syllabus: { physics: [], chemistry: [], maths: [] }
     });
-    if (!window.sv('tests')) { DB.tests.shift(); return; }
+    window.sv('tests');
     window.cm('m-save-calc-test');
-    toast('Test saved to history!');
+    window.toast('Test saved to history!');
   }
 
   function saveCalcAsMockTest() {

@@ -1,7 +1,9 @@
 (function() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
   const canvas = document.getElementById('grid-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
   let width, height;
   let mouseX = -1000, mouseY = -1000;

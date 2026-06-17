@@ -39,13 +39,13 @@ function rdFiles(files, cb) {
 function fItemHTML(f) {
   var icon = f.type && f.type.includes('pdf') ? '📄' : '🖼️';
   var size = f.size ? (f.size / 1024).toFixed(0) + 'KB' : '';
-  return '<div class="file-item"><div class="file-ico">' + icon + '</div><div class="file-name">' + esc(f.name) + '</div><div class="file-size">' + size + '</div></div>';
+  return '<div class="file-item" onclick="pvFile(\'' + esc(f.data || '') + '\',\'' + esc(f.name) + '\')" style="cursor:pointer"><div class="file-ico">' + icon + '</div><div class="file-name">' + esc(f.name) + '</div><div class="file-size">' + size + '</div></div>';
 }
 
 function fItemHTMLRaw(d, label) {
   var isPdf = d.n && d.n.toLowerCase().endsWith('.pdf');
   var icon = isPdf ? '📄' : '🖼️';
-  return '<div class="file-item" onclick="pvFile(\'' + (d.d || '') + '\',\'' + esc(d.n || label) + '\')"><div class="file-ico">' + icon + '</div><div class="file-name">' + esc(d.n || label) + '</div></div>';
+  return '<div class="file-item" onclick="pvFile(\'' + esc(d.d || '') + '\',\'' + esc(d.n || label) + '\')"><div class="file-ico">' + icon + '</div><div class="file-name">' + esc(d.n || label) + '</div></div>';
 }
 
 function setupDZ(dzId, inputId, handler) {
@@ -131,7 +131,8 @@ function setTestMode(mode) {
 function syncBreakdownToDirect() {
   var gn = function (id) { var el = document.getElementById(id); return el ? (parseInt(el.value) || 0) : 0; };
   var total = (gn('tp-c') + gn('tc-c') + gn('tm-c')) * 4 - (gn('tp-w') + gn('tc-w') + gn('tm-w'));
-  var max = (gn('tp-c') + gn('tp-w') + gn('tp-s') + gn('tc-c') + gn('tc-w') + gn('tc-s') + gn('tm-c') + gn('tm-w') + gn('tm-s')) * 4;
+  var totalQ = gn('tp-c') + gn('tp-w') + gn('tp-s') + gn('tc-c') + gn('tc-w') + gn('tc-s') + gn('tm-c') + gn('tm-w') + gn('tm-s');
+  var max = totalQ * 4;
   var ct = document.getElementById('t-calc-total'); if (ct) ct.textContent = Math.max(0, total);
   var cm = document.getElementById('t-calc-max'); if (cm) cm.textContent = max > 0 ? max : 300;
   var dm = document.getElementById('t-direct-marks'); if (dm) dm.value = Math.max(0, total);
@@ -234,7 +235,7 @@ function saveAddCh() {
   var subj = document.getElementById('addch-subj').value;
   var name = document.getElementById('addch-name').value.trim();
   if (!name) { toast('Enter chapter name'); return; }
-  var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'none' };
+  var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'uncovered' };
   if (!DB.chapters) DB.chapters = {};
   if (!DB.chapters[subj]) DB.chapters[subj] = [];
   DB.chapters[subj].push(newCh);
