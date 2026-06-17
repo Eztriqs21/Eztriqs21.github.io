@@ -63,10 +63,10 @@
     const totalHours = logs.reduce((s, l) => s + (l.duration || 0), 0);
 
     // Test averages
-    const testAvg = tests.length ? Math.round(tests.reduce((s, t) => s + t.totalScore, 0) / tests.length) : 0;
-    const physAvg = tests.length ? Math.round(tests.reduce((s, t) => s + ((t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0)), 0) / tests.length) : 0;
-    const chemAvg = tests.length ? Math.round(tests.reduce((s, t) => s + ((t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0)), 0) / tests.length) : 0;
-    const mathAvg = tests.length ? Math.round(tests.reduce((s, t) => s + ((t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0)), 0) / tests.length) : 0;
+    const testAvg = tests.length ? Math.round(tests.reduce((s, t) => s + Math.max(0, t.totalScore), 0) / tests.length) : 0;
+    const physAvg = tests.length ? Math.round(tests.reduce((s, t) => s + Math.max(0, (t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0)), 0) / tests.length) : 0;
+    const chemAvg = tests.length ? Math.round(tests.reduce((s, t) => s + Math.max(0, (t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0)), 0) / tests.length) : 0;
+    const mathAvg = tests.length ? Math.round(tests.reduce((s, t) => s + Math.max(0, (t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0)), 0) / tests.length) : 0;
 
     // Timing averages
     const testsWithTiming = tests.filter(t => t.timing && t.timing.total);

@@ -410,6 +410,7 @@ function cmtSaveToHistory() {
   toast('✅ Saved to history');
 }
 function cmtSubmitTest() {
+  if (!cmtState.startTime) { toast('No active test session'); return; }
   cmtState.elapsed = Math.floor((Date.now() - cmtState.startTime) / 1000);
   toast('Test submitted!');
 }

@@ -110,6 +110,7 @@
     window.renderPrep(document.getElementById('content-wrap'));
   };
 
+  var _prepIdCounter = 0;
   window._prepHandleFiles = function(files) {
     if (!files || !files.length) return;
     var DB = window.DB;
@@ -118,7 +119,7 @@
       if (file.type !== 'application/pdf') { if (window.toast) window.toast('Only PDF files supported'); return; }
       var reader = new FileReader();
       reader.onload = function(e) {
-        DB.prepChat.notes.push({ name: file.name, data: e.target.result, text: 'PDF uploaded: ' + file.name, id: 'pn_' + Date.now() });
+        DB.prepChat.notes.push({ name: file.name, data: e.target.result, text: 'PDF uploaded: ' + file.name, id: 'pn_' + Date.now() + '_' + (++_prepIdCounter) });
         if (window.sv) window.sv('prepChat');
         window.renderPrep(document.getElementById('content-wrap'));
       };

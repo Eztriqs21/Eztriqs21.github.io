@@ -35,7 +35,9 @@ export function toggleTheme() {
   const next = current === 'nexus' ? 'bloom' : 'nexus';
 
   const flash = document.createElement('div');
+  flash.className = 'theme-flash';
   flash.style.cssText = `position:fixed;inset:0;z-index:10000;background:${next === 'nexus' ? '#00f0ff' : '#fff'};opacity:0;pointer-events:none;transition:opacity 0.5s;`;
+  document.querySelectorAll('.theme-flash').forEach(f => f.remove());
   document.body.appendChild(flash);
   requestAnimationFrame(() => { flash.style.opacity = '0.5'; });
   setTimeout(() => { flash.style.opacity = '0'; }, 100);

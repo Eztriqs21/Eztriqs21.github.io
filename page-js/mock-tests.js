@@ -22,7 +22,7 @@
     const p = pfx();
     const data = test[key] || { correct: 0, incorrect: 0, unattempted: 0 };
     const total = data.correct + data.incorrect + data.unattempted;
-    const score = data.correct * 4 - data.incorrect;
+    const score = Math.max(0, data.correct * 4 - data.incorrect);
     const maxS = total * 4;
     const pct = safePct(Math.max(0, score), maxS);
     return `<div style="flex:1;min-width:120px">

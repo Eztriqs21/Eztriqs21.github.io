@@ -373,15 +373,22 @@
       if (Number.isNaN(sc)) return s;
       return s + sc;
     }, 0);
-    document.getElementById('mt-scored').value = Math.max(0, tot);
-    document.getElementById('mt-total').value = 300;
-    document.getElementById('mt-date').value = new Date().toISOString().split('T')[0];
-    document.getElementById('mt-subj').value = 'Full Syllabus';
-    document.getElementById('mt-time').value = '';
-    document.getElementById('mt-syllabus').value = '';
-    document.getElementById('mt-review').value = '';
+    var mtScored = document.getElementById('mt-scored');
+    var mtTotal = document.getElementById('mt-total');
+    var mtDate = document.getElementById('mt-date');
+    var mtSubj = document.getElementById('mt-subj');
+    var mtTime = document.getElementById('mt-time');
+    var mtSyllabus = document.getElementById('mt-syllabus');
+    var mtReview = document.getElementById('mt-review');
+    if (mtScored) mtScored.value = Math.max(0, tot);
+    if (mtTotal) mtTotal.value = 300;
+    if (mtDate) mtDate.value = new Date().toISOString().split('T')[0];
+    if (mtSubj) mtSubj.value = 'Full Syllabus';
+    if (mtTime) mtTime.value = '';
+    if (mtSyllabus) mtSyllabus.value = '';
+    if (mtReview) mtReview.value = '';
     window.om('m-mocktest');
-    setTimeout(function () { document.getElementById('mt-scored').focus(); }, 320);
+    setTimeout(function () { if (mtScored) mtScored.focus(); }, 320);
   }
 
   function buildCalcRes() {

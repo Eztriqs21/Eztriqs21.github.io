@@ -18,51 +18,61 @@
   let lastParticleTime = 0;
   let lastMouseX = -100, lastMouseY = -100;
   let speed = 0;
+  let _rafId = null;
+  let _alive = true;
 
-  document.addEventListener('mousemove', (e) => {
+  function onMouseMove(e) {
     const dx = e.clientX - mouseX;
     const dy = e.clientY - mouseY;
     speed = Math.sqrt(dx * dx + dy * dy);
     mouseX = e.clientX;
     mouseY = e.clientY;
-  });
+  }
 
-  document.addEventListener('mouseover', (e) => {
-    if (e.target.closest('[data-interactive]')) {
+  function onMouseOver(e) {
+    if (e.target instanceof Element && e.target.closest('[data-interactive]')) {
       if (!isHovering) {
         isHovering = true;
         targetHoverScale = 1.8;
         document.body.classList.add('cursor-hover');
       }
     }
-  });
+  }
 
-  document.addEventListener('mouseout', (e) => {
-    if (e.target.closest('[data-interactive]')) {
+  function onMouseOut(e) {
+    if (e.target instanceof Element && e.target.closest('[data-interactive]')) {
       isHovering = false;
       targetHoverScale = 1;
       document.body.classList.remove('cursor-hover');
     }
-  });
+  }
 
-  document.addEventListener('mousedown', () => {
+  function onMouseDown() {
     document.body.classList.add('cursor-click');
     spawnClickParticles();
-  });
-  document.addEventListener('mouseup', () => {
+  }
+  function onMouseUp() {
     setTimeout(() => document.body.classList.remove('cursor-click'), 400);
-  });
+  }
 
-  document.addEventListener('mouseleave', () => {
+  function onMouseLeave() {
     ring.style.opacity = '0';
     dot.style.opacity = '0';
     if (trail) trail.style.opacity = '0';
-  });
-  document.addEventListener('mouseenter', () => {
+  }
+  function onMouseEnter() {
     ring.style.opacity = '1';
     dot.style.opacity = '1';
     if (trail) trail.style.opacity = '1';
-  });
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseover', onMouseOver);
+  document.addEventListener('mouseout', onMouseOut);
+  document.addEventListener('mousedown', onMouseDown);
+  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mouseleave', onMouseLeave);
+  document.addEventListener('mouseenter', onMouseEnter);
 
   function lerp(a, b, f) { return a + (b - a) * f; }
 
@@ -130,6 +140,7 @@
   }
 
   function animate() {
+    if (!_alive) return;
     const theme = document.documentElement.getAttribute('data-theme');
 
     hoverScale = lerp(hoverScale, targetHoverScale, 0.12);
@@ -154,11 +165,24 @@
     }
 
     spawnTrailParticles();
-    requestAnimationFrame(animate);
+    _rafId = requestAnimationFrame(animate);
   }
 
-  animate();
+  _rafId = requestAnimationFrame(animate);
   document.body.classList.add('cursor-active');
+
+  function stop() {
+    _alive = false;
+    if (_rafId !== null) { cancelAnimationFrame(_rafId); _rafId = null; }
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseover', onMouseOver);
+    document.removeEventListener('mouseout', onMouseOut);
+    document.removeEventListener('mousedown', onMouseDown);
+    document.removeEventListener('mouseup', onMouseUp);
+    document.removeEventListener('mouseleave', onMouseLeave);
+    document.removeEventListener('mouseenter', onMouseEnter);
+    document.body.classList.remove('cursor-active', 'cursor-hover', 'cursor-click');
+  }
 
   window.cursorEngine = {
     morph: function() {
@@ -167,7 +191,8 @@
       document.documentElement.setAttribute('data-theme-transitioning', '');
       setTimeout(() => document.documentElement.removeAttribute('data-theme-transitioning'), 400);
     },
-    updateParticles: updateParticles
+    updateParticles: updateParticles,
+    stop: stop
   };
   }
   if (document.readyState === 'loading') {

@@ -4,6 +4,7 @@ import { modalOpenMobile, modalOpenDesktop, modalClose, toastSlideIn, toastSlide
 
 /* ═══════════════ ANIMATED COUNTER ═══════════════ */
 export function animateValue(el,target,dur=500){
+  if(isNaN(target)||target===null||target===undefined){return;}
   const start=parseFloat(el.getAttribute('data-count-start')||'0');
   const diff=target-start;
   if(!diff||diff===0){el.textContent=target;return;}
@@ -280,7 +281,7 @@ export function toast(msg){
 /* ═══════════════ FILE CACHE ═══════════════ */
 const _fileCache={};let _fcacheOrder=[];const _FCACHE_MAX=80;const _FCACHE_MAX_BYTES=20*1024*1024;
 let _fcacheBytes=0;
-function _fcacheSize(d){return typeof d==='string'?d.length*2:0;}
+function _fcacheSize(d){if(typeof d==='string')return d.length*2;if(d instanceof Blob)return d.size||0;if(d instanceof ArrayBuffer)return d.byteLength||0;if(d&&typeof d==='object'&&d.data&&typeof d.data==='string')return d.data.length*2;return 0;}
 export function _fcache(data,_name){if(!data)return'';const id=uid();const sz=_fcacheSize(data);_fileCache[id]=data;_fcacheOrder.push({id,sz});_fcacheBytes+=sz;while(_fcacheOrder.length>_FCACHE_MAX||_fcacheBytes>_FCACHE_MAX_BYTES){const old=_fcacheOrder.shift();_fcacheBytes-=old.sz;delete _fileCache[old.id];}return id;}
 export function _fget(id){return id&&_fileCache[id]?(_fileCache[id]):null;}
 
@@ -331,6 +332,7 @@ export async function pvFile(data,name){
       }else if(data.startsWith('http')){
         const resp=await fetch(data);binary=await resp.arrayBuffer();
       }else{binary=data;}
+      if(typeof pdfjsLib==='undefined'){body.innerHTML=`<div class="pv-empty" style="flex-direction:column;gap:12px"><div style="font-size:40px">📄</div><div style="font-weight:600;color:#fff">PDF Preview Unavailable</div><div style="font-size:12px;color:var(--muted)">PDF library not loaded. Try downloading the file instead.</div>${data.startsWith('data:')?`<a class="btn btn-primary btn-xs" href="${esc(data)}" download="${esc(pv.name)}">⬇ Download</a>`:''}</div>`;return;}
       pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
       pv.pages=pv.pdfDoc.numPages;
       pv.zoom=1.5;
@@ -426,6 +428,7 @@ export async function pvFallbackLoad(){
     }else if(pv.data.startsWith('http')){
       const resp=await fetch(pv.data);binary=await resp.arrayBuffer();
     }else{binary=pv.data;}
+    if(typeof pdfjsLib==='undefined'){pv.type='other';return;}
     pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
     pv.type='pdf';pv.pages=pv.pdfDoc.numPages;pv.zoom=1.5;
     const pdfCtrl=document.getElementById('pv-pdf-controls');

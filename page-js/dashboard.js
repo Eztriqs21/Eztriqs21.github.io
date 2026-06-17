@@ -44,7 +44,7 @@
     return `<div class="${p}-list-item">
       <div class="${p}-list-meta">${fmtDate(date)}</div>
       <div style="flex:1"><div class="${p}-list-title">${esc(topic)}</div><div class="${p}-list-meta">${esc(subject)}</div></div>
-      <div class="${p}-list-value">${(+dur).toFixed(1)}h</div>
+      <div class="${p}-list-value">${((+dur) || 0).toFixed(1)}h</div>
       ${extra || ''}
     </div>`;
   }

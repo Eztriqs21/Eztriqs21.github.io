@@ -3,9 +3,9 @@
 // Zero CSS keyframe animations — all spring/physics based
 
 const _M = window.Motion;
-const _reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const _reducedMq = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-function noMotion() { return !_M || !_M.animate || _reduced; }
+function noMotion() { return !_M || !_M.animate || _reducedMq.matches; }
 
 /* ═══════════════ A: PAGE & NAVIGATION ═══════════════ */
 

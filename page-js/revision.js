@@ -39,11 +39,11 @@
 
   function revLoad() {
     var DB = window.DB;
-    if (DB && DB.revision && typeof DB.revision === 'object' && Object.keys(DB.revision).length > 0) return DB.revision;
+    var existing = (DB && DB.revision && typeof DB.revision === 'object' && Object.keys(DB.revision).length > 0) ? DB.revision : {};
     var st = {};
     Object.keys(REV_SYLLABUS).forEach(function(subj) {
       st[subj] = {};
-      REV_SYLLABUS[subj].forEach(function(g) { g.subs.forEach(function(s) { st[subj][s] = 0; }); });
+      REV_SYLLABUS[subj].forEach(function(g) { g.subs.forEach(function(s) { st[subj][s] = (existing[subj] || {})[s] || 0; }); });
     });
     return st;
   }

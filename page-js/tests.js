@@ -17,9 +17,9 @@
     const p = pfx();
     const pct = t.maxScore > 0 ? Math.round(t.totalScore / t.maxScore * 100) : 0;
     const color = pct >= 70 ? 'var(--success)' : pct >= 50 ? 'var(--accent)' : 'var(--danger)';
-    const phS = (t.physics || {}).correct * 4 - (t.physics || {}).incorrect;
-    const chS = (t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect;
-    const mS = (t.maths || {}).correct * 4 - (t.maths || {}).incorrect;
+    const phS = Math.max(0, (t.physics || {}).correct * 4 - (t.physics || {}).incorrect);
+    const chS = Math.max(0, (t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect);
+    const mS = Math.max(0, (t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
     const papers = t.papers || [];
 
     return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden">

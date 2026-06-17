@@ -150,16 +150,26 @@
 
   window._savePyq = function() {
     var DB = window.DB;
-    var subj = document.getElementById('pyq-subject').value;
-    var year = parseInt(document.getElementById('pyq-year').value) || new Date().getFullYear();
-    var topic = document.getElementById('pyq-topic').value.trim();
-    var diff = document.getElementById('pyq-difficulty').value;
-    var question = document.getElementById('pyq-question').value.trim();
-    var a = document.getElementById('pyq-a').value.trim();
-    var b = document.getElementById('pyq-b').value.trim();
-    var c = document.getElementById('pyq-c').value.trim();
-    var d = document.getElementById('pyq-d').value.trim();
-    var answer = parseInt(document.getElementById('pyq-answer').value) || 0;
+    var subjEl = document.getElementById('pyq-subject');
+    var yearEl = document.getElementById('pyq-year');
+    var topicEl = document.getElementById('pyq-topic');
+    var diffEl = document.getElementById('pyq-difficulty');
+    var questionEl = document.getElementById('pyq-question');
+    var aEl = document.getElementById('pyq-a');
+    var bEl = document.getElementById('pyq-b');
+    var cEl = document.getElementById('pyq-c');
+    var dEl = document.getElementById('pyq-d');
+    var answerEl = document.getElementById('pyq-answer');
+    var subj = subjEl ? subjEl.value : 'physics';
+    var year = yearEl ? parseInt(yearEl.value) || new Date().getFullYear() : new Date().getFullYear();
+    var topic = topicEl ? topicEl.value.trim() : '';
+    var diff = diffEl ? diffEl.value : 'medium';
+    var question = questionEl ? questionEl.value.trim() : '';
+    var a = aEl ? aEl.value.trim() : '';
+    var b = bEl ? bEl.value.trim() : '';
+    var c = cEl ? cEl.value.trim() : '';
+    var d = dEl ? dEl.value.trim() : '';
+    var answer = answerEl ? parseInt(answerEl.value) || 0 : 0;
     if (!topic || !question || !a || !b || !c || !d) { if (window.toast) window.toast('Fill all fields'); return; }
     if (!DB) return;
     if (!DB.pyqs) DB.pyqs = [];
