@@ -407,12 +407,12 @@ export function sectionFadeInView(el) {
 
 export function animateAllEntrance(scope) {
   if (noMotion()) {
-    scope.querySelectorAll('.anim-up').forEach(e => { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
-    scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card').forEach(e => { e.style.opacity = '1'; });
+    scope.querySelectorAll('.anim-entrance, .anim-up').forEach(e => { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
     return;
   }
-  const els = scope.querySelectorAll('.anim-up');
+  const els = scope.querySelectorAll('.anim-entrance, .anim-up');
   els.forEach((el, i) => {
+    el.style.opacity = '0';
     _M.animate(el, {
       opacity: [0, 1],
       transform: ['translateY(16px)', 'translateY(0px)']
@@ -421,15 +421,6 @@ export function animateAllEntrance(scope) {
     }).catch(() => {
       el.classList.add('visible');
     });
-  });
-  // Also animate section blocks and gc cards
-  const cards = scope.querySelectorAll('.stat-card, .gc, .test-card, .mt-card');
-  cards.forEach((card, i) => {
-    card.style.opacity = '0';
-    _M.animate(card, {
-      opacity: [0, 1],
-      transform: ['translateY(16px)', 'translateY(0px)']
-    }, { duration: 0.35, delay: 0.05 + i * 0.04, easing: [0.34, 1.56, 0.64, 1] });
   });
 }
 
