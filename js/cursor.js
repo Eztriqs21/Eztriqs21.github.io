@@ -1,14 +1,15 @@
 (function() {
+  function initCursor() {
   const ring = document.getElementById('cursor-ring');
   const dot = document.getElementById('cursor-dot');
   const trail = document.getElementById('cursor-trail');
   const pulse = document.getElementById('cursor-pulse');
   if (!ring || !dot) return;
 
-  let mouseX = -100, mouseY = -100;
-  let ringX = -100, ringY = -100;
-  let trailX = -100, trailY = -100;
-  let dotX = -100, dotY = -100;
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let ringX = mouseX, ringY = mouseY;
+  let trailX = mouseX, trailY = mouseY;
+  let dotX = mouseX, dotY = mouseY;
   let isHovering = false;
   let hoverScale = 1;
   let targetHoverScale = 1;
@@ -160,4 +161,10 @@
     },
     updateParticles: updateParticles
   };
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCursor);
+  } else {
+    initCursor();
+  }
 })();
