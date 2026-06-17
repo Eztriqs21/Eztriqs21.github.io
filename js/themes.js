@@ -1,4 +1,5 @@
 /* themes.js – 4-theme engine (dark, amber, nexus, bloom) + dropdown switcher */
+import { callPageRenderer, PAGE_RENDERERS } from './page-registry.js';
 const themes = ['dark', 'amber', 'nexus', 'bloom'];
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
@@ -36,26 +37,9 @@ export function applyTheme(i) {
   }
 
   const page = html.getAttribute('data-page') || 'dashboard';
-  const renderMap = {
-    dashboard: 'renderDashboard',
-    chapters: 'renderChapters',
-    notes: 'renderNotes',
-    assignments: 'renderAssignments',
-    tests: 'renderTests',
-    calculator: 'renderCalculator',
-    analytics: 'renderAnalytics',
-    studylog: 'renderStudyLog',
-    pyq: 'renderPYQ',
-    mocktests: 'renderMockTests',
-    revision: 'renderRevision',
-    doubtsolver: 'renderDoubtSolver',
-    scoreanalytics: 'renderScoreAnalytics',
-    prep: 'renderPrep'
-  };
-  const fnName = renderMap[page];
   const mainEl = document.getElementById('content-wrap');
-  if (fnName && typeof window[fnName] === 'function' && mainEl) {
-    window[fnName](mainEl);
+  if (mainEl) {
+    callPageRenderer(page, mainEl);
   }
 }
 
