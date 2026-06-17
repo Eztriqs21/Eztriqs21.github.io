@@ -605,10 +605,12 @@ export function initAccessibility() {
 export function initPerformance() {
   // Will-change cleanup: add on hover, remove after animation
   document.addEventListener('pointerenter', e => {
+    if (!(e.target instanceof Element)) return;
     const card = e.target.closest('.stat-card, .prep-card, .test-card, .mt-card');
     if (card) card.style.willChange = 'transform';
   }, true);
   document.addEventListener('pointerleave', e => {
+    if (!(e.target instanceof Element)) return;
     const card = e.target.closest('.stat-card, .prep-card, .test-card, .mt-card');
     if (card) {
       setTimeout(() => { card.style.willChange = 'auto'; }, 300);
@@ -661,9 +663,11 @@ export function initCustomCursor() {
   // Hover state on interactive elements
   const interactives = 'a, button, .si, .bni, .fab, .fab-action, .theme-dot, .cmt-chip, .cmt-source-opt, .cmt-time-btn, .pyq-tab, .ds-tab, .chip, .mt-month-head, .mt-subj-header, .test-card-head, [onclick]';
   document.addEventListener('pointerenter', e => {
+    if (!(e.target instanceof Element)) return;
     if (e.target.closest(interactives)) dot.classList.add('hover');
   }, true);
   document.addEventListener('pointerleave', e => {
+    if (!(e.target instanceof Element)) return;
     if (e.target.closest(interactives)) dot.classList.remove('hover');
   }, true);
 
@@ -690,28 +694,33 @@ export function initInteractions() {
 
   // Button hover lift
   document.addEventListener('pointerenter', e => {
+    if (!(e.target instanceof Element)) return;
     const btn = e.target.closest('.btn-primary');
     if (btn) buttonHoverLift(btn);
   }, true);
   document.addEventListener('pointerleave', e => {
+    if (!(e.target instanceof Element)) return;
     const btn = e.target.closest('.btn-primary');
     if (btn) buttonHoverReset(btn);
   }, true);
 
   // Button press
   document.addEventListener('pointerdown', e => {
+    if (!(e.target instanceof Element)) return;
     const btn = e.target.closest('.btn');
     if (btn) buttonPress(btn);
   }, true);
 
   // FAB press feedback
   document.addEventListener('pointerdown', e => {
+    if (!(e.target instanceof Element)) return;
     const fab = e.target.closest('.fab');
     if (fab) fabPress(fab);
   }, true);
 
   // 3D tilt on stat-cards and prep-cards
   document.addEventListener('pointermove', e => {
+    if (!(e.target instanceof Element)) return;
     const card = e.target.closest('.stat-card, .prep-card');
     if (!card) return;
     const r = card.getBoundingClientRect();
@@ -721,6 +730,7 @@ export function initInteractions() {
   }, { passive: true });
 
   document.addEventListener('pointerleave', e => {
+    if (!(e.target instanceof Element)) return;
     const card = e.target.closest('.stat-card, .prep-card');
     if (card) tiltCardReset(card);
   }, true);
