@@ -187,7 +187,7 @@ export function defaultTests(){return[
 ];}
 export function findCh(subj,id){return DB.chapters[subj]?.find(c=>c.id===id);}
 
-window.KEYS=KEYS;window.DB=DB;window.sv=sv;window.load=load;
+window.KEYS=KEYS;window.DB=DB;window.sv=sv;
 window.usesCloudStorage=usesCloudStorage;window.lsBytesUsed=lsBytesUsed;
 window.LS_HARD_LIMIT=LS_HARD_LIMIT;window.LS_SAFE_BUDGET=LS_SAFE_BUDGET;
 window.ONE_SHOT_LINKS=ONE_SHOT_LINKS;window.oneShotURL=oneShotURL;

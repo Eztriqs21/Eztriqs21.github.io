@@ -23,10 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   load();
   loadSupaConfig();
 
-  // Bridge more helpers to window for modal onclick handlers
-  const h = window._helpers || {};
-  Object.assign(window, h);
-
   window.preloaderEngine?.run(() => {
     const theme = document.documentElement.getAttribute('data-theme');
     if (theme === 'nexus') {
