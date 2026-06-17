@@ -1,30 +1,39 @@
 // js/app.js — Entry point for JEE HQ
-import { render } from './nav.js';
-import { load } from './data.js';
+import { DB, sv, load, findCh, KEYS } from './data.js';
 import { loadSupaConfig } from './supabase-sync.js';
 import { initThemes } from './themes.js';
 import { initInteractions } from './animations.js';
+import { go, getPage, render } from './nav.js';
+import { om, cm, toast, pvFile, animateAllCounters } from './helpers.js';
 
-// Page modules — each registers its render function on window
-import '../page-js/dashboard.js';
-import '../page-js/chapters.js';
-import '../page-js/notes.js';
-import '../page-js/assignments.js';
-import '../page-js/tests.js';
-import '../page-js/calculator.js';
-import '../page-js/mock-tests.js';
-import '../page-js/analytics.js';
-import '../page-js/revision.js';
-import '../page-js/doubt-solver.js';
-import '../page-js/score-analytics.js';
-import '../page-js/study-log.js';
-import '../page-js/pyq-research.js';
-import '../page-js/personalized-prep.js';
+// Bridge: expose data layer to window for page module IIFEs
+window.DB = DB;
+window.sv = sv;
+window.findCh = findCh;
+window.KEYS = KEYS;
+window.om = om;
+window.cm = cm;
+window.toast = toast;
+window.pvFile = pvFile;
+window.animateAllCounters = animateAllCounters;
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemes();
   initInteractions();
   load();
   loadSupaConfig();
-  render();
+
+  // Bridge more helpers to window for modal onclick handlers
+  const h = window._helpers || {};
+  Object.assign(window, h);
+
+  window.preloaderEngine?.run(() => {
+    const theme = document.documentElement.getAttribute('data-theme');
+    if (theme === 'nexus') {
+      window.gridNexus?.start();
+    } else {
+      window.gridBloom?.start();
+    }
+    go(getPage());
+  });
 });

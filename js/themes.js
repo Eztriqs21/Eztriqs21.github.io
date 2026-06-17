@@ -1,5 +1,5 @@
-/* themes.js – 4-theme engine (dark, amber, nexus, bloom) + dropdown switcher */
-const themes = ['dark', 'amber', 'nexus', 'bloom'];
+/* themes.js – 2-theme engine (nexus, bloom) */
+const themes = ['nexus', 'bloom'];
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
 
@@ -9,16 +9,6 @@ export function applyTheme(i) {
   html.setAttribute('data-theme', t);
   localStorage.setItem('themeIndex', i);
   idx = i;
-
-  document.querySelectorAll('.theme-dropdown-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.theme === t);
-  });
-
-  const btn = document.getElementById('theme-dropdown-btn');
-  if (btn) {
-    const icons = { dark: 'fa-moon', amber: 'fa-sun', nexus: 'fa-microchip', bloom: 'fa-leaf' };
-    btn.innerHTML = `<i class="fas ${icons[t] || 'fa-palette'}"></i>`;
-  }
 
   const gridCanvas = document.getElementById('grid-canvas');
   if (gridCanvas) {
@@ -34,40 +24,51 @@ export function applyTheme(i) {
       gridCanvas.classList.remove('active');
     }
   }
+
+  if (window.cursorEngine && window.cursorEngine.reinit) {
+    window.cursorEngine.reinit();
+  }
+}
+
+export function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'nexus' ? 'bloom' : 'nexus';
+
+  const flash = document.createElement('div');
+  flash.style.cssText = `position:fixed;inset:0;z-index:10000;background:${next === 'nexus' ? '#00f0ff' : '#fff'};opacity:0;pointer-events:none;transition:opacity 0.5s;`;
+  document.body.appendChild(flash);
+  requestAnimationFrame(() => { flash.style.opacity = '0.5'; });
+  setTimeout(() => { flash.style.opacity = '0'; }, 100);
+  setTimeout(() => flash.remove(), 600);
+
+  const i = themes.indexOf(next);
+  if (i !== -1) applyTheme(i);
+
+  if (window.cursorEngine && window.cursorEngine.morph) {
+    window.cursorEngine.morph();
+  }
 }
 
 export function initThemes() {
-  const themeBtn = document.getElementById('theme-toggle');
   applyTheme(idx);
 
-  if (themeBtn) {
-    themeBtn.addEventListener('click', () => {
-      applyTheme((idx + 1) % themes.length);
-    });
+  const switcher = document.getElementById('theme-switcher');
+  if (switcher) {
+    switcher.addEventListener('click', toggleTheme);
   }
 
-  const dropdownBtn = document.getElementById('theme-dropdown-btn');
-  const dropdownMenu = document.getElementById('theme-dropdown-menu');
-  if (dropdownBtn && dropdownMenu) {
-    dropdownBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdownMenu.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-      if (!dropdownMenu.contains(e.target)) {
-        dropdownMenu.classList.remove('open');
-      }
-    });
-    dropdownMenu.querySelectorAll('.theme-dropdown-item').forEach(item => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const t = item.dataset.theme;
-        const i = themes.indexOf(t);
-        if (i !== -1) applyTheme(i);
-        dropdownMenu.classList.remove('open');
-      });
-    });
+  const mobileBtn = document.getElementById('mobile-theme-btn');
+  if (mobileBtn) {
+    mobileBtn.addEventListener('click', toggleTheme);
   }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 't' || e.key === 'T') {
+      e.preventDefault();
+      toggleTheme();
+    }
+  });
 }
 
-window.themesEngine = { applyTheme };
+window.themesEngine = { applyTheme, toggleTheme };

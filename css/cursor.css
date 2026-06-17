@@ -1,0 +1,129 @@
+/* ═══════════════ CUSTOM CURSORS ═══════════════ */
+.custom-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+/* ═══════════════ NEXUS CURSOR ═══════════════ */
+[data-theme="nexus"] #cursor-ring {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.1);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+[data-theme="nexus"] #cursor-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+  transform: translate(-50%, -50%);
+}
+
+[data-theme="nexus"] #cursor-trail {
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+[data-theme="nexus"] #cursor-pulse {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Nexus cursor hover on interactive */
+[data-theme="nexus"] .cursor-hover #cursor-ring {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 240, 255, 0.08);
+  border-color: rgba(0, 240, 255, 0.6);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.15);
+}
+
+[data-theme="nexus"] .cursor-hover #cursor-trail {
+  width: 40px;
+  height: 40px;
+}
+
+/* Nexus click pulse */
+[data-theme="nexus"].cursor-click #cursor-pulse {
+  animation: nexus-pulse 0.4s ease-out forwards;
+}
+
+@keyframes nexus-pulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+/* ═══════════════ BLOOM CURSOR ═══════════════ */
+[data-theme="bloom"] #cursor-ring {
+  width: 16px;
+  height: 16px;
+  background: var(--text);
+  border-radius: 50%;
+  transition: width 0.3s ease, height 0.3s ease, border-radius 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transform: translate(-50%, -50%);
+  opacity: 0.8;
+}
+
+[data-theme="bloom"] #cursor-dot {
+  display: none;
+}
+
+[data-theme="bloom"] #cursor-trail {
+  display: none;
+}
+
+[data-theme="bloom"] #cursor-pulse {
+  display: none;
+}
+
+/* Bloom cursor hover on interactive */
+[data-theme="bloom"] .cursor-hover #cursor-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--primary);
+  opacity: 0.9;
+  box-shadow: 0 4px 15px rgba(107, 144, 128, 0.4);
+}
+
+/* Bloom click bounce */
+[data-theme="bloom"].cursor-click #cursor-ring {
+  animation: bloom-bounce 0.3s ease;
+}
+
+@keyframes bloom-bounce {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  40% { transform: translate(-50%, -50%) scale(0.8); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ═══════════════ THEME TRANSITION ═══════════════ */
+[data-theme-transitioning] #cursor-ring,
+[data-theme-transitioning] #cursor-dot,
+[data-theme-transitioning] #cursor-trail {
+  transition: all 0.4s ease !important;
+}
+
+/* ═══════════════ NO JSFALLBACK ═══════════════ */
+@media (pointer: coarse) {
+  .custom-cursor { display: none !important; }
+  *, *::before, *::after { cursor: auto !important; }
+}
