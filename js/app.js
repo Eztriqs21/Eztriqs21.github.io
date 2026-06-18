@@ -25,7 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
   load();
   loadSupaConfig();
 
-  window.preloaderEngine?.run(() => {
+  if (window.preloaderEngine) {
+    window.preloaderEngine.run(() => {
+      const theme = document.documentElement.getAttribute('data-theme');
+      if (theme === 'nexus') {
+        window.gridNexus?.start();
+      } else {
+        window.gridBloom?.start();
+      }
+      go(getPage());
+    });
+  } else {
     const theme = document.documentElement.getAttribute('data-theme');
     if (theme === 'nexus') {
       window.gridNexus?.start();
@@ -33,5 +43,5 @@ document.addEventListener('DOMContentLoaded', () => {
       window.gridBloom?.start();
     }
     go(getPage());
-  }) ?? go(getPage());
+  }
 });

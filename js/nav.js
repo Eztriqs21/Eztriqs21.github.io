@@ -85,6 +85,11 @@ function _renderSwap(el) {
       setTimeout(() => animateAllCounters(el), 50);
       if (_pendingPage && _pendingPage !== PAGE) { var pp = _pendingPage; _pendingPage = null; go(pp); }
     });
+    // Safety: ensure content visible even if pageEnter hangs
+    setTimeout(() => {
+      el.style.opacity = '1';
+      animateAllEntrance(el);
+    }, 2000);
   } else {
     el.offsetHeight;
     el.style.opacity = '1';
