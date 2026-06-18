@@ -382,12 +382,21 @@ export function animateAllEntrance(scope) {
           }, { duration: 0.4, delay: idx * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(function() {
             el.classList.add('visible');
           }).catch(function() {
+            el.style.opacity = '1';
             el.classList.add('visible');
           });
         })(toAnim[k], k);
       }
     })(b);
   }
+  setTimeout(function() {
+    for (var s = 0; s < toAnim.length; s++) {
+      if (toAnim[s] && toAnim[s].style && toAnim[s].style.opacity === '0') {
+        toAnim[s].style.opacity = '1';
+        toAnim[s].classList.add('visible');
+      }
+    }
+  }, 600);
 }
 
 export function pageLoadChoreography(scope) {

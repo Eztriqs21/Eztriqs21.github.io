@@ -61,6 +61,7 @@ function _renderSwap(el) {
   if (!el) { _renderLock = false; return; }
 
   el.classList.remove('page-exit');
+  setTimeout(function() { if (el && el.classList.contains('page-exit')) el.classList.remove('page-exit'); }, 500);
   el.innerHTML = '';
   try {
     if (!callPageRenderer(PAGE, el)) {

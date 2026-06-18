@@ -118,6 +118,7 @@
     if (!container) return;
     var tests = getFilteredTests();
     container.innerHTML = testResultsHTML(tests);
+    if (window.animateAllEntrance) window.animateAllEntrance(container);
   }
 
   /* CRUD */

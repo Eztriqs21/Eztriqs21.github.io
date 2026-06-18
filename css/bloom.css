@@ -256,7 +256,6 @@
 }
 
 /* Test Card */
-.bl-test-card { cursor: pointer; }
 .bl-test-header {
   display: flex;
   align-items: center;
@@ -299,13 +298,6 @@
   transition: transform 0.3s;
   color: var(--text-muted);
 }
-
-/* Score Colors */
-.score-high { color: var(--success); }
-.score-med { color: var(--accent); }
-.score-low { color: var(--danger); }
-
-
 
 /* Ring Chart */
 .bl-ring-chart {

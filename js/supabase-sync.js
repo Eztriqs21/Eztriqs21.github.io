@@ -14,7 +14,7 @@ function loadSyncTimestamps(){
   try{return JSON.parse(localStorage.getItem(SYNC_TS_KEY))||{};}catch(e){return{};}
 }
 function saveSyncTimestamps(ts){try{localStorage.setItem(SYNC_TS_KEY,JSON.stringify(ts));}catch(e){}}
-const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','doubtChats','prepChat','revision'];
+const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','doubtChats','prepChat','revision','calculator'];
 
 /* Offline sync queue */
 const SYNC_QUEUE_KEY='jeehq3_sync_q';

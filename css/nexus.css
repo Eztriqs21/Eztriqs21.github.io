@@ -278,9 +278,6 @@
 }
 
 /* Test Card */
-.nx-test-card {
-  cursor: pointer;
-}
 .nx-test-header {
   display: flex;
   align-items: center;
@@ -323,13 +320,6 @@
   transition: transform 0.3s;
   color: var(--text-muted);
 }
-
-/* Score Colors */
-.score-high { color: var(--success); }
-.score-med { color: var(--accent); }
-.score-low { color: var(--danger); }
-
-
 
 /* Ring Chart */
 .nx-ring-chart {
@@ -769,6 +759,10 @@
   flex-direction: column;
   gap: 12px;
 }
+.nx-score-ring {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.08);
+}
 .nx-test-card {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
@@ -779,7 +773,7 @@
 }
 .nx-test-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 .nx-test-card-header {
   display: flex;

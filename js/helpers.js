@@ -474,5 +474,6 @@ window._fcache=_fcache;window._fget=_fget;
 window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;window.pvZoom=pvZoom;
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;
+window.cfm2=cfm2;window.fItemHTML=fItemHTML;window.fItemHTMLRaw=fItemHTMLRaw;window.setupDZ=setupDZ;window.esc=esc;
 
 

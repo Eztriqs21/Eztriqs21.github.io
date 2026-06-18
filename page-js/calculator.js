@@ -14,14 +14,13 @@
     });
   }
   var currentFocusQ = 1;
-  var calcActiveTab = 'manual';
 
   function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
   function renderCalculator(el) {
-    if (!calcQuestions.length) initCalcQ();
+    if (!calcQuestions.length) { if (!loadCalcState()) initCalcQ(); }
     var ans = calcQuestions.filter(function (q) { return q.selected && !q.unattempted; }).length;
     var skp = calcQuestions.filter(function (q) { return q.unattempted; }).length;
     var pend = 75 - ans - skp;
@@ -29,9 +28,6 @@
 
     el.innerHTML =
       '<div class="' + p + '-page-header anim-entrance"><div class="' + p + '-page-title" data-text="Calculator">Calculator</div><div class="' + p + '-page-sub">Full JEE mock evaluation engine</div></div>' +
-      '<div class="' + p + '-tabs anim-entrance">' +
-        '<button class="' + p + '-tab-btn ' + p + '-tab-btn-on" onclick="switchCalcTab(\'manual\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Manual Calculator</button>' +
-      '</div>' +
       '<div class="' + p + '-card anim-entrance" style="padding:20px">' +
         '<div class="' + p + '-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Answer Key <span style="font-size:10px;font-weight:400;color:var(--faint)">(required)</span></div>' +
         '<p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>' +
@@ -57,17 +53,12 @@
         '</div>' +
         '<div style="padding:14px 0 0;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">' +
           '<button class="' + p + '-btn ' + p + '-btn-ghost" onclick="resetCalc()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reset</button>' +
-          '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="evalCalc()" style="padding:10px 22px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Calculate Score</button>' +
+          '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="evalCalc()"' + (Object.keys(calcAnsKey).length === 0 ? ' disabled style="padding:10px 22px;opacity:0.5;cursor:not-allowed"' : ' style="padding:10px 22px"') + '><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Calculate Score</button>' +
         '</div>' +
       '</div>' +
       '<div id="calc-results" style="margin-top:16px;display:' + (calcShowResults ? 'block' : 'none') + '">' + (calcShowResults ? buildCalcRes() : '') + '</div>';
 
     attachCalcKeyboard();
-  }
-
-  function switchCalcTab(tab) {
-    calcActiveTab = tab;
-    if (window.PAGE === 'calculator') renderCalculator(document.getElementById('content-wrap'));
   }
 
   function buildQMat() {
@@ -110,6 +101,7 @@
     }
     calcShowResults = false;
     var r = document.getElementById('calc-results'); if (r) r.style.display = 'none';
+    saveCalcState();
     var nextQ = calcQuestions.find(function (x) { return x.num === num + 1; });
     if (nextQ) focusQRow(nextQ.num);
   }
@@ -132,6 +124,7 @@
     }
     calcShowResults = false;
     var r = document.getElementById('calc-results'); if (r) r.style.display = 'none';
+    saveCalcState();
     var nextQ = calcQuestions.find(function (x) { return x.num === num + 1; });
     if (nextQ) focusQRow(nextQ.num);
   }
@@ -145,6 +138,7 @@
     q.selected = null; q.intVal = ''; q.multiVal = ''; q.unattempted = false;
     calcShowResults = false;
     var r = document.getElementById('calc-results'); if (r) r.style.display = 'none';
+    saveCalcState();
     var body = document.getElementById('q-mat-body');
     if (body) body.innerHTML = buildQMat();
     focusQRow(num);
@@ -161,6 +155,7 @@
     q.unattempted = false;
     calcShowResults = false;
     var r = document.getElementById('calc-results'); if (r) r.style.display = 'none';
+    saveCalcState();
     var row = document.getElementById('qrow-' + num);
     if (row) row.classList.remove('q-focus');
     var nextQ = calcQuestions.find(function (x) { return x.num === num + 1; });
@@ -173,6 +168,7 @@
     q.intVal = val; q.selected = val || null; q.unattempted = false;
     var row = document.getElementById('qrow-' + num);
     if (row) row.classList.remove('q-focus');
+    saveCalcState();
     var nextQ = calcQuestions.find(function (x) { return x.num === num + 1; });
     if (nextQ && val) focusQRow(nextQ.num);
   }
@@ -202,7 +198,9 @@
     var cnt = Object.keys(calcAnsKey).length;
     var st = document.getElementById('key-status');
     if (st) st.textContent = cnt + ' answers loaded';
+    saveCalcState();
     if (window.toast) window.toast('Key applied: ' + cnt + ' questions');
+    renderCalculator(document.getElementById('content-wrap'));
   }
 
   function focusQRow(num) {
@@ -220,7 +218,7 @@
   function attachCalcKeyboard() {
     if (window._calcKeyHandler) return;
     window._calcKeyHandler = function (e) {
-      if (window.PAGE !== 'calculator' || calcActiveTab !== 'manual') return;
+      if (window.PAGE !== 'calculator') return;
       if (!e.key) return;
       var key = e.key.toUpperCase();
       var isModCtrl = e.ctrlKey || e.metaKey || e.altKey;
@@ -276,6 +274,7 @@
     el.style.display = 'block';
     el.style.opacity = '1';
     el.innerHTML = buildCalcRes();
+    if (window.animateAllEntrance) window.animateAllEntrance(el);
     setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
   }
 
@@ -506,11 +505,33 @@
 
   function resetCalc() {
     initCalcQ(); calcShowResults = false; calcAnsKey = {}; currentFocusQ = 1;
+    saveCalcState();
     renderCalculator(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+  }
+
+  function saveCalcState() {
+    try {
+      if (window.DB) {
+        window.DB.calculator = { questions: calcQuestions, ansKey: calcAnsKey, showResults: calcShowResults };
+        if (window.sv) window.sv('calculator');
+      }
+    } catch(e) {}
+  }
+
+  function loadCalcState() {
+    try {
+      if (window.DB && window.DB.calculator && window.DB.calculator.questions && window.DB.calculator.questions.length === 75) {
+        calcQuestions = window.DB.calculator.questions;
+        calcAnsKey = window.DB.calculator.ansKey || {};
+        calcShowResults = window.DB.calculator.showResults || false;
+        return true;
+      }
+    } catch(e) {}
+    return false;
   }
 
   window.renderCalculator = renderCalculator;
-  window.switchCalcTab = switchCalcTab;
   window.setQResp = setQResp;
   window.toggleQSkip = toggleQSkip;
   window.toggleQType = toggleQType;

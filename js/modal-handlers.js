@@ -3,7 +3,6 @@
 // They rely on window.DB, window.sv, window.cm, window.om, window.toast, window.findCh
 
 /* ═══════════════ SHARED HELPERS ═══════════════ */
-function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
 function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
 function fmtDateTime(d) { return new Date(d).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
@@ -29,50 +28,6 @@ function _refreshPage() {
   else if (renderers[page]) renderers[page](el);
   if (window.animateAllEntrance) window.animateAllEntrance(el);
   if (window.animateAllCounters) window.animateAllCounters(el);
-}
-
-function cfm2(title, msg, onConfirm) {
-  var existing = document.querySelector('.cfm-overlay');
-  if (existing) existing.remove();
-  var el = document.createElement('div');
-  el.className = 'cfm-overlay';
-  el.innerHTML = '<div class="cfm-box"><div class="cfm-title">' + esc(title) + '</div><div class="cfm-sub">' + esc(msg) + '</div><div class="cfm-btns"><button class="btn btn-ghost btn-sm" id="cfm-cancel-btn">Cancel</button><button class="btn btn-danger btn-sm" id="cfm-ok-btn">Confirm</button></div></div>';
-  document.body.appendChild(el);
-  document.getElementById('cfm-cancel-btn').addEventListener('click', function () { el.remove(); });
-  document.getElementById('cfm-ok-btn').addEventListener('click', function () { el.remove(); if (onConfirm) onConfirm(); });
-}
-
-function rdFiles(files, cb) {
-  var maxSize = 5 * 1024 * 1024;
-  Array.from(files).forEach(function (file) {
-    if (file.size > maxSize) { toast('⚠️ ' + file.name + ' exceeds 5MB'); return; }
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      cb({ name: file.name, size: file.size, type: file.type, data: e.target.result, url: e.target.result });
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function fItemHTML(f) {
-  var icon = f.type && f.type.includes('pdf') ? '📄' : '🖼️';
-  var size = f.size ? (f.size / 1024).toFixed(0) + 'KB' : '';
-  return '<div class="file-item" onclick="pvFile(\'' + esc(f.data || '') + '\',\'' + esc(f.name) + '\')" style="cursor:pointer"><div class="file-ico">' + icon + '</div><div class="file-name">' + esc(f.name) + '</div><div class="file-size">' + size + '</div></div>';
-}
-
-function fItemHTMLRaw(d, label) {
-  var isPdf = d.n && d.n.toLowerCase().endsWith('.pdf');
-  var icon = isPdf ? '📄' : '🖼️';
-  return '<div class="file-item" onclick="pvFile(\'' + esc(d.d || '') + '\',\'' + esc(d.n || label) + '\')"><div class="file-ico">' + icon + '</div><div class="file-name">' + esc(d.n || label) + '</div></div>';
-}
-
-function setupDZ(dzId, inputId, handler) {
-  var dz = document.getElementById(dzId);
-  var inp = document.getElementById(inputId);
-  if (!dz || !inp) return;
-  dz.addEventListener('dragover', function (e) { e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', function () { dz.classList.remove('dragover'); });
-  dz.addEventListener('drop', function (e) { e.preventDefault(); dz.classList.remove('dragover'); if (handler) handler(e.dataTransfer.files); });
 }
 
 /* ═══════════════ ASSIGNMENTS ═══════════════ */
@@ -411,8 +366,3 @@ window.saveMockTest = saveMockTest;
 window.dsSetProvider = dsSetProvider;
 window.fetchOllamaModels = fetchOllamaModels;
 window.saveDSSettings = saveDSSettings;
-window.cfm2 = cfm2;
-window.fItemHTML = fItemHTML;
-window.fItemHTMLRaw = fItemHTMLRaw;
-window.setupDZ = setupDZ;
-window.esc = esc;

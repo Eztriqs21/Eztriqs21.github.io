@@ -138,6 +138,7 @@
     if (!container) return;
     var all = getFilteredAssignments();
     container.innerHTML = assignmentsResultsHTML(all);
+    if (window.animateAllEntrance) window.animateAllEntrance(container);
   }
 
   /* CRUD FUNCTIONS */

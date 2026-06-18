@@ -100,6 +100,7 @@
     var container = document.getElementById('ch-results');
     if (!container) return;
     container.innerHTML = chaptersResultsHTML();
+    if (window.animateAllEntrance) window.animateAllEntrance(container);
   }
 
   /* CRUD */

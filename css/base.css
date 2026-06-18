@@ -5,7 +5,7 @@ body {
   font-family: var(--font-body);
   background: var(--bg);
   color: var(--text);
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100vh;
   transition: background 0.6s ease, color 0.6s ease;
   -webkit-font-smoothing: antialiased;
@@ -177,7 +177,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   background: var(--nav-bg);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   border-right: 1px solid var(--border-card);
-  display: flex; flex-direction: column; z-index: 100;
+  display: flex; flex-direction: column; z-index: 110;
   transition: background 0.6s, border-color 0.6s, transform 0.3s ease;
 }
 
@@ -296,6 +296,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .page-enter { animation: pageEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes pageExit { to { opacity: 0; transform: translateY(-10px) scale(0.98); } }
 @keyframes pageEnter { from { opacity: 0; transform: translateY(10px) scale(1.01); } to { opacity: 1; transform: scale(1); } }
+
+/* Score colors */
+.score-high { color: var(--success); }
+.score-med { color: var(--accent); }
+.score-low { color: var(--danger); }
 
 /* Easter egg */
 #easter-egg-overlay {
@@ -427,8 +432,8 @@ select.inp{appearance:auto;}
 .fg-full{grid-column:1 / -1;}
 
 /* ═══════════════ MODALS ═══════════════ */
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s var(--ease);}
-.mo.open{opacity:1;pointer-events:all;}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .2s var(--ease),visibility .2s;}
+.mo.open{opacity:1;pointer-events:all;visibility:visible;}
 @media(min-width:600px){.mo{align-items:center;padding:var(--sp-5);}}
 .md{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg) var(--r-lg) 0 0;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;transform:translateY(20px);transition:transform .3s var(--spring);box-shadow:var(--shadow-lg);}
 .mo.open .md{transform:translateY(0);}
