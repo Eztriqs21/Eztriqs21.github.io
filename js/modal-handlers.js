@@ -3,8 +3,8 @@
 // They rely on window.DB, window.sv, window.cm, window.om, window.toast, window.findCh
 
 /* ═══════════════ SHARED HELPERS ═══════════════ */
-function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
-function fmtDateTime(d) { return new Date(d).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+function fmtDate(d) { if (!d) return '—'; try { var dt = new Date(d); if (isNaN(dt.getTime())) return d; return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); } catch(e) { return d || '—'; } }
+function fmtDateTime(d) { if (!d) return '—'; try { var dt = new Date(d); if (isNaN(dt.getTime())) return d; return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch(e) { return d || '—'; } }
 
 function _refreshPage() {
   var el = document.getElementById('content-wrap');
@@ -70,7 +70,7 @@ function saveAssignment() {
     description: (document.getElementById('a-desc') || {}).value || '',
     priority: aPriority || 'none',
     completed: false,
-    attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name }; }),
+    attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: ((document.getElementById('a-syl') || {}).value || '').trim() || undefined,
     createdAt: new Date().toISOString()
   });
@@ -171,7 +171,7 @@ function saveTest() {
     physics: p, chemistry: c, maths: m,
     totalScore: Math.max(0, total), maxScore: maxScore,
     timing: timing,
-    papers: (window.pendingTFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name }; }),
+    papers: (window.pendingTFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: syllabus
   });
   window.sv('tests');

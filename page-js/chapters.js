@@ -14,7 +14,6 @@
   const STRENGTH_COLORS = { none: 'var(--muted)', weak: 'var(--danger)', medium: 'var(--accent)', strong: 'var(--success)' };
   const STRENGTH_BG = { none: 'var(--border-card)', weak: 'var(--red-dim)', medium: 'var(--accent-dim)', strong: 'rgba(34,197,94,0.1)' };
 
-  let _chFilter = 'all';
   let _chSearch = '';
 
   function chapterRow(ch, subj, index) {
@@ -153,21 +152,8 @@
     if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 
-  window.togglePyq = function(subj, id) {
-    var DB = window.DB;
-    if (!DB || !DB.chapters || !DB.chapters[subj]) return;
-    var ch = DB.chapters[subj].find(c => c.id === id);
-    if (!ch) return;
-    ch.pyq = !ch.pyq;
-    if (window.sv) window.sv('chapters');
-    window.renderChapters(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
-  };
-
   window._chSearchFn = function(val) {
     _chSearch = val || '';
     _updateChResults();
-    var input = document.getElementById('ch-search-input');
-    if (input && document.activeElement !== input) input.focus();
   };
 })();

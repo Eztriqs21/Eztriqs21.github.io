@@ -1,6 +1,5 @@
 // js/pages/analytics.js — Analytics page renderer (Nexus & Bloom)
 (function() {
-  function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }

@@ -190,7 +190,5 @@
   window._asnSearchFn = function(val) {
     _asnSearch = val || '';
     _updateAsnResults();
-    var input = document.getElementById('asn-search-input');
-    if (input && document.activeElement !== input) input.focus();
   };
 })();

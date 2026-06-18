@@ -196,9 +196,9 @@
   </div>
 
 <!-- Device Sync Modal -->
-<div class="mo" id="m-auth">
+<div class="mo" id="m-auth" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Device Sync</div><button class="md-x" onclick="cm('m-auth')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Device Sync</div><button class="md-x" aria-label="Close" onclick="cm('m-auth')">&#10005;</button></div>
     <div class="md-body">
       <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">Enter a sync key to link your devices. Use the <b>same key</b> on laptop and mobile to share data.</p>
       <div class="fg"><label>Your Sync Key</label><input class="inp" id="sync-key-input" type="text" placeholder="e.g. myjeekey2026"/></div>
@@ -212,9 +212,9 @@
 </div>
 
 <!-- Supabase Config Modal -->
-<div class="mo" id="m-supa-config">
+<div class="mo" id="m-supa-config" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Supabase Setup</div><button class="md-x" onclick="cm('m-supa-config')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Supabase Setup</div><button class="md-x" aria-label="Close" onclick="cm('m-supa-config')">&#10005;</button></div>
     <div class="md-body">
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px">Connect your JEE HQ dashboard to Supabase for automatic cloud sync across all devices.</p>
       <div class="fg"><label>Supabase Project URL</label><input class="inp" id="supa-url" type="url" placeholder="https://xxxxxx.supabase.co"/></div>
@@ -261,7 +261,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- File Preview Modal -->
-<div class="mo" id="m-preview">
+<div class="mo" id="m-preview" role="dialog" aria-modal="true">
   <div class="md md-xl"><div class="md-handle"></div>
     <div class="md-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <div class="md-title" id="pv-title" style="flex:1;min-width:120px">Preview</div>
@@ -280,7 +280,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
         <button class="btn btn-ghost btn-xs" onclick="pvZoomImg(0.25)" style="padding:4px 8px">+</button>
         <button class="btn btn-ghost btn-xs" onclick="pvImgReset()" style="padding:4px 8px">&#8634;</button>
       </div>
-      <button class="md-x" onclick="cm('m-preview')">&#10005;</button>
+      <button class="md-x" aria-label="Close" onclick="cm('m-preview')">&#10005;</button>
     </div>
     <div class="md-body" id="pv-body" style="position:relative;overflow:auto"></div>
     <div id="pv-footer" style="display:none;padding:8px 12px;text-align:center;font-size:11px;color:var(--faint);background:var(--glass);border-radius:0 0 14px 14px;justify-content:center;align-items:center;flex-wrap:wrap"></div>
@@ -288,9 +288,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Add Assignment Modal -->
-<div class="mo" id="m-asgn">
+<div class="mo" id="m-asgn" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Add Assignment</div><button class="md-x" onclick="cm('m-asgn')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Add Assignment</div><button class="md-x" aria-label="Close" onclick="cm('m-asgn')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Title</label><input class="inp" id="a-title" type="text" placeholder="e.g. Physics DPP &#8212; Rotational Motion"/></div>
       <div class="fg"><label>Description</label><textarea class="inp" id="a-desc" rows="3" placeholder="Add details..."></textarea></div>
@@ -324,9 +324,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Add Test Modal -->
-<div class="mo" id="m-test">
+<div class="mo" id="m-test" role="dialog" aria-modal="true">
   <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Add Test Result</div><button class="md-x" onclick="cm('m-test')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Add Test Result</div><button class="md-x" aria-label="Close" onclick="cm('m-test')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Test Name</label><input class="inp" id="t-name" type="text" placeholder="e.g. Full Mock Test #4"/></div>
       <div class="fg"><label>Date</label><input class="inp" id="t-date" type="date"/></div>
@@ -394,9 +394,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Save Calculator Test Modal -->
-<div class="mo" id="m-save-calc-test">
+<div class="mo" id="m-save-calc-test" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Save Calculator Result</div><button class="md-x" onclick="cm('m-save-calc-test')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Save Calculator Result</div><button class="md-x" aria-label="Close" onclick="cm('m-save-calc-test')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Test Name</label><input class="inp" id="calc-save-name" type="text" placeholder="e.g. Full Mock Test #4"/></div>
       <div class="fg"><label>Date</label><input class="inp" id="calc-save-date" type="date"/></div>
@@ -413,7 +413,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Notes Modal -->
-<div class="mo" id="m-notes">
+<div class="mo" id="m-notes" role="dialog" aria-modal="true">
   <div class="md md-xl"><div class="md-handle"></div>
     <div class="md-head">
       <div class="md-title" id="notes-chapter-name">Chapter Notes</div>
@@ -446,9 +446,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Add Chapter Modal -->
-<div class="mo" id="m-add-ch">
+<div class="mo" id="m-add-ch" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title" id="addch-title">Add Chapter</div><button class="md-x" onclick="cm('m-add-ch')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title" id="addch-title">Add Chapter</div><button class="md-x" aria-label="Close" onclick="cm('m-add-ch')">&#10005;</button></div>
     <div class="md-body">
       <input type="hidden" id="addch-subj"/>
       <div class="fg"><label>Chapter Name</label><input class="inp" id="addch-name" type="text" placeholder="e.g. Electromagnetic Waves"/></div>
@@ -461,9 +461,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Edit Chapter Modal -->
-<div class="mo" id="m-edit-ch">
+<div class="mo" id="m-edit-ch" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title" id="editch-title">Edit Chapter</div><button class="md-x" onclick="cm('m-edit-ch')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title" id="editch-title">Edit Chapter</div><button class="md-x" aria-label="Close" onclick="cm('m-edit-ch')">&#10005;</button></div>
     <div class="md-body">
       <input type="hidden" id="editch-subj"/>
       <input type="hidden" id="editch-id"/>
@@ -479,9 +479,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Study Log Modal -->
-<div class="mo" id="m-study-log">
+<div class="mo" id="m-study-log" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Log Study Session</div><button class="md-x" onclick="cm('m-study-log')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Log Study Session</div><button class="md-x" aria-label="Close" onclick="cm('m-study-log')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Subject</label>
         <select class="inp" id="sl-subj">
@@ -505,9 +505,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Start Study Session Modal -->
-<div class="mo" id="m-study-session">
+<div class="mo" id="m-study-session" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Start Study Session</div><button class="md-x" onclick="cm('m-study-session')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Start Study Session</div><button class="md-x" aria-label="Close" onclick="cm('m-study-session')">&#10005;</button></div>
     <div class="md-body">
       <div class="fg"><label>Subject</label>
         <select class="inp" id="ss-subj">
@@ -527,9 +527,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Add PYQ Modal -->
-<div class="mo" id="m-pyq-add">
+<div class="mo" id="m-pyq-add" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Add PYQ Question</div><button class="md-x" onclick="cm('m-pyq-add')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Add PYQ Question</div><button class="md-x" aria-label="Close" onclick="cm('m-pyq-add')">&#10005;</button></div>
     <div class="md-body">
       <div class="g2">
         <div class="fg"><label>Subject</label>
@@ -575,9 +575,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Log Mock Test Modal -->
-<div class="mo" id="m-mocktest">
+<div class="mo" id="m-mocktest" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Log Mock Test</div><button class="md-x" onclick="cm('m-mocktest')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Log Mock Test</div><button class="md-x" aria-label="Close" onclick="cm('m-mocktest')">&#10005;</button></div>
     <div class="md-body">
       <div class="mt-form">
         <div class="fg"><label>Test Name</label><input class="inp" id="mt-name" type="text" placeholder="e.g. Allen Mock Test 3"/></div>
@@ -605,9 +605,9 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 </div>
 
 <!-- Doubt Solver Settings Modal -->
-<div class="mo" id="m-ds-settings">
+<div class="mo" id="m-ds-settings" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Doubt Solver Settings</div><button class="md-x" onclick="cm('m-ds-settings')">&#10005;</button></div>
+    <div class="md-head"><div class="md-title">Doubt Solver Settings</div><button class="md-x" aria-label="Close" onclick="cm('m-ds-settings')">&#10005;</button></div>
     <div class="md-body" style="padding:16px 20px">
       <div class="fg"><label>AI Provider</label>
         <div style="display:flex;gap:6px;margin-top:4px">

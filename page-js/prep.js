@@ -119,7 +119,7 @@
     if (!DB.prepChat) DB.prepChat = { messages: [], notes: [] };
     Array.from(files).forEach(function(file) {
       if (file.type !== 'application/pdf') { if (window.toast) window.toast('Only PDF files supported'); return; }
-      DB.prepChat.notes.push({ name: file.name, text: 'PDF uploaded: ' + file.name, id: 'pn_' + Date.now() + '_' + (++_prepIdCounter) });
+      DB.prepChat.notes.push({ name: file.name, text: '[PDF uploaded — content not extracted: ' + file.name + ']', id: 'pn_' + Date.now() + '_' + (++_prepIdCounter) });
       if (window.sv) window.sv('prepChat');
       window.renderPrep(document.getElementById('content-wrap'));
     });

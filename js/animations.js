@@ -593,11 +593,13 @@ export function initInteractions() {
     if (!target) return;
     const ripple = document.createElement('span');
     const size = Math.max(target.offsetWidth, target.offsetHeight);
-    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.offsetX - size / 2) + 'px;top:' + (e.offsetY - size / 2) + 'px;border-radius:50%;background:rgba(255,255,255,0.2);transform:scale(0);animation:ripple-expand 0.6s ease-out;pointer-events:none;';
+    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.offsetX - size / 2) + 'px;top:' + (e.offsetY - size / 2) + 'px;border-radius:50%;background:rgba(255,255,255,0.2);transform:scale(0);animation:ripple-expand 0.6s ease-out;pointer-events:none;z-index:1;';
+    var prevOverflow = target.style.overflow;
+    var prevPosition = target.style.position;
     target.style.position = 'relative';
     target.style.overflow = 'hidden';
     target.appendChild(ripple);
-    setTimeout(function() { ripple.remove(); }, 600);
+    setTimeout(function() { ripple.remove(); target.style.overflow = prevOverflow; target.style.position = prevPosition; }, 600);
   }, true);
 
   // Bloom parallax cards — cached + viewport-culled

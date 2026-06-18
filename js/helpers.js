@@ -212,9 +212,11 @@ export function fmtDate(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(d
 export function fmt12(t){if(!t||!t.includes(':'))return t;const[h,m]=t.split(':').map(Number);const ap=h>=12?'PM':'AM';const h12=h%12||12;return`${h12}:${String(m).padStart(2,'0')} ${ap}`;}
 
 /* MODAL */
+let _modalGen=0;
 export function om(id){
   const m=document.getElementById(id);
   if(!m)return;
+  _modalGen++;
   m.classList.add('open');
   const md=m.querySelector('.md');
   if(md){
@@ -243,14 +245,16 @@ export function om(id){
 export function cm(id){
   const m=document.getElementById(id);
   if(!m)return;
+  const gen=_modalGen;
   const md=m.querySelector('.md');
   if(md&&shouldAnimate()){
-    modalClose(md).then(()=>m.classList.remove('open'));
+    modalClose(md).then(()=>{if(gen===_modalGen)m.classList.remove('open');});
   }else{
     m.classList.remove('open');
   }
 }
 document.addEventListener('pointerdown',e=>{const mo=e.target.closest('.mo');if(mo&&e.target===mo)mo.classList.remove('open');},{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.querySelector('.mo.open');if(m)m.classList.remove('open');}},{passive:true});
 
 /* CONFIRM */
 export function cfm2(title,sub,cb){
@@ -265,7 +269,7 @@ let toastT;
 export function toast(msg){
   const el=document.getElementById('toast');
   if(!el) return;
-  el.innerHTML=msg;
+  el.textContent=msg;
   if(shouldAnimate()){
     toastSlideIn(el);
   }else{

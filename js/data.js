@@ -84,10 +84,6 @@ export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];
   window._pendingNoteFiles=[];
 }
-export function resetEphemeralUiState(){
-  window.pendingAFiles=[];window.pendingTFiles=[];
-  window._pendingNoteFiles=[];
-}
 
 /* ═══════════════ DEFAULT DATA (WITH FULL SUBTOPICS) ═══════════════ */
 export function mkCh(id,name,subTopics){return{id,name,completed:false,strength:'uncovered',mainsPyqDone:false,advPyqDone:false,notes:{detailed:[],revision:[]},subTopics:subTopics||[]};}

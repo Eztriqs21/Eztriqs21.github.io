@@ -171,7 +171,5 @@
   window._testSearchFn = function(val) {
     _testSearch = val || '';
     _updateTestResults();
-    var input = document.getElementById('test-search-input');
-    if (input && document.activeElement !== input) input.focus();
   };
 })();

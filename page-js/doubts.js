@@ -65,7 +65,13 @@
     var chats = (DB && DB.doubtChats) || {};
     var msgs = (chats[dsChatSubject] || {}).messages || [];
 
+    var subjBtns = Object.keys(SUBJS).map(function(s) {
+      var active = s === dsChatSubject;
+      return '<button onclick="window._dsSubject(\'' + s + '\')" style="padding:6px 12px;font-size:11px;font-weight:600;border:1px solid ' + (active ? 'var(--accent)' : 'var(--border)') + ';background:' + (active ? 'var(--accent-bg)' : 'transparent') + ';color:' + (active ? 'var(--accent)' : 'var(--muted)') + ';border-radius:6px;cursor:pointer;transition:all 0.2s">' + SUBJS[s].label + '</button>';
+    }).join('');
+
     return '<div style="display:flex;flex-direction:column;height:100%">'
+      + '<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center">' + subjBtns + '</div>'
       + '<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px" id="ds-chat-msgs">'
       + (msgs.length === 0
         ? '<div class="' + p + '-empty" style="padding:40px;margin:auto"><div class="' + p + '-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="' + p + '-empty-title">Ask about ' + SUBJS[dsChatSubject].label + '!</div><div class="' + p + '-empty-sub">Type your question below.</div></div>'
@@ -108,6 +114,11 @@
     dsTab = tab;
     window.renderDoubts(document.getElementById('content-wrap'));
     if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+
+  window._dsSubject = function(subj) {
+    dsChatSubject = subj;
+    window.renderDoubts(document.getElementById('content-wrap'));
+  };
     if (tab === 'chat') setTimeout(scrollChat, 50);
   };
 
