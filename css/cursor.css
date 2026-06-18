@@ -65,7 +65,7 @@ body.cursor-active, body.cursor-active * {
 }
 
 /* Nexus click pulse */
-[data-theme="nexus"].cursor-click #cursor-pulse {
+[data-theme="nexus"].cursor-active.cursor-click #cursor-pulse {
   animation: nexus-pulse 0.4s ease-out forwards;
 }
 
@@ -108,7 +108,7 @@ body.cursor-active, body.cursor-active * {
 }
 
 /* Bloom click bounce */
-[data-theme="bloom"].cursor-click #cursor-ring {
+[data-theme="bloom"].cursor-active.cursor-click #cursor-ring {
   animation: bloom-bounce 0.3s ease;
 }
 

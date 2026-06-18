@@ -27,6 +27,7 @@
   }
 
   window.renderPrep = function(el) {
+    if (!el) return;
     var p = pfx();
     var DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }

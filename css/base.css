@@ -116,7 +116,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-@keyframes glow-pulse { 0%, 100% { box-shadow: var(--glow-primary); } 50% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.5); } }
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: var(--glow-primary); }
+  50% { box-shadow: var(--glow-primary); filter: brightness(1.5); }
+}
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 @keyframes draw-line { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
 @keyframes bar-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
@@ -336,7 +339,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .ds-card-responsive { height: calc(100vh - 160px) !important; min-height: 300px !important; }
   .cmt-player-sidebar { display: none !important; }
   .cmt-player-body { flex-direction: column !important; }
-  .cmt-mobile-nav { display: flex !important; }
+  .cmt-mobile-nav.open { display: flex !important; }
   .nx-page-title, .bl-page-title { font-size: 22px !important; }
   .toast { top: 60px; }
 }
@@ -391,6 +394,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   --accent-dim: rgba(107, 144, 128, 0.08);
   --ghost: rgba(107, 144, 128, 0.12); --faint: rgba(0, 0, 0, 0.3);
   --red-dim: rgba(214, 69, 69, 0.08);
+  --orange: #c4a882;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06); --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
 }

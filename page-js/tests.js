@@ -120,6 +120,7 @@
     var grid = document.getElementById('t-syl-grid');
     if (grid) {
       var DB = window.DB;
+      if (!DB) return;
       var html = '';
       ['physics', 'chemistry', 'maths'].forEach(function(subj) {
         var chapters = (DB.chapters || {})[subj] || [];

@@ -184,7 +184,8 @@
   }
 
   function applyAnsKey() {
-    var txt = document.getElementById('calc-key-txt').value.trim();
+    var txtEl = document.getElementById('calc-key-txt');
+    var txt = txtEl ? txtEl.value.trim() : '';
     if (!txt) { window.toast('Paste an answer key first'); return; }
     calcAnsKey = {};
     var matches = txt.match(/(\d{1,2})\s*[:.)\s]\s*([A-Da-d]+|\d{1,4})/g);
@@ -326,7 +327,7 @@
     if (scoredEl) scoredEl.value = Math.max(0, totalScore);
     var maxEl = document.getElementById('calc-save-max');
     if (maxEl) maxEl.value = 300;
-    window.om('m-save-calc-test');
+    if (window.om) window.om('m-save-calc-test');
     setTimeout(function () { if (nameEl) nameEl.focus(); }, 320);
   }
 
@@ -362,9 +363,9 @@
       totalScore: Math.max(0, totalScore), maxScore: 300,
       papers: [], syllabus: { physics: [], chemistry: [], maths: [] }
     });
-    window.sv('tests');
-    window.cm('m-save-calc-test');
-    window.toast('Test saved to history!');
+    if (window.sv) window.sv('tests');
+    if (window.cm) window.cm('m-save-calc-test');
+    if (window.toast) window.toast('Test saved to history!');
   }
 
   function saveCalcAsMockTest() {

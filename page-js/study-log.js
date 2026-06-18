@@ -128,6 +128,7 @@
   }
 
   window.renderStudyLog = function(el) {
+    if (!el) return;
     const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
@@ -194,7 +195,7 @@
 
   /* Session Timer CRUD */
   window._startSessionModal = function() {
-    window.om('m-study-session');
+    if (window.om) window.om('m-study-session');
     setTimeout(function() { var t = document.getElementById('ss-topic'); if (t) t.focus(); }, 320);
   };
 
@@ -206,7 +207,7 @@
     if (!topic) { if (window.toast) window.toast('Enter a topic'); return; }
     _session = { status: 'running', subject: subj, topic: topic, startTime: Date.now(), pausedAt: 0, totalPausedMs: 0 };
     saveSession();
-    window.cm('m-study-session');
+    if (window.cm) window.cm('m-study-session');
     startTimer();
     window.renderStudyLog(document.getElementById('content-wrap'));
     _anim();

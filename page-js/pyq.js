@@ -180,7 +180,7 @@
       builtIn: false, createdAt: new Date().toISOString()
     });
     if (window.sv) window.sv('pyqs');
-    window.cm('m-pyq-add');
+    if (window.cm) window.cm('m-pyq-add');
     if (window.toast) window.toast('PYQ added!');
     var el = document.getElementById('content-wrap');
     if (el) { el.innerHTML = ''; window.renderPYQ(el); _anim(); }

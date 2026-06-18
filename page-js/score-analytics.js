@@ -90,6 +90,7 @@
   }
 
   window.renderScoreAnalytics = function(el) {
+    if (!el) return;
     const p = pfx();
     const data = ANALYTICS_DATA.tests;
     const DB = window.DB;

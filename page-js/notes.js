@@ -111,7 +111,7 @@
     if (dz && fi && window.setupDZ) window.setupDZ('n-dz', 'n-finp', window.handleNoteFiles);
 
     refreshNoteFileList();
-    window.om('m-notes');
+    if (window.om) window.om('m-notes');
     window._openNotesSubj = subj;
     window._openNotesChId = chId;
   }

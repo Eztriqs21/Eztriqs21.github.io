@@ -69,6 +69,7 @@
   }
 
   window.renderDashboard = function(el) {
+    if (!el) return;
     const p = pfx();
     const DB = window.DB;
     if (!DB || !DB.chapters) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }

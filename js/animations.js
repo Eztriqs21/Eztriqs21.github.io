@@ -59,6 +59,7 @@ export function bottomNavSwitch(el) {
 }
 
 export function fabExpand(actions) {
+  if (!actions || !actions.length) return;
   if (noMotion()) { actions.forEach(a => a.style.display = 'flex'); return; }
   actions.forEach((a, i) => {
     a.style.display = 'flex';
@@ -71,6 +72,7 @@ export function fabExpand(actions) {
 }
 
 export function fabCollapse(actions) {
+  if (!actions || !actions.length) return;
   if (noMotion()) { actions.forEach(a => a.style.display = 'none'); return; }
   const count = actions.length;
   actions.forEach((a, i) => {
@@ -551,7 +553,7 @@ export function skeletonPulse(el) {
   if (noMotion()) return;
   _M.animate(el, {
     opacity: [0.4, 0.8, 0.4]
-  }, { duration: 1.5, easing: 'ease-in-out', repeat: Infinity });
+  }, { duration: 1.5, easing: [0.42, 0, 0.58, 1], iterations: Infinity });
 }
 
 export function showSkeleton(container, count = 3) {
@@ -737,5 +739,5 @@ export function initInteractions() {
 /* ═══════════════ PREFERS-REDUCED-MOTION ═══════════════ */
 
 export function shouldAnimate() {
-  return !_reduced && !!_M && !!_M.animate;
+  return !_reducedMq.matches && !!_M && !!_M.animate;
 }

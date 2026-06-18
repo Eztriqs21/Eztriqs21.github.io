@@ -34,6 +34,7 @@
   }
 
   window.renderAnalytics = function(el) {
+    if (!el) return;
     const p = pfx();
     const logs = (window.DB && window.DB.studyLogs) || [];
     const tests = (window.DB && window.DB.tests) || [];

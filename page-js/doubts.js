@@ -204,6 +204,7 @@
     }
 
     var DB = window.DB;
+    if (!DB) return;
     if (!DB.doubtChats) DB.doubtChats = { physics: { messages: [] }, chemistry: { messages: [] }, maths: { messages: [] } };
     if (!DB.doubtChats[dsChatSubject]) DB.doubtChats[dsChatSubject] = { messages: [] };
     var msgs = DB.doubtChats[dsChatSubject].messages;

@@ -60,7 +60,6 @@ export function render() {
 function _renderSwap(el) {
   if (!el) return;
   el.innerHTML = '';
-  _renderLock = false;
   try {
     if (!callPageRenderer(PAGE, el)) {
       el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">Page not found</div>';
@@ -69,6 +68,7 @@ function _renderSwap(el) {
     console.error('Render error for page:', PAGE, err);
     el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:18px;font-weight:700;margin-bottom:8px">Something went wrong</div><div style="font-size:13px">' + (err.message || '').replace(/</g, '&lt;') + '</div></div>';
   }
+  _renderLock = false;
 
   if (shouldAnimate()) {
     pageEnter(el).then(() => {

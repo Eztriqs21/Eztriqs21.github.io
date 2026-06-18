@@ -31,7 +31,6 @@ export function load(){
   if(!DB.revision)DB.revision={topics:[],history:[]};
   try{DB.notes=JSON.parse(localStorage.getItem(KEYS.notes))||{};}catch(e){DB.notes={}}
   try{DB.pyqs=JSON.parse(localStorage.getItem(KEYS.pyqs))||[];}catch(e){DB.pyqs=[];}
-  if(window.cmtLoadHashes)window.cmtLoadHashes();
 }
 export const LS_SAFE_BUDGET=4*1024*1024;
 export function usesCloudStorage(){return !!(window.supaClient&&window.supaConfig&&window.currentSyncKey);}

@@ -165,7 +165,7 @@ function saveTest() {
   var name = document.getElementById('t-name').value.trim();
   if (!name) { toast('Enter test name'); return; }
   var p, c, m, total, maxScore;
-  var gn = function (id) { return parseInt(document.getElementById(id).value) || 0; };
+  var gn = function (id) { var el = document.getElementById(id); return el ? (parseInt(el.value) || 0) : 0; };
 
   if (testEntryMode === 'direct') {
     total = parseInt(document.getElementById('t-direct-marks').value) || 0;

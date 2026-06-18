@@ -38,7 +38,7 @@
 
   function mockCard(t, i) {
     const p = pfx();
-    const total = ((t.physics || {}).correct * 4 - (t.physics || {}).incorrect) + ((t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect) + ((t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
+    const total = (((t.physics||{}).correct||0)*4 - ((t.physics||{}).incorrect||0)) + (((t.chemistry||{}).correct||0)*4 - ((t.chemistry||{}).incorrect||0)) + (((t.maths||{}).correct||0)*4 - ((t.maths||{}).incorrect||0));
     const maxScore = t.total || 300;
     const pct = safePct(Math.max(0, total), maxScore);
     const color = pct >= 70 ? 'var(--success)' : pct >= 50 ? 'var(--accent)' : 'var(--danger)';
@@ -76,7 +76,7 @@
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
     const tests = DB.mockTests || [];
     const avg = tests.length ? Math.round(tests.reduce((s, t) => {
-      const total = ((t.physics || {}).correct * 4 - (t.physics || {}).incorrect) + ((t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect) + ((t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
+      const total = (((t.physics||{}).correct||0)*4 - ((t.physics||{}).incorrect||0)) + (((t.chemistry||{}).correct||0)*4 - ((t.chemistry||{}).incorrect||0)) + (((t.maths||{}).correct||0)*4 - ((t.maths||{}).incorrect||0));
       const max = t.total || 300;
       return s + safePct(Math.max(0, total), max);
     }, 0) / tests.length) : 0;
