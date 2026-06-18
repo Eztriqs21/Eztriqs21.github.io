@@ -1,6 +1,6 @@
 // page-js/notes.js — Notes page (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
@@ -104,10 +104,10 @@
     }
     if (dz && fi && window.setupDZ) window.setupDZ('n-dz', 'n-finp', window.handleNoteFiles);
 
-    refreshNoteFileList();
-    if (window.om) window.om('m-notes');
     window._openNotesSubj = subj;
     window._openNotesChId = chId;
+    refreshNoteFileList();
+    if (window.om) window.om('m-notes');
   }
 
   window._saveNoteFiles = function() {
@@ -133,6 +133,7 @@
   };
 
   window.renderNotes = function(el) {
+    if (!el) return;
     const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }

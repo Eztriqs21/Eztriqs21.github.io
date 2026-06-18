@@ -1,6 +1,6 @@
 // page-js/mock-tests.js — Mock Tests page (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
@@ -65,6 +65,7 @@
   }
 
   window.renderMockTests = function(el) {
+    if (!el) return;
     const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
@@ -113,6 +114,12 @@
 
   /* CRUD */
   window.openAddMockTest = function() {
+    ['mt-name', 'mt-scored', 'mt-total', 'mt-date', 'mt-subj', 'mt-time', 'mt-syllabus', 'mt-review'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    var dateEl = document.getElementById('mt-date');
+    if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
     if (window.om) window.om('m-mocktest');
     setTimeout(function() { var t = document.getElementById('mt-name'); if (t) t.focus(); }, 320);
   };

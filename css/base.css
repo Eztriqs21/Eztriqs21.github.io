@@ -281,15 +281,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ═══════════════ ENTRANCE ANIMATIONS ═══════════════ */
 .anim-entrance { opacity: 0; transform: translateY(20px); }
-.anim-entrance.visible { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.anim-entrance:nth-child(1) { animation-delay: 0.05s; }
-.anim-entrance:nth-child(2) { animation-delay: 0.1s; }
-.anim-entrance:nth-child(3) { animation-delay: 0.15s; }
-.anim-entrance:nth-child(4) { animation-delay: 0.2s; }
-.anim-entrance:nth-child(5) { animation-delay: 0.25s; }
-.anim-entrance:nth-child(6) { animation-delay: 0.3s; }
-.anim-entrance:nth-child(7) { animation-delay: 0.35s; }
-.anim-entrance:nth-child(8) { animation-delay: 0.4s; }
+.anim-entrance.visible { opacity: 1; transform: none; }
 
 /* Page transition */
 .page-exit { animation: pageExit 0.25s ease forwards; }
@@ -384,7 +376,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
   --r: var(--radius); --r-sm: 4px; --r-lg: 8px;
   --surface: var(--bg-surface); --surface2: var(--bg-card); --surface3: rgba(0, 240, 255, 0.06);
-  --border: var(--border-card); --border2: var(--border-hover);
+  --border2: var(--border-hover);
   --accent-dim: rgba(0, 240, 255, 0.08);
   --txt: var(--text); --ghost: rgba(0, 240, 255, 0.15); --faint: rgba(255, 255, 255, 0.3);
   --red: var(--danger); --red-dim: rgba(239, 68, 68, 0.1); --green: var(--success); --orange: #f59e0b;

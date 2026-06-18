@@ -100,8 +100,8 @@ export function readFileLocal(file,cb){
     if(!usesCloudStorage()){
       const extra=(typeof data==='string'?data.length:JSON.stringify(data).length)*2+256;
       const total=lsBytesUsed()+extra;
-      if(total>LS_HARD_LIMIT){toast('⚠️ Storage full. Configure Supabase sync.');return;}
-      if(total>LS_SAFE_BUDGET){toast('⚠️ Attachment too large for offline storage');return;}
+      if(total>LS_HARD_LIMIT){toast('⚠️ Storage full. Configure Supabase sync.');cb(null);return;}
+      if(total>LS_SAFE_BUDGET){toast('⚠️ Attachment too large for offline storage');cb(null);return;}
     }
     cb({id:uid(),name:cn,type:ct,size:cs,data});
   };
@@ -112,7 +112,7 @@ export function readFileLocal(file,cb){
     return;
   }
   if(isPdfFile(file)&&!usesCloudStorage()&&file.size>900000){
-    toast('⚠️ PDF too large for offline (~900KB). Use Supabase sync.');return;
+    toast('⚠️ PDF too large for offline (~900KB). Use Supabase sync.');cb(null);return;
   }
   const r=new FileReader();r.onload=ev=>finish(ev.target.result);r.readAsDataURL(file);
 }

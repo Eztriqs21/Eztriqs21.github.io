@@ -14,7 +14,7 @@ function loadSyncTimestamps(){
   try{return JSON.parse(localStorage.getItem(SYNC_TS_KEY))||{};}catch(e){return{};}
 }
 function saveSyncTimestamps(ts){try{localStorage.setItem(SYNC_TS_KEY,JSON.stringify(ts));}catch(e){}}
-const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','doubtChats','prepChat','revision','calculator'];
+const SYNC_ENTITIES=['chapters','assignments','tests','studyLogs','mockTests','doubtHistory','doubtChats','prepChat','revision','notes','pyqs','calculator'];
 
 /* Offline sync queue */
 const SYNC_QUEUE_KEY='jeehq3_sync_q';
@@ -30,14 +30,15 @@ async function flushSyncQueue(){
 export function loadSupaConfig(){
   try{supaConfig=JSON.parse(localStorage.getItem(SUPA_KEY))||null;}catch(e){supaConfig=null;}
   try{currentSyncKey=localStorage.getItem(SYNC_KEY_STORAGE)||null;}catch(e){currentSyncKey=null;}
-  updateSupaStatus();
-  updateSyncUI();
-  if(supaConfig&&supaConfig.url&&supaConfig.key){
-    try{
-      const { createClient } = window.supabase;
-      supaClient = createClient(supaConfig.url, supaConfig.key);
-    }catch(e){console.error('Supabase init error:',e);supaClient=null;}
-  }
+    updateSupaStatus();
+    updateSyncUI();
+    if(supaConfig&&supaConfig.url&&supaConfig.key){
+      try{
+        const { createClient } = window.supabase;
+        supaClient = createClient(supaConfig.url, supaConfig.key);
+        flushSyncQueue();
+      }catch(e){console.error('Supabase init error:',e);supaClient=null;}
+    }
 }
 function updateSupaStatus(){
   const el=document.getElementById('supa-status');if(!el)return;
@@ -59,12 +60,15 @@ function updateSyncUI(){
   }
 }
 export function openAuthModal(){
-  document.getElementById('sync-key-input').value=currentSyncKey||'';
+  var el=document.getElementById('sync-key-input');
+  if(el)el.value=currentSyncKey||'';
   om('m-auth');
-  setTimeout(()=>document.getElementById('sync-key-input').focus(),320);
+  if(el)setTimeout(function(){el.focus();},320);
 }
 export function saveSyncKey(){
-  const key=document.getElementById('sync-key-input').value.trim();
+  var el=document.getElementById('sync-key-input');
+  if(!el)return;
+  const key=el.value.trim();
   if(!key){toast('⚠️ Enter a sync key');return;}
   currentSyncKey=key;
   localStorage.setItem(SYNC_KEY_STORAGE,key);
@@ -204,7 +208,7 @@ export async function pullFromSupabase(){
       if(parsed[k]===DB[k])return;
       const localT=localTs[k]||'';
       const cloudT=cloudTs[k]||'';
-      if(cloudT>=localT||!DB[k]){
+      if(cloudT>localT||!DB[k]){
         DB[k]=JSON.parse(JSON.stringify(parsed[k]));
         mergedCount++;
       }
@@ -221,7 +225,9 @@ export async function pullFromSupabase(){
 }
 function autoSync(){
   if(!supaClient||!supaConfig||!currentSyncKey)return;
-  pushToSupabase().catch(function(e){console.warn('autoSync push failed:',e);});
+  if(window._supaPushLock)return;
+  window._supaPushLock=true;
+  pushToSupabase().catch(function(e){console.warn('autoSync push failed:',e);}).finally(function(){window._supaPushLock=false;});
 }
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */

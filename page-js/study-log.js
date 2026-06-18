@@ -1,6 +1,6 @@
 // page-js/study-log.js — Study Log page with live timer (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
@@ -123,6 +123,7 @@
 
   window.renderStudyLog = function(el) {
     if (!el) return;
+    if (window.PAGE !== 'study-log' && _timerInterval) stopTimer();
     const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }

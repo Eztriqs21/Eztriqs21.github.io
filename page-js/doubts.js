@@ -1,6 +1,6 @@
 // page-js/doubts.js — Doubt Solver with AI (Quick Ask + Chat)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
@@ -84,6 +84,7 @@
   }
 
   window.renderDoubts = function(el) {
+    if (!el) return;
     var p = pfx();
     var DB = window.DB;
     var chats = (DB && DB.doubtChats) || {};

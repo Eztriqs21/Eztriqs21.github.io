@@ -1,6 +1,6 @@
 // page-js/prep.js — Personalized Prep with AI Chat
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
@@ -115,6 +115,7 @@
   window._prepHandleFiles = function(files) {
     if (!files || !files.length) return;
     var DB = window.DB;
+    if (!DB) return;
     if (!DB.prepChat) DB.prepChat = { messages: [], notes: [] };
     Array.from(files).forEach(function(file) {
       if (file.type !== 'application/pdf') { if (window.toast) window.toast('Only PDF files supported'); return; }
@@ -126,7 +127,7 @@
 
   window._prepDelNote = function(index) {
     var DB = window.DB;
-    if (!DB.prepChat || !DB.prepChat.notes) return;
+    if (!DB || !DB.prepChat || !DB.prepChat.notes) return;
     DB.prepChat.notes.splice(index, 1);
     if (window.sv) window.sv('prepChat');
     window.renderPrep(document.getElementById('content-wrap'));

@@ -58,18 +58,20 @@ function refreshAFileList() {
 }
 
 function saveAssignment() {
-  var t = document.getElementById('a-title').value.trim();
+  var titleEl = document.getElementById('a-title');
+  if (!titleEl) return;
+  var t = titleEl.value.trim();
   if (!t) { toast('Enter a title'); return; }
   var DB = window.DB;
   if (!DB) return;
   if (!DB.assignments) DB.assignments = [];
   DB.assignments.unshift({
     id: 'a_' + Date.now(), title: t,
-    description: document.getElementById('a-desc').value.trim(),
+    description: (document.getElementById('a-desc') || {}).value || '',
     priority: aPriority || 'none',
     completed: false,
     attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name }; }),
-    syllabus: document.getElementById('a-syl').value.trim() || undefined,
+    syllabus: ((document.getElementById('a-syl') || {}).value || '').trim() || undefined,
     createdAt: new Date().toISOString()
   });
   window.sv('assignments');
@@ -133,14 +135,16 @@ function refreshTFileList() {
 
 function saveTest() {
   var DB = window.DB;
-  var name = document.getElementById('t-name').value.trim();
+  var nameEl = document.getElementById('t-name');
+  if (!nameEl) return;
+  var name = nameEl.value.trim();
   if (!name) { toast('Enter test name'); return; }
   var p, c, m, total, maxScore;
   var gn = function (id) { var el = document.getElementById(id); return el ? (parseInt(el.value) || 0) : 0; };
 
   if (testEntryMode === 'direct') {
-    total = parseInt(document.getElementById('t-direct-marks').value) || 0;
-    maxScore = parseInt(document.getElementById('t-direct-max').value) || 300;
+    total = parseInt((document.getElementById('t-direct-marks') || {}).value) || 0;
+    maxScore = parseInt((document.getElementById('t-direct-max') || {}).value) || 300;
     var estCorrect = Math.round(total / 4);
     var estWrong = Math.max(0, Math.round((maxScore - total) / 4 - estCorrect * 0));
     p = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.round((25 - estCorrect - estWrong) / 3) };
@@ -163,7 +167,7 @@ function saveTest() {
   if (!DB.tests) DB.tests = [];
   DB.tests.unshift({
     id: 't_' + Date.now(), name: name,
-    date: document.getElementById('t-date').value || new Date().toISOString().split('T')[0],
+    date: (document.getElementById('t-date') || {}).value || new Date().toISOString().split('T')[0],
     physics: p, chemistry: c, maths: m,
     totalScore: Math.max(0, total), maxScore: maxScore,
     timing: timing,
@@ -204,8 +208,11 @@ function closeNotesModal() {
 /* ═══════════════ CHAPTERS ═══════════════ */
 function saveAddCh() {
   var DB = window.DB;
-  var subj = document.getElementById('addch-subj').value;
-  var name = document.getElementById('addch-name').value.trim();
+  var subjEl = document.getElementById('addch-subj');
+  var nameEl = document.getElementById('addch-name');
+  if (!subjEl || !nameEl) return;
+  var subj = subjEl.value;
+  var name = nameEl.value.trim();
   if (!name) { toast('Enter chapter name'); return; }
   var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'uncovered' };
   if (!DB.chapters) DB.chapters = {};
@@ -219,9 +226,13 @@ function saveAddCh() {
 
 function saveEditCh() {
   var DB = window.DB;
-  var subj = document.getElementById('editch-subj').value;
-  var id = document.getElementById('editch-id').value;
-  var name = document.getElementById('editch-name').value.trim();
+  var subjEl = document.getElementById('editch-subj');
+  var idEl = document.getElementById('editch-id');
+  var nameEl = document.getElementById('editch-name');
+  if (!subjEl || !idEl || !nameEl) return;
+  var subj = subjEl.value;
+  var id = idEl.value;
+  var name = nameEl.value.trim();
   if (!name) { toast('Enter chapter name'); return; }
   var ch = DB.chapters[subj] && DB.chapters[subj].find(function (c) { return c.id === id; });
   if (!ch) { toast('Chapter not found'); return; }
@@ -234,8 +245,11 @@ function saveEditCh() {
 
 function deleteEditCh() {
   var DB = window.DB;
-  var subj = document.getElementById('editch-subj').value;
-  var id = document.getElementById('editch-id').value;
+  var subjEl = document.getElementById('editch-subj');
+  var idEl = document.getElementById('editch-id');
+  if (!subjEl || !idEl) return;
+  var subj = subjEl.value;
+  var id = idEl.value;
   cfm2('Delete chapter?', 'This cannot be undone.', function () {
     if (DB.chapters[subj]) DB.chapters[subj] = DB.chapters[subj].filter(function (c) { return c.id !== id; });
     window.sv('chapters');
@@ -248,10 +262,15 @@ function deleteEditCh() {
 /* ═══════════════ STUDY LOG ═══════════════ */
 function saveStudyLog() {
   var DB = window.DB;
-  var topic = document.getElementById('sl-topic').value.trim();
-  var subj = document.getElementById('sl-subj').value;
-  var dur = parseFloat(document.getElementById('sl-dur').value) || 0;
-  var date = document.getElementById('sl-date').value;
+  var topicEl = document.getElementById('sl-topic');
+  var subjEl = document.getElementById('sl-subj');
+  var durEl = document.getElementById('sl-dur');
+  var dateEl = document.getElementById('sl-date');
+  if (!topicEl || !subjEl || !durEl || !dateEl) return;
+  var topic = topicEl.value.trim();
+  var subj = subjEl.value;
+  var dur = parseFloat(durEl.value) || 0;
+  var date = dateEl.value;
   if (!topic) { toast('Enter a topic'); return; }
   if (dur <= 0) { toast('Enter valid duration'); return; }
   if (!DB.studyLogs) DB.studyLogs = [];
@@ -280,14 +299,14 @@ function saveMockTest() {
   if (!DB.mockTests) DB.mockTests = [];
   DB.mockTests.unshift({
     id: 'mt_' + Date.now(), name: name, subject: subj,
-    date: document.getElementById('mt-date').value || new Date().toISOString().split('T')[0],
+    date: (document.getElementById('mt-date') || {}).value || new Date().toISOString().split('T')[0],
     total: total,
     physics: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
     chemistry: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
     maths: { correct: correct - Math.round(correct * 0.33) * 2, incorrect: incorrect - Math.round(incorrect * 0.33) * 2, unattempted: unattempted - Math.round(unattempted * 0.33) * 2 },
-    syllabus: document.getElementById('mt-syllabus').value.trim(),
-    time: document.getElementById('mt-time').value.trim(),
-    review: document.getElementById('mt-review').value.trim()
+    syllabus: (document.getElementById('mt-syllabus') || {}).value || '',
+    time: (document.getElementById('mt-time') || {}).value || '',
+    review: (document.getElementById('mt-review') || {}).value || ''
   });
   window.sv('mockTests');
   ['mt-name', 'mt-scored', 'mt-total', 'mt-time', 'mt-syllabus', 'mt-review'].forEach(function (id) {

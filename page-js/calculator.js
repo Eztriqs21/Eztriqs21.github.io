@@ -15,7 +15,7 @@
   }
   var currentFocusQ = 1;
 
-  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
 
@@ -361,6 +361,7 @@
       date: (document.getElementById('calc-save-date') || {}).value || new Date().toISOString().split('T')[0],
       physics: p, chemistry: c, maths: m,
       totalScore: Math.max(0, totalScore), maxScore: 300,
+      timing: { total: 0, physics: 0, chemistry: 0, maths: 0 },
       papers: [], syllabus: { physics: [], chemistry: [], maths: [] }
     });
     if (window.sv) window.sv('tests');

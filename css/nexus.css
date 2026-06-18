@@ -378,6 +378,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-color: var(--border-hover);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.08);
 }
 .nx-score-ring svg {
   transform: rotate(-90deg);
@@ -759,10 +763,6 @@
   flex-direction: column;
   gap: 12px;
 }
-.nx-score-ring {
-  border-color: var(--border-hover);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.08);
-}
 .nx-test-card {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
@@ -1010,11 +1010,6 @@
   justify-content: center;
   padding: 24px;
 }
-.nx-score-ring {
-  position: relative;
-  width: 120px;
-  height: 120px;
-}
 .nx-score-ring-svg {
   width: 100%;
   height: 100%;
@@ -1055,3 +1050,8 @@
 }
 
 .nx-card.expanded .nx-mock-extra { display: block !important; }
+
+@media (max-width: 640px) {
+  .nx-question-row { grid-template-columns: 40px 1fr 36px; }
+  .nx-question-subject { display: none; }
+}

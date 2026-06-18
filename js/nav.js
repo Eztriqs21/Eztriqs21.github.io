@@ -61,7 +61,6 @@ function _renderSwap(el) {
   if (!el) { _renderLock = false; return; }
 
   el.classList.remove('page-exit');
-  setTimeout(function() { if (el && el.classList.contains('page-exit')) el.classList.remove('page-exit'); }, 500);
   el.innerHTML = '';
   try {
     if (!callPageRenderer(PAGE, el)) {
@@ -78,7 +77,7 @@ function _renderSwap(el) {
       el.classList.remove('page-enter');
       animateAllEntrance(el);
       _finishRender(el);
-    }, 50);
+    }, 360);
   } else {
     el.style.opacity = '1';
     animateAllEntrance(el);

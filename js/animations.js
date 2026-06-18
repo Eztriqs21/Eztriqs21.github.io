@@ -33,16 +33,17 @@ export function pageEnter(el) {
 }
 
 export function sidebarExpand(sb) {
-  if (noMotion()) return;
+  if (!sb || noMotion()) return;
   _M.animate(sb, { width: ['60px', '240px'] }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
 }
 
 export function sidebarCollapse(sb) {
-  if (noMotion()) return;
+  if (!sb || noMotion()) return;
   _M.animate(sb, { width: ['240px', '60px'] }, { duration: 0.25, easing: [0.25, 1, 0.5, 1] });
 }
 
 export function sidebarMobileOpen(sb) {
+  if (!sb) return;
   if (noMotion()) { sb.classList.add('open'); return; }
   sb.classList.add('open');
   _M.animate(sb, { transform: ['translateX(-100%)', 'translateX(0%)'] }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
@@ -361,6 +362,7 @@ export function sectionFadeInView(el) {
 /* ═══════════════ COMPOSITE CHOREOGRAPHIES ═══════════════ */
 
 export function animateAllEntrance(scope) {
+  if (!scope) return;
   if (noMotion()) {
     scope.querySelectorAll('.anim-entrance, .anim-up').forEach(e => { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
     return;
@@ -499,7 +501,7 @@ export function showSkeleton(container, count = 3) {
 export function removeSkeleton(container) {
   container.querySelectorAll('.skeleton').forEach(s => {
     if (noMotion()) { s.remove(); return; }
-    _M.animate(s, { opacity: [1, 0], height: ['60px', '0px'] }, { duration: 0.2 }).then(() => s.remove());
+    _M.animate(s, { opacity: [1, 0], height: ['60px', '0px'] }, { duration: 0.2 }).then(() => s.remove()).catch(() => { try { s.remove(); } catch(e) {} });
   });
 }
 

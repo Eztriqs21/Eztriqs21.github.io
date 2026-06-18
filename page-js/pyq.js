@@ -1,6 +1,6 @@
 // page-js/pyq.js — PYQ Research page with custom questions (Nexus & Bloom)
 (function() {
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/'/g, '&#39;'); }
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
@@ -65,6 +65,9 @@
   }
 
   window.renderPYQ = function(el) {
+    if (!el) return;
+    var DB = window.DB;
+    _pyqAnswers = (DB && DB.pyqAnswers) || {};
     const p = pfx();
     const allQ = getAllQuestions();
     const filtered = allQ.filter(function(q) { return (activeYear === 'all' || q.year === activeYear) && (activeSubject === 'all' || q.subject === activeSubject); });
@@ -127,6 +130,8 @@
 
   window._answerPyq = function(qid, idx) {
     _pyqAnswers[qid] = idx;
+    var DB = window.DB;
+    if (DB) { if (!DB.pyqAnswers) DB.pyqAnswers = {}; DB.pyqAnswers[qid] = idx; if (window.sv) window.sv('pyqAnswers'); }
     var el = document.getElementById('content-wrap');
     if (el) { el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); }
   };

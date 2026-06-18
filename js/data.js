@@ -28,7 +28,7 @@ export function load(){
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
   if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
   try{DB.revision=JSON.parse(localStorage.getItem(KEYS.rev))||null;}catch(e){DB.revision=null;}
-  if(!DB.revision)DB.revision={topics:[],history:[]};
+  if(!DB.revision)DB.revision={physics:{},chemistry:{},maths:{}};
   try{DB.notes=JSON.parse(localStorage.getItem(KEYS.notes))||{};}catch(e){DB.notes={}}
   try{DB.pyqs=JSON.parse(localStorage.getItem(KEYS.pyqs))||[];}catch(e){DB.pyqs=[];}
   try{DB.calculator=JSON.parse(localStorage.getItem(KEYS.calc))||null;}catch(e){DB.calculator=null;}
@@ -47,7 +47,7 @@ export function sv(key,opts){
   const lsKey=m[key];
   if(!lsKey)return false;
   let serialized;
-  try{serialized=JSON.stringify(DB[key]);}catch(e){return false;}
+  try{serialized=JSON.stringify(DB[key]);}catch(e){console.error('Serialization failed for key:',key,e);toast('⚠️ Failed to save data — possible corruption');return false;}
   if(!opts.skipBudgetCheck&&!usesCloudStorage()){
     const prev=(localStorage.getItem(lsKey)||'').length*2;
     const projected=lsBytesUsed()-prev+serialized.length*2;
@@ -78,27 +78,15 @@ export function sv(key,opts){
   return true;
 }
 export function persistAllLocal(opts){
-  ['chapters','assignments','tests','studyLogs','mockTests','doubtHistory','doubtChats','prepChat','revision','notes','pyqs','calculator'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
+  ['chapters','assignments','tests','studyLogs','mockTests','doubtChats','prepChat','revision','notes','pyqs','calculator'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
 }
 export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];
   window._pendingNoteFiles=[];
 }
-export function applyCloudPayload(parsed){
-  if(!parsed||typeof parsed!=='object')return false;
-  DB.chapters=Array.isArray(parsed.chapters)?parsed.chapters:defaultChapters();
-  DB.assignments=Array.isArray(parsed.assignments)?parsed.assignments:defaultAssignments();
-  DB.tests=Array.isArray(parsed.tests)?parsed.tests:defaultTests();
-  DB.studyLogs=Array.isArray(parsed.studyLogs)?parsed.studyLogs:[];
-  DB.mockTests=Array.isArray(parsed.mockTests)?parsed.mockTests:[];
-  if(parsed.doubtChats&&typeof parsed.doubtChats==='object')DB.doubtChats=parsed.doubtChats;
-  if(parsed.prepChat&&typeof parsed.prepChat==='object')DB.prepChat=parsed.prepChat;
-  if(parsed.revision&&typeof parsed.revision==='object')DB.revision=parsed.revision;
-  if(parsed.doubtHistory&&Array.isArray(parsed.doubtHistory))DB.doubtHistory=parsed.doubtHistory;
-  if(parsed.notes&&typeof parsed.notes==='object')DB.notes=parsed.notes;
-  if(parsed.pyqs&&Array.isArray(parsed.pyqs))DB.pyqs=parsed.pyqs;
-  resetEphemeralUiState();
-  return true;
+export function resetEphemeralUiState(){
+  window.pendingAFiles=[];window.pendingTFiles=[];
+  window._pendingNoteFiles=[];
 }
 
 /* ═══════════════ DEFAULT DATA (WITH FULL SUBTOPICS) ═══════════════ */
@@ -200,4 +188,3 @@ window.ONE_SHOT_LINKS=ONE_SHOT_LINKS;window.oneShotURL=oneShotURL;
 window.defaultChapters=defaultChapters;window.defaultAssignments=defaultAssignments;
 window.defaultTests=defaultTests;window.mkCh=mkCh;window.findCh=findCh;
 window.persistAllLocal=persistAllLocal;window.resetEphemeralUiState=resetEphemeralUiState;
-window.applyCloudPayload=applyCloudPayload;
