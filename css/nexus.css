@@ -56,6 +56,10 @@
   background: rgba(0, 240, 255, 0.05);
 }
 .nx-btn:hover::before { left: 100%; }
+.nx-btn:focus-visible, .nx-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .nx-btn-primary {
   background: rgba(0, 240, 255, 0.1);
   border-color: var(--primary);
@@ -254,29 +258,6 @@
   display: flex;
   gap: 4px;
 }
-.nx-strength-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 1px solid var(--border-card);
-  transition: all 0.2s;
-}
-.nx-strength-dot.active-strong { background: var(--success); border-color: var(--success); box-shadow: 0 0 6px rgba(34, 197, 94, 0.5); }
-.nx-strength-dot.active-decent { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
-.nx-strength-dot.active-weak { background: var(--danger); border-color: var(--danger); box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
-
-/* Chapter Row */
-.nx-chapter-row {
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.05);
-  gap: 12px;
-  font-size: 13px;
-  transition: background 0.2s;
-}
-.nx-chapter-row:hover { background: rgba(0, 240, 255, 0.03); }
-.nx-chapter-row:last-child { border-bottom: none; }
 
 .nx-checkbox {
   width: 18px;
@@ -294,45 +275,6 @@
   background: rgba(0, 240, 255, 0.15);
   border-color: var(--primary);
   color: var(--primary);
-}
-
-/* Accordion */
-.nx-accordion {
-  margin-bottom: 12px;
-}
-.nx-accordion-header {
-  display: flex;
-  align-items: center;
-  padding: 14px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.3s;
-  gap: 12px;
-}
-.nx-accordion-header:hover {
-  border-color: var(--border-hover);
-}
-.nx-accordion-chevron {
-  margin-left: auto;
-  transition: transform 0.3s;
-  color: var(--text-muted);
-}
-.nx-accordion.open .nx-accordion-chevron {
-  transform: rotate(180deg);
-}
-.nx-accordion-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-  border: 1px solid transparent;
-  border-top: none;
-  border-radius: 0 0 var(--radius) var(--radius);
-}
-.nx-accordion.open .nx-accordion-body {
-  max-height: 2000px;
-  border-color: var(--border-card);
 }
 
 /* Test Card */
@@ -387,52 +329,7 @@
 .score-med { color: var(--accent); }
 .score-low { color: var(--danger); }
 
-/* Bar Chart */
-.nx-bar-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  height: 140px;
-  padding: 16px 0;
-}
-.nx-bar-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  height: 100%;
-  justify-content: flex-end;
-}
-.nx-bar-val {
-  font-family: var(--font-data);
-  font-size: 10px;
-  color: var(--text-muted);
-}
-.nx-bar-track {
-  width: 100%;
-  max-width: 40px;
-  height: 100%;
-  background: rgba(0, 240, 255, 0.05);
-  border-radius: 2px;
-  position: relative;
-  overflow: hidden;
-}
-.nx-bar-fill {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(0deg, var(--primary), rgba(0, 240, 255, 0.3));
-  border-radius: 2px;
-  transition: height 1s ease;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-}
-.nx-bar-label {
-  font-family: var(--font-data);
-  font-size: 10px;
-  color: var(--text-muted);
-}
+
 
 /* Ring Chart */
 .nx-ring-chart {

@@ -127,7 +127,7 @@
         <div class="${p}-stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <div class="${p}-stat-val" style="color:var(--success)"><span data-count="${done.length}">0</span></div>
         <div class="${p}-stat-label">Completed</div>
-        <div class="${p}-stat-sub">${totalAll > 0 ? safePct(done.length, totalAll) : 0}% done</div>
+        <div class="${p}-stat-sub">${all.length > 0 ? safePct(done.length, all.length) : 0}% done</div>
       </div>
     </div>
     <div id="asn-results">${assignmentsResultsHTML(all)}</div>`;

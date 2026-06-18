@@ -186,7 +186,7 @@
   function applyAnsKey() {
     var txtEl = document.getElementById('calc-key-txt');
     var txt = txtEl ? txtEl.value.trim() : '';
-    if (!txt) { window.toast('Paste an answer key first'); return; }
+    if (!txt) { if (window.toast) window.toast('Paste an answer key first'); return; }
     calcAnsKey = {};
     var matches = txt.match(/(\d{1,2})\s*[:.)\s]\s*([A-Da-d]+|\d{1,4})/g);
     if (matches) matches.forEach(function (m) {
@@ -202,7 +202,7 @@
     var cnt = Object.keys(calcAnsKey).length;
     var st = document.getElementById('key-status');
     if (st) st.textContent = cnt + ' answers loaded';
-    window.toast('Key applied: ' + cnt + ' questions');
+    if (window.toast) window.toast('Key applied: ' + cnt + ' questions');
   }
 
   function focusQRow(num) {
@@ -269,7 +269,7 @@
   }
 
   function evalCalc() {
-    if (Object.keys(calcAnsKey).length === 0) { window.toast('Answer key is required. Paste the key above and click Apply Key first.'); return; }
+    if (Object.keys(calcAnsKey).length === 0) { if (window.toast) window.toast('Answer key is required. Paste the key above and click Apply Key first.'); return; }
     calcShowResults = true;
     var el = document.getElementById('calc-results');
     if (!el) return;
@@ -302,7 +302,7 @@
   }
 
   function saveCalcToHistory() {
-    if (!calcQuestions || !calcQuestions.length) { window.toast('No calculator data. Solve a test first!'); return; }
+    if (!calcQuestions || !calcQuestions.length) { if (window.toast) window.toast('No calculator data. Solve a test first!'); return; }
     var p = { correct: 0, incorrect: 0, unattempted: 0, partial: 0 };
     var c = { correct: 0, incorrect: 0, unattempted: 0, partial: 0 };
     var m = { correct: 0, incorrect: 0, unattempted: 0, partial: 0 };
@@ -333,10 +333,10 @@
   }
 
   function saveCalcTestFromModal() {
-    if (!calcQuestions || !calcQuestions.length) { window.toast('No calculator data. Solve a test first!'); return; }
+    if (!calcQuestions || !calcQuestions.length) { if (window.toast) window.toast('No calculator data. Solve a test first!'); return; }
     var nameEl = document.getElementById('calc-save-name');
     var name = nameEl ? nameEl.value.trim() : '';
-    if (!name) { window.toast('Enter a test name'); return; }
+    if (!name) { if (window.toast) window.toast('Enter a test name'); return; }
     var DB = window.DB;
     if (!DB) return;
     if (!DB.tests) DB.tests = [];
@@ -389,7 +389,7 @@
     if (mtTime) mtTime.value = '';
     if (mtSyllabus) mtSyllabus.value = '';
     if (mtReview) mtReview.value = '';
-    window.om('m-mocktest');
+    if (window.om) window.om('m-mocktest');
     setTimeout(function () { if (mtScored) mtScored.focus(); }, 320);
   }
 
@@ -411,6 +411,7 @@
       else if (sc === 0 && q.mode === 'multi' && q.selected) totP++;
       else totW++;
     });
+    if (tot < 0) tot = 0;
     var p = pfx();
     var scoreColor = tot >= 200 ? 'var(--green)' : tot >= 120 ? 'var(--accent)' : 'var(--red)';
     var rPct = Math.max(0, Math.min(100, tot / 300 * 100));

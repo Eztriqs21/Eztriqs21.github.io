@@ -639,93 +639,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 
 <div class="toast" id="toast"></div>
 
-<!-- CMT Config Modal -->
-<div class="mo" id="m-cmt-config">
-  <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Create Custom Mock Test</div><button class="md-x" onclick="cm('m-cmt-config')">&#10005;</button></div>
-    <div class="md-body" id="cmt-config-body"></div>
-    <div class="md-foot">
-      <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-config')">Cancel</button>
-      <button class="cmt-gen-btn" id="cmt-gen-btn" onclick="cmtGenerate()">Generate Test</button>
-    </div>
-  </div>
-</div>
 
-<!-- CMT Loading Screen -->
-<div class="cmt-loading" id="cmt-loading" style="display:none">
-  <div class="cmt-loading-title" id="cmt-loading-title">Generating Questions...</div>
-  <div class="cmt-loading-sub" id="cmt-loading-sub">This may take a minute</div>
-  <div class="cmt-loading-bar"><div class="cmt-loading-fill" id="cmt-loading-fill"></div></div>
-  <button class="cmt-loading-cancel" onclick="cmtCancelGeneration()">Cancel</button>
-</div>
-
-<!-- CMT Test Player -->
-<div class="cmt-player" id="cmt-player" style="display:none">
-  <div class="cmt-player-top">
-    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
-      <div class="cmt-player-title" id="cmt-player-title">Custom Mock Test</div>
-    </div>
-    <div class="cmt-player-timer" id="cmt-player-timer">02:30:00</div>
-  </div>
-  <div class="cmt-player-body">
-    <div class="cmt-player-main" id="cmt-player-main"></div>
-    <div class="cmt-player-sidebar" id="cmt-player-sidebar">
-      <div class="cmt-player-sidebar-title">Question Navigator</div>
-      <div class="cmt-nav-grid" id="cmt-nav-grid"></div>
-      <div class="cmt-nav-legend">
-        <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--green)"></div>Answered</div>
-        <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--accent)"></div>Marked</div>
-        <div class="cmt-nav-legend-item"><div class="cmt-nav-legend-dot" style="background:var(--surface2)"></div>Skipped</div>
-      </div>
-      <div style="flex:1"></div>
-      <div id="cmt-sidebar-stats" style="font-size:10px;color:var(--faint);text-align:center;padding-top:8px;border-top:1px solid var(--border)"></div>
-    </div>
-  </div>
-  <div class="cmt-player-bottom">
-    <button class="btn btn-ghost btn-sm" onclick="cmtPrevQ()">&#9664; Prev</button>
-    <div style="flex:1;display:flex;justify-content:center;gap:6px;align-items:center">
-      <button class="cmt-q-mark-btn" id="cmt-mark-btn" onclick="cmtToggleMark()">Mark</button>
-      <button class="cmt-q-mark-btn" onclick="cmtToggleNav()">Nav</button>
-      <button class="cmt-q-mark-btn" onclick="cmtClearAnswer()">Clear</button>
-    </div>
-    <button class="btn btn-ghost btn-sm" onclick="cmtNextQ()">Next &#9654;</button>
-  </div>
-  <div class="cmt-mobile-nav" id="cmt-mobile-nav" style="display:none">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border)">
-      <span style="font-size:11px;font-weight:700;color:var(--faint)">Question Navigator</span>
-      <button class="btn btn-ghost btn-xs" onclick="cmtToggleNav()">&#10005;</button>
-    </div>
-    <div style="padding:8px 14px;overflow-y:auto;max-height:50vh">
-      <div class="cmt-nav-grid" id="cmt-mobile-nav-grid" style="grid-template-columns:repeat(6,1fr)"></div>
-    </div>
-  </div>
-</div>
-
-<!-- CMT Results Modal -->
-<div class="mo" id="m-cmt-results">
-  <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Test Results</div><button class="md-x" onclick="cm('m-cmt-results');go('mock-tests')">&#10005;</button></div>
-    <div class="md-body" id="cmt-results-body"></div>
-    <div class="md-foot">
-      <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-results');go('mock-tests')">Close</button>
-      <button class="btn btn-primary btn-sm" onclick="cmtSaveToHistory()">Save to History</button>
-    </div>
-  </div>
-</div>
-
-<!-- CMT Confirm Submit Modal -->
-<div class="mo" id="m-cmt-confirm">
-  <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Submit Test?</div><button class="md-x" onclick="cm('m-cmt-confirm')">&#10005;</button></div>
-    <div class="md-body" style="text-align:center;padding:16px 20px">
-      <div id="cmt-confirm-stats" style="font-size:13px;color:var(--muted);line-height:1.8"></div>
-    </div>
-    <div class="md-foot">
-      <button class="btn btn-ghost btn-sm" onclick="cm('m-cmt-confirm')">Go Back</button>
-      <button class="btn btn-primary btn-sm" onclick="cm('m-cmt-confirm');cmtSubmitTest()">Submit</button>
-    </div>
-  </div>
-</div>
 
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.min.js"></script>
@@ -745,6 +659,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   <script src="page-js/notes.js?v=2"></script>
   <script src="page-js/pyq.js?v=2"></script>
   <script src="page-js/score-analytics.js?v=2"></script>
+  <script src="page-js/prep.js?v=2"></script>
   <script src="page-js/study-log.js?v=2"></script>
   <script src="js/modal-handlers.js?v=2"></script>
   <script type="module" src="js/app.js?v=2"></script>

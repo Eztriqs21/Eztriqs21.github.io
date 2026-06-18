@@ -475,26 +475,4 @@ window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;windo
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;
 
-/* ═══════════════ FAB ═══════════════ */
-import { fabArcExpand, fabArcCollapse } from './animations.js';
 
-let _fabOpen=false;
-window.toggleFab=function(){
-  _fabOpen=!_fabOpen;
-  const btn=document.getElementById('fab-btn');
-  const actions=document.getElementById('fab-actions');
-  if(!btn||!actions)return;
-  if(_fabOpen){
-    btn.textContent='✕';
-    actions.style.display='flex';
-    const items=[...actions.querySelectorAll('.fab-action')];
-    fabArcExpand(items);
-  }else{
-    btn.textContent='+';
-    const items=[...actions.querySelectorAll('.fab-action')];
-    fabArcCollapse(items);
-  }
-};
-window.closeFab=function(){
-  if(_fabOpen){_fabOpen=false;const btn=document.getElementById('fab-btn');const actions=document.getElementById('fab-actions');if(btn)btn.textContent='+';if(actions)actions.style.display='none';}
-};

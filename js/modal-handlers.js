@@ -78,7 +78,7 @@ function setAP(pri) {
     var id = { none: 'ap-none', high: 'ap-hi', medium: 'ap-med', low: 'ap-lo' }[p2];
     var btn = document.getElementById(id);
     if (!btn) return;
-    btn.className = p2 === pri ? p + '-btn ' + p + '-btn-primary' : p + '-btn ' + p + '-btn-ghost';
+    btn.className = p2 === pri ? p + '-btn ' + p + '-btn-primary btn-sm' : p + '-btn ' + p + '-btn-ghost btn-sm';
   });
 }
 
@@ -126,12 +126,12 @@ function setTestMode(mode) {
   var dSec = document.getElementById('test-mode-direct'), bSec = document.getElementById('test-mode-breakdown');
   var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
   if (mode === 'direct') {
-    if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-primary'; dBtn.style.cssText = 'flex:1;text-align:center'; }
-    if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-ghost'; bBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-primary btn-sm'; dBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-ghost btn-sm'; bBtn.style.cssText = 'flex:1;text-align:center'; }
     if (dSec) dSec.style.display = 'block'; if (bSec) bSec.style.display = 'none';
   } else {
-    if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-primary'; bBtn.style.cssText = 'flex:1;text-align:center'; }
-    if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-ghost'; dBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-primary btn-sm'; bBtn.style.cssText = 'flex:1;text-align:center'; }
+    if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-ghost btn-sm'; dBtn.style.cssText = 'flex:1;text-align:center'; }
     if (bSec) bSec.style.display = 'block'; if (dSec) dSec.style.display = 'none';
   }
 }
@@ -142,7 +142,7 @@ function syncBreakdownToDirect() {
   var totalQ = gn('tp-c') + gn('tp-w') + gn('tp-s') + gn('tc-c') + gn('tc-w') + gn('tc-s') + gn('tm-c') + gn('tm-w') + gn('tm-s');
   var max = totalQ * 4;
   var ct = document.getElementById('t-calc-total'); if (ct) ct.textContent = Math.max(0, total);
-  var cm = document.getElementById('t-calc-max'); if (cm) cm.textContent = max > 0 ? max : 300;
+  var calcMaxEl = document.getElementById('t-calc-max'); if (calcMaxEl) calcMaxEl.textContent = max > 0 ? max : 300;
   var dm = document.getElementById('t-direct-marks'); if (dm) dm.value = Math.max(0, total);
   var dx = document.getElementById('t-direct-max'); if (dx) dx.value = max > 0 ? max : 300;
 }
@@ -153,7 +153,7 @@ function syncDirectToBreakdown() {
   var marks = dm ? (parseInt(dm.value) || 0) : 0;
   var max = dx ? (parseInt(dx.value) || 0) : 300;
   var ct = document.getElementById('t-calc-total'); if (ct) ct.textContent = marks;
-  var cm = document.getElementById('t-calc-max'); if (cm) cm.textContent = max;
+  var calcMaxEl = document.getElementById('t-calc-max'); if (calcMaxEl) calcMaxEl.textContent = max;
 }
 
 function handleTFiles(files) {
@@ -222,8 +222,8 @@ function setNoteType(t) {
   var detBtn = document.getElementById('note-type-det');
   var revBtn = document.getElementById('note-type-rev');
   var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
-  if (detBtn) detBtn.className = p + '-btn ' + (t === 'detailed' ? p + '-btn-primary' : p + '-btn-ghost');
-  if (revBtn) revBtn.className = p + '-btn ' + (t === 'revision' ? p + '-btn-primary' : p + '-btn-ghost');
+  if (detBtn) detBtn.className = p + '-btn ' + (t === 'detailed' ? p + '-btn-primary' : p + '-btn-ghost') + ' btn-sm';
+  if (revBtn) revBtn.className = p + '-btn ' + (t === 'revision' ? p + '-btn-primary' : p + '-btn-ghost') + ' btn-sm';
 }
 
 function handleNoteFiles(files) {
@@ -378,40 +378,6 @@ function saveDSSettings() {
   toast('Settings saved!');
 }
 
-/* ═══════════════ CMT (Chapter Mock Test) ═══════════════ */
-var cmtConfig = { subjects: {}, difficulty: 'mixed', timeMin: 30, source: 'pw' };
-var cmtQuestions = [], cmtState = { current: 0, answers: {}, marked: new Set(), startTime: null, elapsed: 0 };
-var cmtGenerating = false, cmtTimerInterval = null;
-
-function cmtGenerate() {
-  toast('⚠️ CMT generation requires AI setup. Configure in Settings.');
-}
-
-function cmtCancelGeneration() {
-  cmtGenerating = false;
-  toast('Generation cancelled');
-}
-
-function cmtPrevQ() { if (cmtState.current > 0) cmtState.current--; }
-function cmtNextQ() { if (cmtState.current < cmtQuestions.length - 1) cmtState.current++; }
-function cmtToggleMark() {
-  if (cmtState.marked.has(cmtState.current)) cmtState.marked.delete(cmtState.current);
-  else cmtState.marked.add(cmtState.current);
-}
-function cmtClearAnswer() { delete cmtState.answers[cmtState.current]; }
-function cmtToggleNav() {
-  var nav = document.querySelector('.cmt-mobile-nav');
-  if (nav) nav.classList.toggle('open');
-}
-function cmtSaveToHistory() {
-  toast('✅ Saved to history');
-}
-function cmtSubmitTest() {
-  if (!cmtState.startTime) { toast('No active test session'); return; }
-  cmtState.elapsed = Math.floor((Date.now() - cmtState.startTime) / 1000);
-  toast('Test submitted!');
-}
-
 /* ═══════════════ GLOBAL EXPORTS ═══════════════ */
 window.setAP = setAP;
 window.handleAFiles = handleAFiles;
@@ -434,15 +400,6 @@ window.saveMockTest = saveMockTest;
 window.dsSetProvider = dsSetProvider;
 window.fetchOllamaModels = fetchOllamaModels;
 window.saveDSSettings = saveDSSettings;
-window.cmtGenerate = cmtGenerate;
-window.cmtCancelGeneration = cmtCancelGeneration;
-window.cmtPrevQ = cmtPrevQ;
-window.cmtNextQ = cmtNextQ;
-window.cmtToggleMark = cmtToggleMark;
-window.cmtClearAnswer = cmtClearAnswer;
-window.cmtToggleNav = cmtToggleNav;
-window.cmtSaveToHistory = cmtSaveToHistory;
-window.cmtSubmitTest = cmtSubmitTest;
 window.cfm2 = cfm2;
 window.fItemHTML = fItemHTML;
 window.fItemHTMLRaw = fItemHTMLRaw;

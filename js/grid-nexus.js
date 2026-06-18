@@ -208,7 +208,7 @@
   }, { passive: true });
 
   window.gridNexus = {
-    start: function() { active = true; resize(); draw(); },
+    start: function() { if (active) return; active = true; resize(); draw(); },
     stop: function() { active = false; if (animId) cancelAnimationFrame(animId); ctx.clearRect(0, 0, width, height); },
     resize: resize
   };

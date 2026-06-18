@@ -58,33 +58,6 @@ export function bottomNavSwitch(el) {
   } catch(e) {}
 }
 
-export function fabExpand(actions) {
-  if (!actions || !actions.length) return;
-  if (noMotion()) { actions.forEach(a => a.style.display = 'flex'); return; }
-  actions.forEach((a, i) => {
-    a.style.display = 'flex';
-    a.style.opacity = '0';
-    _M.animate(a, {
-      opacity: [0, 1],
-      transform: ['translateY(20px) scale(0.8)', 'translateY(0px) scale(1)']
-    }, { duration: 0.25, delay: i * 0.05, easing: [0.34, 1.56, 0.64, 1] });
-  });
-}
-
-export function fabCollapse(actions) {
-  if (!actions || !actions.length) return;
-  if (noMotion()) { actions.forEach(a => a.style.display = 'none'); return; }
-  const count = actions.length;
-  actions.forEach((a, i) => {
-    _M.animate(a, {
-      opacity: [1, 0],
-      transform: ['translateY(0px) scale(1)', 'translateY(20px) scale(0.8)']
-    }, { duration: 0.15, delay: (count - 1 - i) * 0.03, easing: [0.25, 1, 0.5, 1] }).then(() => {
-      a.style.display = 'none';
-    });
-  });
-}
-
 /* ═══════════════ B: SECTION & CONTENT ═══════════════ */
 
 export function staggerIn(els, opts = {}) {
@@ -453,53 +426,6 @@ export function chartChoreography(scope) {
 
 /* ═══════════════ STEP 11: FAB ARC FAN-OUT ═══════════════ */
 
-export function fabArcExpand(actions) {
-  if (noMotion()) { actions.forEach(a => a.style.display = 'flex'); return; }
-  const count = actions.length;
-  actions.forEach((a, i) => {
-    a.style.display = 'flex';
-    a.style.opacity = '0';
-    const angle = -90 + (i / (count - 1 || 1)) * 45;
-    const rad = angle * Math.PI / 180;
-    const dist = 60 + i * 8;
-    const tx = Math.cos(rad) * dist;
-    const ty = Math.sin(rad) * dist - 20;
-    _M.animate(a, {
-      opacity: [0, 1],
-      transform: [`translate(${tx}px, ${ty + 20}px) scale(0.5)`, `translate(${tx}px, ${ty}px) scale(1)`]
-    }, { duration: 0.3, delay: i * 0.06, easing: [0.34, 1.56, 0.64, 1] });
-  });
-}
-
-export function fabArcCollapse(actions) {
-  if (noMotion()) { actions.forEach(a => a.style.display = 'none'); return; }
-  const count = actions.length;
-  actions.forEach((a, i) => {
-    _M.animate(a, {
-      opacity: [1, 0],
-      transform: ['translate(0px, 0px) scale(1)', 'translate(0px, 20px) scale(0.5)']
-    }, { duration: 0.15, delay: (count - 1 - i) * 0.04, easing: [0.25, 1, 0.5, 1] }).then(() => {
-      a.style.display = 'none';
-      a.style.transform = '';
-    });
-  });
-}
-
-export function fabPress(el) {
-  if (noMotion()) return;
-  try {
-    const p = _M.animate(el, { transform: ['scale(1) rotate(0deg)', 'scale(0.9) rotate(45deg)'] }, { duration: 0.15, easing: [0.25, 1, 0.5, 1] });
-    if (p && p.then) p.then(() => {
-      _M.animate(el, { transform: ['scale(0.9) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.25, easing: [0.34, 1.56, 0.64, 1] });
-    });
-  } catch(e) {}
-}
-
-export function fabResetIcon(el) {
-  if (noMotion()) return;
-  _M.animate(el, { transform: ['scale(1) rotate(45deg)', 'scale(1) rotate(0deg)'] }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] });
-}
-
 /* ═══════════════ STEP 12: SCROLL-LINKED ═══════════════ */
 
 export function initScrollAnimations() {
@@ -612,13 +538,6 @@ export function initInteractions() {
     if (!(e.target instanceof Element)) return;
     const btn = e.target.closest('.btn');
     if (btn) buttonPress(btn);
-  }, true);
-
-  // FAB press feedback
-  document.addEventListener('pointerdown', e => {
-    if (!(e.target instanceof Element)) return;
-    const fab = e.target.closest('.fab');
-    if (fab) fabPress(fab);
   }, true);
 
   // Magnetic buttons on [data-interactive] — RAF-throttled

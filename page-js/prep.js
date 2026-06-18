@@ -118,13 +118,9 @@
     if (!DB.prepChat) DB.prepChat = { messages: [], notes: [] };
     Array.from(files).forEach(function(file) {
       if (file.type !== 'application/pdf') { if (window.toast) window.toast('Only PDF files supported'); return; }
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        DB.prepChat.notes.push({ name: file.name, data: e.target.result, text: 'PDF uploaded: ' + file.name, id: 'pn_' + Date.now() + '_' + (++_prepIdCounter) });
-        if (window.sv) window.sv('prepChat');
-        window.renderPrep(document.getElementById('content-wrap'));
-      };
-      reader.readAsDataURL(file);
+      DB.prepChat.notes.push({ name: file.name, text: 'PDF uploaded: ' + file.name, id: 'pn_' + Date.now() + '_' + (++_prepIdCounter) });
+      if (window.sv) window.sv('prepChat');
+      window.renderPrep(document.getElementById('content-wrap'));
     });
   };
 
