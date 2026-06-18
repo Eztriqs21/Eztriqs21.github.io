@@ -138,7 +138,7 @@
     if (!container) return;
     var all = getFilteredAssignments();
     container.innerHTML = assignmentsResultsHTML(all);
-    if (window.animateAllEntrance) window.animateAllEntrance(container);
+    container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
   }
 
   /* CRUD FUNCTIONS */

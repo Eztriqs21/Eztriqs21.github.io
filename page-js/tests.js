@@ -118,7 +118,7 @@
     if (!container) return;
     var tests = getFilteredTests();
     container.innerHTML = testResultsHTML(tests);
-    if (window.animateAllEntrance) window.animateAllEntrance(container);
+    container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
   }
 
   /* CRUD */

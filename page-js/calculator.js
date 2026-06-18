@@ -274,8 +274,7 @@
     el.style.display = 'block';
     el.style.opacity = '1';
     el.innerHTML = buildCalcRes();
-    el.querySelectorAll('.anim-entrance').forEach(function(e) { e.style.opacity = '1'; e.classList.add('visible'); });
-    if (window.animateAllEntrance) window.animateAllEntrance(el);
+    el.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.style.opacity = '1'; e.classList.add('visible'); });
     setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
   }
 
@@ -508,7 +507,6 @@
     initCalcQ(); calcShowResults = false; calcAnsKey = {}; currentFocusQ = 1;
     saveCalcState();
     renderCalculator(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   }
 
   function saveCalcState() {

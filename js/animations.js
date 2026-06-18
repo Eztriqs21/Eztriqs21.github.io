@@ -371,15 +371,6 @@ export function animateAllEntrance(scope) {
     if (!all[i].classList.contains('visible')) toAnim.push(all[i]);
   }
   if (!toAnim.length) return;
-  for (var j = 0; j < toAnim.length; j++) toAnim[j].style.opacity = '0';
-  setTimeout(function() {
-    for (var s = 0; s < toAnim.length; s++) {
-      if (toAnim[s] && toAnim[s].style && toAnim[s].style.opacity === '0') {
-        toAnim[s].style.opacity = '1';
-        toAnim[s].classList.add('visible');
-      }
-    }
-  }, 600);
   for (var b = 0; b < toAnim.length; b += 12) {
     (function(start) {
       for (var k = start; k < Math.min(start + 12, toAnim.length); k++) {

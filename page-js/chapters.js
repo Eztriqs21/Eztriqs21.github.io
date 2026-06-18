@@ -100,7 +100,7 @@
     var container = document.getElementById('ch-results');
     if (!container) return;
     container.innerHTML = chaptersResultsHTML();
-    if (window.animateAllEntrance) window.animateAllEntrance(container);
+    container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
   }
 
   /* CRUD */
