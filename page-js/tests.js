@@ -7,12 +7,6 @@
 
   let _testSearch = '';
 
-  function _anim() {
-    var el = document.getElementById('content-wrap');
-    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
-    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
-  }
-
   function tstCard(t, i) {
     const p = pfx();
     const pct = t.maxScore > 0 ? Math.round(t.totalScore / t.maxScore * 100) : 0;
@@ -59,41 +53,9 @@
     </div>`;
   }
 
-  window.renderTests = function(el) {
+  function testResultsHTML(tests) {
     const p = pfx();
-    const DB = window.DB;
-    if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
-    let tests = DB.tests || [];
-    if (_testSearch.trim()) {
-      const q = _testSearch.trim().toLowerCase();
-      tests = tests.filter(t => (t.name || '').toLowerCase().includes(q));
-    }
-    const avg = tests.length ? Math.round(tests.reduce((s, t) => s + (t.maxScore > 0 ? (t.totalScore / t.maxScore) * 100 : 0), 0) / tests.length) : 0;
-
-    el.innerHTML = `
-    <div class="${p}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div>
-        <div class="${p}-page-title" data-text="Tests">Tests</div>
-        <div class="${p}-page-sub">Test history and performance analysis</div>
-      </div>
-      <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddTest()">+ Add Test</button>
-    </div>
-    <input class="${p}-input anim-entrance" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off">
-    <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        <div class="${p}-stat-val"><span data-count="${(DB.tests || []).length}">0</span></div>
-        <div class="${p}-stat-label">Total Tests</div>
-        <div class="${p}-stat-sub">${_testSearch ? 'Filtered' : 'All time'}</div>
-      </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="${p}-stat-val" style="color:var(--accent)"><span data-count="${avg}">0</span>%</div>
-        <div class="${p}-stat-label">Average Score</div>
-        <div class="${p}-stat-sub">Across all tests</div>
-      </div>
-    </div>
-    <div class="${p}-section-block anim-entrance" style="--delay:0.2s">
+    return `<div class="${p}-section-block anim-entrance" style="--delay:0.2s">
       <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Test History (${tests.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${tests.length === 0
@@ -105,7 +67,58 @@
           : [...tests].sort((a, b) => new Date(b.date) - new Date(a.date)).map((t, i) => tstCard(t, i)).join('')}
       </div>
     </div>`;
+  }
+
+  function getFilteredTests() {
+    var DB = window.DB;
+    var tests = (DB && DB.tests) || [];
+    if (_testSearch.trim()) {
+      var q = _testSearch.trim().toLowerCase();
+      tests = tests.filter(function(t) { return (t.name || '').toLowerCase().includes(q); });
+    }
+    return tests;
+  }
+
+  window.renderTests = function(el) {
+    const p = pfx();
+    const DB = window.DB;
+    if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
+    var tests = getFilteredTests();
+    var allTests = DB.tests || [];
+    const avg = tests.length ? Math.round(tests.reduce((s, t) => s + (t.maxScore > 0 ? (t.totalScore / t.maxScore) * 100 : 0), 0) / tests.length) : 0;
+
+    el.innerHTML = `
+    <div class="${p}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="${p}-page-title" data-text="Tests">Tests</div>
+        <div class="${p}-page-sub">Test history and performance analysis</div>
+      </div>
+      <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddTest()">+ Add Test</button>
+    </div>
+    <input class="${p}-input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off">
+    <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
+      <div class="${p}-stat-card">
+        <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <div class="${p}-stat-val"><span data-count="${allTests.length}">0</span></div>
+        <div class="${p}-stat-label">Total Tests</div>
+        <div class="${p}-stat-sub">${_testSearch ? 'Filtered' : 'All time'}</div>
+      </div>
+      <div class="${p}-stat-card">
+        <div class="${p}-stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="${p}-stat-val" style="color:var(--accent)"><span data-count="${avg}">0</span>%</div>
+        <div class="${p}-stat-label">Average Score</div>
+        <div class="${p}-stat-sub">Across all tests</div>
+      </div>
+    </div>
+    <div id="test-results">${testResultsHTML(tests)}</div>`;
   };
+
+  function _updateTestResults() {
+    var container = document.getElementById('test-results');
+    if (!container) return;
+    var tests = getFilteredTests();
+    container.innerHTML = testResultsHTML(tests);
+  }
 
   /* CRUD */
   window.openAddTest = function() {
@@ -142,20 +155,19 @@
         DB.tests = DB.tests.filter(t => t.id !== id);
         if (window.sv) window.sv('tests');
         window.renderTests(document.getElementById('content-wrap'));
-        _anim();
         if (window.toast) window.toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Test deleted');
       });
     } else {
       DB.tests = DB.tests.filter(t => t.id !== id);
       if (window.sv) window.sv('tests');
       window.renderTests(document.getElementById('content-wrap'));
-      _anim();
     }
   };
 
   window._testSearchFn = function(val) {
     _testSearch = val || '';
-    window.renderTests(document.getElementById('content-wrap'));
-    _anim();
+    _updateTestResults();
+    var input = document.getElementById('test-search-input');
+    if (input && document.activeElement !== input) input.focus();
   };
 })();

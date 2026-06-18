@@ -62,25 +62,44 @@
     </div>`;
   }
 
-  function _anim() {
-    var el = document.getElementById('content-wrap');
-    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
-    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
+  function getFilteredAssignments() {
+    var DB = window.DB;
+    var all = (DB && DB.assignments) || [];
+    if (_asnSearch.trim()) {
+      var q = _asnSearch.trim().toLowerCase();
+      all = all.filter(function(a) { return (a.title || '').toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.syllabus || '').toLowerCase().includes(q); });
+    }
+    return all;
+  }
+
+  function assignmentsResultsHTML(all) {
+    const p = pfx();
+    var pending = all.filter(function(a) { return !a.completed; });
+    var done = all.filter(function(a) { return a.completed; });
+    if (all.length === 0 && !_asnSearch) return emptyState();
+    return `<div class="${p}-section-block anim-entrance" style="--delay:0.2s">
+      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pending (${pending.length})</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${pending.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">${_asnSearch ? 'No pending assignments match your search' : 'All caught up!'}</div></div>` : pending.map(function(a, i) { return assignmentCard(a, i); }).join('')}
+      </div>
+    </div>
+    <div class="${p}-section-block anim-entrance" style="--delay:0.3s">
+      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed (${done.length})</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${done.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">No completed assignments yet</div></div>` : done.map(function(a, i) { return assignmentCard(a, i); }).join('')}
+      </div>
+    </div>`;
   }
 
   window.renderAssignments = function(el) {
     const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
-    let all = DB.assignments || [];
-    if (_asnSearch.trim()) {
-      const q = _asnSearch.trim().toLowerCase();
-      all = all.filter(a => (a.title || '').toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.syllabus || '').toLowerCase().includes(q));
-    }
-    const pending = all.filter(a => !a.completed);
-    const done = all.filter(a => a.completed);
-    const overdue = pending.filter(a => a.dueDate && new Date(a.dueDate) < new Date());
-    const totalAll = (DB.assignments || []).length;
+    var all = getFilteredAssignments();
+    var totalAll = (DB.assignments || []).length;
+    var pending = all.filter(function(a) { return !a.completed; });
+    var done = all.filter(function(a) { return a.completed; });
+    var overdue = pending.filter(function(a) { return a.dueDate && new Date(a.dueDate) < new Date(); });
 
     el.innerHTML = `
     <div class="${p}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
@@ -90,7 +109,7 @@
       </div>
       <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddAssign()">+ Add Task</button>
     </div>
-    <input class="${p}-input anim-entrance" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
+    <input class="${p}-input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
     <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
       <div class="${p}-stat-card">
         <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
@@ -111,20 +130,15 @@
         <div class="${p}-stat-sub">${totalAll > 0 ? safePct(done.length, totalAll) : 0}% done</div>
       </div>
     </div>
-    ${all.length === 0 && !_asnSearch ? emptyState() : `
-    <div class="${p}-section-block anim-entrance" style="--delay:0.2s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pending (${pending.length})</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        ${pending.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">${_asnSearch ? 'No pending assignments match your search' : 'All caught up!'}</div></div>` : pending.map((a, i) => assignmentCard(a, i)).join('')}
-      </div>
-    </div>
-    <div class="${p}-section-block anim-entrance" style="--delay:0.3s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed (${done.length})</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        ${done.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">No completed assignments yet</div></div>` : done.map((a, i) => assignmentCard(a, i)).join('')}
-      </div>
-    </div>`}`;
+    <div id="asn-results">${assignmentsResultsHTML(all)}</div>`;
   };
+
+  function _updateAsnResults() {
+    var container = document.getElementById('asn-results');
+    if (!container) return;
+    var all = getFilteredAssignments();
+    container.innerHTML = assignmentsResultsHTML(all);
+  }
 
   /* CRUD FUNCTIONS */
   window.openAddAssign = function() {
@@ -148,7 +162,6 @@
     a.completedAt = a.completed ? new Date().toISOString() : null;
     if (window.sv) window.sv('assignments');
     window.renderAssignments(document.getElementById('content-wrap'));
-    _anim();
     if (window.toast) window.toast(a.completed ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Marked complete' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Marked incomplete');
   };
 
@@ -160,20 +173,19 @@
         DB.assignments = DB.assignments.filter(a => a.id !== id);
         if (window.sv) window.sv('assignments');
         window.renderAssignments(document.getElementById('content-wrap'));
-        _anim();
         if (window.toast) window.toast('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Assignment deleted');
       });
     } else {
       DB.assignments = DB.assignments.filter(a => a.id !== id);
       if (window.sv) window.sv('assignments');
       window.renderAssignments(document.getElementById('content-wrap'));
-      _anim();
     }
   };
 
   window._asnSearchFn = function(val) {
     _asnSearch = val || '';
-    window.renderAssignments(document.getElementById('content-wrap'));
-    _anim();
+    _updateAsnResults();
+    var input = document.getElementById('asn-search-input');
+    if (input && document.activeElement !== input) input.focus();
   };
 })();

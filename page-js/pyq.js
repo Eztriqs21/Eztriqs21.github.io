@@ -30,12 +30,6 @@
   let activeSubject = 'all';
   let _pyqAnswers = {};
 
-  function _anim() {
-    var el = document.getElementById('content-wrap');
-    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
-    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
-  }
-
   function getAllQuestions() {
     var DB = window.DB;
     var userQs = (DB && DB.pyqs) || [];
@@ -134,7 +128,7 @@
   window._answerPyq = function(qid, idx) {
     _pyqAnswers[qid] = idx;
     var el = document.getElementById('content-wrap');
-    if (el) { el.innerHTML = ''; window.renderPYQ(el); _anim(); }
+    if (el) { el.innerHTML = ''; window.renderPYQ(el); }
   };
 
   window._openAddPyq = function() {
@@ -183,7 +177,7 @@
     if (window.cm) window.cm('m-pyq-add');
     if (window.toast) window.toast('PYQ added!');
     var el = document.getElementById('content-wrap');
-    if (el) { el.innerHTML = ''; window.renderPYQ(el); _anim(); }
+    if (el) { el.innerHTML = ''; window.renderPYQ(el); }
   };
 
   window._deletePyq = function(id) {
@@ -194,14 +188,14 @@
         DB.pyqs = DB.pyqs.filter(function(q) { return q.id !== id; });
         if (window.sv) window.sv('pyqs');
         var el = document.getElementById('content-wrap');
-        if (el) { el.innerHTML = ''; window.renderPYQ(el); _anim(); }
+        if (el) { el.innerHTML = ''; window.renderPYQ(el); }
         if (window.toast) window.toast('Deleted');
       });
     } else {
       DB.pyqs = DB.pyqs.filter(function(q) { return q.id !== id; });
       if (window.sv) window.sv('pyqs');
       var el = document.getElementById('content-wrap');
-      if (el) { el.innerHTML = ''; window.renderPYQ(el); _anim(); }
+      if (el) { el.innerHTML = ''; window.renderPYQ(el); }
     }
   };
 })();

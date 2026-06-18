@@ -171,16 +171,14 @@ export function sectionBlockEntrance(els) {
 
 export function tiltCard3D(el, x, y) {
   if (noMotion()) return;
-  _M.animate(el, {
-    transform: `perspective(600px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-3px)`
-  }, { duration: 0.15, easing: [0.25, 1, 0.5, 1] });
+  el.style.transform = `perspective(600px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-2px)`;
+  el.style.willChange = 'transform';
 }
 
 export function tiltCardReset(el) {
   if (noMotion()) return;
-  _M.animate(el, {
-    transform: 'perspective(600px) rotateY(0deg) rotateX(0deg) translateY(0px)'
-  }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+  el.style.transform = '';
+  el.style.willChange = '';
 }
 
 export function buttonPress(el) {
@@ -635,41 +633,34 @@ export function initInteractions() {
     if (fab) fabPress(fab);
   }, true);
 
-  // 3D tilt on cards — RAF-throttled + distance guard
-  var tiltSelector = '.nx-card, .nx-stat-card, .nx-hero-stat, .bl-card, .bl-stat-card, .bl-hero-stat, .stat-card, .prep-card';
+  // 3D tilt on cards — matches jee-hq-v2 exactly (Nexus only)
+  var tiltSelector = '.nx-card, .nx-stat-card, .nx-hero-stat, .stat-card, .prep-card';
   var _tiltTick = false;
-  var _tiltCard = null;
-  var _tiltX = 0, _tiltY = 0;
-  document.addEventListener('pointermove', function(e) {
-    if (!(e.target instanceof Element)) return;
-    var card = e.target.closest(tiltSelector);
-    if (!card) return;
-    _tiltCard = card;
-    _tiltX = e.clientX;
-    _tiltY = e.clientY;
-    if (!_tiltTick) {
-      _tiltTick = true;
-      requestAnimationFrame(function() {
-        if (_tiltCard) {
-          var r = _tiltCard.getBoundingClientRect();
-          var dx = Math.abs(_tiltX - r.left - r.width / 2);
-          var dy = Math.abs(_tiltY - r.top - r.height / 2);
-          if (dx < r.width / 2 + 40 && dy < r.height / 2 + 40) {
-            var x = (_tiltX - r.left) / r.width - 0.5;
-            var y = (_tiltY - r.top) / r.height - 0.5;
-            tiltCard3D(_tiltCard, x, y);
-          }
+  document.addEventListener('mousemove', function(e) {
+    if (_tiltTick) return;
+    _tiltTick = true;
+    requestAnimationFrame(function() {
+      var theme = document.documentElement.getAttribute('data-theme');
+      if (theme !== 'nexus') { _tiltTick = false; return; }
+      var cards = document.querySelectorAll(tiltSelector);
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var rect = card.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+          var rotateX = ((y / rect.height) - 0.5) * -6;
+          var rotateY = ((x / rect.width) - 0.5) * 6;
+          card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
+          card.style.willChange = 'transform';
+        } else {
+          card.style.transform = '';
+          card.style.willChange = '';
         }
-        _tiltTick = false;
-      });
-    }
-  }, { passive: true });
-
-  document.addEventListener('pointerleave', function(e) {
-    if (!(e.target instanceof Element)) return;
-    var card = e.target.closest(tiltSelector);
-    if (card) tiltCardReset(card);
-  }, true);
+      }
+      _tiltTick = false;
+    });
+  });
 
   // Magnetic buttons on [data-interactive] — RAF-throttled
   var _magTick = false;

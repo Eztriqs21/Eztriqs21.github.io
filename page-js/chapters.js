@@ -17,12 +17,6 @@
   let _chFilter = 'all';
   let _chSearch = '';
 
-  function _anim() {
-    var el = document.getElementById('content-wrap');
-    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
-    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
-  }
-
   function chapterRow(ch, subj, index) {
     const p = pfx();
     const str = ch.strength || 'none';
@@ -70,6 +64,10 @@
     </div>`;
   }
 
+  function chaptersResultsHTML() {
+    return ['physics', 'chemistry', 'maths'].map(function(s) { return subjectSection(s); }).join('');
+  }
+
   window.renderChapters = function(el) {
     const p = pfx();
     const DB = window.DB;
@@ -86,7 +84,7 @@
       </div>
       <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddCh()">+ Add Chapter</button>
     </div>
-    <input class="${p}-input anim-entrance" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_chSearch)}" autocomplete="off">
+    <input class="${p}-input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_chSearch)}" autocomplete="off">
     <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
       <div class="${p}-stat-card">
         <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
@@ -95,8 +93,14 @@
         <div class="${p}-stat-sub">${total > 0 ? Math.round((done / total) * 100) : 0}% of syllabus</div>
       </div>
     </div>
-    ${['physics', 'chemistry', 'maths'].map(s => subjectSection(s)).join('')}`;
+    <div id="ch-results">${chaptersResultsHTML()}</div>`;
   };
+
+  function _updateChResults() {
+    var container = document.getElementById('ch-results');
+    if (!container) return;
+    container.innerHTML = chaptersResultsHTML();
+  }
 
   /* CRUD */
   window.openAddCh = function() {
@@ -132,8 +136,6 @@
     ch.completedAt = ch.completed ? new Date().toISOString() : null;
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
-    _anim();
-    if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
   };
 
   window.setMF = function(subj, id) {
@@ -145,7 +147,6 @@
     ch.strength = STRENGTH[(idx + 1) % STRENGTH.length];
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
-    _anim();
   };
 
   window.togglePyq = function(subj, id) {
@@ -156,12 +157,12 @@
     ch.pyq = !ch.pyq;
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
-    _anim();
   };
 
   window._chSearchFn = function(val) {
     _chSearch = val || '';
-    window.renderChapters(document.getElementById('content-wrap'));
-    _anim();
+    _updateChResults();
+    var input = document.getElementById('ch-search-input');
+    if (input && document.activeElement !== input) input.focus();
   };
 })();

@@ -7,10 +7,20 @@ function esc(s) { var d = document.createElement('div'); d.textContent = s; retu
 function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
 function fmtDateTime(d) { return new Date(d).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
-function _animPage() {
+function _refreshPage() {
   var el = document.getElementById('content-wrap');
-  if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
-  if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
+  if (!el) return;
+  var page = window.PAGE;
+  var renderers = {
+    assignments: window.renderAssignments,
+    tests: window.renderTests,
+    chapters: window.renderChapters,
+    'study-log': window.renderStudyLog,
+    'mock-tests': window.renderMockTests,
+    notes: window.renderNotes
+  };
+  if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);
+  else if (renderers[page]) renderers[page](el);
 }
 
 function cfm2(title, msg, onConfirm) {
@@ -103,9 +113,7 @@ function saveAssignment() {
   window.pendingAFiles = [];
   window.cm('m-asgn');
   toast('Task added!');
-  if (window.PAGE === 'assignments') window.renderAssignments(document.getElementById('content-wrap'));
-  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-  _animPage();
+  _refreshPage();
 }
 
 /* ═══════════════ TESTS ═══════════════ */
@@ -201,9 +209,7 @@ function saveTest() {
   window.pendingTFiles = [];
   window.cm('m-test');
   toast('Test saved!');
-  if (window.PAGE === 'tests') window.renderTests(document.getElementById('content-wrap'));
-  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-  _animPage();
+  _refreshPage();
 }
 
 /* ═══════════════ CALCULATOR ═══════════════ */
@@ -242,9 +248,7 @@ function saveAddCh() {
   window.sv('chapters');
   window.cm('m-add-ch');
   toast('Chapter added!');
-  if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
-  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-  _animPage();
+  _refreshPage();
 }
 
 function saveEditCh() {
@@ -259,8 +263,7 @@ function saveEditCh() {
   window.sv('chapters');
   window.cm('m-edit-ch');
   toast('Updated!');
-  if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
-  _animPage();
+  _refreshPage();
 }
 
 function deleteEditCh() {
@@ -272,9 +275,7 @@ function deleteEditCh() {
     window.sv('chapters');
     window.cm('m-edit-ch');
     toast('Deleted');
-    if (window.PAGE === 'chapters') window.renderChapters(document.getElementById('content-wrap'));
-    if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-    _animPage();
+    _refreshPage();
   });
 }
 
@@ -292,9 +293,7 @@ function saveStudyLog() {
   window.sv('studyLogs');
   window.cm('m-study-log');
   toast('Session logged!');
-  if (window.PAGE === 'study-log') window.renderStudyLog(document.getElementById('content-wrap'));
-  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-  _animPage();
+  _refreshPage();
 }
 
 /* ═══════════════ MOCK TEST ═══════════════ */
@@ -335,9 +334,7 @@ function saveMockTest() {
   if (sj) sj.value = 'Full Syllabus';
   window.cm('m-mocktest');
   toast('Mock test saved!');
-  if (window.PAGE === 'mock-tests') window.renderMockTests(document.getElementById('content-wrap'));
-  if (window.PAGE === 'dashboard' && window.renderDashboard) window.renderDashboard(document.getElementById('content-wrap'));
-  _animPage();
+  _refreshPage();
 }
 
 /* ═══════════════ DOUBT SOLVER ═══════════════ */

@@ -10,12 +10,6 @@
     maths: { label: 'Mathematics', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>' }
   };
 
-  function _anim() {
-    var el = document.getElementById('content-wrap');
-    if (el && typeof window.animateAllEntrance === 'function') window.animateAllEntrance(el);
-    if (el && typeof window.animateAllCounters === 'function') window.animateAllCounters(el);
-  }
-
   function refreshNoteFileList() {
     var subj = window._openNotesSubj;
     var chId = window._openNotesChId;
