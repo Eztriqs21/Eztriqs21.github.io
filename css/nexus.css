@@ -10,7 +10,6 @@
   -webkit-backdrop-filter: blur(4px);
   transition: border-color 0.3s, box-shadow 0.3s;
   position: relative;
-  perspective: 1000px;
 }
 .nx-card::before {
   content: '';

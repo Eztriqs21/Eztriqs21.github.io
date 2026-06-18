@@ -169,18 +169,6 @@ export function sectionBlockEntrance(els) {
 
 /* ═══════════════ C: CARDS & INTERACTIVE ═══════════════ */
 
-export function tiltCard3D(el, x, y) {
-  if (noMotion()) return;
-  el.style.transform = `perspective(600px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-2px)`;
-  el.style.willChange = 'transform';
-}
-
-export function tiltCardReset(el) {
-  if (noMotion()) return;
-  el.style.transform = '';
-  el.style.willChange = '';
-}
-
 export function buttonPress(el) {
   if (noMotion()) return;
   try {
@@ -632,35 +620,6 @@ export function initInteractions() {
     const fab = e.target.closest('.fab');
     if (fab) fabPress(fab);
   }, true);
-
-  // 3D tilt on cards — matches jee-hq-v2 exactly (Nexus only)
-  var tiltSelector = '.nx-card, .nx-stat-card, .nx-hero-stat, .stat-card, .prep-card';
-  var _tiltTick = false;
-  document.addEventListener('mousemove', function(e) {
-    if (_tiltTick) return;
-    _tiltTick = true;
-    requestAnimationFrame(function() {
-      var theme = document.documentElement.getAttribute('data-theme');
-      if (theme !== 'nexus') { _tiltTick = false; return; }
-      var cards = document.querySelectorAll(tiltSelector);
-      for (var i = 0; i < cards.length; i++) {
-        var card = cards[i];
-        var rect = card.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-          var rotateX = ((y / rect.height) - 0.5) * -6;
-          var rotateY = ((x / rect.width) - 0.5) * 6;
-          card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
-          card.style.willChange = 'transform';
-        } else {
-          card.style.transform = '';
-          card.style.willChange = '';
-        }
-      }
-      _tiltTick = false;
-    });
-  });
 
   // Magnetic buttons on [data-interactive] — RAF-throttled
   var _magTick = false;

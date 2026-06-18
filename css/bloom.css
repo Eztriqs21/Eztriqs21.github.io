@@ -9,7 +9,6 @@
   box-shadow: var(--shadow-card);
   transition: box-shadow 0.3s;
   position: relative;
-  perspective: 1000px;
 }
 .bl-card::before {
   content: '';

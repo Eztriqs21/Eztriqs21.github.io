@@ -60,7 +60,7 @@
           '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="evalCalc()" style="padding:10px 22px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Calculate Score</button>' +
         '</div>' +
       '</div>' +
-      '<div id="calc-results" class="anim-entrance" style="margin-top:16px;display:' + (calcShowResults ? 'block' : 'none') + '">' + (calcShowResults ? buildCalcRes() : '') + '</div>';
+      '<div id="calc-results" style="margin-top:16px;display:' + (calcShowResults ? 'block' : 'none') + '">' + (calcShowResults ? buildCalcRes() : '') + '</div>';
 
     attachCalcKeyboard();
   }
@@ -274,6 +274,7 @@
     var el = document.getElementById('calc-results');
     if (!el) return;
     el.style.display = 'block';
+    el.style.opacity = '1';
     el.innerHTML = buildCalcRes();
     setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
   }
