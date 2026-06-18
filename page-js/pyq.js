@@ -23,7 +23,7 @@
     { id: 'q8', year: 2022, subject: 'chemistry', topic: 'Organic Chemistry', difficulty: 'hard', question: 'Which reaction proceeds through a carbocation intermediate?', options: ['SN2', 'SN1', 'E2', 'Addition'], answer: 1, builtIn: true }
   ];
 
-  const YEARS = [2024, 2023, 2022, 2021, 2020];
+  const YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
   const DIFFICULTY = { easy: { label: 'Easy', color: 'var(--success)', bg: 'rgba(34,197,94,0.1)' }, medium: { label: 'Medium', color: 'var(--accent)', bg: 'rgba(245,158,11,0.1)' }, hard: { label: 'Hard', color: 'var(--danger)', bg: 'rgba(239,68,68,0.1)' } };
 
   let activeYear = 'all';
@@ -132,8 +132,24 @@
     _pyqAnswers[qid] = idx;
     var DB = window.DB;
     if (DB) { if (!DB.pyqAnswers) DB.pyqAnswers = {}; DB.pyqAnswers[qid] = idx; if (window.sv) window.sv('pyqAnswers'); }
-    var el = document.getElementById('content-wrap');
-    if (el) { el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); }
+    var allQ = getAllQuestions();
+    var q = allQ.find(function(x) { return x.id === qid; });
+    if (!q) return;
+    var cards = document.querySelectorAll('.' + pfx() + '-card');
+    cards.forEach(function(card) {
+      var btns = card.querySelectorAll('[onclick*="_answerPyq"]');
+      btns.forEach(function(btn) {
+        var m = btn.getAttribute('onclick').match(/_answerPyq\('([^']+)',(\d+)\)/);
+        if (m && m[1] === qid) {
+          var oi = parseInt(m[2]);
+          var isCorrect = oi === idx && idx === q.answer;
+          var isWrong = oi === idx && idx !== q.answer;
+          var isActualCorrect = oi === q.answer;
+          btn.style.borderColor = isCorrect ? 'var(--success)' : isWrong ? 'var(--danger)' : isActualCorrect && idx !== undefined ? 'var(--success)' : 'var(--border)';
+          btn.style.background = isCorrect ? 'rgba(34,197,94,0.1)' : isWrong ? 'rgba(239,68,68,0.1)' : 'transparent';
+        }
+      });
+    });
   };
 
   window._openAddPyq = function() {
@@ -169,7 +185,14 @@
     var c = cEl ? cEl.value.trim() : '';
     var d = dEl ? dEl.value.trim() : '';
     var answer = answerEl ? parseInt(answerEl.value) || 0 : 0;
-    if (!topic || !question || !a || !b || !c || !d) { if (window.toast) window.toast('Fill all fields'); return; }
+    if (!topic || !question || !a || !b || !c || !d) {
+      var fields = { 'pyq-topic': topic, 'pyq-question': question, 'pyq-a': a, 'pyq-b': b, 'pyq-c': c, 'pyq-d': d };
+      Object.keys(fields).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && !fields[id]) { el.style.borderColor = 'var(--danger)'; setTimeout(function() { el.style.borderColor = ''; }, 2000); }
+      });
+      if (window.toast) window.toast('Fill all fields'); return;
+    }
     if (!DB) return;
     if (!DB.pyqs) DB.pyqs = [];
     DB.pyqs.unshift({

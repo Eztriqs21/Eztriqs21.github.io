@@ -136,8 +136,7 @@
     ch.completed = !ch.completed;
     ch.completedAt = ch.completed ? new Date().toISOString() : null;
     if (window.sv) window.sv('chapters');
-    window.renderChapters(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    _updateChResults();
   };
 
   window.setMF = function(subj, id) {
@@ -148,8 +147,7 @@
     var idx = STRENGTH.indexOf(ch.strength || 'none');
     ch.strength = STRENGTH[(idx + 1) % STRENGTH.length];
     if (window.sv) window.sv('chapters');
-    window.renderChapters(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    _updateChResults();
   };
 
   window._chSearchFn = function(val) {

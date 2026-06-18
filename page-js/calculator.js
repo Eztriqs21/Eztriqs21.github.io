@@ -39,7 +39,7 @@
       '</div>' +
       '<div class="' + p + '-card anim-entrance" style="overflow:hidden;padding:20px">' +
         '<div style="padding:0 0 10px;font-size:11px;color:var(--faint);margin-bottom:6px">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg> Keyboard: <b>A/B/C/D</b> to select · <b>0-9</b> for Integer · <b>S</b> to skip · <b>Enter</b> next · Toggle <b>MCQ</b>/<b>INT</b>/<b>MULTI</b>' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg> Keyboard: <b>A/B/C/D</b> to select · <b>0-9</b> for Integer · <b>S</b> to skip · <b>Enter</b> next · Click type label (MCQ/INT/MULTI) to cycle' +
         '</div>' +
         '<div style="padding:0 0 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">' +
           '<div style="font-size:13px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Response Sheet — 75 Questions</div>' +

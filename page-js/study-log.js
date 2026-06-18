@@ -183,7 +183,7 @@
       + '<div class="' + p + '-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Session Log</div>'
       + '<div class="' + p + '-card" style="padding:12px 16px">'
       + (logs.length === 0
-        ? '<div class="' + p + '-empty" style="padding:32px"><div class="' + p + '-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="' + p + '-empty-title">No sessions logged</div><div class="' + p + '-empty-sub">Tap Start Session to begin tracking</div></div>'
+        ? '<div class="' + p + '-empty" style="padding:32px"><div class="' + p + '-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="' + p + '-empty-title">No sessions logged</div><div class="' + p + '-empty-sub">Click "Start Session" at the top to begin tracking</div></div>'
         : [...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).map((l, i) => logRow(l, i)).join(''))
       + '</div></div>';
   };
@@ -199,7 +199,10 @@
     var subj = subjEl ? subjEl.value : 'Physics';
     var topicEl = document.getElementById('ss-topic');
     var topic = topicEl ? topicEl.value.trim() : '';
-    if (!topic) { if (window.toast) window.toast('Enter a topic'); return; }
+    if (!topic) {
+      if (topicEl) { topicEl.classList.add('inp-error'); setTimeout(function() { topicEl.classList.remove('inp-error'); }, 2000); }
+      if (window.toast) window.toast('Enter a topic'); return;
+    }
     _session = { status: 'running', subject: subj, topic: topic, startTime: Date.now(), pausedAt: 0, totalPausedMs: 0 };
     saveSession();
     if (window.cm) window.cm('m-study-session');
@@ -234,7 +237,21 @@
     if (!_session) return;
     var elapsed = getElapsed();
     var dur = Math.round((elapsed / 3600) * 10) / 10;
-    if (dur < 0.05) { if (window.toast) window.toast('Session too short to save'); _session = null; saveSession(); stopTimer(); window.renderStudyLog(document.getElementById('content-wrap')); if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap')); return; }
+    if (dur < 0.05) {
+      if (window.cfm2) {
+        window.cfm2('Short Session', 'Session is only ' + Math.round(elapsed / 60) + ' minutes. Discard?', function() {
+          _session = null; saveSession(); stopTimer();
+          window.renderStudyLog(document.getElementById('content-wrap'));
+          if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+        });
+      } else {
+        if (window.toast) window.toast('Session too short to save');
+        _session = null; saveSession(); stopTimer();
+        window.renderStudyLog(document.getElementById('content-wrap'));
+        if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+      }
+      return;
+    }
     var DB = window.DB;
     if (!DB) return;
     if (!DB.studyLogs) DB.studyLogs = [];

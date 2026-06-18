@@ -21,7 +21,7 @@ export function go(page) {
   PAGE = page;
   window.PAGE = page;
 
-  document.querySelectorAll('.nav-item, .bni').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item.active, .bni.active').forEach(el => el.classList.remove('active'));
   const navEl = document.querySelector(`.nav-item[href="#/${page}"], .bni[href="#/${page}"]`);
   if (navEl) navEl.classList.add('active');
 
@@ -51,7 +51,7 @@ export function render() {
     el.classList.add('page-exit');
     _pageSwapTimer = setTimeout(function() {
       _renderSwap(el);
-    }, 250);
+    }, 160);
   } else {
     _renderSwap(el);
   }
@@ -77,7 +77,7 @@ function _renderSwap(el) {
       el.classList.remove('page-enter');
       animateAllEntrance(el);
       _finishRender(el);
-    }, 360);
+    }, 220);
   } else {
     el.style.opacity = '1';
     animateAllEntrance(el);

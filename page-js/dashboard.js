@@ -72,7 +72,14 @@
     if (!el) return;
     const p = pfx();
     const DB = window.DB;
-    if (!DB || !DB.chapters) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
+    if (!DB || !DB.chapters) {
+      el.innerHTML = '<div class="p-anim-entrance" style="display:flex;flex-direction:column;gap:16px">'
+        + '<div class="shimmer" style="height:80px"></div>'
+        + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">'
+        + '<div class="shimmer" style="height:120px"></div><div class="shimmer" style="height:120px"></div><div class="shimmer" style="height:120px"></div></div>'
+        + '<div class="shimmer" style="height:200px"></div></div>';
+      return;
+    }
     const all = [...(DB.chapters.physics||[]), ...(DB.chapters.chemistry||[]), ...(DB.chapters.maths||[])];
     const done = all.filter(c => c.completed).length;
     const total = all.length;
@@ -88,7 +95,7 @@
 
     el.innerHTML = `
     <div class="${p}-page-header anim-entrance">
-      <div class="${p}-page-title" data-text="Command Center">Command Center</div>
+      <div class="${p}-page-title" data-text="Dashboard">Dashboard</div>
       <div class="${p}-page-sub">Your JEE preparation intelligence dashboard</div>
     </div>
     <div class="${p}-stats-grid">

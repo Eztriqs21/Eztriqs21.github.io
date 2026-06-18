@@ -147,9 +147,8 @@
     window.pendingAFiles = [];
     window.aPriority = 'none';
     if (window.setAP) window.setAP('none');
-    ['a-title', 'a-desc', 'a-syl'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+    ['a-title', 'a-desc', 'a-syl', 'a-due'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
     var fl = document.getElementById('a-file-list'); if (fl) fl.innerHTML = '';
-    var sw = document.getElementById('a-syl-wrap'); if (sw) sw.style.display = 'none';
     if (window.setupDZ) window.setupDZ('a-dz', 'a-finp', window.handleAFiles);
     if (window.om) window.om('m-asgn');
     setTimeout(function() { var t = document.getElementById('a-title'); if (t) t.focus(); }, 320);

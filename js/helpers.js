@@ -254,7 +254,7 @@ export function cm(id){
   }
 }
 document.addEventListener('pointerdown',e=>{const mo=e.target.closest('.mo');if(mo&&e.target===mo)mo.classList.remove('open');},{passive:true});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.querySelector('.mo.open');if(m)m.classList.remove('open');}},{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const ms=document.querySelectorAll('.mo.open');if(ms.length){ms[ms.length-1].classList.remove('open');}}},{passive:true});
 
 /* CONFIRM */
 export function cfm2(title,sub,cb){
@@ -276,10 +276,11 @@ export function toast(msg){
     el.classList.add('on');
   }
   clearTimeout(toastT);
+  var dur=Math.min(5000,2800+String(msg||'').length*15);
   toastT=setTimeout(()=>{
     if(shouldAnimate())toastSlideOut(el);
     else el.classList.remove('on');
-  },2800);
+  },dur);
 }
 
 /* ═══════════════ FILE CACHE ═══════════════ */

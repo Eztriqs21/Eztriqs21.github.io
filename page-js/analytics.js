@@ -58,7 +58,10 @@
     const weekTotal = weekLogs.reduce((s, l) => s + (l.duration || 0), 0);
     const dayMapAll = {};
     logs.forEach(l => { dayMapAll[l.date] = (dayMapAll[l.date] || 0) + (l.duration || 0); });
-    const avgDay = logs.length ? Object.values(dayMapAll).reduce((a, b) => a + b, 0) / Object.keys(dayMapAll).length : 0;
+    var last30 = logs.filter(l => (new Date() - new Date(l.date)) / 86400000 <= 30);
+    var last30Days = new Set(last30.map(l => l.date)).size || 1;
+    var last30Total = last30.reduce((s, l) => s + (l.duration || 0), 0);
+    const avgDay = last30Total / last30Days;
     const bestDay = Object.entries(dayMapAll).sort((a, b) => b[1] - a[1])[0];
     const totalHours = logs.reduce((s, l) => s + (l.duration || 0), 0);
 

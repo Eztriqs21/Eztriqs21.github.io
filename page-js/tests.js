@@ -62,7 +62,7 @@
           ? `<div class="${p}-empty" style="padding:32px">
               <div class="${p}-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
               <div class="${p}-empty-title">No tests recorded</div>
-              <div class="${p}-empty-sub">Tap + to add your first test result</div>
+              <div class="${p}-empty-sub">Click 'Add Test' above to record your first result</div>
             </div>`
           : [...tests].sort((a, b) => new Date(b.date) - new Date(a.date)).map((t, i) => tstCard(t, i)).join('')}
       </div>

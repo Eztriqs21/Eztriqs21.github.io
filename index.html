@@ -94,7 +94,7 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/><line x1="16" y1="18" x2="16" y2="18.01"/></svg>
           <span>Calculator</span>
         </a>
-        <div class="nav-divider"></div>
+        <div class="nav-divider" role="separator" aria-orientation="horizontal"></div>
         <a href="#/assignments" class="nav-item" data-interactive>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           <span>Assignments</span>
@@ -181,7 +181,7 @@
     </a>
     <a href="#/calculator" class="bni" data-interactive>
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
-      <span>Calc</span>
+      <span>Calculator</span>
     </a>
   </nav>
 
@@ -201,7 +201,7 @@
     <div class="md-head"><div class="md-title">Device Sync</div><button class="md-x" aria-label="Close" onclick="cm('m-auth')">&#10005;</button></div>
     <div class="md-body">
       <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px">Enter a sync key to link your devices. Use the <b>same key</b> on laptop and mobile to share data.</p>
-      <div class="fg"><label>Your Sync Key</label><input class="inp" id="sync-key-input" type="text" placeholder="e.g. myjeekey2026"/></div>
+      <div class="fg"><label>Your Sync Key</label><input class="inp" id="sync-key-input" type="text" placeholder="my-secret-key"/></div>
       <p style="font-size:10px;color:var(--faint);margin-top:8px;line-height:1.5">This key acts like a password for your cloud data. Anyone with this key can access your data, so keep it private and memorable.</p>
     </div>
     <div class="md-foot">
@@ -219,8 +219,8 @@
       <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px">Connect your JEE HQ dashboard to Supabase for automatic cloud sync across all devices.</p>
       <div class="fg"><label>Supabase Project URL</label><input class="inp" id="supa-url" type="url" placeholder="https://xxxxxx.supabase.co"/></div>
       <div class="fg"><label>Supabase Anon Key</label><input class="inp" id="supa-key" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..."/></div>
-      <div class="fg"><label>Table Name (default: jeehq_data)</label><input class="inp" id="supa-table" type="text" value="jeehq_data"/></div>
-      <div class="fg"><label>Storage Bucket (default: jeehq-assets)</label><input class="inp" id="supa-bucket" type="text" value="jeehq-assets" placeholder="jeehq-assets"/></div>
+      <div class="fg"><label>Table Name</label><input class="inp" id="supa-table" type="text" value="jeehq_data"/></div>
+      <div class="fg"><label>Storage Bucket</label><input class="inp" id="supa-bucket" type="text" value="jeehq-assets" placeholder="jeehq-assets"/></div>
       <div style="font-size:10px;color:var(--faint);margin-top:8px;line-height:1.5">
         <b>How to set up:</b><br/>
         1. Create a project at <a href="https://supabase.com" target="_blank" style="color:var(--accent)">supabase.com</a><br/>
@@ -302,10 +302,10 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
           <button class="btn btn-ghost btn-sm" id="ap-lo" onclick="setAP('low')">Low</button>
         </div>
       </div>
-      <div class="fg">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="var p=document.getElementById('a-syl-wrap');p.style.display=p.style.display==='none'?'block':'none'">Syllabus (optional) <span style="font-size:9px;color:var(--accent)">&#9660; toggle</span></label>
-        <div id="a-syl-wrap" style="display:none;margin-top:8px"><textarea class="inp" id="a-syl" rows="2" placeholder="e.g. Chapter 5: Rotational Motion, Chapter 7: Gravitation"></textarea></div>
+      <div class="fg"><label>Syllabus (optional)</label>
+        <div id="a-syl-wrap" style="margin-top:8px"><textarea class="inp" id="a-syl" rows="2" placeholder="e.g. Chapter 5: Rotational Motion, Chapter 7: Gravitation"></textarea></div>
       </div>
+      <div class="fg"><label>Due Date</label><input class="inp" id="a-due" type="date"/></div>
       <div class="fg">
         <label>Attachments (PDF / Images)</label>
         <label class="dz" id="a-dz" for="a-finp">
@@ -328,15 +328,15 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   <div class="md md-xl"><div class="md-handle"></div>
     <div class="md-head"><div class="md-title">Add Test Result</div><button class="md-x" aria-label="Close" onclick="cm('m-test')">&#10005;</button></div>
     <div class="md-body">
-      <div class="fg"><label>Test Name</label><input class="inp" id="t-name" type="text" placeholder="e.g. Full Mock Test #4"/></div>
-      <div class="fg"><label>Date</label><input class="inp" id="t-date" type="date"/></div>
+      <div class="fg"><label>Test Name *</label><input class="inp" id="t-name" type="text" placeholder="e.g. Full Mock Test #4" required/></div>
+      <div class="fg"><label>Date *</label><input class="inp" id="t-date" type="date" required/></div>
       <div style="display:flex;gap:8px;margin-bottom:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;">
-        <button class="btn btn-sm" id="tm-direct" onclick="setTestMode('direct')" style="flex:1;text-align:center">Direct Marks</button>
+        <button class="btn btn-primary btn-sm" id="tm-direct" onclick="setTestMode('direct')" style="flex:1;text-align:center">Direct Marks</button>
         <button class="btn btn-ghost btn-sm" id="tm-breakdown" onclick="setTestMode('breakdown')" style="flex:1;text-align:center">Breakdown</button>
       </div>
       <div id="test-mode-direct">
         <div class="fg"><label>Total Marks Obtained</label><input class="inp" id="t-direct-marks" type="number" min="0" max="300" placeholder="e.g. 184" oninput="syncDirectToBreakdown()"/></div>
-        <div class="fg"><label>Max Marks</label><input class="inp" id="t-direct-max" type="number" min="0" max="500" value="300"/></div>
+        <div class="fg"><label>Max Marks</label><input class="inp" id="t-direct-max" type="number" min="1" max="500" value="300"/></div>
       </div>
       <div id="test-mode-breakdown" style="display:none">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px;">Correct / Wrong / Skipped per subject</div>
@@ -593,7 +593,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
         <div class="fg"><label>Marks Scored</label><input class="inp" id="mt-scored" type="number" min="0" step="0.5" placeholder="e.g. 180"/></div>
         <div class="fg"><label>Total Marks</label><input class="inp" id="mt-total" type="number" min="0" step="0.5" placeholder="e.g. 300"/></div>
         <div class="fg"><label>Time Taken (minutes)</label><input class="inp" id="mt-time" type="number" min="0" step="1" placeholder="e.g. 180"/></div>
-        <div class="fg fg-full"><label>Syllabus</label><textarea class="inp" id="mt-syllabus" rows="3" placeholder="What syllabus was covered? (e.g. Physics: Electrostatics, Chemistry: Chemical Bonding)"></textarea></div>
+        <div class="fg fg-full"><label>Syllabus</label><textarea class="inp" id="mt-syllabus" rows="3" placeholder="Topics covered..."></textarea></div>
         <div class="fg fg-full"><label>Topics to Review</label><textarea class="inp" id="mt-review" rows="3" placeholder="Which topics need more work?"></textarea></div>
       </div>
     </div>

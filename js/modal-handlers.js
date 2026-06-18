@@ -65,11 +65,14 @@ function saveAssignment() {
   var DB = window.DB;
   if (!DB) return;
   if (!DB.assignments) DB.assignments = [];
+  var dueEl = document.getElementById('a-due');
+  var dueVal = dueEl ? dueEl.value : '';
   DB.assignments.unshift({
     id: 'a_' + Date.now(), title: t,
     description: (document.getElementById('a-desc') || {}).value || '',
     priority: aPriority || 'none',
     completed: false,
+    dueDate: dueVal ? new Date(dueVal).toISOString() : null,
     attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: ((document.getElementById('a-syl') || {}).value || '').trim() || undefined,
     createdAt: new Date().toISOString()
