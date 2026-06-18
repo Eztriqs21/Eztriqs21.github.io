@@ -1,14 +1,15 @@
-// js/nav.js — Hash-based SPA navigation (optimized)
+// js/nav.js — Hash-based SPA navigation (matches jee-hq-v2 exactly)
 import { callPageRenderer, PAGE_TITLES } from './page-registry.js';
 import { animateAllCounters } from './helpers.js';
-import { pageExit, pageEnter, shouldAnimate, animateAllEntrance } from './animations.js';
+import { shouldAnimate, animateAllEntrance } from './animations.js';
 
 export let PAGE = 'dashboard';
 
 let _renderLock = false;
 let _lastPage = null;
 let _pendingPage = null;
-let _safetyTimer = null;
+let _pageSwapTimer = null;
+let _pageEnterTimer = null;
 
 export function getPage() {
   return window.location.hash.replace('#/', '') || 'dashboard';
@@ -43,10 +44,14 @@ export function render() {
   const el = document.getElementById('content-wrap');
   if (!el) { _renderLock = false; return; }
 
-  if (_safetyTimer) { clearTimeout(_safetyTimer); _safetyTimer = null; }
+  if (_pageSwapTimer) { clearTimeout(_pageSwapTimer); _pageSwapTimer = null; }
+  if (_pageEnterTimer) { clearTimeout(_pageEnterTimer); _pageEnterTimer = null; }
 
   if (shouldAnimate() && _lastPage) {
-    pageExit(el).then(() => _renderSwap(el)).catch(() => _renderSwap(el));
+    el.classList.add('page-exit');
+    _pageSwapTimer = setTimeout(function() {
+      _renderSwap(el);
+    }, 250);
   } else {
     _renderSwap(el);
   }
@@ -54,8 +59,9 @@ export function render() {
 
 function _renderSwap(el) {
   if (!el) { _renderLock = false; return; }
+
+  el.classList.remove('page-exit');
   el.innerHTML = '';
-  el.style.opacity = '0';
   try {
     if (!callPageRenderer(PAGE, el)) {
       el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">Page not found</div>';
@@ -66,14 +72,12 @@ function _renderSwap(el) {
   }
 
   if (shouldAnimate()) {
-    pageEnter(el).then(() => {
+    el.classList.add('page-enter');
+    _pageEnterTimer = setTimeout(function() {
+      el.classList.remove('page-enter');
       animateAllEntrance(el);
       _finishRender(el);
-    }).catch(() => {
-      el.style.opacity = '1';
-      animateAllEntrance(el);
-      _finishRender(el);
-    });
+    }, 50);
   } else {
     el.style.opacity = '1';
     animateAllEntrance(el);
@@ -86,7 +90,7 @@ function _renderSwap(el) {
 function _finishRender(el) {
   _renderLock = false;
   _lastPage = PAGE;
-  setTimeout(() => { if (el) animateAllCounters(el); }, 50);
+  setTimeout(function() { if (el) animateAllCounters(el); }, 50);
   if (_pendingPage && _pendingPage !== PAGE) {
     var pp = _pendingPage;
     _pendingPage = null;

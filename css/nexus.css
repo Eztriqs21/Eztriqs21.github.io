@@ -8,9 +8,9 @@
   padding: 20px;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
   position: relative;
-  overflow: hidden;
+  perspective: 1000px;
 }
 .nx-card::before {
   content: '';
@@ -22,7 +22,6 @@
 .nx-card:hover {
   border-color: var(--border-hover);
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.08), inset 0 0 20px rgba(0, 240, 255, 0.02);
-  transform: translateY(-1px);
 }
 
 /* Buttons */
