@@ -1,4 +1,4 @@
-// js/nav.js — Hash-based SPA navigation
+// js/nav.js — Hash-based SPA navigation (optimized)
 import { callPageRenderer, PAGE_TITLES } from './page-registry.js';
 import { animateAllCounters } from './helpers.js';
 import { pageExit, pageEnter, shouldAnimate, animateAllEntrance } from './animations.js';
@@ -8,6 +8,7 @@ export let PAGE = 'dashboard';
 let _renderLock = false;
 let _lastPage = null;
 let _pendingPage = null;
+let _safetyTimer = null;
 
 export function getPage() {
   return window.location.hash.replace('#/', '') || 'dashboard';
@@ -15,6 +16,7 @@ export function getPage() {
 
 export function go(page) {
   if (_renderLock) { _pendingPage = page; return; }
+  if (page === _lastPage && page === PAGE) return;
   PAGE = page;
   window.PAGE = page;
 
@@ -39,27 +41,21 @@ export function render() {
   if (_renderLock) return;
   _renderLock = true;
   const el = document.getElementById('content-wrap');
+  if (!el) { _renderLock = false; return; }
 
-  // Safety: reset lock after 5s if something goes wrong
-  const safetyTimer = setTimeout(() => { _renderLock = false; }, 5000);
+  if (_safetyTimer) { clearTimeout(_safetyTimer); _safetyTimer = null; }
 
-  if (shouldAnimate()) {
-    pageExit(el).then(() => {
-      clearTimeout(safetyTimer);
-      _renderSwap(el);
-    }).catch(() => {
-      clearTimeout(safetyTimer);
-      _renderSwap(el);
-    });
+  if (shouldAnimate() && _lastPage) {
+    pageExit(el).then(() => _renderSwap(el)).catch(() => _renderSwap(el));
   } else {
-    clearTimeout(safetyTimer);
     _renderSwap(el);
   }
 }
 
 function _renderSwap(el) {
-  if (!el) return;
+  if (!el) { _renderLock = false; return; }
   el.innerHTML = '';
+  el.style.opacity = '0';
   try {
     if (!callPageRenderer(PAGE, el)) {
       el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">Page not found</div>';
@@ -68,38 +64,34 @@ function _renderSwap(el) {
     console.error('Render error for page:', PAGE, err);
     el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:18px;font-weight:700;margin-bottom:8px">Something went wrong</div><div style="font-size:13px">' + (err.message || '').replace(/</g, '&lt;') + '</div></div>';
   }
-  _renderLock = false;
 
   if (shouldAnimate()) {
     pageEnter(el).then(() => {
       animateAllEntrance(el);
-      _renderLock = false;
-      _lastPage = PAGE;
-      setTimeout(() => animateAllCounters(el), 50);
-      if (_pendingPage && _pendingPage !== PAGE) { var pp = _pendingPage; _pendingPage = null; go(pp); }
+      _finishRender(el);
     }).catch(() => {
       el.style.opacity = '1';
       animateAllEntrance(el);
-      _renderLock = false;
-      _lastPage = PAGE;
-      setTimeout(() => animateAllCounters(el), 50);
-      if (_pendingPage && _pendingPage !== PAGE) { var pp = _pendingPage; _pendingPage = null; go(pp); }
+      _finishRender(el);
     });
-    // Safety: ensure content visible even if pageEnter hangs
-    setTimeout(() => {
-      el.style.opacity = '1';
-      animateAllEntrance(el);
-    }, 2000);
   } else {
-    el.offsetHeight;
     el.style.opacity = '1';
     animateAllEntrance(el);
-    _renderLock = false;
-    _lastPage = PAGE;
-    setTimeout(() => animateAllCounters(el), 50);
+    _finishRender(el);
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function _finishRender(el) {
+  _renderLock = false;
+  _lastPage = PAGE;
+  setTimeout(() => { if (el) animateAllCounters(el); }, 50);
+  if (_pendingPage && _pendingPage !== PAGE) {
+    var pp = _pendingPage;
+    _pendingPage = null;
+    go(pp);
+  }
 }
 
 /* SIDEBAR */

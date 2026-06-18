@@ -10,23 +10,24 @@
   let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
   let ringX = mouseX, ringY = mouseY;
   let trailX = mouseX, trailY = mouseY;
-  let dotX = mouseX, dotY = mouseY;
   let isHovering = false;
   let hoverScale = 1;
   let targetHoverScale = 1;
   let particles = [];
   let lastParticleTime = 0;
-  let lastMouseX = -100, lastMouseY = -100;
   let speed = 0;
+  let prevMouseX = mouseX, prevMouseY = mouseY;
   let _rafId = null;
   let _alive = true;
 
   function onMouseMove(e) {
-    const dx = e.clientX - mouseX;
-    const dy = e.clientY - mouseY;
-    speed = Math.sqrt(dx * dx + dy * dy);
+    prevMouseX = mouseX;
+    prevMouseY = mouseY;
     mouseX = e.clientX;
     mouseY = e.clientY;
+    const dx = mouseX - prevMouseX;
+    const dy = mouseY - prevMouseY;
+    speed = Math.sqrt(dx * dx + dy * dy);
   }
 
   function onMouseOver(e) {
@@ -56,19 +57,18 @@
   }
 
   function onMouseLeave() {
-    ring.style.opacity = '0';
-    dot.style.opacity = '0';
-    if (trail) trail.style.opacity = '0';
+    ring.style.transform = 'translate3d(-9999px, -9999px, 0)';
+    dot.style.transform = 'translate3d(-9999px, -9999px, 0)';
+    if (trail) trail.style.transform = 'translate3d(-9999px, -9999px, 0)';
   }
   function onMouseEnter() {
-    ring.style.opacity = '1';
-    dot.style.opacity = '1';
-    if (trail) trail.style.opacity = '1';
+    ringX = mouseX; ringY = mouseY;
+    trailX = mouseX; trailY = mouseY;
   }
 
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseover', onMouseOver);
-  document.addEventListener('mouseout', onMouseOut);
+  document.addEventListener('mousemove', onMouseMove, { passive: true });
+  document.addEventListener('mouseover', onMouseOver, { passive: true });
+  document.addEventListener('mouseout', onMouseOut, { passive: true });
   document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mouseup', onMouseUp);
   document.addEventListener('mouseleave', onMouseLeave);
@@ -92,14 +92,13 @@
         color: color
       });
     }
+    if (particles.length > 60) particles.splice(0, particles.length - 60);
   }
 
   function spawnTrailParticles() {
     const now = performance.now();
-    if (now - lastParticleTime < 50) return;
-    if (speed < 3) return;
+    if (now - lastParticleTime < 50 || speed < 3) return;
     lastParticleTime = now;
-
     const theme = document.documentElement.getAttribute('data-theme');
     const color = theme === 'nexus' ? '0,240,255' : '107,144,128';
     particles.push({
@@ -111,19 +110,20 @@
       size: 1 + Math.random() * 2,
       color: color
     });
+    if (particles.length > 60) particles.splice(0, particles.length - 60);
   }
 
   let particleCanvas = null;
   let particleCtx = null;
+  let _particleFrameClear = false;
 
   function updateParticles() {
     if (!particleCanvas) {
       particleCanvas = document.getElementById('grid-canvas');
       if (particleCanvas) particleCtx = particleCanvas.getContext('2d');
     }
-    if (!particleCanvas || !particleCtx) return;
+    if (!particleCanvas || !particleCtx || particles.length === 0) return;
     const ctx = particleCtx;
-
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.x += p.vx;
@@ -131,12 +131,12 @@
       p.vy += 0.05;
       p.life -= p.decay;
       if (p.life <= 0) { particles.splice(i, 1); continue; }
-
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${p.color},${p.life * 0.6})`;
       ctx.fill();
     }
+    _particleFrameClear = true;
   }
 
   function animate() {
@@ -152,16 +152,13 @@
       trailX = lerp(trailX, ringX, 0.08);
       trailY = lerp(trailY, ringY, 0.08);
 
-      ring.style.transform = `translate(calc(-50% + ${ringX}px), calc(-50% + ${ringY}px)) scale(${hoverScale})`;
-      dot.style.transform = `translate(calc(-50% + ${mouseX}px), calc(-50% + ${mouseY}px))`;
-
-      if (trail) {
-        trail.style.transform = `translate(calc(-50% + ${trailX}px), calc(-50% + ${trailY}px)) scale(${hoverScale * 0.9})`;
-      }
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${hoverScale})`;
+      dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      if (trail) trail.style.transform = `translate3d(${trailX}px, ${trailY}px, 0) translate(-50%, -50%) scale(${hoverScale * 0.9})`;
     } else {
       ringX = lerp(ringX, mouseX, 0.12);
       ringY = lerp(ringY, mouseY, 0.12);
-      ring.style.transform = `translate(calc(-50% + ${ringX}px), calc(-50% + ${ringY}px)) scale(${hoverScale})`;
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${hoverScale})`;
     }
 
     spawnTrailParticles();

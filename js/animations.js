@@ -406,24 +406,28 @@ export function animateAllEntrance(scope) {
     scope.querySelectorAll('.anim-entrance, .anim-up').forEach(e => { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
     return;
   }
-  const els = scope.querySelectorAll('.anim-entrance, .anim-up');
-  const BATCH = 12;
-  els.forEach((el, i) => {
-    el.style.opacity = '0';
-  });
-  for (let b = 0; b < els.length; b += BATCH) {
-    const batch = Array.from(els).slice(b, b + BATCH);
-    batch.forEach((el, j) => {
-      const idx = b + j;
-      _M.animate(el, {
-        opacity: [0, 1],
-        transform: ['translateY(16px)', 'translateY(0px)']
-      }, { duration: 0.4, delay: idx * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(() => {
-        el.classList.add('visible');
-      }).catch(() => {
-        el.classList.add('visible');
-      });
-    });
+  var all = scope.querySelectorAll('.anim-entrance, .anim-up');
+  var toAnim = [];
+  for (var i = 0; i < all.length; i++) {
+    if (!all[i].classList.contains('visible')) toAnim.push(all[i]);
+  }
+  if (!toAnim.length) return;
+  for (var j = 0; j < toAnim.length; j++) toAnim[j].style.opacity = '0';
+  for (var b = 0; b < toAnim.length; b += 12) {
+    (function(start) {
+      for (var k = start; k < Math.min(start + 12, toAnim.length); k++) {
+        (function(el, idx) {
+          _M.animate(el, {
+            opacity: [0, 1],
+            transform: ['translateY(16px)', 'translateY(0px)']
+          }, { duration: 0.4, delay: idx * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(function() {
+            el.classList.add('visible');
+          }).catch(function() {
+            el.classList.add('visible');
+          });
+        })(toAnim[k], k);
+      }
+    })(b);
   }
 }
 
@@ -432,14 +436,20 @@ export function pageLoadChoreography(scope) {
     scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card').forEach(c => c.style.opacity = '1');
     return;
   }
-  const cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card');
-  cards.forEach((card, i) => {
+  var cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card');
+  var idx = 0;
+  for (var i = 0; i < cards.length; i++) {
+    var card = cards[i];
+    if (card.style.opacity === '1' || card.classList.contains('visible')) continue;
     card.style.opacity = '0';
-    _M.animate(card, {
-      opacity: [0, 1],
-      transform: ['translateY(16px)', 'translateY(0px)']
-    }, { duration: 0.35, delay: i * 0.05, easing: [0.34, 1.56, 0.64, 1] });
-  });
+    (function(c, d) {
+      _M.animate(c, {
+        opacity: [0, 1],
+        transform: ['translateY(16px)', 'translateY(0px)']
+      }, { duration: 0.35, delay: d * 0.05, easing: [0.34, 1.56, 0.64, 1] });
+    })(card, idx);
+    idx++;
+  }
 }
 
 export function chartChoreography(scope) {
@@ -625,40 +635,72 @@ export function initInteractions() {
     if (fab) fabPress(fab);
   }, true);
 
-  // 3D tilt on cards
-  const tiltSelector = '.nx-card, .nx-stat-card, .nx-hero-stat, .bl-card, .bl-stat-card, .bl-hero-stat, .stat-card, .prep-card';
-  document.addEventListener('pointermove', e => {
+  // 3D tilt on cards — RAF-throttled + distance guard
+  var tiltSelector = '.nx-card, .nx-stat-card, .nx-hero-stat, .bl-card, .bl-stat-card, .bl-hero-stat, .stat-card, .prep-card';
+  var _tiltTick = false;
+  var _tiltCard = null;
+  var _tiltX = 0, _tiltY = 0;
+  document.addEventListener('pointermove', function(e) {
     if (!(e.target instanceof Element)) return;
-    const card = e.target.closest(tiltSelector);
+    var card = e.target.closest(tiltSelector);
     if (!card) return;
-    const r = card.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    tiltCard3D(card, x, y);
+    _tiltCard = card;
+    _tiltX = e.clientX;
+    _tiltY = e.clientY;
+    if (!_tiltTick) {
+      _tiltTick = true;
+      requestAnimationFrame(function() {
+        if (_tiltCard) {
+          var r = _tiltCard.getBoundingClientRect();
+          var dx = Math.abs(_tiltX - r.left - r.width / 2);
+          var dy = Math.abs(_tiltY - r.top - r.height / 2);
+          if (dx < r.width / 2 + 40 && dy < r.height / 2 + 40) {
+            var x = (_tiltX - r.left) / r.width - 0.5;
+            var y = (_tiltY - r.top) / r.height - 0.5;
+            tiltCard3D(_tiltCard, x, y);
+          }
+        }
+        _tiltTick = false;
+      });
+    }
   }, { passive: true });
 
-  document.addEventListener('pointerleave', e => {
+  document.addEventListener('pointerleave', function(e) {
     if (!(e.target instanceof Element)) return;
-    const card = e.target.closest(tiltSelector);
+    var card = e.target.closest(tiltSelector);
     if (card) tiltCardReset(card);
   }, true);
 
-  // Magnetic buttons on [data-interactive] — only target element under cursor
-  document.addEventListener('pointermove', e => {
+  // Magnetic buttons on [data-interactive] — RAF-throttled
+  var _magTick = false;
+  var _magEl = null, _magX = 0, _magY = 0;
+  document.addEventListener('pointermove', function(e) {
     if (!(e.target instanceof Element)) return;
-    const el = e.target.closest('[data-interactive]');
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 80) {
-      const force = (1 - dist / 80) * 0.3;
-      el.style.transform = 'translate(' + (dx * force) + 'px,' + (dy * force) + 'px)';
-    } else {
-      el.style.transform = '';
+    var el = e.target.closest('[data-interactive]');
+    _magEl = el;
+    _magX = e.clientX;
+    _magY = e.clientY;
+    if (!_magTick && el) {
+      _magTick = true;
+      requestAnimationFrame(function() {
+        if (_magEl) {
+          var rect = _magEl.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var dx = _magX - cx;
+          var dy = _magY - cy;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 80) {
+            var force = (1 - dist / 80) * 0.3;
+            _magEl.style.transform = 'translate(' + (dx * force) + 'px,' + (dy * force) + 'px)';
+          } else {
+            _magEl.style.transform = '';
+          }
+        }
+        _magTick = false;
+      });
+    } else if (!el) {
+      _magEl = null;
     }
   }, { passive: true });
 
@@ -675,33 +717,38 @@ export function initInteractions() {
     setTimeout(function() { ripple.remove(); }, 600);
   }, true);
 
-  // Bloom parallax cards — cached
-  let _parallaxTick = false;
-  let _bloomCards = null;
-  let _bloomCardsTime = 0;
-  document.addEventListener('pointermove', e => {
+  // Bloom parallax cards — cached + viewport-culled
+  var _parallaxTick = false;
+  var _bloomCards = null;
+  var _bloomCardsTime = 0;
+  document.addEventListener('pointermove', function(e) {
     if (_parallaxTick) return;
     _parallaxTick = true;
     requestAnimationFrame(function() {
-      const theme = document.documentElement.getAttribute('data-theme');
+      var theme = document.documentElement.getAttribute('data-theme');
       if (theme === 'bloom') {
-        const now = Date.now();
+        var now = Date.now();
         if (!_bloomCards || now - _bloomCardsTime > 2000) {
           _bloomCards = document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat');
           _bloomCardsTime = now;
         }
-        _bloomCards.forEach(function(card) {
-          const rect = card.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          const offsetX = (e.clientX - centerX) * 0.015;
-          const offsetY = (e.clientY - centerY) * 0.015;
-          if (Math.abs(e.clientX - centerX) < 300 && Math.abs(e.clientY - centerY) < 300) {
+        var vh = window.innerHeight;
+        for (var i = 0; i < _bloomCards.length; i++) {
+          var card = _bloomCards[i];
+          var rect = card.getBoundingClientRect();
+          if (rect.bottom < -50 || rect.top > vh + 50) { card.style.transform = ''; continue; }
+          var centerX = rect.left + rect.width / 2;
+          var centerY = rect.top + rect.height / 2;
+          var dxC = Math.abs(e.clientX - centerX);
+          var dyC = Math.abs(e.clientY - centerY);
+          if (dxC < 300 && dyC < 300) {
+            var offsetX = (e.clientX - centerX) * 0.015;
+            var offsetY = (e.clientY - centerY) * 0.015;
             card.style.transform = 'translate(' + (-offsetX) + 'px,' + (-offsetY) + 'px) translateY(-2px)';
           } else {
             card.style.transform = '';
           }
-        });
+        }
       }
       _parallaxTick = false;
     });

@@ -26,13 +26,14 @@
 
   function initDots() {
     dots = [];
-    const cols = Math.ceil(width / SPACING) + 1;
-    const rows = Math.ceil(height / SPACING) + 1;
+    const spacing = width < 768 ? 60 : SPACING;
+    const cols = Math.ceil(width / spacing) + 1;
+    const rows = Math.ceil(height / spacing) + 1;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         dots.push({
-          baseX: c * SPACING, baseY: r * SPACING,
-          x: c * SPACING, y: r * SPACING,
+          baseX: c * spacing, baseY: r * spacing,
+          x: c * spacing, y: r * spacing,
           phase: Math.random() * Math.PI * 2,
           size: DOT_BASE_SIZE
         });
@@ -42,7 +43,8 @@
 
   function initPollen() {
     pollen = [];
-    for (let i = 0; i < 25; i++) {
+    const count = width < 768 ? 12 : 25;
+    for (let i = 0; i < count; i++) {
       pollen.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -58,7 +60,8 @@
 
   function initButterflies() {
     butterflies = [];
-    for (let i = 0; i < 5; i++) {
+    const count = width < 768 ? 2 : 5;
+    for (let i = 0; i < count; i++) {
       butterflies.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -72,6 +75,7 @@
     }
   }
 
+  let _resizeTimer = null;
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
@@ -80,23 +84,28 @@
     initButterflies();
   }
 
+  function debouncedResize() {
+    if (_resizeTimer) clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(resize, 200);
+  }
+
   function draw() {
     if (!active) return;
     ctx.clearRect(0, 0, width, height);
     time++;
 
-    // Dot grid with breathing and repulsion
     for (const dot of dots) {
       const breathScale = 1 + Math.sin(time * BREATH_SPEED + dot.phase) * BREATH_AMOUNT;
       const dx = dot.baseX - mouseX;
       const dy = dot.baseY - mouseY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const distSq = dx * dx + dy * dy;
 
       let offsetX = 0, offsetY = 0;
       let alpha = BASE_ALPHA;
       let size = dot.size * breathScale;
 
-      if (dist < REPULSION_RADIUS && dist > 0) {
+      if (distSq < REPULSION_RADIUS * REPULSION_RADIUS && distSq > 0) {
+        const dist = Math.sqrt(distSq);
         const force = (1 - dist / REPULSION_RADIUS) * REPULSION_FORCE;
         offsetX = (dx / dist) * force;
         offsetY = (dy / dist) * force;
@@ -113,17 +122,17 @@
       ctx.fill();
     }
 
-    // Organic connections between nearby dots (with early exit optimization)
     const maxDist = SPACING * 1.2;
+    const maxDistSq = maxDist * maxDist;
     for (let i = 0; i < dots.length; i++) {
       for (let j = i + 1; j < dots.length; j++) {
         const dx = dots[i].x - dots[j].x;
         if (Math.abs(dx) > maxDist) continue;
         const dy = dots[i].y - dots[j].y;
         if (Math.abs(dy) > maxDist) continue;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.04;
+        const distSq = dx * dx + dy * dy;
+        if (distSq < maxDistSq) {
+          const alpha = (1 - Math.sqrt(distSq) / maxDist) * 0.04;
           ctx.beginPath();
           ctx.moveTo(dots[i].x, dots[i].y);
           ctx.lineTo(dots[j].x, dots[j].y);
@@ -134,7 +143,6 @@
       }
     }
 
-    // Floating pollen
     for (const p of pollen) {
       p.x += p.vx + Math.sin(time * 0.005 + p.phase) * 0.3;
       p.y += p.vy;
@@ -157,7 +165,6 @@
       ctx.fill();
     }
 
-    // Butterflies
     for (const b of butterflies) {
       const dx = b.targetX - b.x;
       const dy = b.targetY - b.y;
@@ -177,7 +184,6 @@
       ctx.translate(b.x, b.y);
       ctx.rotate(bodyAngle);
 
-      // Wings
       ctx.beginPath();
       ctx.ellipse(-b.size * 0.3, wingSpread * 0.5, b.size * 0.6, Math.abs(wingSpread) * 0.5, 0, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha * 0.6})`;
@@ -188,7 +194,6 @@
       ctx.fillStyle = `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha * 0.6})`;
       ctx.fill();
 
-      // Body
       ctx.beginPath();
       ctx.ellipse(0, 0, b.size * 0.4, b.size * 0.15, 0, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${b.color[0]},${b.color[1]},${b.color[2]},${b.alpha})`;
@@ -197,7 +202,6 @@
       ctx.restore();
     }
 
-    // Cursor glow
     if (mouseX > 0 && mouseY > 0) {
       const glow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, REPULSION_RADIUS);
       glow.addColorStop(0, 'rgba(107,144,128,0.06)');
@@ -207,16 +211,14 @@
       ctx.fillRect(mouseX - REPULSION_RADIUS, mouseY - REPULSION_RADIUS, REPULSION_RADIUS * 2, REPULSION_RADIUS * 2);
     }
 
-    // Particle system from cursor engine
     window.cursorEngine?.updateParticles?.();
-
     animId = requestAnimationFrame(draw);
   }
 
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-  });
+  }, { passive: true });
 
   window.gridBloom = {
     start: function() { active = true; resize(); draw(); },
@@ -224,5 +226,5 @@
     resize: resize
   };
 
-  window.addEventListener('resize', () => { if (active) resize(); });
+  window.addEventListener('resize', () => { if (active) debouncedResize(); });
 })();

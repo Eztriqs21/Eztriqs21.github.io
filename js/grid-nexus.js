@@ -26,7 +26,8 @@
 
   function initFloatingParticles() {
     floatingParticles = [];
-    for (let i = 0; i < 40; i++) {
+    const count = width < 768 ? 20 : 40;
+    for (let i = 0; i < count; i++) {
       floatingParticles.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -41,7 +42,8 @@
 
   function initDataStreams() {
     dataStreams = [];
-    for (let i = 0; i < 8; i++) {
+    const count = width < 768 ? 4 : 8;
+    for (let i = 0; i < count; i++) {
       dataStreams.push({
         x: Math.random() * width,
         y: -Math.random() * height,
@@ -53,11 +55,17 @@
     }
   }
 
+  let _resizeTimer = null;
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
     initFloatingParticles();
     initDataStreams();
+  }
+
+  function debouncedResize() {
+    if (_resizeTimer) clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(resize, 200);
   }
 
   function draw() {
@@ -69,7 +77,6 @@
     const centerX = width / 2;
     offset = (offset + SCROLL_SPEED) % GRID_SPACING;
 
-    // Horizontal lines (perspective)
     const numHLines = 30;
     for (let i = 0; i <= numHLines; i++) {
       const t = i / numHLines;
@@ -91,7 +98,6 @@
       ctx.stroke();
     }
 
-    // Vertical lines (converging)
     const numVLines = 24;
     for (let i = -numVLines / 2; i <= numVLines / 2; i++) {
       const bottomX = centerX + i * GRID_SPACING * 2;
@@ -109,7 +115,6 @@
       ctx.stroke();
     }
 
-    // Grid dots
     for (let i = 0; i <= numHLines; i++) {
       const t = i / numHLines;
       const y = horizonY + (height - horizonY) * Math.pow(t, 1.5);
@@ -139,7 +144,6 @@
       }
     }
 
-    // Floating particles
     for (const p of floatingParticles) {
       p.x += p.vx + Math.sin(time * 0.01 + p.phase) * 0.1;
       p.y += p.vy;
@@ -162,7 +166,6 @@
       ctx.fill();
     }
 
-    // Data streams (matrix-like)
     ctx.font = '10px JetBrains Mono, monospace';
     for (const s of dataStreams) {
       s.y += s.speed;
@@ -178,7 +181,6 @@
       }
     }
 
-    // Horizontal scan line
     scanY = (scanY + 0.5) % height;
     const scanGrad = ctx.createLinearGradient(0, scanY - 2, 0, scanY + 2);
     scanGrad.addColorStop(0, 'rgba(0,240,255,0)');
@@ -187,7 +189,6 @@
     ctx.fillStyle = scanGrad;
     ctx.fillRect(0, scanY - 2, width, 4);
 
-    // Cursor glow
     if (mouseX > 0 && mouseY > 0) {
       const glow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, GLOW_RADIUS);
       glow.addColorStop(0, 'rgba(0,240,255,0.08)');
@@ -197,16 +198,14 @@
       ctx.fillRect(mouseX - GLOW_RADIUS, mouseY - GLOW_RADIUS, GLOW_RADIUS * 2, GLOW_RADIUS * 2);
     }
 
-    // Particle system from cursor engine
     window.cursorEngine?.updateParticles?.();
-
     animId = requestAnimationFrame(draw);
   }
 
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-  });
+  }, { passive: true });
 
   window.gridNexus = {
     start: function() { active = true; resize(); draw(); },
@@ -214,5 +213,5 @@
     resize: resize
   };
 
-  window.addEventListener('resize', () => { if (active) resize(); });
+  window.addEventListener('resize', () => { if (active) debouncedResize(); });
 })();
