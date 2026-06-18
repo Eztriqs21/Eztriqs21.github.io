@@ -77,13 +77,13 @@
     var pending = all.filter(function(a) { return !a.completed; });
     var done = all.filter(function(a) { return a.completed; });
     if (all.length === 0 && !_asnSearch) return emptyState();
-    return `<div class="${p}-section-block anim-entrance" style="--delay:0.2s">
+    return `<div class="${p}-section-block" style="--delay:0.2s">
       <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pending (${pending.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${pending.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">${_asnSearch ? 'No pending assignments match your search' : 'All caught up!'}</div></div>` : pending.map(function(a, i) { return assignmentCard(a, i); }).join('')}
       </div>
     </div>
-    <div class="${p}-section-block anim-entrance" style="--delay:0.3s">
+    <div class="${p}-section-block" style="--delay:0.3s">
       <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed (${done.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${done.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">No completed assignments yet</div></div>` : done.map(function(a, i) { return assignmentCard(a, i); }).join('')}

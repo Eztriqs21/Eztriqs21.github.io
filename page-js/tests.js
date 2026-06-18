@@ -55,7 +55,7 @@
 
   function testResultsHTML(tests) {
     const p = pfx();
-    return `<div class="${p}-section-block anim-entrance" style="--delay:0.2s">
+    return `<div class="${p}-section-block">
       <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Test History (${tests.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${tests.length === 0

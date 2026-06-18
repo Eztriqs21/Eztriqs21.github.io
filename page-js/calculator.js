@@ -274,6 +274,7 @@
     el.style.display = 'block';
     el.style.opacity = '1';
     el.innerHTML = buildCalcRes();
+    el.querySelectorAll('.anim-entrance').forEach(function(e) { e.style.opacity = '1'; e.classList.add('visible'); });
     if (window.animateAllEntrance) window.animateAllEntrance(el);
     setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
   }

@@ -372,23 +372,6 @@ export function animateAllEntrance(scope) {
   }
   if (!toAnim.length) return;
   for (var j = 0; j < toAnim.length; j++) toAnim[j].style.opacity = '0';
-  for (var b = 0; b < toAnim.length; b += 12) {
-    (function(start) {
-      for (var k = start; k < Math.min(start + 12, toAnim.length); k++) {
-        (function(el, idx) {
-          _M.animate(el, {
-            opacity: [0, 1],
-            transform: ['translateY(16px)', 'translateY(0px)']
-          }, { duration: 0.4, delay: idx * 0.04, easing: [0.34, 1.56, 0.64, 1] }).then(function() {
-            el.classList.add('visible');
-          }).catch(function() {
-            el.style.opacity = '1';
-            el.classList.add('visible');
-          });
-        })(toAnim[k], k);
-      }
-    })(b);
-  }
   setTimeout(function() {
     for (var s = 0; s < toAnim.length; s++) {
       if (toAnim[s] && toAnim[s].style && toAnim[s].style.opacity === '0') {
@@ -397,6 +380,29 @@ export function animateAllEntrance(scope) {
       }
     }
   }, 600);
+  for (var b = 0; b < toAnim.length; b += 12) {
+    (function(start) {
+      for (var k = start; k < Math.min(start + 12, toAnim.length); k++) {
+        (function(el, idx) {
+          try {
+            var p = _M.animate(el, {
+              opacity: [0, 1],
+              transform: ['translateY(16px)', 'translateY(0px)']
+            }, { duration: 0.4, delay: idx * 0.04, easing: [0.34, 1.56, 0.64, 1] }) || Promise.resolve();
+            p.then(function() {
+              el.classList.add('visible');
+            }).catch(function() {
+              el.style.opacity = '1';
+              el.classList.add('visible');
+            });
+          } catch(e) {
+            el.style.opacity = '1';
+            el.classList.add('visible');
+          }
+        })(toAnim[k], k);
+      }
+    })(b);
+  }
 }
 
 export function pageLoadChoreography(scope) {
@@ -411,10 +417,16 @@ export function pageLoadChoreography(scope) {
     if (card.style.opacity === '1' || card.classList.contains('visible')) continue;
     card.style.opacity = '0';
     (function(c, d) {
-      _M.animate(c, {
-        opacity: [0, 1],
-        transform: ['translateY(16px)', 'translateY(0px)']
-      }, { duration: 0.35, delay: d * 0.05, easing: [0.34, 1.56, 0.64, 1] });
+      try {
+        (_M.animate(c, {
+          opacity: [0, 1],
+          transform: ['translateY(16px)', 'translateY(0px)']
+        }, { duration: 0.35, delay: d * 0.05, easing: [0.34, 1.56, 0.64, 1] }) || Promise.resolve()).catch(function() {
+          c.style.opacity = '1';
+        });
+      } catch(e) {
+        c.style.opacity = '1';
+      }
     })(card, idx);
     idx++;
   }

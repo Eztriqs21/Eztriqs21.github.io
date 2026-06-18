@@ -51,7 +51,7 @@
     const total = filtered.length;
     const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
-    return `<div class="${p}-section-block anim-entrance">
+    return `<div class="${p}-section-block">
       <div class="${p}-section-title" style="cursor:pointer;display:flex;align-items:center;gap:8px" onclick="this.parentElement.classList.toggle('open')">
         ${info.icon} ${info.label}
         <span style="font-size:11px;color:var(--muted);margin-left:auto">${done}/${total} (${pct}%)</span>
