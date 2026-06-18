@@ -106,6 +106,7 @@
   window._dsTab = function(tab) {
     dsTab = tab;
     window.renderDoubts(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
     if (tab === 'chat') setTimeout(scrollChat, 50);
   };
 
@@ -246,5 +247,6 @@
     dsLoading = false;
     if (sendBtn) sendBtn.disabled = false;
     window.renderDoubts(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 })();

@@ -100,5 +100,6 @@
     rev[subj][topic] = rev[subj][topic] === 1 ? 0 : 1;
     revSave(rev);
     window.renderRevision(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 })();

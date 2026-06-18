@@ -136,6 +136,7 @@
     ch.completedAt = ch.completed ? new Date().toISOString() : null;
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 
   window.setMF = function(subj, id) {
@@ -147,6 +148,7 @@
     ch.strength = STRENGTH[(idx + 1) % STRENGTH.length];
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 
   window.togglePyq = function(subj, id) {
@@ -157,6 +159,7 @@
     ch.pyq = !ch.pyq;
     if (window.sv) window.sv('chapters');
     window.renderChapters(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 
   window._chSearchFn = function(val) {

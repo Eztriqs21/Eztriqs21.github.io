@@ -204,6 +204,7 @@
     if (window.cm) window.cm('m-study-session');
     startTimer();
     window.renderStudyLog(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
     if (window.toast) window.toast('Session started!');
   };
 
@@ -214,6 +215,7 @@
     saveSession();
     stopTimer();
     window.renderStudyLog(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 
   window._resumeSession = function() {
@@ -224,13 +226,14 @@
     saveSession();
     startTimer();
     window.renderStudyLog(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
   };
 
   window._stopSession = function() {
     if (!_session) return;
     var elapsed = getElapsed();
     var dur = Math.round((elapsed / 3600) * 10) / 10;
-    if (dur < 0.05) { if (window.toast) window.toast('Session too short to save'); _session = null; saveSession(); stopTimer(); window.renderStudyLog(document.getElementById('content-wrap')); return; }
+    if (dur < 0.05) { if (window.toast) window.toast('Session too short to save'); _session = null; saveSession(); stopTimer(); window.renderStudyLog(document.getElementById('content-wrap')); if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap')); return; }
     var DB = window.DB;
     if (!DB) return;
     if (!DB.studyLogs) DB.studyLogs = [];
@@ -247,6 +250,7 @@
     saveSession();
     stopTimer();
     window.renderStudyLog(document.getElementById('content-wrap'));
+    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
     if (window.toast) window.toast('Session saved! ' + dur + 'h logged');
   };
 
@@ -266,12 +270,14 @@
         DB.studyLogs = DB.studyLogs.filter(l => l.id !== id);
         if (window.sv) window.sv('studyLogs');
         window.renderStudyLog(document.getElementById('content-wrap'));
+        if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
         if (window.toast) window.toast('Session deleted');
       });
     } else {
       DB.studyLogs = DB.studyLogs.filter(l => l.id !== id);
       if (window.sv) window.sv('studyLogs');
       window.renderStudyLog(document.getElementById('content-wrap'));
+      if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
     }
   };
 

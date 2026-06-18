@@ -27,6 +27,8 @@ function _refreshPage() {
   };
   if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);
   else if (renderers[page]) renderers[page](el);
+  if (window.animateAllEntrance) window.animateAllEntrance(el);
+  if (window.animateAllCounters) window.animateAllCounters(el);
 }
 
 function cfm2(title, msg, onConfirm) {
