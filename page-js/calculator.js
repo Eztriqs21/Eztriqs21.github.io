@@ -367,6 +367,7 @@
     if (window.sv) window.sv('tests');
     if (window.cm) window.cm('m-save-calc-test');
     if (window.toast) window.toast('Test saved to history!');
+    if (window.PAGE === 'tests' && window.renderTests) window.renderTests(document.getElementById('content-wrap'));
   }
 
   function saveCalcAsMockTest() {
@@ -433,7 +434,7 @@
     return '<div class="' + p + '-card anim-entrance">' +
       '<div class="results-hero">' +
         '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px">Score Based on Answer Key</div>' +
-        '<div class="score-ring">' +
+        '<div class="' + p + '-score-ring">' +
           '<svg viewBox="0 0 100 100" style="transform:rotate(-90deg)">' +
             '<circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface2)" stroke-width="7"/>' +
             '<circle cx="50" cy="50" r="42" fill="none" stroke="' + scoreColor + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + sd2 + ' 264" style="transition:stroke-dasharray 1.2s ease"/>' +

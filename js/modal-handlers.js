@@ -17,7 +17,13 @@ function _refreshPage() {
     chapters: window.renderChapters,
     'study-log': window.renderStudyLog,
     'mock-tests': window.renderMockTests,
-    notes: window.renderNotes
+    notes: window.renderNotes,
+    analytics: window.renderAnalytics,
+    calculator: window.renderCalculator,
+    revision: window.renderRevision,
+    doubts: window.renderDoubts,
+    pyq: window.renderPYQ,
+    'score-analytics': window.renderScoreAnalytics
   };
   if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);
   else if (renderers[page]) renderers[page](el);
@@ -178,9 +184,11 @@ function saveTest() {
   if (testEntryMode === 'direct') {
     total = parseInt(document.getElementById('t-direct-marks').value) || 0;
     maxScore = parseInt(document.getElementById('t-direct-max').value) || 300;
-    p = { correct: 0, incorrect: 0, unattempted: 0 };
-    c = { correct: 0, incorrect: 0, unattempted: 0 };
-    m = { correct: 0, incorrect: 0, unattempted: 0 };
+    var estCorrect = Math.round(total / 4);
+    var estWrong = Math.max(0, Math.round((maxScore - total) / 4 - estCorrect * 0));
+    p = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.round((25 - estCorrect - estWrong) / 3) };
+    c = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.round((25 - estCorrect - estWrong) / 3) };
+    m = { correct: estCorrect - Math.round(estCorrect / 3) * 2, incorrect: estWrong - Math.round(estWrong / 3) * 2, unattempted: 25 - (estCorrect - Math.round(estCorrect / 3) * 2) - (estWrong - Math.round(estWrong / 3) * 2) };
   } else {
     p = { correct: gn('tp-c'), incorrect: gn('tp-w'), unattempted: gn('tp-s') };
     c = { correct: gn('tc-c'), incorrect: gn('tc-w'), unattempted: gn('tc-s') };
@@ -227,12 +235,13 @@ function setNoteType(t) {
 }
 
 function handleNoteFiles(files) {
-  rdFiles(files, function (obj) { window._pendingNoteFiles.push(obj); });
+  rdFiles(files, function (obj) { window._pendingNoteFiles.push(obj); if (window.refreshNoteFileList) window.refreshNoteFileList(); });
 }
 
 function closeNotesModal() {
   if (window._saveNoteFiles) window._saveNoteFiles();
   window.cm('m-notes');
+  _refreshPage();
 }
 
 /* ═══════════════ CHAPTERS ═══════════════ */
@@ -372,7 +381,7 @@ function saveDSSettings() {
   var provider = document.querySelector('.ds-prov-btn.on')?.dataset.prov || 'ollama';
   var apiKey = document.getElementById('ds-openai-key')?.value || '';
   var model = provider === 'ollama' ? (document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b') : (document.getElementById('ds-openai-model-ds')?.value || 'llama-3.3-70b-versatile');
-  var settings = { provider: provider, openaiKey: apiKey, openaiModel: model, ollamaUrl: document.getElementById('ds-ollama-url')?.value || 'http://localhost:11434', ollamaModel: document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b' };
+  var settings = { provider: provider, openaiKey: apiKey, openaiModel: model, ollamaUrl: document.getElementById('ds-ollama-url')?.value || 'http://localhost:11434', ollamaModel: document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b', useVision: document.getElementById('ds-use-vision')?.checked || false };
   if (window.aiService) window.aiService.saveSettings(settings);
   window.cm('m-ds-settings');
   toast('Settings saved!');

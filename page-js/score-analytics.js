@@ -12,14 +12,6 @@
     maths:     { label: 'Maths',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>', color: 'var(--accent)' }
   };
 
-  const ANALYTICS_DATA = {
-    tests: [
-      { name: 'Mock #1', date: new Date(Date.now() - 1296000000).toISOString(), physics: { correct: 18, incorrect: 3, unattempted: 4 }, chemistry: { correct: 22, incorrect: 2, unattempted: 1 }, maths: { correct: 13, incorrect: 6, unattempted: 6 }, total: 212, max: 300 },
-      { name: 'Mock #2', date: new Date(Date.now() - 432000000).toISOString(), physics: { correct: 20, incorrect: 2, unattempted: 3 }, chemistry: { correct: 22, incorrect: 1, unattempted: 2 }, maths: { correct: 16, incorrect: 4, unattempted: 5 }, total: 244, max: 300 },
-      { name: 'Mock #3', date: new Date(Date.now() - 86400000).toISOString(), physics: { correct: 17, incorrect: 2, unattempted: 6 }, chemistry: { correct: 21, incorrect: 1, unattempted: 3 }, maths: { correct: 12, incorrect: 4, unattempted: 9 }, total: 98, max: 198 }
-    ]
-  };
-
   function trendLineChart(data) {
     const p = pfx();
     const w = 400, h = 140, pad = 24;
@@ -92,7 +84,6 @@
   window.renderScoreAnalytics = function(el) {
     if (!el) return;
     const p = pfx();
-    const data = ANALYTICS_DATA.tests;
     const DB = window.DB;
     const allTests = (DB && DB.tests && DB.tests.length > 0) ? DB.tests : [];
     if (allTests.length === 0) {

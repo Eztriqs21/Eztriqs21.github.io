@@ -412,7 +412,7 @@ export function pageLoadChoreography(scope) {
 }
 
 export function chartChoreography(scope) {
-  scope.querySelectorAll('.bar-fill').forEach((bar, i) => {
+  scope.querySelectorAll('.bar-fill, [class*="-bar-fill"]').forEach((bar, i) => {
     const h = bar.style.height;
     barChartGrow(bar, h, i * 0.06);
   });

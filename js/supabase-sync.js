@@ -221,7 +221,7 @@ export async function pullFromSupabase(){
 }
 function autoSync(){
   if(!supaClient||!supaConfig||!currentSyncKey)return;
-  flushSyncQueue();
+  pushToSupabase().catch(function(e){console.warn('autoSync push failed:',e);});
 }
 
 /* ═══════════════ WINDOW EXPORTS ═══════════════ */

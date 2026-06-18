@@ -31,7 +31,7 @@ import { barChartGrow, svgLineDraw, svgCirclePop, progressBarFill as animProgres
 
 export function animateBarCharts(scope){
   if(!shouldAnimate())return;
-  scope.querySelectorAll('.bar-fill').forEach((bar,i)=>{
+  scope.querySelectorAll('.bar-fill, [class*="-bar-fill"]').forEach((bar,i)=>{
     const h=bar.style.height;
     barChartGrow(bar,h,i*.06);
   });
@@ -200,9 +200,9 @@ export function setupDZ(dzId,inpId,cb){
   const dz=document.getElementById(dzId);if(!dz)return;
   const inp=document.getElementById(inpId);
   if(inp)dz.onclick=function(){inp.click();};
-  dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragging');};
-  dz.ondragleave=function(){dz.classList.remove('dragging');};
-  dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragging');if(e.dataTransfer&&e.dataTransfer.files)cb(e.dataTransfer.files);};
+  dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover');};
+  dz.ondragleave=function(){dz.classList.remove('dragover');};
+  dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer&&e.dataTransfer.files)cb(e.dataTransfer.files);};
 }
 export function safePct(num,den){if(!den||!num)return 0;return Math.round(Math.min(100,Math.max(0,num/den*100)));}
 export function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}

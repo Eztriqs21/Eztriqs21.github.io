@@ -188,7 +188,7 @@ export function defaultAssignments(){return[
   {id:'a1',title:'Physics DPP — Rotational Motion',description:'Solve all 25 problems.',priority:'high',completed:false,attachments:[],createdAt:new Date(Date.now()-86400000).toISOString()},
 ];}
 export function defaultTests(){return[
-  {id:'t1',name:'Full Mock Test #1',date:new Date(Date.now()-604800000).toISOString(),physics:{correct:18,incorrect:5,unattempted:2},chemistry:{correct:20,incorrect:3,unattempted:2},maths:{correct:15,incorrect:7,unattempted:3},totalScore:212,maxScore:300,papers:[],timing:{total:175,physics:55,chemistry:45,maths:75},syllabus:{physics:['p1','p2','p3'],chemistry:['c1','c2'],maths:['m1','m2']}}
+  {id:'t1',name:'Full Mock Test #1',date:new Date(Date.now()-604800000).toISOString(),physics:{correct:18,incorrect:5,unattempted:2},chemistry:{correct:20,incorrect:3,unattempted:2},maths:{correct:15,incorrect:7,unattempted:3},totalScore:197,maxScore:300,papers:[],timing:{total:175,physics:55,chemistry:45,maths:75},syllabus:{physics:['p1','p2','p3'],chemistry:['c1','c2'],maths:['m1','m2']}}
 ];}
 export function findCh(subj,id){return DB.chapters[subj]?.find(c=>c.id===id);}
 
