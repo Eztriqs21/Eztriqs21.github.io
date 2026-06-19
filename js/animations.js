@@ -692,9 +692,9 @@ export function initMouseParticles() {
   if (!ctx) return;
 
   var particles = [];
-  var maxParticles = 30;
+  var maxParticles = 15;
   var lastSpawn = 0;
-  var spawnInterval = 70;
+  var spawnInterval = 120;
   var mouseX = -100, mouseY = -100;
   var isMoving = false;
   var moveTimer = null;

@@ -241,7 +241,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .anim-entrance { opacity: 1 !important; transform: none !important; }
   .amb-float { opacity: 0 !important; display: none !important; }
   #mouse-particles { display: none !important; }
-  body::before { animation: none !important; }
 }
 
 /* ═══════════════ UTILITY ═══════════════ */
@@ -665,7 +664,6 @@ body::before {
   z-index: -2;
   pointer-events: none;
   opacity: 0.6;
-  will-change: background-position;
   transition: opacity 0.8s ease;
 }
 
@@ -674,7 +672,6 @@ body::before {
     radial-gradient(ellipse 600px 500px at 15% 20%, rgba(0,240,255,0.06), transparent),
     radial-gradient(ellipse 500px 600px at 85% 75%, rgba(168,85,247,0.05), transparent),
     radial-gradient(ellipse 700px 400px at 50% 50%, rgba(0,80,120,0.04), transparent);
-  animation: mesh-drift 25s ease-in-out infinite;
 }
 
 [data-theme="bloom"] body::before {
@@ -682,7 +679,6 @@ body::before {
     radial-gradient(ellipse 600px 500px at 20% 25%, rgba(107,144,128,0.06), transparent),
     radial-gradient(ellipse 500px 600px at 80% 70%, rgba(224,122,95,0.04), transparent),
     radial-gradient(ellipse 700px 400px at 50% 50%, rgba(196,168,130,0.04), transparent);
-  animation: mesh-drift 30s ease-in-out infinite;
 }
 
 [data-theme="nebula"] body::before {
@@ -690,15 +686,6 @@ body::before {
     radial-gradient(ellipse 600px 500px at 10% 30%, rgba(140,122,230,0.07), transparent),
     radial-gradient(ellipse 500px 600px at 90% 65%, rgba(232,107,138,0.05), transparent),
     radial-gradient(ellipse 700px 400px at 50% 50%, rgba(106,232,176,0.03), transparent);
-  animation: mesh-drift 22s ease-in-out infinite;
-}
-
-@keyframes mesh-drift {
-  0%   { background-position: 0% 0%, 100% 100%, 50% 50%; }
-  25%  { background-position: 20% 30%, 80% 60%, 40% 60%; }
-  50%  { background-position: 40% 10%, 60% 90%, 60% 40%; }
-  75%  { background-position: 10% 40%, 90% 30%, 50% 70%; }
-  100% { background-position: 0% 0%, 100% 100%, 50% 50%; }
 }
 
 /* ═══════════════ AMBIENT FLOATING ELEMENTS ═══════════════ */
@@ -708,26 +695,24 @@ body::before {
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
-  will-change: transform;
 }
 
 .amb-float {
   position: absolute;
   border-radius: 50%;
   opacity: 0;
-  will-change: transform, opacity;
   animation: float-drift var(--dur, 20s) ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
 
 [data-theme="nexus"] .amb-float {
-  background: radial-gradient(circle, rgba(0,240,255,0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(0,240,255,0.2), transparent 70%);
 }
 [data-theme="bloom"] .amb-float {
-  background: radial-gradient(circle, rgba(107,144,128,0.2), transparent 70%);
+  background: radial-gradient(circle, rgba(107,144,128,0.18), transparent 70%);
 }
 [data-theme="nebula"] .amb-float {
-  background: radial-gradient(circle, rgba(140,122,230,0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(140,122,230,0.2), transparent 70%);
 }
 
 .amb-float.diamond {
