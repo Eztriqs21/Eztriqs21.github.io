@@ -24,11 +24,9 @@ function _refreshPage() {
     chapters: window.renderChapters,
     'study-log': window.renderStudyLog,
     'mock-tests': window.renderMockTests,
-    notes: window.renderNotes,
-    analytics: window.renderAnalytics,
+  analytics: window.renderAnalytics,
     calculator: window.renderCalculator,
-    revision: window.renderRevision,
-    doubts: window.renderDoubts,
+
     pyq: window.renderPYQ,
     'score-analytics': window.renderScoreAnalytics
   };
@@ -196,30 +194,6 @@ function saveTest() {
   _refreshPage();
 }
 
-/* ═══════════════ CALCULATOR ═══════════════ */
-/* ═══════════════ NOTES ═══════════════ */
-window._pendingNoteFiles = [];
-window._currentNoteType = 'detailed';
-
-function setNoteType(t) {
-  window._currentNoteType = t;
-  var detBtn = document.getElementById('note-type-det');
-  var revBtn = document.getElementById('note-type-rev');
-  var p = document.documentElement.getAttribute('data-theme') === 'bloom' ? 'bl' : 'nx';
-  if (detBtn) detBtn.className = p + '-btn ' + (t === 'detailed' ? p + '-btn-primary' : p + '-btn-ghost') + ' btn-sm';
-  if (revBtn) revBtn.className = p + '-btn ' + (t === 'revision' ? p + '-btn-primary' : p + '-btn-ghost') + ' btn-sm';
-}
-
-function handleNoteFiles(files) {
-  rdFiles(files, function (obj) { window._pendingNoteFiles.push(obj); if (window.refreshNoteFileList) window.refreshNoteFileList(); });
-}
-
-function closeNotesModal() {
-  if (window._saveNoteFiles) window._saveNoteFiles();
-  window.cm('m-notes');
-  _refreshPage();
-}
-
 /* ═══════════════ CHAPTERS ═══════════════ */
 function saveAddCh() {
   var DB = window.DB;
@@ -337,47 +311,6 @@ function saveMockTest() {
   _refreshPage();
 }
 
-/* ═══════════════ DOUBT SOLVER ═══════════════ */
-function dsSetProvider(prov) {
-  var btns = document.querySelectorAll('.ds-prov-btn');
-  btns.forEach(function (b) { b.classList.toggle('on', b.dataset.prov === prov); });
-  var groqSec = document.getElementById('ds-groq-section');
-  var ollamaSec = document.getElementById('ds-ollama-section');
-  if (groqSec) groqSec.style.display = prov === 'groq' ? 'block' : 'none';
-  if (ollamaSec) ollamaSec.style.display = prov === 'ollama' ? 'block' : 'none';
-  if (prov === 'ollama') fetchOllamaModels();
-}
-
-function fetchOllamaModels() {
-  var sel = document.getElementById('ds-ollama-model');
-  var urlEl = document.getElementById('ds-ollama-url');
-  var baseUrl = urlEl ? urlEl.value.trim() : 'http://localhost:11434';
-  if (!sel) return;
-  sel.innerHTML = '<option value="">Loading models...</option>';
-  fetch(baseUrl + '/api/tags', { method: 'GET', signal: AbortSignal.timeout(5000) })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      var models = (data.models || []).map(function (m) { return m.name; });
-      if (!models.length) { sel.innerHTML = '<option value="">No models found</option>'; return; }
-      sel.innerHTML = models.map(function (m) { return '<option value="' + esc(m) + '">' + esc(m) + '</option>'; }).join('');
-      var currentModel = document.getElementById('ds-ollama-model')?.getAttribute('data-current');
-      if (currentModel) sel.value = currentModel;
-    })
-    .catch(function () {
-      sel.innerHTML = '<option value="qwen2.5:3b">qwen2.5:3b (default)</option><option value="llama3.2:3b">llama3.2:3b</option>';
-    });
-}
-
-function saveDSSettings() {
-  var provider = document.querySelector('.ds-prov-btn.on')?.dataset.prov || 'ollama';
-  var apiKey = document.getElementById('ds-openai-key')?.value || '';
-  var model = provider === 'ollama' ? (document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b') : (document.getElementById('ds-openai-model-ds')?.value || 'llama-3.3-70b-versatile');
-  var settings = { provider: provider, openaiKey: apiKey, openaiModel: model, ollamaUrl: document.getElementById('ds-ollama-url')?.value || 'http://localhost:11434', ollamaModel: document.getElementById('ds-ollama-model')?.value || 'qwen2.5:3b', useVision: document.getElementById('ds-use-vision')?.checked || false };
-  if (window.aiService) window.aiService.saveSettings(settings);
-  window.cm('m-ds-settings');
-  toast('Settings saved!');
-}
-
 /* ═══════════════ GLOBAL EXPORTS ═══════════════ */
 window.setAP = setAP;
 window.handleAFiles = handleAFiles;
@@ -389,15 +322,11 @@ window.syncDirectToBreakdown = syncDirectToBreakdown;
 window.handleTFiles = handleTFiles;
 window.refreshTFileList = refreshTFileList;
 window.saveTest = saveTest;
-window.setNoteType = setNoteType;
-window.handleNoteFiles = handleNoteFiles;
-window.closeNotesModal = closeNotesModal;
+
 window.saveAddCh = saveAddCh;
 window.saveEditCh = saveEditCh;
 window.deleteEditCh = deleteEditCh;
 window.saveStudyLog = saveStudyLog;
 window.saveMockTest = saveMockTest;
-window.dsSetProvider = dsSetProvider;
-window.fetchOllamaModels = fetchOllamaModels;
-window.saveDSSettings = saveDSSettings;
+
 window._refreshPage = _refreshPage;

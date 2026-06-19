@@ -474,17 +474,6 @@ input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-even
 /* ═══════════════ MOCK TEST FORM ═══════════════ */
 .mt-form{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);}
 
-/* ═══════════════ NOTES ═══════════════ */
-.notes-sec-title{font-size:12px;font-weight:700;margin-bottom:var(--sp-2);text-transform:uppercase;letter-spacing:.04em;}
-
-
-
-/* ═══════════════ DOUBT SOLVER ═══════════════ */
-.ds-prov-btn.on{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
-.ds-tab{padding:var(--sp-2) var(--sp-3);border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .15s var(--ease);}
-.ds-tab.on{background:var(--accent-dim);color:var(--accent);border-color:var(--accent);}
-.ds-vision-lbl{transition:border-color .2s var(--ease),background .2s var(--ease);}
-
 /* ═══════════════ CONFIRM DIALOG ═══════════════ */
 .cfm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:600;display:flex;align-items:center;justify-content:center;padding:var(--sp-5);}
 .cfm-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp-6);max-width:320px;width:100%;text-align:center;box-shadow:var(--shadow-lg);}
