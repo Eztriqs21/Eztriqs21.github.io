@@ -483,6 +483,36 @@ export function initScrollAnimations() {
   }
 }
 
+/* ═══════════════ 3D CARD TILT (Nexus) ═══════════════ */
+
+export function initTilt() {
+  if (_reducedMq.matches) return;
+  let ticking = false;
+  document.addEventListener('mousemove', function(e) {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function() {
+      var theme = document.documentElement.getAttribute('data-theme');
+      if (theme !== 'nexus') { ticking = false; return; }
+
+      document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat').forEach(function(card) {
+        var rect = card.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+          var rotateX = ((y / rect.height) - 0.5) * -6;
+          var rotateY = ((x / rect.width) - 0.5) * 6;
+          card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
+        } else {
+          card.style.transform = '';
+        }
+      });
+      ticking = false;
+    });
+  }, { passive: true });
+}
+
 /* ═══════════════ STEP 13: LOADING STATES ═══════════════ */
 
 export function skeletonPulse(el) {
@@ -662,6 +692,9 @@ export function initInteractions() {
   document.addEventListener('focusout', e => {
     if (e.target.classList.contains('inp')) inputBlurRing(e.target);
   }, true);
+
+  // 3D card tilt (Nexus only)
+  initTilt();
 
   // Init scroll and accessibility
   initScrollAnimations();
