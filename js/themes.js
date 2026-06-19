@@ -1,5 +1,5 @@
-/* themes.js – 2-theme engine (nexus, bloom) */
-const themes = ['nexus', 'bloom'];
+/* themes.js – 3-theme engine (nexus, bloom, nebula) */
+const themes = ['nexus', 'bloom', 'nebula'];
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
 
@@ -18,9 +18,13 @@ export function applyTheme(i) {
     } else if (t === 'bloom' && window.gridBloom) {
       window.gridBloom.start();
       gridCanvas.classList.add('active');
+    } else if (t === 'nebula' && window.gridNebula) {
+      window.gridNebula.start();
+      gridCanvas.classList.add('active');
     } else {
       if (window.gridNexus) window.gridNexus.stop();
       if (window.gridBloom) window.gridBloom.stop();
+      if (window.gridNebula) window.gridNebula.stop();
       gridCanvas.classList.remove('active');
     }
   }
@@ -32,11 +36,13 @@ export function applyTheme(i) {
 
 export function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'nexus' ? 'bloom' : 'nexus';
+  const ci = themes.indexOf(current);
+  const next = themes[(ci + 1) % themes.length];
 
+  const flashColors = { nexus: '#00f0ff', bloom: '#fff', nebula: '#8C7AE6' };
   const flash = document.createElement('div');
   flash.className = 'theme-flash';
-  flash.style.cssText = `position:fixed;inset:0;z-index:10000;background:${next === 'nexus' ? '#00f0ff' : '#fff'};opacity:0;pointer-events:none;transition:opacity 0.5s;`;
+  flash.style.cssText = `position:fixed;inset:0;z-index:10000;background:${flashColors[next] || '#fff'};opacity:0;pointer-events:none;transition:opacity 0.5s;`;
   document.querySelectorAll('.theme-flash').forEach(f => f.remove());
   document.body.appendChild(flash);
   requestAnimationFrame(() => { flash.style.opacity = '0.5'; });

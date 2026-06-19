@@ -493,9 +493,9 @@ export function initTilt() {
     ticking = true;
     requestAnimationFrame(function() {
       var theme = document.documentElement.getAttribute('data-theme');
-      if (theme !== 'nexus') { ticking = false; return; }
+      if (theme !== 'nexus' && theme !== 'nebula') { ticking = false; return; }
 
-        document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat').forEach(function(card) {
+        document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat, .nb-card, .nb-stat-card, .nb-hero-stat').forEach(function(card) {
           if (card.hasAttribute('data-no-tilt')) return;
           var rect = card.getBoundingClientRect();
           var x = e.clientX - rect.left;

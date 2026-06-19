@@ -78,7 +78,8 @@
 
   function spawnClickParticles() {
     const theme = document.documentElement.getAttribute('data-theme');
-    const color = theme === 'nexus' ? '0,240,255' : '107,144,128';
+    const colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230' };
+    const color = colors[theme] || colors.nexus;
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI * 2 / 6) * i + Math.random() * 0.5;
       const vel = 1.5 + Math.random() * 2;
@@ -100,7 +101,8 @@
     if (now - lastParticleTime < 50 || speed < 3) return;
     lastParticleTime = now;
     const theme = document.documentElement.getAttribute('data-theme');
-    const color = theme === 'nexus' ? '0,240,255' : '107,144,128';
+    const colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230' };
+    const color = colors[theme] || colors.nexus;
     particles.push({
       x: mouseX, y: mouseY,
       vx: (Math.random() - 0.5) * 0.5,
@@ -145,7 +147,7 @@
 
     hoverScale = lerp(hoverScale, targetHoverScale, 0.12);
 
-    if (theme === 'nexus') {
+    if (theme === 'nexus' || theme === 'nebula') {
       const ringLerp = isHovering ? 0.1 : 0.15;
       ringX = lerp(ringX, mouseX, ringLerp);
       ringY = lerp(ringY, mouseY, ringLerp);

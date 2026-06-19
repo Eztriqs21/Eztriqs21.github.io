@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const theme = document.documentElement.getAttribute('data-theme');
       if (theme === 'nexus') {
         window.gridNexus?.start();
+      } else if (theme === 'nebula') {
+        window.gridNebula?.start();
       } else {
         window.gridBloom?.start();
       }
@@ -39,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const theme = document.documentElement.getAttribute('data-theme');
     if (theme === 'nexus') {
       window.gridNexus?.start();
+    } else if (theme === 'nebula') {
+      window.gridNebula?.start();
     } else {
       window.gridBloom?.start();
     }

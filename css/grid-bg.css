@@ -69,3 +69,12 @@
 @media (max-width: 768px) {
   [data-theme="bloom"] #botanical-corners { display: none; }
 }
+
+/* ═══════════════ NEBULA CONSTELLATION ═══════════════ */
+[data-theme="nebula"] #scanline-overlay { display: none; }
+[data-theme="nebula"] #paper-texture { display: none; }
+[data-theme="nebula"] #botanical-corners { display: none; }
+
+[data-theme="nebula"] #grid-canvas {
+  opacity: 0.8;
+}

@@ -103,6 +103,47 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   --accent-bg: rgba(196, 168, 130, 0.08);
 }
 
+/* ═══════════════ NEBULA THEME ═══════════════ */
+[data-theme="nebula"] {
+  --font-heading: 'Fraunces', Georgia, serif;
+  --font-data: 'IBM Plex Mono', monospace;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --bg: #12102A;
+  --bg-surface: #1E1A3D;
+  --bg-card: rgba(140, 122, 230, 0.05);
+  --border-card: rgba(61, 53, 102, 0.5);
+  --border-hover: rgba(107, 94, 170, 0.6);
+  --primary: #8C7AE6;
+  --secondary: #E86B8A;
+  --accent: #6AE8B0;
+  --danger: #E85757;
+  --success: #6AE8B0;
+  --text: #EDE8F5;
+  --text-muted: #5A5278;
+  --glow-primary: 0 0 20px rgba(140, 122, 230, 0.3);
+  --glow-secondary: 0 0 20px rgba(232, 107, 138, 0.3);
+  --radius: 12px;
+  --radius-btn: 8px;
+  --shadow-card: 0 2px 12px rgba(18, 16, 42, 0.5), 0 0 0 1px rgba(61, 53, 102, 0.3);
+  --muted: var(--text-muted);
+  --border: var(--border-card);
+  --font-physics: #8C7AE6;
+  --font-chemistry: #E86B8A;
+  --font-maths: #6AE8B0;
+  --nav-bg: rgba(18, 16, 42, 0.85);
+  --nav-active-border: var(--primary);
+  --scrollbar-thumb: var(--primary);
+  --scrollbar-track: rgba(140, 122, 230, 0.05);
+  --sidebar-width: 240px;
+  --topbar-height: 70px;
+  --hover: rgba(140, 122, 230, 0.08);
+  --yellow: #E8A04A;
+  --yellow-dim: rgba(232, 160, 74, 0.1);
+  --green-dim: rgba(106, 232, 176, 0.1);
+  --glass: rgba(18, 16, 42, 0.8);
+  --accent-bg: rgba(140, 122, 230, 0.08);
+}
+
 /* ═══════════════ SCROLLBAR ═══════════════ */
 ::-webkit-scrollbar { width: 4px; }
 [data-theme="bloom"] ::-webkit-scrollbar { width: 6px; }
@@ -259,8 +300,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .theme-btn:active { transform: scale(0.9); }
 
 /* Theme icon visibility */
-[data-theme="nexus"] .icon-bloom { display: none; }
-[data-theme="bloom"] .icon-nexus { display: none; }
+[data-theme="nexus"] .icon-bloom, [data-theme="nexus"] .icon-nebula { display: none; }
+[data-theme="bloom"] .icon-nexus, [data-theme="bloom"] .icon-nebula { display: none; }
+[data-theme="nebula"] .icon-nexus, [data-theme="nebula"] .icon-bloom { display: none; }
 
 /* Page title */
 .page-title-wrap { flex: 1; }
@@ -370,6 +412,12 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }
 #preloader-nexus { background: #0a0a0a; }
 #preloader-bloom { background: var(--bg); }
+#preloader-nebula { background: #12102A; }
+#preloader-nebula .nebula-constellation { position: relative; width: 200px; height: 200px; }
+#preloader-nebula .nebula-star { position: absolute; width: 4px; height: 4px; background: #8C7AE6; border-radius: 50%; animation: nebula-pulse 2s ease-in-out infinite; }
+#preloader-nebula .nebula-line { position: absolute; height: 1px; background: linear-gradient(90deg, transparent, rgba(140,122,230,0.4), transparent); transform-origin: left center; }
+#preloader-nebula .boot-text { color: #8C7AE6; font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.8; padding: 20px; }
+@keyframes nebula-pulse { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.5); } }
 .boot-text { color: #0f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; padding: 20px; }
 .boot-line { display: block; }
 .boot-cursor { color: #0f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; animation: boot-blink 0.8s infinite; margin-top: 8px; }
@@ -400,6 +448,16 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   --orange: #c4a882;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06); --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+[data-theme="nebula"] {
+  --surface3: rgba(140, 122, 230, 0.08);
+  --accent-dim: rgba(140, 122, 230, 0.08);
+  --ghost: rgba(140, 122, 230, 0.15); --faint: rgba(237, 232, 245, 0.3);
+  --red-dim: rgba(232, 87, 87, 0.1);
+  --phys-dim: rgba(140, 122, 230, 0.08);
+  --orange: #E8A04A;
+  --shadow-sm: 0 1px 3px rgba(18, 16, 42, 0.4); --shadow-md: 0 4px 12px rgba(18, 16, 42, 0.5);
+  --shadow-lg: 0 8px 32px rgba(18, 16, 42, 0.6);
 }
 [data-theme="bloom"] .btn-primary { color: #1a1a1a; }
 
