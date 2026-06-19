@@ -581,11 +581,13 @@ function initThemeAnimations(scope) {
     }
   }
 
+  var prefix = p;
+
   var themeObserver = new IntersectionObserver(function(entries) {
     for (var j = 0; j < entries.length; j++) {
       if (entries[j].isIntersecting) {
         var el = entries[j].target;
-        el.classList.add(theme + '-anim-active');
+        el.classList.add(prefix + '-anim-active');
         themeObserver.unobserve(el);
       }
     }
