@@ -2,7 +2,7 @@
 (function() {
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
+  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : 'fd'; }
 
   function heroStat(val, label, color, delay) {
     const p = pfx();

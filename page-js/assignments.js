@@ -4,7 +4,7 @@
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { return getTheme() === 'nexus' ? 'nx' : 'bl'; }
+  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : 'fd'; }
 
   const PRIORITY = {
     high:   { label: 'High',   color: 'var(--danger)',  bg: 'var(--red-dim)' },

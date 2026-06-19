@@ -46,7 +46,7 @@ var aPriority = 'none';
 
 function setAP(pri) {
   aPriority = pri;
-  var p = (function() { var t = document.documentElement.getAttribute('data-theme'); return t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : 'nx'; })();
+  var p = (function() { var t = document.documentElement.getAttribute('data-theme'); return t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'forge' ? 'fd' : 'nx'; })();
   ['none', 'high', 'medium', 'low'].forEach(function (p2) {
     var id = { none: 'ap-none', high: 'ap-hi', medium: 'ap-med', low: 'ap-lo' }[p2];
     var btn = document.getElementById(id);
@@ -102,7 +102,7 @@ function setTestMode(mode) {
   testEntryMode = mode;
   var dBtn = document.getElementById('tm-direct'), bBtn = document.getElementById('tm-breakdown');
   var dSec = document.getElementById('test-mode-direct'), bSec = document.getElementById('test-mode-breakdown');
-  var p = (function() { var t = document.documentElement.getAttribute('data-theme'); return t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : 'nx'; })();
+  var p = (function() { var t = document.documentElement.getAttribute('data-theme'); return t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'forge' ? 'fd' : 'nx'; })();
   if (mode === 'direct') {
     if (dBtn) { dBtn.className = p + '-btn ' + p + '-btn-primary btn-sm'; dBtn.style.cssText = 'flex:1;text-align:center'; }
     if (bBtn) { bBtn.className = p + '-btn ' + p + '-btn-ghost btn-sm'; bBtn.style.cssText = 'flex:1;text-align:center'; }

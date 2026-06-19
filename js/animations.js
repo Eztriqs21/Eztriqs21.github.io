@@ -400,10 +400,10 @@ export function animateAllEntrance(scope) {
 
 export function pageLoadChoreography(scope) {
   if (noMotion()) {
-    scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card').forEach(c => c.style.opacity = '1');
+    scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .bl-stat-card, .bl-card, .bl-list-item, .nb-stat-card, .nb-card, .nb-list-item, .fd-stat-card, .fd-card, .fd-list-item, .test-card, .mt-card, .prep-card, .freq-card').forEach(c => c.style.opacity = '1');
     return;
   }
-  var cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .test-card, .mt-card, .prep-card, .freq-card');
+  var cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .bl-stat-card, .bl-card, .bl-list-item, .nb-stat-card, .nb-card, .nb-list-item, .fd-stat-card, .fd-card, .fd-list-item, .test-card, .mt-card, .prep-card, .freq-card');
   var idx = 0;
   for (var i = 0; i < cards.length; i++) {
     var card = cards[i];
@@ -446,7 +446,7 @@ export function initScrollAnimations() {
   if (noMotion()) return;
 
   // Section reveal on scroll with depth stagger
-  var sections = document.querySelectorAll('.nx-section-block, .nx-card, .section-block, .gc, .bl-card, .nb-card');
+  var sections = document.querySelectorAll('.nx-section-block, .nx-card, .section-block, .gc, .bl-card, .nb-card, .fd-card, .fd-section-block');
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
@@ -500,9 +500,9 @@ export function initTilt() {
     ticking = true;
     requestAnimationFrame(function() {
       var theme = document.documentElement.getAttribute('data-theme');
-      if (theme !== 'nexus' && theme !== 'nebula') { ticking = false; return; }
+      if (theme !== 'nexus' && theme !== 'nebula' && theme !== 'forge') { ticking = false; return; }
 
-        document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat, .nb-card, .nb-stat-card, .nb-hero-stat').forEach(function(card) {
+        document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat, .nb-card, .nb-stat-card, .nb-hero-stat, .fd-card, .fd-stat-card, .fd-hero-stat').forEach(function(card) {
           if (card.hasAttribute('data-no-tilt')) return;
           var rect = card.getBoundingClientRect();
           var x = e.clientX - rect.left;
