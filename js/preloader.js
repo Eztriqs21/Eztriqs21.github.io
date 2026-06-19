@@ -1,21 +1,54 @@
 (function() {
-  const preloader = document.getElementById('preloader');
-  const nexusScreen = document.getElementById('preloader-nexus');
-  const bloomScreen = document.getElementById('preloader-bloom');
-  const nebulaScreen = document.getElementById('preloader-nebula');
-  const forgeScreen = document.getElementById('preloader-forge');
-  
+  var preloader = document.getElementById('preloader');
+  var nexusScreen = document.getElementById('preloader-nexus');
+  var bloomScreen = document.getElementById('preloader-bloom');
+  var nebulaScreen = document.getElementById('preloader-nebula');
+  var forgeScreen = document.getElementById('preloader-forge');
+
   if (!preloader) return;
-  
-  const NEXUS_BOOT_LINES = [
+
+  var NEXUS_BOOT_LINES = [
     'NEXUS v2.0',
     'INITIALIZING DASHBOARD...',
     'LOADING MODULES...',
     'SYNCING DATA...',
     'READY.'
   ];
-  
-  let _preloaderTimers = [];
+
+  var THEME_QUOTES = {
+    nexus: [
+      { text: 'Logic is the beginning of wisdom.', author: 'Aristotle' },
+      { text: 'First, solve the problem. Then, write the code.', author: 'John Johnson' },
+      { text: 'In the middle of difficulty lies opportunity.', author: 'Albert Einstein' },
+      { text: 'The only way to do great work is to love what you do.', author: 'Steve Jobs' },
+      { text: 'Code is poetry written in logic.', author: 'Unknown' }
+    ],
+    bloom: [
+      { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
+      { text: 'Growth is never by mere chance; it is the result of forces working together.', author: 'James Cash Penney' },
+      { text: 'Every moment is a fresh beginning.', author: 'T.S. Eliot' },
+      { text: 'Bloom where you are planted.', author: 'Mary Engelbreit' },
+      { text: 'The journey of a thousand miles begins with a single step.', author: 'Lao Tzu' }
+    ],
+    nebula: [
+      { text: 'Somewhere, something incredible is waiting to be known.', author: 'Carl Sagan' },
+      { text: 'The universe is under no obligation to make sense to you.', author: 'Neil deGrasse Tyson' },
+      { text: 'We are all made of starstuff.', author: 'Carl Sagan' },
+      { text: 'Ad astra per aspera — through hardships to the stars.', author: 'Latin Proverb' },
+      { text: 'Not only is the universe stranger than we imagine, it is stranger than we can imagine.', author: 'J.B.S. Haldane' }
+    ],
+    forge: [
+      { text: 'The smith who masters the flame shapes the steel.', author: 'Japanese Proverb' },
+      { text: 'Excellence is not a skill. It is an attitude.', author: 'Ralph Marston' },
+      { text: 'The iron is hot — strike while you can.', author: 'English Proverb' },
+      { text: 'Pressure makes diamonds.', author: 'George S. Patton' },
+      { text: 'A diamond is a chunk of coal that did well under pressure.', author: 'Henry A. Kissinger' }
+    ]
+  };
+
+  var _quoteIdx = { nexus: 0, bloom: 0, nebula: 0, forge: 0 };
+
+  var _preloaderTimers = [];
   function _plSetTimeout(fn, ms) {
     var id = setTimeout(fn, ms);
     _preloaderTimers.push(id);
@@ -47,36 +80,63 @@
     preloader.style.opacity = '0';
     _plSetTimeout(function() {
       preloader.style.display = 'none';
+      removeQuoteOverlay();
       callback();
     }, 400);
+  }
+
+  function removeQuoteOverlay() {
+    var qo = preloader.querySelector('.quote-overlay');
+    if (qo) qo.remove();
+  }
+
+  function showThemedQuote(theme) {
+    var quotes = THEME_QUOTES[theme];
+    if (!quotes || !quotes.length) return;
+    var q = quotes[_quoteIdx[theme] % quotes.length];
+    _quoteIdx[theme]++;
+
+    removeQuoteOverlay();
+
+    var overlay = document.createElement('div');
+    overlay.className = 'quote-overlay quote-' + theme;
+    overlay.innerHTML =
+      '<div class="quote-text">' + q.text + '</div>' +
+      '<div class="quote-author">— ' + q.author + '</div>';
+
+    preloader.appendChild(overlay);
+
+    void overlay.offsetWidth;
+    overlay.classList.add('visible');
   }
 
   function runNexusBoot(onComplete) {
     _plClearAll();
     showScreen('nexus');
-    
-    const bootText = nexusScreen?.querySelector('.boot-text');
-    if (!bootText) { onComplete?.(); return; }
-    
+
+    var bootText = nexusScreen?.querySelector('.boot-text');
+    if (!bootText) { showThemedQuote('nexus'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
+
     bootText.innerHTML = '';
-    let lineIndex = 0;
-    
+    var lineIndex = 0;
+
     function typeLine() {
       if (lineIndex >= NEXUS_BOOT_LINES.length) {
         _plSetTimeout(function() {
-          fadeOutPreloader(onComplete);
+          showThemedQuote('nexus');
+          _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500);
         }, 300);
         return;
       }
-      
-      const line = document.createElement('div');
+
+      var line = document.createElement('div');
       line.className = 'boot-line';
       line.textContent = '';
       bootText.appendChild(line);
-      
-      const text = NEXUS_BOOT_LINES[lineIndex];
-      let charIndex = 0;
-      
+
+      var text = NEXUS_BOOT_LINES[lineIndex];
+      var charIndex = 0;
+
       function typeChar() {
         if (charIndex < text.length) {
           line.textContent += text[charIndex];
@@ -87,38 +147,39 @@
           _plSetTimeout(typeLine, 150);
         }
       }
-      
+
       typeChar();
     }
-    
+
     typeLine();
   }
-  
+
   function runBloomGrow(onComplete) {
     _plClearAll();
     showScreen('bloom');
-    
-    const paths = bloomScreen?.querySelectorAll('svg path');
-    if (!paths || paths.length === 0) { onComplete?.(); return; }
-    
+
+    var paths = bloomScreen?.querySelectorAll('svg path');
+    if (!paths || paths.length === 0) { showThemedQuote('bloom'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
+
     paths.forEach(function(path, i) {
       var length = path.getTotalLength ? path.getTotalLength() : 200;
       path.style.strokeDasharray = length;
       path.style.strokeDashoffset = length;
       path.style.animation = 'leaf-draw 0.6s ease ' + (i * 0.2) + 's forwards';
     });
-    
+
     _plSetTimeout(function() {
-      fadeOutPreloader(onComplete);
+      showThemedQuote('bloom');
+      _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500);
     }, 2000);
   }
-  
+
   function runNebulaConstellation(onComplete) {
     _plClearAll();
     showScreen('nebula');
 
     var svg = nebulaScreen?.querySelector('svg');
-    if (!svg) { onComplete?.(); return; }
+    if (!svg) { showThemedQuote('nebula'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
 
     var circles = svg.querySelectorAll('circle');
     var lines = svg.querySelectorAll('line');
@@ -160,25 +221,9 @@
     }, delay);
 
     _plSetTimeout(function() {
-      fadeOutPreloader(onComplete);
+      showThemedQuote('nebula');
+      _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500);
     }, delay + 600);
-  }
-
-  function runTransition(theme, onComplete) {
-    _plClearAll();
-    showScreen(theme);
-
-    fadeInPreloader(function() {
-      if (theme === 'nexus') {
-        runNexusBoot(onComplete);
-      } else if (theme === 'nebula') {
-        runNebulaConstellation(onComplete);
-      } else if (theme === 'forge') {
-        runForgeAssembly(onComplete);
-      } else {
-        runBloomGrow(onComplete);
-      }
-    });
   }
 
   function runForgeAssembly(onComplete) {
@@ -186,7 +231,7 @@
     showScreen('forge');
 
     var svg = forgeScreen?.querySelector('svg');
-    if (!svg) { fadeOutPreloader(onComplete); return; }
+    if (!svg) { showThemedQuote('forge'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
 
     var gears = svg.querySelectorAll('circle');
     var rects = svg.querySelectorAll('rect');
@@ -259,8 +304,26 @@
     }
 
     _plSetTimeout(function() {
-      fadeOutPreloader(onComplete);
+      showThemedQuote('forge');
+      _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500);
     }, delay + 1200);
+  }
+
+  function runTransition(theme, onComplete) {
+    _plClearAll();
+    showScreen(theme);
+
+    fadeInPreloader(function() {
+      if (theme === 'nexus') {
+        runNexusBoot(onComplete);
+      } else if (theme === 'nebula') {
+        runNebulaConstellation(onComplete);
+      } else if (theme === 'forge') {
+        runForgeAssembly(onComplete);
+      } else {
+        runBloomGrow(onComplete);
+      }
+    });
   }
 
   window.preloaderEngine = {
@@ -269,7 +332,7 @@
       var theme = document.documentElement.getAttribute('data-theme');
       preloader.style.display = 'flex';
       preloader.style.opacity = '1';
-      
+
       if (theme === 'nexus') {
         runNexusBoot(onComplete);
       } else if (theme === 'nebula') {
@@ -283,6 +346,7 @@
     runTransition: runTransition,
     cancel: function() {
       _plClearAll();
+      removeQuoteOverlay();
       preloader.style.display = 'none';
       preloader.style.opacity = '0';
     }

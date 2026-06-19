@@ -2,7 +2,7 @@
 import { DB, sv, load, findCh, KEYS } from './data.js';
 import { loadSupaConfig } from './supabase-sync.js';
 import { initThemes } from './themes.js';
-import { initInteractions, animateAllEntrance } from './animations.js';
+import { initInteractions, animateAllEntrance, initScrollAnimations, cleanupScrollAnimations } from './animations.js';
 import { go, getPage, render } from './nav.js';
 import { om, cm, toast, pvFile, animateAllCounters } from './helpers.js';
 import './ai-service.js';
@@ -18,6 +18,8 @@ window.toast = toast;
 window.pvFile = pvFile;
 window.animateAllCounters = animateAllCounters;
 window.animateAllEntrance = animateAllEntrance;
+window.initScrollAnimations = initScrollAnimations;
+window.cleanupScrollAnimations = cleanupScrollAnimations;
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemes();

@@ -1,7 +1,7 @@
 // js/nav.js — Hash-based SPA navigation (matches jee-hq-v2 exactly)
 import { callPageRenderer, PAGE_TITLES } from './page-registry.js';
 import { animateAllCounters } from './helpers.js';
-import { shouldAnimate, animateAllEntrance } from './animations.js';
+import { shouldAnimate, initScrollAnimations, cleanupScrollAnimations } from './animations.js';
 
 export let PAGE = 'dashboard';
 
@@ -75,12 +75,12 @@ function _renderSwap(el) {
     el.classList.add('page-enter');
     _pageEnterTimer = setTimeout(function() {
       el.classList.remove('page-enter');
-      animateAllEntrance(el);
+      initScrollAnimations(el);
       _finishRender(el);
     }, 220);
   } else {
     el.style.opacity = '1';
-    animateAllEntrance(el);
+    initScrollAnimations(el);
     _finishRender(el);
   }
 

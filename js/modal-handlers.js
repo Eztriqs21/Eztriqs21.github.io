@@ -36,7 +36,7 @@ function _refreshPage() {
   // Ensure container is visible before animating children
   el.style.opacity = '1';
 
-  if (window.animateAllEntrance) window.animateAllEntrance(el);
+  if (window.initScrollAnimations) window.initScrollAnimations(el);
   if (window.animateAllCounters) window.animateAllCounters(el);
 }
 
