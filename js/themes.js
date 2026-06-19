@@ -1,6 +1,6 @@
 /* themes.js – 4-theme engine (nexus, bloom, nebula, forge) */
-const themes = ['nexus', 'bloom', 'nebula', 'forge'];
-const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE' };
+const themes = ['nexus', 'bloom', 'nebula', 'forge', 'aurora'];
+const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE', aurora: 'AURORA' };
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
 
@@ -10,7 +10,8 @@ const THEME_BG_IMAGES = {
   nexus: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80',
   bloom: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80',
   nebula: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1920&q=80',
-  forge: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80'
+  forge: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80',
+  aurora: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80'
 };
 
 function showIndicator(name) {
@@ -55,6 +56,7 @@ export function applyTheme(i) {
   if (window.gridBloom) window.gridBloom.stop();
   if (window.gridNebula) window.gridNebula.stop();
   if (window.gridForge) window.gridForge.stop();
+  if (window.gridAurora) window.gridAurora.stop();
 
   var gridCanvas = document.getElementById('grid-canvas');
   if (gridCanvas) {
@@ -110,6 +112,9 @@ export function applyTheme(i) {
     } else if (t === 'forge' && window.gridForge) {
       window.gridForge.start();
       gridCanvas.classList.add('active');
+    } else if (t === 'aurora' && window.gridAurora) {
+      window.gridAurora.start();
+      gridCanvas.classList.add('active');
     }
   }
 
@@ -139,15 +144,37 @@ export function toggleTheme() {
     window.cursorEngine.morph();
   }
 
-  if (window.preloaderEngine && typeof window.preloaderEngine.runTransition === 'function') {
-    window.preloaderEngine.runTransition(next, function() {
-      applyTheme(i);
-      showIndicator(themeNames[next]);
-    });
-  } else {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     applyTheme(i);
     showIndicator(themeNames[next]);
+    return;
   }
+
+  var washColors = {
+    nexus: 'rgba(0,240,255,0.3)',
+    bloom: 'rgba(107,144,128,0.3)',
+    nebula: 'rgba(140,122,230,0.3)',
+    forge: 'rgba(205,127,50,0.3)',
+    aurora: 'rgba(72,199,172,0.3)'
+  };
+
+  var wash = document.createElement('div');
+  wash.className = 'theme-wash';
+  wash.style.background = 'radial-gradient(circle, ' + (washColors[next] || washColors.nexus) + ', transparent 70%)';
+  document.body.appendChild(wash);
+
+  requestAnimationFrame(function() {
+    wash.classList.add('active');
+  });
+
+  setTimeout(function() {
+    applyTheme(i);
+    showIndicator(themeNames[next]);
+  }, 280);
+
+  setTimeout(function() {
+    if (wash.parentNode) wash.parentNode.removeChild(wash);
+  }, 750);
 }
 
 export function initThemes() {

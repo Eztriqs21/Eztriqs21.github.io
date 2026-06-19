@@ -32,6 +32,12 @@ export function go(page) {
   if (pageTitle) {
     pageTitle.textContent = info.title;
     pageTitle.setAttribute('data-text', info.title);
+    if (shouldAnimate()) {
+      pageTitle.classList.remove('page-title-sweep', 'active');
+      void pageTitle.offsetWidth;
+      pageTitle.classList.add('page-title-sweep', 'active');
+      setTimeout(function() { pageTitle.classList.remove('page-title-sweep', 'active'); }, 1100);
+    }
   }
   if (pageSubtitle) pageSubtitle.textContent = info.sub;
 

@@ -4,6 +4,7 @@
   var bloomScreen = document.getElementById('preloader-bloom');
   var nebulaScreen = document.getElementById('preloader-nebula');
   var forgeScreen = document.getElementById('preloader-forge');
+  var auroraScreen = document.getElementById('preloader-aurora');
 
   if (!preloader) return;
 
@@ -43,10 +44,17 @@
       { text: 'The iron is hot — strike while you can.', author: 'English Proverb' },
       { text: 'Pressure makes diamonds.', author: 'George S. Patton' },
       { text: 'A diamond is a chunk of coal that did well under pressure.', author: 'Henry A. Kissinger' }
+    ],
+    aurora: [
+      { text: 'The aurora paints the sky with the brush of the cosmos.', author: 'Unknown' },
+      { text: 'In the dance of light, we find the poetry of the universe.', author: 'Unknown' },
+      { text: 'The sky is not the limit — it is just the beginning.', author: 'Unknown' },
+      { text: 'Even in the darkest night, the aurora reminds us of beauty.', author: 'Unknown' },
+      { text: 'Nature drapes the sky in colors no artist can replicate.', author: 'Unknown' }
     ]
   };
 
-  var _quoteIdx = { nexus: 0, bloom: 0, nebula: 0, forge: 0 };
+  var _quoteIdx = { nexus: 0, bloom: 0, nebula: 0, forge: 0, aurora: 0 };
 
   var _preloaderTimers = [];
   function _plSetTimeout(fn, ms) {
@@ -64,6 +72,7 @@
     if (bloomScreen) bloomScreen.style.display = name === 'bloom' ? 'flex' : 'none';
     if (nebulaScreen) nebulaScreen.style.display = name === 'nebula' ? 'flex' : 'none';
     if (forgeScreen) forgeScreen.style.display = name === 'forge' ? 'flex' : 'none';
+    if (auroraScreen) auroraScreen.style.display = name === 'aurora' ? 'flex' : 'none';
   }
 
   function fadeInPreloader(callback) {
@@ -309,6 +318,55 @@
     }, delay + 1200);
   }
 
+  function runAuroraShimmer(onComplete) {
+    _plClearAll();
+    showScreen('aurora');
+
+    var svg = auroraScreen?.querySelector('svg');
+    if (!svg) { showThemedQuote('aurora'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
+
+    var paths = svg.querySelectorAll('path');
+    var circles = svg.querySelectorAll('circle');
+
+    paths.forEach(function(p) {
+      var len = p.getTotalLength ? p.getTotalLength() : 300;
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.style.transition = 'none';
+    });
+    circles.forEach(function(c) {
+      c.style.opacity = '0';
+      c.style.transition = 'none';
+    });
+
+    var delay = 0;
+    paths.forEach(function(p, i) {
+      _plSetTimeout(function() {
+        p.style.transition = 'stroke-dashoffset 1s ease';
+        p.style.strokeDashoffset = '0';
+      }, delay);
+      delay += 300;
+    });
+
+    circles.forEach(function(c, i) {
+      _plSetTimeout(function() {
+        c.style.transition = 'opacity 0.4s ease';
+        c.style.opacity = '1';
+      }, delay);
+      delay += 100;
+    });
+
+    _plSetTimeout(function() {
+      svg.style.transition = 'filter 0.5s ease';
+      svg.style.filter = 'drop-shadow(0 0 15px rgba(72,199,172,0.6))';
+    }, delay);
+
+    _plSetTimeout(function() {
+      showThemedQuote('aurora');
+      _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500);
+    }, delay + 600);
+  }
+
   function runTransition(theme, onComplete) {
     _plClearAll();
     showScreen(theme);
@@ -320,6 +378,8 @@
         runNebulaConstellation(onComplete);
       } else if (theme === 'forge') {
         runForgeAssembly(onComplete);
+      } else if (theme === 'aurora') {
+        runAuroraShimmer(onComplete);
       } else {
         runBloomGrow(onComplete);
       }
@@ -339,6 +399,8 @@
         runNebulaConstellation(onComplete);
       } else if (theme === 'forge') {
         runForgeAssembly(onComplete);
+      } else if (theme === 'aurora') {
+        runAuroraShimmer(onComplete);
       } else {
         runBloomGrow(onComplete);
       }

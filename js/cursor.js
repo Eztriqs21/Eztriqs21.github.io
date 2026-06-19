@@ -26,6 +26,7 @@
     var _nexusTraceHistory = [];
     var _forgeGearAngle = 0;
     var _bloomPetalPhase = 0;
+    var _auOrbAngle = 0;
 
     function onMouseMove(e) {
       prevMouseX = mouseX;
@@ -85,7 +86,7 @@
 
     function spawnClickParticles() {
       var theme = document.documentElement.getAttribute('data-theme');
-      var colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230', forge: '205,127,50' };
+      var colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230', forge: '205,127,50', aurora: '72,199,172' };
       var color = colors[theme] || colors.nexus;
       for (var i = 0; i < 6; i++) {
         var angle = (Math.PI * 2 / 6) * i + Math.random() * 0.5;
@@ -108,7 +109,7 @@
       if (now - lastParticleTime < 50 || speed < 3) return;
       lastParticleTime = now;
       var theme = document.documentElement.getAttribute('data-theme');
-      var colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230', forge: '205,127,50' };
+      var colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230', forge: '205,127,50', aurora: '72,199,172' };
       var color = colors[theme] || colors.nexus;
       particles.push({
         x: mouseX, y: mouseY,
@@ -160,6 +161,8 @@
         animateNebula();
       } else if (theme === 'forge') {
         animateForge();
+      } else if (theme === 'aurora') {
+        animateAurora();
       }
 
       spawnTrailParticles();
@@ -239,6 +242,38 @@
       dot.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
       if (trail) {
         trail.style.transform = 'translate3d(' + trailX + 'px,' + trailY + 'px,0) translate(-50%,-50%) scale(' + (hoverScale * 0.9) + ') rotate(' + (gearRotation * -0.5) + 'deg)';
+      }
+    }
+
+    function animateAurora() {
+      _auOrbAngle += 0.03;
+      var ringLerp = isHovering ? 0.1 : 0.15;
+      ringX = lerp(ringX, mouseX, ringLerp);
+      ringY = lerp(ringY, mouseY, ringLerp);
+      trailX = lerp(trailX, ringX, 0.08);
+      trailY = lerp(trailY, ringY, 0.08);
+
+      ring.style.transform = 'translate3d(' + ringX + 'px,' + ringY + 'px,0) translate(-50%,-50%) scale(' + hoverScale + ')';
+      dot.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
+      if (trail) trail.style.transform = 'translate3d(' + trailX + 'px,' + trailY + 'px,0) translate(-50%,-50%) scale(' + (hoverScale * 0.9) + ')';
+
+      var satCanvas = document.getElementById('grid-canvas');
+      if (satCanvas) {
+        var sCtx = satCanvas.getContext('2d');
+        if (sCtx) {
+          var orbitRadius = isHovering ? 18 : 12;
+          var satColors = ['72,199,172', '224,108,159', '123,224,168', '212,165,116'];
+          var spinMult = isHovering ? 2 : 1;
+          for (var si = 0; si < 4; si++) {
+            var angle = _auOrbAngle * spinMult + (Math.PI * 2 / 4) * si;
+            var sx = ringX + Math.cos(angle) * orbitRadius;
+            var sy = ringY + Math.sin(angle) * orbitRadius;
+            sCtx.beginPath();
+            sCtx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+            sCtx.fillStyle = 'rgba(' + satColors[si] + ',0.7)';
+            sCtx.fill();
+          }
+        }
       }
     }
 
