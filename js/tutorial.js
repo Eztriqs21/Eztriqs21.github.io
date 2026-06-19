@@ -189,13 +189,18 @@
   }
 
   function showTourSelect() {
+    if (!tourSelectOverlay) {
+      buildTourSelect();
+    }
+    if (!tourSelectOverlay) return;
     tourSelectOverlay.style.display = 'flex';
     requestAnimationFrame(function() { tourSelectOverlay.classList.add('visible'); });
   }
 
   function hideTourSelect() {
+    if (!tourSelectOverlay) return;
     tourSelectOverlay.classList.remove('visible');
-    setTimeout(function() { tourSelectOverlay.style.display = 'none'; }, 350);
+    setTimeout(function() { if (tourSelectOverlay) tourSelectOverlay.style.display = 'none'; }, 350);
   }
 
   function startTour(mode) {
@@ -488,4 +493,18 @@
 
   buildTourSelect();
   bindGlobalEvents();
+
+  function _bindTutorialBtn() {
+    var btn = document.getElementById('tutorial-btn');
+    if (btn && !btn._tutorialBound) {
+      btn._tutorialBound = true;
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showTourSelect();
+      });
+    }
+  }
+  _bindTutorialBtn();
+  document.addEventListener('DOMContentLoaded', _bindTutorialBtn);
 })();
