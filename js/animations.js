@@ -637,33 +637,7 @@ export function initInteractions() {
     setTimeout(function() { ripple.remove(); target.style.overflow = prevOverflow; target.style.position = prevPosition; }, 600);
   }, true);
 
-  // Bloom parallax cards — matches jee-hq-v2 exactly
-  var _parallaxTick = false;
-  document.addEventListener('mousemove', function(e) {
-    if (_parallaxTick) return;
-    _parallaxTick = true;
-    requestAnimationFrame(function() {
-      var theme = document.documentElement.getAttribute('data-theme');
-      if (theme !== 'bloom') { _parallaxTick = false; return; }
 
-      document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat').forEach(function(card) {
-        var rect = card.getBoundingClientRect();
-        var centerX = rect.left + rect.width / 2;
-        var centerY = rect.top + rect.height / 2;
-        var offsetX = (e.clientX - centerX) * 0.015;
-        var offsetY = (e.clientY - centerY) * 0.015;
-
-        if (Math.abs(e.clientX - centerX) < 300 && Math.abs(e.clientY - centerY) < 300) {
-          card.style.transform = 'translate(' + (-offsetX) + 'px,' + (-offsetY) + 'px) translateY(-2px)';
-          card.style.willChange = 'transform';
-        } else {
-          card.style.transform = '';
-          card.style.willChange = '';
-        }
-      });
-      _parallaxTick = false;
-    });
-  }, { passive: true });
 
   // Easter egg: long-press logo
   const logo = document.querySelector('.sidebar-logo');
