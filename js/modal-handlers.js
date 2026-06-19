@@ -10,6 +10,14 @@ function _refreshPage() {
   var el = document.getElementById('content-wrap');
   if (!el) return;
   var page = window.PAGE;
+
+  // Clear pending render timers from nav.js to prevent race conditions
+  if (typeof window._clearRenderTimers === 'function') window._clearRenderTimers();
+
+  // Reset animation state on the container
+  el.classList.remove('page-exit', 'page-enter');
+  el.style.opacity = '1';
+
   var renderers = {
     assignments: window.renderAssignments,
     tests: window.renderTests,
@@ -26,6 +34,10 @@ function _refreshPage() {
   };
   if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);
   else if (renderers[page]) renderers[page](el);
+
+  // Ensure container is visible before animating children
+  el.style.opacity = '1';
+
   if (window.animateAllEntrance) window.animateAllEntrance(el);
   if (window.animateAllCounters) window.animateAllCounters(el);
 }
@@ -388,3 +400,4 @@ window.saveMockTest = saveMockTest;
 window.dsSetProvider = dsSetProvider;
 window.fetchOllamaModels = fetchOllamaModels;
 window.saveDSSettings = saveDSSettings;
+window._refreshPage = _refreshPage;

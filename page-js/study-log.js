@@ -207,8 +207,7 @@
     saveSession();
     if (window.cm) window.cm('m-study-session');
     startTimer();
-    window.renderStudyLog(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
     if (window.toast) window.toast('Session started!');
   };
 
@@ -218,8 +217,7 @@
     _session.pausedAt = Date.now();
     saveSession();
     stopTimer();
-    window.renderStudyLog(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   };
 
   window._resumeSession = function() {
@@ -229,8 +227,7 @@
     _session.pausedAt = 0;
     saveSession();
     startTimer();
-    window.renderStudyLog(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   };
 
   window._stopSession = function() {
@@ -241,14 +238,12 @@
       if (window.cfm2) {
         window.cfm2('Short Session', 'Session is only ' + Math.round(elapsed / 60) + ' minutes. Discard?', function() {
           _session = null; saveSession(); stopTimer();
-          window.renderStudyLog(document.getElementById('content-wrap'));
-          if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+          if (window._refreshPage) window._refreshPage();
         });
       } else {
         if (window.toast) window.toast('Session too short to save');
         _session = null; saveSession(); stopTimer();
-        window.renderStudyLog(document.getElementById('content-wrap'));
-        if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+        if (window._refreshPage) window._refreshPage();
       }
       return;
     }
@@ -267,8 +262,7 @@
     _session = null;
     saveSession();
     stopTimer();
-    window.renderStudyLog(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
     if (window.toast) window.toast('Session saved! ' + dur + 'h logged');
   };
 
@@ -287,15 +281,13 @@
       window.cfm2('Delete Session', 'Delete this study session?', function() {
         DB.studyLogs = DB.studyLogs.filter(l => l.id !== id);
         if (window.sv) window.sv('studyLogs');
-        window.renderStudyLog(document.getElementById('content-wrap'));
-        if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+        if (window._refreshPage) window._refreshPage();
         if (window.toast) window.toast('Session deleted');
       });
     } else {
       DB.studyLogs = DB.studyLogs.filter(l => l.id !== id);
       if (window.sv) window.sv('studyLogs');
-      window.renderStudyLog(document.getElementById('content-wrap'));
-      if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+      if (window._refreshPage) window._refreshPage();
     }
   };
 

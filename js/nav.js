@@ -135,6 +135,14 @@ export function closeSidebar() {
 /* HASH CHANGE */
 window.addEventListener('hashchange', () => go(getPage()));
 
+/* CLEAR RENDER TIMERS — called by _refreshPage() in modal-handlers.js */
+function clearRenderTimers() {
+  if (_pageSwapTimer) { clearTimeout(_pageSwapTimer); _pageSwapTimer = null; }
+  if (_pageEnterTimer) { clearTimeout(_pageEnterTimer); _pageEnterTimer = null; }
+  _renderLock = false;
+}
+window._clearRenderTimers = clearRenderTimers;
+
 /* WINDOW EXPORTS */
 window.PAGE = PAGE;
 window.go = go;

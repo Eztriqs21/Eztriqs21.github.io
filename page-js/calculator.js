@@ -200,7 +200,7 @@
     if (st) st.textContent = cnt + ' answers loaded';
     saveCalcState();
     if (window.toast) window.toast('Key applied: ' + cnt + ' questions');
-    renderCalculator(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   }
 
   function focusQRow(num) {
@@ -368,7 +368,7 @@
     if (window.sv) window.sv('tests');
     if (window.cm) window.cm('m-save-calc-test');
     if (window.toast) window.toast('Test saved to history!');
-    if (window.PAGE === 'tests' && window.renderTests) window.renderTests(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   }
 
   function saveCalcAsMockTest() {
@@ -508,7 +508,7 @@
   function resetCalc() {
     initCalcQ(); calcShowResults = false; calcAnsKey = {}; currentFocusQ = 1;
     saveCalcState();
-    renderCalculator(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   }
 
   function saveCalcState() {

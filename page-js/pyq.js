@@ -124,8 +124,8 @@
         : '<div class="' + p + '-grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px">' + filtered.map(function(q, i) { return questionCard(q, i); }).join('') + '</div>')
       + '</div>';
 
-    window._pyqYear = function(y) { activeYear = y; el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); };
-    window._pyqSubj = function(s) { activeSubject = s; el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); };
+    window._pyqYear = function(y) { activeYear = y; if (window._refreshPage) window._refreshPage(); };
+    window._pyqSubj = function(s) { activeSubject = s; if (window._refreshPage) window._refreshPage(); };
   };
 
   window._answerPyq = function(qid, idx) {
@@ -204,8 +204,7 @@
     if (window.sv) window.sv('pyqs');
     if (window.cm) window.cm('m-pyq-add');
     if (window.toast) window.toast('PYQ added!');
-    var el = document.getElementById('content-wrap');
-    if (el) { el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); }
+    if (window._refreshPage) window._refreshPage();
   };
 
   window._deletePyq = function(id) {
@@ -215,15 +214,13 @@
       window.cfm2('Delete PYQ', 'Delete this question?', function() {
         DB.pyqs = DB.pyqs.filter(function(q) { return q.id !== id; });
         if (window.sv) window.sv('pyqs');
-        var el = document.getElementById('content-wrap');
-        if (el) { el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); }
+        if (window._refreshPage) window._refreshPage();
         if (window.toast) window.toast('Deleted');
       });
     } else {
       DB.pyqs = DB.pyqs.filter(function(q) { return q.id !== id; });
       if (window.sv) window.sv('pyqs');
-      var el = document.getElementById('content-wrap');
-      if (el) { el.innerHTML = ''; window.renderPYQ(el); if (window.animateAllEntrance) window.animateAllEntrance(el); }
+      if (window._refreshPage) window._refreshPage();
     }
   };
 })();

@@ -112,14 +112,13 @@
 
   window._dsTab = function(tab) {
     dsTab = tab;
-    window.renderDoubts(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
     if (tab === 'chat') setTimeout(scrollChat, 50);
   };
 
   window._dsSubject = function(subj) {
     dsChatSubject = subj;
-    window.renderDoubts(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   };
 
   window._dsHandleFile = function(files) {
@@ -258,7 +257,6 @@
 
     dsLoading = false;
     if (sendBtn) sendBtn.disabled = false;
-    window.renderDoubts(document.getElementById('content-wrap'));
-    if (window.animateAllEntrance) window.animateAllEntrance(document.getElementById('content-wrap'));
+    if (window._refreshPage) window._refreshPage();
   };
 })();
