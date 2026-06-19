@@ -156,10 +156,21 @@
   }
 
   function bindGlobalEvents() {
-    var tutorialBtn = document.getElementById('tutorial-btn');
-    if (tutorialBtn) {
-      tutorialBtn.addEventListener('click', function() { showTourSelect(); });
-    }
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('#tutorial-btn');
+      if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        showTourSelect();
+        return;
+      }
+      if (tourSelectOverlay && tourSelectOverlay.classList.contains('visible')) {
+        var option = e.target.closest('[data-tour]');
+        if (option) { startTour(option.getAttribute('data-tour')); return; }
+        var dismiss = e.target.closest('#tour-dismiss');
+        if (dismiss) { hideTourSelect(); return; }
+      }
+    });
 
     document.addEventListener('keydown', function(e) {
       if (tourSelectOverlay && tourSelectOverlay.classList.contains('visible')) {
