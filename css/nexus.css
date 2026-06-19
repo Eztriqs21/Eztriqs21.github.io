@@ -8,9 +8,8 @@
   padding: 20px;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s ease;
+  transition: border-color 0.3s, box-shadow 0.3s;
   position: relative;
-  will-change: transform;
 }
 .nx-card::before {
   content: '';
@@ -93,8 +92,6 @@
 .nx-stat-card {
   text-align: center;
   padding: 20px 16px;
-  transition: transform 0.3s ease;
-  will-change: transform;
 }
 .nx-stat-icon {
   width: 40px;
@@ -874,8 +871,6 @@
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: var(--radius);
-  transition: transform 0.3s ease;
-  will-change: transform;
 }
 .nx-hero-stat-val {
   font-family: var(--font-data);

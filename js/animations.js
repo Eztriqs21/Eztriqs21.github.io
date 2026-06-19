@@ -487,7 +487,7 @@ export function initScrollAnimations() {
 
 export function initTilt() {
   if (_reducedMq.matches) return;
-  let ticking = false;
+  var ticking = false;
   document.addEventListener('mousemove', function(e) {
     if (ticking) return;
     ticking = true;
@@ -504,14 +504,18 @@ export function initTilt() {
           var rotateX = ((y / rect.height) - 0.5) * -6;
           var rotateY = ((x / rect.width) - 0.5) * 6;
           card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
+          card.style.willChange = 'transform';
         } else {
           card.style.transform = '';
+          card.style.willChange = '';
         }
       });
       ticking = false;
     });
   }, { passive: true });
 }
+
+/* ═══════════════ BLOOM PARALLAX CARDS (already in initInteractions) ═══════════════ */
 
 /* ═══════════════ STEP 13: LOADING STATES ═══════════════ */
 
