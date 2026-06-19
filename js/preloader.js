@@ -3,6 +3,7 @@
   const nexusScreen = document.getElementById('preloader-nexus');
   const bloomScreen = document.getElementById('preloader-bloom');
   const nebulaScreen = document.getElementById('preloader-nebula');
+  const forgeScreen = document.getElementById('preloader-forge');
   
   if (!preloader) return;
   
@@ -29,6 +30,7 @@
     if (nexusScreen) nexusScreen.style.display = name === 'nexus' ? 'flex' : 'none';
     if (bloomScreen) bloomScreen.style.display = name === 'bloom' ? 'flex' : 'none';
     if (nebulaScreen) nebulaScreen.style.display = name === 'nebula' ? 'flex' : 'none';
+    if (forgeScreen) forgeScreen.style.display = name === 'forge' ? 'flex' : 'none';
   }
 
   function fadeInPreloader(callback) {
@@ -171,10 +173,94 @@
         runNexusBoot(onComplete);
       } else if (theme === 'nebula') {
         runNebulaConstellation(onComplete);
+      } else if (theme === 'forge') {
+        runForgeAssembly(onComplete);
       } else {
         runBloomGrow(onComplete);
       }
     });
+  }
+
+  function runForgeAssembly(onComplete) {
+    _plClearAll();
+    showScreen('forge');
+
+    var svg = forgeScreen?.querySelector('svg');
+    if (!svg) { fadeOutPreloader(onComplete); return; }
+
+    var gears = svg.querySelectorAll('circle');
+    var rects = svg.querySelectorAll('rect');
+    var lines = svg.querySelectorAll('line');
+    var bootText = forgeScreen?.querySelector('.boot-text');
+
+    gears.forEach(function(g) {
+      g.style.opacity = '0';
+      g.style.transform = 'scale(0)';
+      g.style.transformOrigin = 'center';
+      g.style.transition = 'none';
+    });
+    rects.forEach(function(r) {
+      r.style.opacity = '0';
+      r.style.transition = 'none';
+    });
+    lines.forEach(function(l) {
+      l.style.opacity = '0';
+      l.style.transition = 'none';
+    });
+
+    var delay = 0;
+    gears.forEach(function(g, i) {
+      _plSetTimeout(function() {
+        g.style.transition = 'opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';
+        g.style.opacity = '1';
+        g.style.transform = 'scale(1)';
+      }, delay);
+      delay += 100;
+    });
+
+    rects.forEach(function(r, i) {
+      _plSetTimeout(function() {
+        r.style.transition = 'opacity 0.2s ease';
+        r.style.opacity = '1';
+      }, delay);
+      delay += 50;
+    });
+
+    _plSetTimeout(function() {
+      svg.style.transition = 'filter 0.5s ease';
+      svg.style.filter = 'drop-shadow(0 0 12px rgba(205,127,50,0.6))';
+    }, delay);
+
+    var bootLines = ['FORGE v1.0', 'ASSEMBLING SYSTEMS...', 'CALIBRATING...', 'READY.'];
+    if (bootText) {
+      bootText.innerHTML = '';
+      var lineIdx = 0;
+      function typeForgeLine() {
+        if (lineIdx >= bootLines.length) return;
+        var line = document.createElement('div');
+        line.className = 'boot-line';
+        line.textContent = '';
+        bootText.appendChild(line);
+        var text = bootLines[lineIdx];
+        var charIdx = 0;
+        function typeChar() {
+          if (charIdx < text.length) {
+            line.textContent += text[charIdx];
+            charIdx++;
+            _plSetTimeout(typeChar, 20 + Math.random() * 30);
+          } else {
+            lineIdx++;
+            _plSetTimeout(typeForgeLine, 150);
+          }
+        }
+        typeChar();
+      }
+      _plSetTimeout(typeForgeLine, delay);
+    }
+
+    _plSetTimeout(function() {
+      fadeOutPreloader(onComplete);
+    }, delay + 1200);
   }
 
   window.preloaderEngine = {
@@ -188,6 +274,8 @@
         runNexusBoot(onComplete);
       } else if (theme === 'nebula') {
         runNebulaConstellation(onComplete);
+      } else if (theme === 'forge') {
+        runForgeAssembly(onComplete);
       } else {
         runBloomGrow(onComplete);
       }

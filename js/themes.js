@@ -1,6 +1,6 @@
-/* themes.js – 3-theme engine (nexus, bloom, nebula) */
-const themes = ['nexus', 'bloom', 'nebula'];
-const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA' };
+/* themes.js – 4-theme engine (nexus, bloom, nebula, forge) */
+const themes = ['nexus', 'bloom', 'nebula', 'forge'];
+const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE' };
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
 
@@ -26,6 +26,7 @@ export function applyTheme(i) {
   if (window.gridNexus) window.gridNexus.stop();
   if (window.gridBloom) window.gridBloom.stop();
   if (window.gridNebula) window.gridNebula.stop();
+  if (window.gridForge) window.gridForge.stop();
 
   const gridCanvas = document.getElementById('grid-canvas');
   if (gridCanvas) {
@@ -37,6 +38,9 @@ export function applyTheme(i) {
       gridCanvas.classList.add('active');
     } else if (t === 'nebula' && window.gridNebula) {
       window.gridNebula.start();
+      gridCanvas.classList.add('active');
+    } else if (t === 'forge' && window.gridForge) {
+      window.gridForge.start();
       gridCanvas.classList.add('active');
     } else {
       gridCanvas.classList.remove('active');

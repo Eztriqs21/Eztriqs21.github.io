@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.gridNexus?.start();
       } else if (theme === 'nebula') {
         window.gridNebula?.start();
+      } else if (theme === 'forge') {
+        window.gridForge?.start();
       } else {
         window.gridBloom?.start();
       }
@@ -43,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
       window.gridNexus?.start();
     } else if (theme === 'nebula') {
       window.gridNebula?.start();
+    } else if (theme === 'forge') {
+      window.gridForge?.start();
     } else {
       window.gridBloom?.start();
     }

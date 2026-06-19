@@ -80,7 +80,7 @@
 
   function spawnClickParticles() {
     const theme = document.documentElement.getAttribute('data-theme');
-    const colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230' };
+    const colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230', forge: '205,127,50' };
     const color = colors[theme] || colors.nexus;
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI * 2 / 6) * i + Math.random() * 0.5;
@@ -103,7 +103,7 @@
     if (now - lastParticleTime < 50 || speed < 3) return;
     lastParticleTime = now;
     const theme = document.documentElement.getAttribute('data-theme');
-    const colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230' };
+    const colors = { nexus: '0,240,255', bloom: '107,144,128', nebula: '140,122,230', forge: '205,127,50' };
     const color = colors[theme] || colors.nexus;
     particles.push({
       x: mouseX, y: mouseY,
@@ -150,6 +150,16 @@
     hoverScale = lerp(hoverScale, targetHoverScale, 0.12);
 
     if (theme === 'nexus' || theme === 'nebula') {
+      const ringLerp = isHovering ? 0.1 : 0.15;
+      ringX = lerp(ringX, mouseX, ringLerp);
+      ringY = lerp(ringY, mouseY, ringLerp);
+      trailX = lerp(trailX, ringX, 0.08);
+      trailY = lerp(trailY, ringY, 0.08);
+
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${hoverScale})`;
+      dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      if (trail) trail.style.transform = `translate3d(${trailX}px, ${trailY}px, 0) translate(-50%, -50%) scale(${hoverScale * 0.9})`;
+    } else if (theme === 'forge') {
       const ringLerp = isHovering ? 0.1 : 0.15;
       ringX = lerp(ringX, mouseX, ringLerp);
       ringY = lerp(ringY, mouseY, ringLerp);

@@ -87,3 +87,12 @@
 [data-theme="nebula"] #grid-canvas {
   opacity: 0.8;
 }
+
+/* ═══════════════ FORGE GEARS ═══════════════ */
+[data-theme="forge"] #scanline-overlay { display: none; }
+[data-theme="forge"] #paper-texture { }
+[data-theme="forge"] #botanical-corners { display: none; }
+
+[data-theme="forge"] #grid-canvas {
+  opacity: 0.8;
+}
