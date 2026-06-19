@@ -399,8 +399,10 @@ export function chartChoreography(scope) {
 
 var _scrollObservers = [];
 var _parallaxAttached = false;
+var _themeAnimGeneration = 0;
 
 function _disconnectScrollObservers() {
+  _themeAnimGeneration++;
   for (var i = 0; i < _scrollObservers.length; i++) {
     try { _scrollObservers[i].disconnect(); } catch(e) {}
   }
@@ -464,7 +466,7 @@ export function initScrollAnimations(scope) {
   }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
 
   for (var i = 0; i < animEls.length; i++) {
-    if (!animEls[i].classList.contains('visible')) {
+    if (!animEls[i].classList.contains('visible') && !animEls[i].hasAttribute('data-theme-anim')) {
       enterObserver.observe(animEls[i]);
     }
   }
@@ -511,10 +513,14 @@ function _showAllVisible(scope) {
     '.section-block, .gc, .test-card, .mt-card, .prep-card, .freq-card, ' +
     '.anim-entrance, .anim-up'
   );
+  var theme = document.documentElement.getAttribute('data-theme');
   for (var i = 0; i < els.length; i++) {
     els[i].style.opacity = '1';
     els[i].style.transform = 'none';
     els[i].classList.add('visible');
+    if (theme && els[i].hasAttribute('data-theme-anim')) {
+      els[i].classList.add(theme + '-anim-active');
+    }
   }
 }
 
@@ -545,6 +551,8 @@ function initThemeAnimations(scope) {
     '.test-card', '.mt-card', '.prep-card', '.freq-card'
   ];
 
+  var themeElements = [];
+
   for (var s = 0; s < cardSelectors.length; s++) {
     var els = root.querySelectorAll(cardSelectors[s]);
     for (var e = 0; e < els.length; e++) {
@@ -553,7 +561,14 @@ function initThemeAnimations(scope) {
       for (var a = 0; a < animClasses.length; a++) {
         if (el.classList.contains(animClasses[a])) { alreadyHasAnim = true; break; }
       }
-      if (alreadyHasAnim) { el.setAttribute('data-theme-anim', '1'); continue; }
+      if (alreadyHasAnim) {
+        el.setAttribute('data-theme-anim', '1');
+        el.style.opacity = '';
+        el.style.transform = '';
+        el.style.willChange = '';
+        themeElements.push(el);
+        continue;
+      }
 
       var typeKey = '';
       var cl = el.className;
@@ -571,26 +586,40 @@ function initThemeAnimations(scope) {
       var idx = _typeAnimIndex[typeKey] !== undefined ? _typeAnimIndex[typeKey] : s % animClasses.length;
       el.classList.add(animClasses[idx]);
       el.setAttribute('data-theme-anim', '1');
+      el.style.opacity = '';
+      el.style.transform = '';
+      el.style.willChange = '';
+      themeElements.push(el);
     }
   }
 
-  var themeObserver = new IntersectionObserver(function(entries) {
-    for (var j = 0; j < entries.length; j++) {
-      if (entries[j].isIntersecting) {
-        var el = entries[j].target;
-        el.classList.add(theme + '-anim-active');
-        themeObserver.unobserve(el);
+  var capturedTheme = theme;
+  var capturedAnimClasses = animClasses;
+  var capturedRoot = root;
+  var myGeneration = ++_themeAnimGeneration;
+
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      if (_themeAnimGeneration !== myGeneration) return;
+      var themeObserver = new IntersectionObserver(function(entries) {
+        for (var j = 0; j < entries.length; j++) {
+          if (entries[j].isIntersecting) {
+            var el = entries[j].target;
+            el.classList.add(capturedTheme + '-anim-active');
+            themeObserver.unobserve(el);
+          }
+        }
+      }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
+
+      for (var c = 0; c < capturedAnimClasses.length; c++) {
+        var animEls = capturedRoot.querySelectorAll('.' + capturedAnimClasses[c]);
+        for (var ae = 0; ae < animEls.length; ae++) {
+          themeObserver.observe(animEls[ae]);
+        }
       }
-    }
-  }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
-
-  for (var c = 0; c < animClasses.length; c++) {
-    var animEls = root.querySelectorAll('.' + animClasses[c]);
-    for (var ae = 0; ae < animEls.length; ae++) {
-      themeObserver.observe(animEls[ae]);
-    }
-  }
-  _scrollObservers.push(themeObserver);
+      _scrollObservers.push(themeObserver);
+    });
+  });
 }
 
 export function cleanupScrollAnimations() {
