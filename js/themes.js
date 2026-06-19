@@ -60,6 +60,7 @@ export function applyTheme(i) {
   if (gridCanvas) {
     var ctx = gridCanvas.getContext('2d');
     if (ctx) ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+    gridCanvas.classList.remove('active');
   }
 
   if (window.cursorEngine && typeof window.cursorEngine.morph === 'function') {
@@ -70,6 +71,11 @@ export function applyTheme(i) {
     window.cleanupScrollAnimations();
   }
 
+  var staleEls = document.querySelectorAll('[data-theme-anim]');
+  for (var si = 0; si < staleEls.length; si++) {
+    staleEls[si].removeAttribute('data-theme-anim');
+  }
+
   var contentWrap = document.getElementById('content-wrap');
   if (contentWrap) {
     var pgTitle = contentWrap.querySelector('.pg-title');
@@ -77,24 +83,33 @@ export function applyTheme(i) {
       pgTitle.style.transform = '';
       pgTitle.style.opacity = '';
     }
+    var allAnimEls = contentWrap.querySelectorAll('[class*="-anim-"]');
+    for (var ai = 0; ai < allAnimEls.length; ai++) {
+      var classes = allAnimEls[ai].className.split(' ');
+      for (var ci = classes.length - 1; ci >= 0; ci--) {
+        if (classes[ci].indexOf('-anim-') !== -1 && classes[ci].indexOf('-anim-active') === -1) {
+          allAnimEls[ai].classList.remove(classes[ci]);
+        }
+        if (classes[ci].indexOf('-anim-active') !== -1) {
+          allAnimEls[ai].classList.remove(classes[ci]);
+        }
+      }
+    }
   }
 
-  var gridCanvas2 = document.getElementById('grid-canvas');
-  if (gridCanvas2) {
+  if (gridCanvas) {
     if (t === 'nexus' && window.gridNexus) {
       window.gridNexus.start();
-      gridCanvas2.classList.add('active');
+      gridCanvas.classList.add('active');
     } else if (t === 'bloom' && window.gridBloom) {
       window.gridBloom.start();
-      gridCanvas2.classList.add('active');
+      gridCanvas.classList.add('active');
     } else if (t === 'nebula' && window.gridNebula) {
       window.gridNebula.start();
-      gridCanvas2.classList.add('active');
+      gridCanvas.classList.add('active');
     } else if (t === 'forge' && window.gridForge) {
       window.gridForge.start();
-      gridCanvas2.classList.add('active');
-    } else {
-      gridCanvas2.classList.remove('active');
+      gridCanvas.classList.add('active');
     }
   }
 
@@ -106,6 +121,7 @@ export function applyTheme(i) {
 
   requestAnimationFrame(function() {
     if (prev !== t && contentWrap) {
+      window._forceRerender = true;
       var currentPage = document.querySelector('.nav-item.active');
       if (currentPage) currentPage.click();
     }

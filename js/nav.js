@@ -17,7 +17,8 @@ export function getPage() {
 
 export function go(page) {
   if (_renderLock) { _pendingPage = page; return; }
-  if (page === _lastPage && page === PAGE) return;
+  if (page === _lastPage && page === PAGE && !window._forceRerender) return;
+  window._forceRerender = false;
   PAGE = page;
   window.PAGE = page;
 

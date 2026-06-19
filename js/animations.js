@@ -415,6 +415,8 @@ export function initScrollAnimations(scope) {
   _disconnectScrollObservers();
   var root = scope || document;
 
+  initThemeAnimations(root);
+
   var animEls = root.querySelectorAll(
     '.nx-card, .nx-stat-card, .nx-hero-stat, .nx-list-item, .nx-section-block, .nx-chip, ' +
     '.bl-card, .bl-stat-card, .bl-hero-stat, .bl-list-item, .bl-chip, ' +
@@ -427,6 +429,7 @@ export function initScrollAnimations(scope) {
   for (var i = 0; i < animEls.length; i++) {
     var el = animEls[i];
     if (el.classList.contains('visible') || el.style.opacity === '1') continue;
+    if (el.hasAttribute('data-theme-anim')) continue;
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
   }
@@ -436,6 +439,7 @@ export function initScrollAnimations(scope) {
       var entry = entries[j];
       if (entry.isIntersecting) {
         var el = entry.target;
+        if (el.hasAttribute('data-theme-anim')) { enterObserver.unobserve(el); continue; }
         var parent = el.parentElement;
         var siblings = parent ? parent.children : [];
         var idx = 0;
@@ -465,8 +469,6 @@ export function initScrollAnimations(scope) {
     }
   }
   _scrollObservers.push(enterObserver);
-
-  initThemeAnimations(scope);
 
   if (!_parallaxAttached) {
     _parallaxAttached = true;
@@ -551,7 +553,7 @@ function initThemeAnimations(scope) {
       for (var a = 0; a < animClasses.length; a++) {
         if (el.classList.contains(animClasses[a])) { alreadyHasAnim = true; break; }
       }
-      if (alreadyHasAnim) continue;
+      if (alreadyHasAnim) { el.setAttribute('data-theme-anim', '1'); continue; }
 
       var typeKey = '';
       var cl = el.className;
@@ -568,6 +570,7 @@ function initThemeAnimations(scope) {
 
       var idx = _typeAnimIndex[typeKey] !== undefined ? _typeAnimIndex[typeKey] : s % animClasses.length;
       el.classList.add(animClasses[idx]);
+      el.setAttribute('data-theme-anim', '1');
     }
   }
 

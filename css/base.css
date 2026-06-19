@@ -937,18 +937,18 @@ body::after {
   opacity: 1;
 }
 [data-theme="nexus"] #bg-image-overlay {
-  opacity: 0.08;
+  opacity: 0.18;
 }
 [data-theme="bloom"] #bg-image-overlay {
   mix-blend-mode: overlay;
-  opacity: 0.06;
+  opacity: 0.17;
 }
 [data-theme="nebula"] #bg-image-overlay {
-  opacity: 0.1;
+  opacity: 0.2;
 }
 [data-theme="forge"] #bg-image-overlay {
   mix-blend-mode: overlay;
-  opacity: 0.07;
+  opacity: 0.17;
 }
 
 @media (prefers-reduced-motion: reduce) {
