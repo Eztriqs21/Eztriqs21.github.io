@@ -6,10 +6,11 @@
   border: 1px solid var(--border-card);
   border-radius: var(--radius);
   padding: 20px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   position: relative;
+  overflow: hidden;
 }
 .nx-card::before {
   content: '';
@@ -17,6 +18,11 @@
   inset: 0;
   background: linear-gradient(135deg, rgba(0, 240, 255, 0.02), transparent);
   pointer-events: none;
+}
+.nx-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.08), inset 0 0 20px rgba(0, 240, 255, 0.02);
+  transform: translateY(-1px);
 }
 .nx-card:hover {
   border-color: var(--border-hover);
