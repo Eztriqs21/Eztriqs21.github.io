@@ -24,10 +24,6 @@
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.08), inset 0 0 20px rgba(0, 240, 255, 0.02);
   transform: translateY(-1px);
 }
-.nx-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.08), inset 0 0 20px rgba(0, 240, 255, 0.02);
-}
 
 /* Buttons */
 .nx-btn {
