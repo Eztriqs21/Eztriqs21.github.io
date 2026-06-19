@@ -37,7 +37,7 @@
     const pct = safePct(Math.max(0, total), maxScore);
     const color = pct >= 70 ? 'var(--success)' : pct >= 50 ? 'var(--accent)' : 'var(--danger)';
 
-    return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden">
+    return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="mock-card">
       <div style="padding:16px 18px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <div style="flex:1;min-width:0">
@@ -82,7 +82,7 @@
         <div class="${p}-page-title" data-text="Mock Tests">Mock Tests</div>
         <div class="${p}-page-sub">Full-length practice exams</div>
       </div>
-      <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddMockTest()">+ Add Mock Test</button>
+      <button class="${p}-btn ${p}-btn-primary" data-tutorial-id="add-mock" onclick="window.openAddMockTest()">+ Add Mock Test</button>
     </div>
     <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
       <div class="${p}-stat-card">

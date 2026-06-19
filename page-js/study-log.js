@@ -66,7 +66,7 @@
       + '<div style="font-size:13px;font-weight:600">' + esc(_session.topic || 'Study Session') + '</div>'
       + '<div style="font-size:11px;color:var(--muted)">' + esc(_session.subject) + ' · ' + (isRunning ? 'Running' : 'Paused') + '</div>'
       + '</div>'
-      + '<div id="sl-live-timer" style="font-family:var(--font-data);font-size:28px;font-weight:700;color:var(--accent);letter-spacing:2px">' + formatTime(elapsed) + '</div>'
+      + '<div id="sl-live-timer" data-tutorial-id="live-timer" style="font-family:var(--font-data);font-size:28px;font-weight:700;color:var(--accent);letter-spacing:2px">' + formatTime(elapsed) + '</div>'
       + '<div style="display:flex;gap:8px">'
       + (isRunning
         ? '<button class="' + p + '-btn ' + p + '-btn-ghost" onclick="window._pauseSession()" style="font-size:11px;padding:6px 12px">Pause</button>'
@@ -149,7 +149,7 @@
       + '<div style="display:flex;gap:8px">'
       + (_session
         ? ''
-        : '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="window._startSessionModal()">Start Session</button>')
+        : '<button class="' + p + '-btn ' + p + '-btn-primary" data-tutorial-id="start-session" onclick="window._startSessionModal()">Start Session</button>')
       + '<button class="' + p + '-btn ' + p + '-btn-ghost" onclick="window.openStudyLog()">+ Manual Entry</button>'
       + '</div>'
       + '</div>'

@@ -31,7 +31,7 @@
       '<div class="' + p + '-card anim-entrance" style="padding:20px">' +
         '<div class="' + p + '-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Answer Key <span style="font-size:10px;font-weight:400;color:var(--faint)">(required)</span></div>' +
         '<p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>' +
-        '<textarea class="' + p + '-input" id="calc-key-txt" rows="3" placeholder="Paste answer key...\ne.g. 1:A, 2:C, 3:D, 4:B, 5:A ...\ninteger: 1:25, 2:100, 3:45 ...\nmulti-correct: 1:ABD, 2:CD, 3:ABC"></textarea>' +
+        '<textarea class="' + p + '-input" id="calc-key-txt" rows="3" placeholder="Paste answer key...\ne.g. 1:A, 2:C, 3:D, 4:B, 5:A ...\ninteger: 1:25, 2:100, 3:45 ...\nmulti-correct: 1:ABD, 2:CD, 3:ABC" data-tutorial-id="answer-key"></textarea>' +
         '<div style="display:flex;align-items:center;gap:10px;margin-top:8px">' +
           '<button class="' + p + '-btn ' + p + '-btn-ghost" onclick="window.applyAnsKey()">Apply Key</button>' +
           '<span id="key-status" style="font-size:11px;color:var(--green)"></span>' +
@@ -48,7 +48,7 @@
         '<div class="q-matrix-wrap">' +
           '<div class="q-matrix">' +
             '<div class="q-matrix-header"><div>Q#</div><div>Subject</div><div>Type</div><div>Response</div><div>Skip</div></div>' +
-            '<div id="q-mat-body" style="max-height:440px;overflow-y:auto;-webkit-overflow-scrolling:touch">' + buildQMat() + '</div>' +
+            '<div id="q-mat-body" style="max-height:440px;overflow-y:auto;-webkit-overflow-scrolling:touch" data-tutorial-id="response-sheet">' + buildQMat() + '</div>' +
           '</div>' +
         '</div>' +
         '<div style="padding:14px 0 0;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">' +
@@ -56,7 +56,7 @@
           '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="window.evalCalc()"' + (Object.keys(calcAnsKey).length === 0 ? ' disabled style="padding:10px 22px;opacity:0.5;cursor:not-allowed"' : ' style="padding:10px 22px"') + '><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg> Calculate Score</button>' +
         '</div>' +
       '</div>' +
-      '<div id="calc-results" style="margin-top:16px;display:' + (calcShowResults ? 'block' : 'none') + '">' + (calcShowResults ? buildCalcRes() : '') + '</div>';
+      '<div id="calc-results" data-tutorial-id="calc-results" style="margin-top:16px;display:' + (calcShowResults ? 'block' : 'none') + '">' + (calcShowResults ? buildCalcRes() : '') + '</div>';
 
     attachCalcKeyboard();
   }

@@ -40,7 +40,7 @@
     const p = pfx();
     const diff = DIFFICULTY[q.difficulty] || DIFFICULTY.medium;
     const answered = _pyqAnswers[q.id];
-    return '<div class="' + p + '-card anim-entrance" style="--delay:' + (index * 0.05) + 's;padding:16px">'
+    return '<div class="' + p + '-card anim-entrance" style="--delay:' + (index * 0.05) + 's;padding:16px" data-tutorial-id="pyq-card">'
       + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
       + '<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;background:' + diff.bg + ';color:' + diff.color + '">' + diff.label + '</span>'
       + '<span style="font-size:11px;padding:2px 8px;border-radius:12px;background:var(--border);color:var(--muted)">' + q.year + '</span>'
@@ -79,7 +79,7 @@
       + '<div class="' + p + '-page-title" data-text="PYQ Research">PYQ Research</div>'
       + '<div class="' + p + '-page-sub">Previous year question analysis</div>'
       + '</div>'
-      + '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="window._openAddPyq()">+ Add PYQ</button>'
+      + '<button class="' + p + '-btn ' + p + '-btn-primary" data-tutorial-id="add-pyq" onclick="window._openAddPyq()">+ Add PYQ</button>'
       + '</div>'
       + '<div class="' + p + '-stats-grid anim-entrance" style="--delay:0.1s">'
       + '<div class="' + p + '-stat-card">'
@@ -107,7 +107,7 @@
       + '<div class="' + p + '-stat-sub">Questions</div>'
       + '</div>'
       + '</div>'
-      + '<div class="' + p + '-filter-bar anim-entrance" style="--delay:0.15s">'
+      + '<div class="' + p + '-filter-bar anim-entrance" style="--delay:0.15s" data-tutorial-id="pyq-filters">'
       + '<button class="' + p + '-chip ' + (activeYear === 'all' ? 'active' : '') + '" onclick="window._pyqYear(\'all\')">All Years</button>'
       + YEARS.map(function(y) { return '<button class="' + p + '-chip ' + (activeYear === y ? 'active' : '') + '" onclick="window._pyqYear(' + y + ')">' + y + '</button>'; }).join('')
       + '</div>'

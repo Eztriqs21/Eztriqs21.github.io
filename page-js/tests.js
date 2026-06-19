@@ -16,7 +16,7 @@
     const mS = Math.max(0, (t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
     const papers = t.papers || [];
 
-    return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden">
+    return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="test-card">
       <div style="padding:16px 18px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <div style="width:32px;height:32px;border-radius:8px;background:var(--border-card);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-muted);flex-shrink:0">#${i + 1}</div>
@@ -94,9 +94,9 @@
         <div class="${p}-page-title" data-text="Tests">Tests</div>
         <div class="${p}-page-sub">Test history and performance analysis</div>
       </div>
-      <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddTest()">+ Add Test</button>
+      <button class="${p}-btn ${p}-btn-primary" data-tutorial-id="add-test" onclick="window.openAddTest()">+ Add Test</button>
     </div>
-    <input class="${p}-input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off">
+    <input class="${p}-input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
     <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
       <div class="${p}-stat-card">
         <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>

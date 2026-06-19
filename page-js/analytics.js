@@ -82,7 +82,7 @@
       <div class="${p}-page-title" data-text="Statistics & Study Logs">Statistics & Study Logs</div>
       <div class="${p}-page-sub">Performance insights and study tracking</div>
     </div>
-    <div class="${p}-hero-stats">
+    <div class="${p}-hero-stats" data-tutorial-id="hero-stats">
       ${heroStat((+weekTotal).toFixed(1) + 'h', 'This Week Total', 'var(--accent)', '0.1s')}
       ${heroStat((+avgDay).toFixed(1) + 'h', 'Avg Per Day', 'var(--success)', '0.15s')}
       ${heroStat(bestDay ? ((+bestDay[1]).toFixed(1) + 'h') : '—', 'Best Day' + (bestDay ? ' (' + fmtDate(bestDay[0]) + ')' : ''), 'var(--primary)', '0.2s')}
@@ -91,7 +91,7 @@
     </div>
     <div class="${p}-section-block anim-entrance" style="--delay:0.35s">
       <div class="${p}-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Weekly Study Hours</div>
-      <div class="${p}-bar-chart">
+      <div class="${p}-bar-chart" data-tutorial-id="weekly-chart">
         ${barData.map((b, i) => barCol(b.day, b.val, maxVal, (0.4 + i * 0.03) + 's')).join('')}
       </div>
     </div>

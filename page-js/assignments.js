@@ -22,7 +22,7 @@
     const dueColor = a.completed ? 'var(--success)' : daysLeft !== null && daysLeft < 0 ? 'var(--danger)' : daysLeft !== null && daysLeft <= 1 ? 'var(--accent)' : 'var(--muted)';
     const atts = a.attachments || [];
 
-    return `<div class="${p}-card anim-entrance" style="--delay:${index * 0.04}s;padding:0;overflow:hidden">
+    return `<div class="${p}-card anim-entrance" style="--delay:${index * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="assignment-item">
       <div style="display:flex;align-items:stretch">
         <div style="width:4px;background:${pr.color};flex-shrink:0;border-radius:4px 0 0 4px"></div>
         <div style="flex:1;padding:16px 18px">
@@ -108,7 +108,7 @@
         <div class="${p}-page-title" data-text="Assignments">Assignments</div>
         <div class="${p}-page-sub">Tasks and study materials</div>
       </div>
-      <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddAssign()">+ Add Task</button>
+      <button class="${p}-btn ${p}-btn-primary" data-tutorial-id="add-assignment" onclick="window.openAddAssign()">+ Add Task</button>
     </div>
     <input class="${p}-input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
     <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">

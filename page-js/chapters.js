@@ -22,7 +22,7 @@
     const strColor = STRENGTH_COLORS[str];
     const strBg = STRENGTH_BG[str];
 
-    return `<div class="${p}-list-item anim-entrance" style="--delay:${index * 0.02}s;cursor:pointer" onclick="window.openEditCh('${subj}','${ch.id}')">
+    return `<div class="${p}-list-item anim-entrance" style="--delay:${index * 0.02}s;cursor:pointer" data-tutorial-id="chapter-item" onclick="window.openEditCh('${subj}','${ch.id}')">
       <div class="${p}-chapter-check ${ch.completed ? 'done' : ''}" onclick="event.stopPropagation();window.toggleChDone('${subj}','${ch.id}')">
         ${ch.completed ? '<svg width="11" height="11" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>' : ''}
       </div>
@@ -82,9 +82,9 @@
         <div class="${p}-page-title" data-text="Chapters">Chapters</div>
         <div class="${p}-page-sub">Syllabus mastery & tracking</div>
       </div>
-      <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddCh()">+ Add Chapter</button>
+      <button class="${p}-btn ${p}-btn-primary" data-tutorial-id="add-chapter" onclick="window.openAddCh()">+ Add Chapter</button>
     </div>
-    <input class="${p}-input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_chSearch)}" autocomplete="off">
+    <input class="${p}-input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_chSearch)}" autocomplete="off" data-tutorial-id="chapter-search">
     <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
       <div class="${p}-stat-card">
         <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
