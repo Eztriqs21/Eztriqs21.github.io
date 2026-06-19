@@ -102,7 +102,6 @@
       '</div>';
     document.body.appendChild(closingScreen);
 
-    buildTourSelect();
     bindEvents();
   }
 
@@ -141,8 +140,29 @@
     tourSelectOverlay.querySelector('[data-tour="full"]').addEventListener('click', function() { startTour('full'); });
     document.getElementById('tour-dismiss').addEventListener('click', function() { hideTourSelect(); });
 
+    callout.addEventListener('mouseenter', function() { if (active) _paused = true; });
+    callout.addEventListener('mouseleave', function() { if (active) { _paused = false; resetAutoTimer(); } });
+
+    if ('ontouchstart' in window) {
+      var touchStartX = 0;
+      callout.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+      callout.addEventListener('touchend', function(e) {
+        var dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) {
+          if (dx < 0) next(); else prev();
+        }
+      }, { passive: true });
+    }
+  }
+
+  function bindGlobalEvents() {
+    var tutorialBtn = document.getElementById('tutorial-btn');
+    if (tutorialBtn) {
+      tutorialBtn.addEventListener('click', function() { showTourSelect(); });
+    }
+
     document.addEventListener('keydown', function(e) {
-      if (tourSelectOverlay.classList.contains('visible')) {
+      if (tourSelectOverlay && tourSelectOverlay.classList.contains('visible')) {
         if (e.key === 'Escape') hideTourSelect();
         return;
       }
@@ -155,25 +175,6 @@
       else if (e.key === 'ArrowRight') { next(); }
       else if (e.key === 'ArrowLeft') { prev(); }
     });
-
-    callout.addEventListener('mouseenter', function() { if (active) _paused = true; });
-    callout.addEventListener('mouseleave', function() { if (active) { _paused = false; resetAutoTimer(); } });
-
-    var tutorialBtn = document.getElementById('tutorial-btn');
-    if (tutorialBtn) {
-      tutorialBtn.addEventListener('click', function() { showTourSelect(); });
-    }
-
-    if ('ontouchstart' in window) {
-      var touchStartX = 0;
-      callout.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
-      callout.addEventListener('touchend', function(e) {
-        var dx = e.changedTouches[0].clientX - touchStartX;
-        if (Math.abs(dx) > 50) {
-          if (dx < 0) next(); else prev();
-        }
-      }, { passive: true });
-    }
   }
 
   function showTourSelect() {
@@ -473,4 +474,7 @@
     start: function(mode) { startTour(mode || 'quick'); },
     skip: skip
   };
+
+  buildTourSelect();
+  bindGlobalEvents();
 })();
