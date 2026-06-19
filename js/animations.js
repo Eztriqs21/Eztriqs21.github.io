@@ -553,7 +553,12 @@ function initThemeAnimations(scope) {
       for (var a = 0; a < animClasses.length; a++) {
         if (el.classList.contains(animClasses[a])) { alreadyHasAnim = true; break; }
       }
-      if (alreadyHasAnim) { el.setAttribute('data-theme-anim', '1'); continue; }
+      if (alreadyHasAnim) {
+        el.setAttribute('data-theme-anim', '1');
+        el.classList.remove('anim-entrance', 'anim-up');
+        el.classList.add('visible');
+        continue;
+      }
 
       var typeKey = '';
       var cl = el.className;
@@ -571,6 +576,8 @@ function initThemeAnimations(scope) {
       var idx = _typeAnimIndex[typeKey] !== undefined ? _typeAnimIndex[typeKey] : s % animClasses.length;
       el.classList.add(animClasses[idx]);
       el.setAttribute('data-theme-anim', '1');
+      el.classList.remove('anim-entrance', 'anim-up');
+      el.classList.add('visible');
     }
   }
 
