@@ -165,7 +165,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mobile-only { display: none; }
 
 /* ═══════════════ APP LAYOUT ═══════════════ */
-#app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+#app { display: flex; min-height: 100vh; position: relative; }
 
 #sidebar {
   position: fixed; left: 0; top: 0; bottom: 0;
