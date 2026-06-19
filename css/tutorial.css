@@ -43,10 +43,12 @@
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(6px);
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.35s ease;
 }
 .tour-select-overlay.visible {
   opacity: 1;
+  pointer-events: auto;
 }
 .tour-select-modal {
   background: var(--bg-surface);

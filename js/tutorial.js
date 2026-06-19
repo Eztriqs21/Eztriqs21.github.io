@@ -109,6 +109,7 @@
     tourSelectOverlay = document.createElement('div');
     tourSelectOverlay.className = 'tour-select-overlay';
     tourSelectOverlay.id = 'tour-select';
+    tourSelectOverlay.style.display = 'none';
     tourSelectOverlay.innerHTML =
       '<div class="tour-select-modal">' +
         '<h2>Choose Your Tour</h2>' +
