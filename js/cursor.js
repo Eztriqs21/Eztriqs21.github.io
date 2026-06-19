@@ -19,6 +19,8 @@
   let prevMouseX = mouseX, prevMouseY = mouseY;
   let _rafId = null;
   let _alive = true;
+  let _nbSatAngle = [0, Math.PI * 0.66, Math.PI * 1.33];
+  let _nbSatSpeed = [0.04, 0.03, 0.05];
 
   function onMouseMove(e) {
     prevMouseX = mouseX;
@@ -164,6 +166,28 @@
     }
 
     spawnTrailParticles();
+
+    if (theme === 'nebula') {
+      var satCanvas = document.getElementById('grid-canvas');
+      if (satCanvas) {
+        var sCtx = satCanvas.getContext('2d');
+        if (sCtx) {
+          var orbitRadius = isHovering ? 20 : 14;
+          var satColors = ['140,122,230', '232,107,138', '106,232,176'];
+          var spinMult = isHovering ? 2.5 : 1;
+          for (var si = 0; si < 3; si++) {
+            _nbSatAngle[si] += _nbSatSpeed[si] * spinMult;
+            var sx = ringX + Math.cos(_nbSatAngle[si]) * orbitRadius;
+            var sy = ringY + Math.sin(_nbSatAngle[si]) * orbitRadius;
+            sCtx.beginPath();
+            sCtx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+            sCtx.fillStyle = 'rgba(' + satColors[si] + ',0.7)';
+            sCtx.fill();
+          }
+        }
+      }
+    }
+
     _rafId = requestAnimationFrame(animate);
   }
 

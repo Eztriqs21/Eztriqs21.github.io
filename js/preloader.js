@@ -24,12 +24,34 @@
     _preloaderTimers.forEach(function(id) { clearTimeout(id); });
     _preloaderTimers = [];
   }
-  
+
+  function showScreen(name) {
+    if (nexusScreen) nexusScreen.style.display = name === 'nexus' ? 'flex' : 'none';
+    if (bloomScreen) bloomScreen.style.display = name === 'bloom' ? 'flex' : 'none';
+    if (nebulaScreen) nebulaScreen.style.display = name === 'nebula' ? 'flex' : 'none';
+  }
+
+  function fadeInPreloader(callback) {
+    preloader.style.display = 'flex';
+    preloader.style.opacity = '0';
+    void preloader.offsetWidth;
+    preloader.style.transition = 'opacity 0.3s ease';
+    preloader.style.opacity = '1';
+    _plSetTimeout(callback, 300);
+  }
+
+  function fadeOutPreloader(callback) {
+    preloader.style.transition = 'opacity 0.4s ease';
+    preloader.style.opacity = '0';
+    _plSetTimeout(function() {
+      preloader.style.display = 'none';
+      callback();
+    }, 400);
+  }
+
   function runNexusBoot(onComplete) {
     _plClearAll();
-    if (nexusScreen) nexusScreen.style.display = 'flex';
-    if (bloomScreen) bloomScreen.style.display = 'none';
-    if (nebulaScreen) nebulaScreen.style.display = 'none';
+    showScreen('nexus');
     
     const bootText = nexusScreen?.querySelector('.boot-text');
     if (!bootText) { onComplete?.(); return; }
@@ -39,12 +61,8 @@
     
     function typeLine() {
       if (lineIndex >= NEXUS_BOOT_LINES.length) {
-        _plSetTimeout(() => {
-          preloader.style.opacity = '0';
-          _plSetTimeout(() => {
-            preloader.style.display = 'none';
-            onComplete?.();
-          }, 400);
+        _plSetTimeout(function() {
+          fadeOutPreloader(onComplete);
         }, 300);
         return;
       }
@@ -76,48 +94,93 @@
   
   function runBloomGrow(onComplete) {
     _plClearAll();
-    if (nexusScreen) nexusScreen.style.display = 'none';
-    if (bloomScreen) bloomScreen.style.display = 'flex';
-    if (nebulaScreen) nebulaScreen.style.display = 'none';
+    showScreen('bloom');
     
     const paths = bloomScreen?.querySelectorAll('svg path');
     if (!paths || paths.length === 0) { onComplete?.(); return; }
     
-    paths.forEach((path, i) => {
-      const length = path.getTotalLength?.() || 200;
+    paths.forEach(function(path, i) {
+      var length = path.getTotalLength ? path.getTotalLength() : 200;
       path.style.strokeDasharray = length;
       path.style.strokeDashoffset = length;
-      path.style.animation = `leaf-draw 0.6s ease ${i * 0.2}s forwards`;
+      path.style.animation = 'leaf-draw 0.6s ease ' + (i * 0.2) + 's forwards';
     });
     
-    _plSetTimeout(() => {
-      preloader.style.opacity = '0';
-      _plSetTimeout(() => {
-        preloader.style.display = 'none';
-        onComplete?.();
-      }, 400);
+    _plSetTimeout(function() {
+      fadeOutPreloader(onComplete);
     }, 2000);
   }
   
   function runNebulaConstellation(onComplete) {
     _plClearAll();
-    if (nexusScreen) nexusScreen.style.display = 'none';
-    if (bloomScreen) bloomScreen.style.display = 'none';
-    if (nebulaScreen) nebulaScreen.style.display = 'flex';
+    showScreen('nebula');
 
-    _plSetTimeout(() => {
-      preloader.style.opacity = '0';
-      _plSetTimeout(() => {
-        preloader.style.display = 'none';
-        onComplete?.();
-      }, 400);
-    }, 1800);
+    var svg = nebulaScreen?.querySelector('svg');
+    if (!svg) { onComplete?.(); return; }
+
+    var circles = svg.querySelectorAll('circle');
+    var lines = svg.querySelectorAll('line');
+
+    circles.forEach(function(c) {
+      c.style.opacity = '0';
+      c.style.transform = 'scale(0)';
+      c.style.transformOrigin = 'center';
+      c.style.transition = 'none';
+    });
+    lines.forEach(function(l) {
+      var len = l.getTotalLength ? l.getTotalLength() : 100;
+      l.style.strokeDasharray = len;
+      l.style.strokeDashoffset = len;
+      l.style.transition = 'none';
+    });
+
+    var delay = 0;
+    circles.forEach(function(c, i) {
+      _plSetTimeout(function() {
+        c.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        c.style.opacity = '1';
+        c.style.transform = 'scale(1)';
+      }, delay);
+      delay += 80;
+    });
+
+    lines.forEach(function(l, i) {
+      _plSetTimeout(function() {
+        l.style.transition = 'stroke-dashoffset 0.4s ease';
+        l.style.strokeDashoffset = '0';
+      }, delay);
+      delay += 150;
+    });
+
+    _plSetTimeout(function() {
+      svg.style.transition = 'filter 0.5s ease';
+      svg.style.filter = 'drop-shadow(0 0 12px rgba(140,122,230,0.6))';
+    }, delay);
+
+    _plSetTimeout(function() {
+      fadeOutPreloader(onComplete);
+    }, delay + 600);
+  }
+
+  function runTransition(theme, onComplete) {
+    _plClearAll();
+    showScreen(theme);
+
+    fadeInPreloader(function() {
+      if (theme === 'nexus') {
+        runNexusBoot(onComplete);
+      } else if (theme === 'nebula') {
+        runNebulaConstellation(onComplete);
+      } else {
+        runBloomGrow(onComplete);
+      }
+    });
   }
 
   window.preloaderEngine = {
     run: function(onComplete) {
       _plClearAll();
-      const theme = document.documentElement.getAttribute('data-theme');
+      var theme = document.documentElement.getAttribute('data-theme');
       preloader.style.display = 'flex';
       preloader.style.opacity = '1';
       
@@ -129,6 +192,7 @@
         runBloomGrow(onComplete);
       }
     },
+    runTransition: runTransition,
     cancel: function() {
       _plClearAll();
       preloader.style.display = 'none';

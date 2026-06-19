@@ -118,6 +118,72 @@ body.cursor-active, body.cursor-active * {
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 
+/* ═══════════════ NEBULA CURSOR ═══════════════ */
+[data-theme="nebula"] #cursor-ring {
+  width: 22px;
+  height: 22px;
+  border: 1.5px dashed rgba(140, 122, 230, 0.5);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 8px rgba(140, 122, 230, 0.15);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, border-style 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+[data-theme="nebula"] #cursor-dot {
+  width: 5px;
+  height: 5px;
+  background: #8C7AE6;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(140, 122, 230, 0.9), 0 0 20px rgba(140, 122, 230, 0.4);
+  transform: translate(-50%, -50%);
+}
+
+[data-theme="nebula"] #cursor-trail {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(140, 122, 230, 0.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+[data-theme="nebula"] #cursor-pulse {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(140, 122, 230, 0.6);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Nebula hover: ring fills with stardust glow */
+[data-theme="nebula"] .cursor-hover #cursor-ring {
+  width: 36px;
+  height: 36px;
+  border-style: solid;
+  border-color: rgba(140, 122, 230, 0.5);
+  background: radial-gradient(circle, rgba(140, 122, 230, 0.12), transparent 70%);
+  box-shadow: 0 0 24px rgba(140, 122, 230, 0.3), inset 0 0 12px rgba(140, 122, 230, 0.08);
+}
+
+[data-theme="nebula"] .cursor-hover #cursor-trail {
+  width: 36px;
+  height: 36px;
+}
+
+/* Nebula click: constellation burst */
+[data-theme="nebula"].cursor-active.cursor-click #cursor-pulse {
+  animation: nebula-burst 0.5s ease-out forwards;
+}
+
+@keyframes nebula-burst {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; border-color: rgba(140, 122, 230, 0.8); }
+  50% { border-color: rgba(232, 107, 138, 0.6); }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-color: rgba(106, 232, 176, 0.2); }
+}
+
 /* ═══════════════ THEME TRANSITION ═══════════════ */
 [data-theme-transitioning] #cursor-ring,
 [data-theme-transitioning] #cursor-dot,
