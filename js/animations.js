@@ -495,21 +495,22 @@ export function initTilt() {
       var theme = document.documentElement.getAttribute('data-theme');
       if (theme !== 'nexus') { ticking = false; return; }
 
-      document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat').forEach(function(card) {
-        var rect = card.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+        document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat').forEach(function(card) {
+          if (card.hasAttribute('data-no-tilt')) return;
+          var rect = card.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var y = e.clientY - rect.top;
 
-        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-          var rotateX = ((y / rect.height) - 0.5) * -6;
-          var rotateY = ((x / rect.width) - 0.5) * 6;
-          card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
-          card.style.willChange = 'transform';
-        } else {
-          card.style.transform = '';
-          card.style.willChange = '';
-        }
-      });
+          if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+            var rotateX = ((y / rect.height) - 0.5) * -6;
+            var rotateY = ((x / rect.width) - 0.5) * 6;
+            card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
+            card.style.willChange = 'transform';
+          } else {
+            card.style.transform = '';
+            card.style.willChange = '';
+          }
+        });
       ticking = false;
     });
   }, { passive: true });
@@ -636,39 +637,30 @@ export function initInteractions() {
     setTimeout(function() { ripple.remove(); target.style.overflow = prevOverflow; target.style.position = prevPosition; }, 600);
   }, true);
 
-  // Bloom parallax cards — cached + viewport-culled
+  // Bloom parallax cards — matches jee-hq-v2 exactly
   var _parallaxTick = false;
-  var _bloomCards = null;
-  var _bloomCardsTime = 0;
-  document.addEventListener('pointermove', function(e) {
+  document.addEventListener('mousemove', function(e) {
     if (_parallaxTick) return;
     _parallaxTick = true;
     requestAnimationFrame(function() {
       var theme = document.documentElement.getAttribute('data-theme');
-      if (theme === 'bloom') {
-        var now = Date.now();
-        if (!_bloomCards || now - _bloomCardsTime > 2000) {
-          _bloomCards = document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat');
-          _bloomCardsTime = now;
+      if (theme !== 'bloom') { _parallaxTick = false; return; }
+
+      document.querySelectorAll('.bl-card, .bl-stat-card, .bl-hero-stat').forEach(function(card) {
+        var rect = card.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2;
+        var centerY = rect.top + rect.height / 2;
+        var offsetX = (e.clientX - centerX) * 0.015;
+        var offsetY = (e.clientY - centerY) * 0.015;
+
+        if (Math.abs(e.clientX - centerX) < 300 && Math.abs(e.clientY - centerY) < 300) {
+          card.style.transform = 'translate(' + (-offsetX) + 'px,' + (-offsetY) + 'px) translateY(-2px)';
+          card.style.willChange = 'transform';
+        } else {
+          card.style.transform = '';
+          card.style.willChange = '';
         }
-        var vh = window.innerHeight;
-        for (var i = 0; i < _bloomCards.length; i++) {
-          var card = _bloomCards[i];
-          var rect = card.getBoundingClientRect();
-          if (rect.bottom < -50 || rect.top > vh + 50) { card.style.transform = ''; continue; }
-          var centerX = rect.left + rect.width / 2;
-          var centerY = rect.top + rect.height / 2;
-          var dxC = Math.abs(e.clientX - centerX);
-          var dyC = Math.abs(e.clientY - centerY);
-          if (dxC < 300 && dyC < 300) {
-            var offsetX = (e.clientX - centerX) * 0.015;
-            var offsetY = (e.clientY - centerY) * 0.015;
-            card.style.transform = 'translate(' + (-offsetX) + 'px,' + (-offsetY) + 'px) translateY(-2px)';
-          } else {
-            card.style.transform = '';
-          }
-        }
-      }
+      });
       _parallaxTick = false;
     });
   }, { passive: true });

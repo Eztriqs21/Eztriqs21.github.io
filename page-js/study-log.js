@@ -176,12 +176,12 @@
       + '</div>'
       + '<div class="' + p + '-section-block anim-entrance" style="--delay:0.2s">'
       + '<div class="' + p + '-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Weekly Overview</div>'
-      + '<div class="' + p + '-card" style="padding:16px;overflow-x:auto">'
+      + '<div class="' + p + '-card" data-no-tilt style="padding:16px;overflow-x:auto">'
       + weeklyChart(logs)
       + '</div></div>'
       + '<div class="' + p + '-section-block anim-entrance" style="--delay:0.3s">'
       + '<div class="' + p + '-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Session Log</div>'
-      + '<div class="' + p + '-card" style="padding:12px 16px">'
+      + '<div class="' + p + '-card" data-no-tilt style="padding:12px 16px">'
       + (logs.length === 0
         ? '<div class="' + p + '-empty" style="padding:32px"><div class="' + p + '-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="' + p + '-empty-title">No sessions logged</div><div class="' + p + '-empty-sub">Click "Start Session" at the top to begin tracking</div></div>'
         : [...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).map((l, i) => logRow(l, i)).join(''))
