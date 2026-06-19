@@ -1137,7 +1137,7 @@
   transition: opacity 0.3s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
-[data-theme="forge"].fd-anim-active .fd-anim-gear::before {
+[data-theme="forge"] .fd-anim-gear.fd-anim-active::before {
   opacity: 1;
   transform: rotate(90deg);
 }
@@ -1160,7 +1160,7 @@
   transition: opacity 0.4s ease, transform 0.5s ease;
   pointer-events: none;
 }
-[data-theme="forge"].fd-anim-active .fd-anim-steam::before {
+[data-theme="forge"] .fd-anim-steam.fd-anim-active::before {
   opacity: 1;
   transform: translateY(-15px) scaleX(1);
 }
@@ -1168,7 +1168,7 @@
 [data-theme="forge"] .fd-anim-stamp {
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-[data-theme="forge"].fd-anim-active .fd-anim-stamp {
+[data-theme="forge"] .fd-anim-stamp.fd-anim-active {
   animation: fd-stamp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes fd-stamp {
@@ -1195,7 +1195,7 @@
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
-[data-theme="forge"].fd-anim-active .fd-anim-chain::before {
+[data-theme="forge"] .fd-anim-chain.fd-anim-active::before {
   transform: scaleY(1);
 }
 
@@ -1222,7 +1222,7 @@
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
-[data-theme="forge"].fd-anim-active .fd-anim-spark::after {
+[data-theme="forge"] .fd-anim-spark.fd-anim-active::after {
   animation: fd-spark 0.5s ease-out forwards;
 }
 @keyframes fd-spark {

@@ -523,6 +523,11 @@ var _themeAnimMap = {
   forge: ['fd-anim-gear', 'fd-anim-steam', 'fd-anim-stamp', 'fd-anim-chain', 'fd-anim-spark']
 };
 
+var _typeAnimIndex = {
+  card: 0, 'stat-card': 1, 'hero-stat': 2, 'list-item': 3, 'section-block': 4,
+  chip: 2, testcard: 0, mtcard: 0, prepcard: 1, freqcard: 2
+};
+
 function initThemeAnimations(scope) {
   if (noMotion()) return;
   var root = scope || document;
@@ -530,10 +535,40 @@ function initThemeAnimations(scope) {
   var animClasses = _themeAnimMap[theme];
   if (!animClasses) return;
 
-  var allAnimEls = root.querySelectorAll('[class*="-anim-"]');
-  for (var i = 0; i < allAnimEls.length; i++) {
-    var el = allAnimEls[i];
-    el.classList.remove(theme + '-anim-active');
+  var p = theme === 'nexus' ? 'nx' : theme === 'bloom' ? 'bl' : theme === 'nebula' ? 'nb' : 'fd';
+
+  var cardSelectors = [
+    '.' + p + '-card', '.' + p + '-stat-card', '.' + p + '-hero-stat',
+    '.' + p + '-list-item', '.' + p + '-section-block', '.' + p + '-chip',
+    '.test-card', '.mt-card', '.prep-card', '.freq-card'
+  ];
+
+  for (var s = 0; s < cardSelectors.length; s++) {
+    var els = root.querySelectorAll(cardSelectors[s]);
+    for (var e = 0; e < els.length; e++) {
+      var el = els[e];
+      var alreadyHasAnim = false;
+      for (var a = 0; a < animClasses.length; a++) {
+        if (el.classList.contains(animClasses[a])) { alreadyHasAnim = true; break; }
+      }
+      if (alreadyHasAnim) continue;
+
+      var typeKey = '';
+      var cl = el.className;
+      if (cl.indexOf(p + '-stat-card') !== -1) typeKey = 'stat-card';
+      else if (cl.indexOf(p + '-hero-stat') !== -1) typeKey = 'hero-stat';
+      else if (cl.indexOf(p + '-list-item') !== -1) typeKey = 'list-item';
+      else if (cl.indexOf(p + '-section-block') !== -1) typeKey = 'section-block';
+      else if (cl.indexOf(p + '-chip') !== -1) typeKey = 'chip';
+      else if (cl.indexOf('test-card') !== -1) typeKey = 'testcard';
+      else if (cl.indexOf('mt-card') !== -1) typeKey = 'mtcard';
+      else if (cl.indexOf('prep-card') !== -1) typeKey = 'prepcard';
+      else if (cl.indexOf('freq-card') !== -1) typeKey = 'freqcard';
+      else typeKey = 'card';
+
+      var idx = _typeAnimIndex[typeKey] !== undefined ? _typeAnimIndex[typeKey] : s % animClasses.length;
+      el.classList.add(animClasses[idx]);
+    }
   }
 
   var themeObserver = new IntersectionObserver(function(entries) {
@@ -544,13 +579,12 @@ function initThemeAnimations(scope) {
         themeObserver.unobserve(el);
       }
     }
-  }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
+  }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
 
   for (var c = 0; c < animClasses.length; c++) {
-    var selector = '.' + animClasses[c];
-    var els = root.querySelectorAll(selector);
-    for (var e = 0; e < els.length; e++) {
-      themeObserver.observe(els[e]);
+    var animEls = root.querySelectorAll('.' + animClasses[c]);
+    for (var ae = 0; ae < animEls.length; ae++) {
+      themeObserver.observe(animEls[ae]);
     }
   }
   _scrollObservers.push(themeObserver);

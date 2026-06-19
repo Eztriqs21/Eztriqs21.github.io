@@ -1097,11 +1097,11 @@
   background: #E86B8A;
   box-shadow: 0 0 6px rgba(232,107,138,0.8);
 }
-[data-theme="nebula"].nb-anim-active .nb-anim-twinkle::before,
-[data-theme="nebula"].nb-anim-active .nb-anim-twinkle::after {
+[data-theme="nebula"] .nb-anim-twinkle.nb-anim-active::before,
+[data-theme="nebula"] .nb-anim-twinkle.nb-anim-active::after {
   animation: nb-twinkle 2s ease-in-out infinite;
 }
-[data-theme="nebula"].nb-anim-active .nb-anim-twinkle::after {
+[data-theme="nebula"] .nb-anim-twinkle.nb-anim-active::after {
   animation-delay: 0.7s;
 }
 @keyframes nb-twinkle {
@@ -1132,7 +1132,7 @@
   transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
-[data-theme="nebula"].nb-anim-active .nb-anim-constellation::before {
+[data-theme="nebula"] .nb-anim-constellation.nb-anim-active::before {
   opacity: 1;
   transform: scale(1);
 }
@@ -1151,7 +1151,7 @@
   transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
 }
-[data-theme="nebula"].nb-anim-active .nb-anim-cloud::before {
+[data-theme="nebula"] .nb-anim-cloud.nb-anim-active::before {
   opacity: 1;
   transform: scale(1);
 }
@@ -1174,7 +1174,7 @@
   transition: none;
   pointer-events: none;
 }
-[data-theme="nebula"].nb-anim-active .nb-anim-shooting::after {
+[data-theme="nebula"] .nb-anim-shooting.nb-anim-active::after {
   animation: nb-shooting 0.8s ease-out forwards;
 }
 @keyframes nb-shooting {
@@ -1186,7 +1186,7 @@
 [data-theme="nebula"] .nb-anim-spiral {
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-[data-theme="nebula"].nb-anim-active .nb-anim-spiral {
+[data-theme="nebula"] .nb-anim-spiral.nb-anim-active {
   animation: nb-spiral-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes nb-spiral-in {
