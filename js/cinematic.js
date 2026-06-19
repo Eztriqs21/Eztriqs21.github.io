@@ -1,96 +1,90 @@
 (function() {
-  var TOTAL_DURATION = 60000;
-  var overlay, scanlines, noise, stage, skipBtn, progressBar, progressFill;
-  var spotlight, spotlightBorder, pageIndicator;
-  var morphFlash;
+  var overlay, vignette, stage, skipBtn, progressBar, progressFill;
+  var spotlight, spotlightBorder, morphFlash;
   var titleEl, subEl, labelEl, themeNameEl;
+  var picker, pickerVisible = false;
   var active = false;
-  var sceneTimer = null;
   var startTime = 0;
   var _raf = null;
+  var _sceneIdx = 0;
+  var chosenStyle = localStorage.getItem('cinematicStyle') || '';
 
   var SCENES = [
-    { t: 0,    dur: 500,   text: '', sub: '', effect: 'none', page: null, theme: null, transition: 'none' },
+    { t: 0,    dur: 600,   effect: 'none' },
 
-    { t: 500,  dur: 2000,  text: 'JEE HQ', sub: '', effect: 'glitch', page: null, theme: null, transition: 'none',
-      position: 'center', textClass: 'cinematic-title' },
+    { t: 600,  dur: 2200,  text: 'JEE HQ', effect: 'title', position: 'center' },
 
-    { t: 2500, dur: 1500,  text: '', sub: 'YOUR COMMAND CENTER', effect: 'typewriter', page: null, theme: null, transition: 'none',
-      position: 'center', textClass: 'cinematic-sub' },
+    { t: 2800, dur: 1600,  sub: 'YOUR COMMAND CENTER', effect: 'sub', position: 'center' },
 
-    { t: 4000, dur: 1500,  text: '', sub: 'Let us show you around.', effect: 'fade-up', page: null, theme: null, transition: 'none',
-      position: 'center', textClass: 'cinematic-sub', subOffset: 60 },
+    { t: 4400, dur: 1600,  sub: 'Let us show you around.', effect: 'sub', position: 'center' },
 
-    { t: 5500,  dur: 2500, text: 'DASHBOARD', label: 'YOUR HUB', effect: 'fly-left', page: 'dashboard',
-      spotlight: '[data-tutorial-id="stat-cards"]', theme: 'nexus', transition: 'cut' },
+    { t: 6000,  dur: 2500, text: 'DASHBOARD', label: 'YOUR HUB', effect: 'title',
+      page: 'dashboard', spotlight: '[data-tutorial-id="stat-cards"]', theme: 'nexus', transition: 'cut' },
 
-    { t: 8000,  dur: 2000, text: 'Know Your Numbers', label: '', effect: 'scale', page: null,
-      spotlight: '[data-tutorial-id="stat-cards"]', theme: null, transition: 'none' },
+    { t: 8500,  dur: 2000, text: 'Know Your Numbers', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="stat-cards"]' },
 
-    { t: 10000, dur: 2500, text: 'CHAPTERS', label: 'SYLLABUS', effect: 'fly-right', page: 'chapters',
-      spotlight: '[data-tutorial-id="chapter-item"]', theme: null, transition: 'cut' },
+    { t: 10500, dur: 2500, text: 'CHAPTERS', label: 'SYLLABUS', effect: 'title',
+      page: 'chapters', spotlight: '[data-tutorial-id="chapter-item"]', transition: 'cut' },
 
-    { t: 12500, dur: 2000, text: 'Master Your Syllabus', label: '', effect: 'fade-up', page: null,
-      spotlight: '[data-tutorial-id="chapter-item"]', theme: null, transition: 'none' },
+    { t: 13000, dur: 2000, text: 'Master Your Syllabus', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="chapter-item"]' },
 
-    { t: 14500, dur: 2500, text: 'TESTS', label: 'PERFORMANCE', effect: 'fly-left', page: 'tests',
-      spotlight: '[data-tutorial-id="test-card"]', theme: null, transition: 'cut' },
+    { t: 15000, dur: 2500, text: 'TESTS', label: 'PERFORMANCE', effect: 'title',
+      page: 'tests', spotlight: '[data-tutorial-id="test-card"]', transition: 'cut' },
 
-    { t: 17000, dur: 2000, text: 'Track Every Score', label: '', effect: 'scale', page: null,
-      spotlight: '[data-tutorial-id="test-card"]', theme: null, transition: 'none' },
+    { t: 17500, dur: 2000, text: 'Track Every Score', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="test-card"]' },
 
-    { t: 19000, dur: 2000, text: 'SWITCH', label: '', effect: 'glitch-morph', page: null,
+    { t: 19500, dur: 2000, text: 'SWITCH', effect: 'morph',
       theme: 'bloom', transition: 'morph' },
 
-    { t: 21000, dur: 2500, text: 'ASSIGNMENTS', label: 'DEADLINES', effect: 'fly-right', page: 'assignments',
-      spotlight: '[data-tutorial-id="assignment-item"]', theme: null, transition: 'cut' },
+    { t: 21500, dur: 2500, text: 'ASSIGNMENTS', label: 'DEADLINES', effect: 'title',
+      page: 'assignments', spotlight: '[data-tutorial-id="assignment-item"]', transition: 'cut' },
 
-    { t: 23500, dur: 2000, text: 'Never Miss a Deadline', label: '', effect: 'fade-up', page: null,
-      spotlight: '[data-tutorial-id="assignment-item"]', theme: null, transition: 'none' },
+    { t: 24000, dur: 2000, text: 'Never Miss a Deadline', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="assignment-item"]' },
 
-    { t: 25500, dur: 2500, text: 'PYQ RESEARCH', label: 'PRACTICE', effect: 'fly-left', page: 'pyq',
-      spotlight: '[data-tutorial-id="pyq-card"]', theme: null, transition: 'cut' },
+    { t: 26000, dur: 2500, text: 'PYQ RESEARCH', label: 'PRACTICE', effect: 'title',
+      page: 'pyq', spotlight: '[data-tutorial-id="pyq-card"]', transition: 'cut' },
 
-    { t: 28000, dur: 2000, text: 'Practice with Purpose', label: '', effect: 'scale', page: null,
-      spotlight: '[data-tutorial-id="pyq-card"]', theme: null, transition: 'none' },
+    { t: 28500, dur: 2000, text: 'Practice with Purpose', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="pyq-card"]' },
 
-    { t: 30000, dur: 2500, text: 'STUDY LOG', label: 'TIME TRACKING', effect: 'fly-right', page: 'study-log',
-      spotlight: '[data-tutorial-id="live-timer"]', theme: null, transition: 'cut' },
+    { t: 30500, dur: 2500, text: 'STUDY LOG', label: 'TIME TRACKING', effect: 'title',
+      page: 'study-log', spotlight: '[data-tutorial-id="live-timer"]', transition: 'cut' },
 
-    { t: 32500, dur: 2000, text: 'Every Minute Counts', label: '', effect: 'typewriter', page: null,
-      spotlight: '[data-tutorial-id="live-timer"]', theme: null, transition: 'none' },
+    { t: 33000, dur: 2000, text: 'Every Minute Counts', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="live-timer"]' },
 
-    { t: 34500, dur: 2000, text: 'SWITCH', label: '', effect: 'glitch-morph', page: null,
+    { t: 35000, dur: 2000, text: 'SWITCH', effect: 'morph',
       theme: 'nebula', transition: 'morph' },
 
-    { t: 36500, dur: 2500, text: 'ANALYTICS', label: 'INSIGHTS', effect: 'fly-left', page: 'analytics',
-      spotlight: '[data-tutorial-id="weekly-chart"]', theme: null, transition: 'cut' },
+    { t: 37000, dur: 2500, text: 'ANALYTICS', label: 'INSIGHTS', effect: 'title',
+      page: 'analytics', spotlight: '[data-tutorial-id="weekly-chart"]', transition: 'cut' },
 
-    { t: 39000, dur: 2000, text: 'Your Patterns, Revealed', label: '', effect: 'scale', page: null,
-      spotlight: '[data-tutorial-id="weekly-chart"]', theme: null, transition: 'none' },
+    { t: 39500, dur: 2000, text: 'Your Patterns, Revealed', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="weekly-chart"]' },
 
-    { t: 41000, dur: 2500, text: 'CALCULATOR', label: '75-QUESTION ENGINE', effect: 'fly-right', page: 'calculator',
-      spotlight: '[data-tutorial-id="response-sheet"]', theme: null, transition: 'cut' },
+    { t: 41500, dur: 2500, text: 'CALCULATOR', label: '75-QUESTION ENGINE', effect: 'title',
+      page: 'calculator', spotlight: '[data-tutorial-id="response-sheet"]', transition: 'cut' },
 
-    { t: 43500, dur: 2000, text: 'Score. Analyze. Improve.', label: '', effect: 'fade-up', page: null,
-      spotlight: '[data-tutorial-id="calc-results"]', theme: null, transition: 'none' },
+    { t: 44000, dur: 2000, text: 'Score. Analyze. Improve.', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="calc-results"]' },
 
-    { t: 45500, dur: 2500, text: 'MOCK TESTS', label: 'EXAM SIMULATION', effect: 'fly-left', page: 'mock-tests',
-      spotlight: '[data-tutorial-id="mock-card"]', theme: null, transition: 'cut' },
+    { t: 46000, dur: 2500, text: 'MOCK TESTS', label: 'EXAM SIMULATION', effect: 'title',
+      page: 'mock-tests', spotlight: '[data-tutorial-id="mock-card"]', transition: 'cut' },
 
-    { t: 48000, dur: 2000, text: 'Simulate Exam Day', label: '', effect: 'scale', page: null,
-      spotlight: '[data-tutorial-id="mock-card"]', theme: null, transition: 'none' },
+    { t: 48500, dur: 2000, text: 'Simulate Exam Day', effect: 'subtitle',
+      spotlight: '[data-tutorial-id="mock-card"]' },
 
-    { t: 50000, dur: 3000, text: 'Three Themes.', sub: '', effect: 'typewriter', page: null, theme: null, transition: 'cut',
-      position: 'center', handwrite: true },
+    { t: 50500, dur: 3000, text: 'Three Themes.', effect: 'title', position: 'center' },
 
-    { t: 53000, dur: 2500, text: 'One Mission.', sub: '', effect: 'scale', page: null, theme: null, transition: 'cut',
-      position: 'center' },
+    { t: 53500, dur: 2500, text: 'One Mission.', effect: 'title', position: 'center' },
 
-    { t: 55500, dur: 3000, text: 'Good luck.', sub: '', effect: 'fade-in', page: null, theme: null, transition: 'cut',
-      position: 'center', textClass: 'cinematic-sub', subSize: true },
+    { t: 56000, dur: 3000, sub: 'Good luck.', effect: 'sub-big', position: 'center' },
 
-    { t: 58500, dur: 1500, text: '', sub: '', effect: 'none', page: 'dashboard', theme: null, transition: 'fade-out' }
+    { t: 59000, dur: 1000, effect: 'none', page: 'dashboard', transition: 'fade-out' }
   ];
 
   function buildDOM() {
@@ -99,18 +93,13 @@
     overlay = document.createElement('div');
     overlay.id = 'cinematic-overlay';
     overlay.className = 'cinematic-overlay';
-    overlay.innerHTML =
-      '<div class="cinematic-scanlines"></div>' +
-      '<div class="cinematic-noise"></div>';
+    overlay.innerHTML = '<div class="cinematic-vignette"></div>';
     document.body.appendChild(overlay);
-
-    scanlines = overlay.querySelector('.cinematic-scanlines');
-    noise = overlay.querySelector('.cinematic-noise');
+    vignette = overlay.querySelector('.cinematic-vignette');
 
     var barTop = document.createElement('div');
     barTop.className = 'cinematic-bar cinematic-bar-top';
     document.body.appendChild(barTop);
-
     var barBot = document.createElement('div');
     barBot.className = 'cinematic-bar cinematic-bar-bot';
     document.body.appendChild(barBot);
@@ -150,7 +139,7 @@
     skipBtn = document.createElement('button');
     skipBtn.className = 'cinematic-skip';
     skipBtn.id = 'cin-skip';
-    skipBtn.innerHTML = 'Skip <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+    skipBtn.innerHTML = 'Skip <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
     document.body.appendChild(skipBtn);
 
     progressBar = document.createElement('div');
@@ -164,161 +153,188 @@
     morphFlash.className = 'cinematic-morph-flash';
     document.body.appendChild(morphFlash);
 
-    pageIndicator = document.createElement('div');
-    pageIndicator.className = 'cinematic-page-indicator';
-    pageIndicator.id = 'cin-page-indicator';
-    document.body.appendChild(pageIndicator);
-
-    skipBtn.addEventListener('click', function() { skip(); });
+    skipBtn.addEventListener('click', function(e) { e.stopPropagation(); skip(); });
     document.addEventListener('keydown', function(e) {
-      if (!active) return;
-      if (e.key === 'Escape') skip();
+      if (e.key === 'Escape' && active) skip();
+      if (e.key === 'Escape' && pickerVisible) hidePicker();
+    });
+
+    buildPicker();
+  }
+
+  function buildPicker() {
+    if (document.getElementById('cinematic-picker')) return;
+    picker = document.createElement('div');
+    picker.className = 'cinematic-picker';
+    picker.id = 'cinematic-picker';
+    picker.innerHTML =
+      '<div class="cinematic-picker-inner">' +
+        '<div class="cinematic-picker-heading">Choose Your Experience</div>' +
+        '<div class="cinematic-picker-title">How should we show you around?</div>' +
+        '<div class="cinematic-picker-options">' +
+          '<button class="cinematic-picker-btn elegant" data-style="elegant">' +
+            '<div class="cinematic-picker-btn-style">Elegant</div>' +
+            '<div class="cinematic-picker-btn-sub">Smooth &amp; Refined</div>' +
+          '</button>' +
+          '<button class="cinematic-picker-btn bold" data-style="bold">' +
+            '<div class="cinematic-picker-btn-style">Bold</div>' +
+            '<div class="cinematic-picker-btn-sub">Dramatic &amp; Impactful</div>' +
+          '</button>' +
+        '</div>' +
+        '<button class="cinematic-picker-skip">Skip tour</button>' +
+      '</div>';
+    document.body.appendChild(picker);
+
+    picker.querySelectorAll('.cinematic-picker-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        chosenStyle = btn.getAttribute('data-style');
+        localStorage.setItem('cinematicStyle', chosenStyle);
+        hidePicker();
+        startTour();
+      });
+    });
+
+    picker.querySelector('.cinematic-picker-skip').addEventListener('click', function() {
+      hidePicker();
+      skip();
     });
   }
 
-  function clearStage() {
-    titleEl.style.opacity = '0';
-    titleEl.style.animation = 'none';
-    titleEl.textContent = '';
-    titleEl.className = 'cinematic-title';
-
-    subEl.style.opacity = '0';
-    subEl.style.animation = 'none';
-    subEl.textContent = '';
-    subEl.className = 'cinematic-sub';
-
-    labelEl.style.opacity = '0';
-    labelEl.style.animation = 'none';
-    labelEl.textContent = '';
-
-    themeNameEl.style.opacity = '0';
-    themeNameEl.style.animation = 'none';
-    themeNameEl.textContent = '';
+  function showPicker(onDone) {
+    pickerVisible = true;
+    picker.classList.add('visible');
+  }
+  function hidePicker() {
+    pickerVisible = false;
+    picker.classList.remove('visible');
   }
 
-  function applyTextEffect(el, effect, text, opts) {
-    opts = opts || {};
-    el.textContent = text;
+  function clearStage() {
+    [titleEl, subEl, labelEl, themeNameEl].forEach(function(el) {
+      el.style.animation = 'none';
+      el.style.opacity = '0';
+      el.textContent = '';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+    titleEl.className = 'cinematic-title';
+    subEl.className = 'cinematic-sub';
+    labelEl.className = 'cinematic-label';
+    themeNameEl.className = 'cinematic-theme-name';
+  }
+
+  function applyEffect(el, scene) {
+    var s = chosenStyle || 'elegant';
+    var dur, delay;
+
     el.style.animation = 'none';
+    el.style.opacity = '0';
     void el.offsetWidth;
 
-    var dur = opts.dur || '0.8s';
-    var delay = opts.delay || '0s';
+    switch (scene.effect) {
+      case 'title':
+        if (s === 'bold') {
+          dur = '1.4s';
+          el.style.animation = 'cin-bold-in ' + dur + ' cubic-bezier(0.16,1,0.3,1) forwards';
+        } else {
+          dur = '1.2s';
+          el.style.animation = 'cin-elegant-in ' + dur + ' cubic-bezier(0.22,1,0.36,1) forwards';
+        }
+        break;
 
-    switch (effect) {
-      case 'glitch':
-        el.style.animation = 'cin-glitch-in ' + dur + ' ease-out ' + delay + ' forwards, cin-rgb-shift 3s ease 1s infinite';
+      case 'subtitle':
+        delay = '0.15s';
+        if (s === 'bold') {
+          dur = '0.9s';
+          el.style.animation = 'cin-bold-reveal ' + dur + ' cubic-bezier(0.7,0,0.3,1) ' + delay + ' forwards';
+        } else {
+          dur = '1s';
+          el.style.animation = 'cin-elegant-up ' + dur + ' cubic-bezier(0.22,1,0.36,1) ' + delay + ' forwards';
+        }
         break;
-      case 'fly-left':
-        el.style.animation = 'cin-fly-left ' + dur + ' cubic-bezier(0.22, 1, 0.36, 1) ' + delay + ' forwards';
+
+      case 'sub':
+        dur = '1s';
+        delay = '0.2s';
+        if (s === 'bold') {
+          el.style.animation = 'cin-bold-reveal ' + dur + ' cubic-bezier(0.7,0,0.3,1) ' + delay + ' forwards';
+        } else {
+          el.style.animation = 'cin-elegant-up ' + dur + ' cubic-bezier(0.22,1,0.36,1) ' + delay + ' forwards';
+        }
         break;
-      case 'fly-right':
-        el.style.animation = 'cin-fly-right ' + dur + ' cubic-bezier(0.22, 1, 0.36, 1) ' + delay + ' forwards';
+
+      case 'sub-big':
+        dur = '1.2s';
+        el.style.fontSize = 'clamp(24px, 4vw, 42px)';
+        el.style.letterSpacing = '3px';
+        if (s === 'bold') {
+          el.style.animation = 'cin-bold-glow ' + dur + ' cubic-bezier(0.22,1,0.36,1) forwards';
+        } else {
+          el.style.animation = 'cin-elegant-in ' + dur + ' cubic-bezier(0.22,1,0.36,1) forwards';
+        }
         break;
-      case 'fly-top':
-        el.style.animation = 'cin-fly-top ' + dur + ' cubic-bezier(0.22, 1, 0.36, 1) ' + delay + ' forwards';
+
+      case 'morph':
+        dur = '1s';
+        if (s === 'bold') {
+          el.style.animation = 'cin-bold-impact ' + dur + ' ease forwards';
+        } else {
+          el.style.animation = 'cin-elegant-scale ' + dur + ' cubic-bezier(0.22,1,0.36,1) forwards';
+        }
         break;
-      case 'scale':
-        el.style.animation = 'cin-scale-in ' + dur + ' cubic-bezier(0.22, 1, 0.36, 1) ' + delay + ' forwards';
-        break;
-      case 'fade-up':
-        el.style.animation = 'cin-fade-up ' + dur + ' ease-out ' + delay + ' forwards';
-        break;
-      case 'fade-in':
-        el.style.animation = 'cin-fade-in ' + dur + ' ease ' + delay + ' forwards';
-        break;
-      case 'typewriter':
-        el.style.borderRight = '2px solid #fff';
-        el.style.whiteSpace = 'nowrap';
-        el.style.overflow = 'hidden';
-        el.style.width = '0';
-        el.style.animation = 'none';
-        var totalChars = text.length;
-        var charDur = 60;
-        el.style.transition = 'width ' + (totalChars * charDur) + 'ms steps(' + totalChars + ')';
-        requestAnimationFrame(function() {
-          el.style.width = '100%';
-          setTimeout(function() {
-            el.style.borderRight = 'none';
-          }, totalChars * charDur + 500);
-        });
-        break;
-      case 'glitch-morph':
-        el.style.animation = 'cin-glitch-in ' + dur + ' ease-out ' + delay + ' forwards';
-        el.style.textShadow = '0 0 40px rgba(255,0,64,0.5), 0 0 80px rgba(0,240,255,0.3)';
-        break;
+
       default:
-        el.style.animation = 'cin-fade-in 0.5s ease forwards';
+        dur = '0.6s';
+        el.style.animation = 'cin-fade-in ' + dur + ' ease forwards';
     }
   }
 
-  function showText(scene) {
+  function showSceneText(scene) {
     clearStage();
 
-    var targetEl;
-    if (scene.textClass === 'cinematic-sub') {
-      targetEl = subEl;
-      if (scene.subSize) {
-        subEl.style.fontSize = 'clamp(24px, 4vw, 40px)';
-        subEl.style.letterSpacing = '2px';
-      }
-    } else if (scene.textClass === 'cinematic-label') {
-      targetEl = labelEl;
-    } else {
-      targetEl = titleEl;
-    }
-
     if (scene.text) {
-      targetEl.textContent = '';
-      applyTextEffect(targetEl, scene.effect, scene.text, { dur: '0.7s' });
+      titleEl.textContent = scene.text;
+      applyEffect(titleEl, scene);
     }
 
-    if (scene.sub && targetEl !== subEl) {
+    if (scene.sub) {
       subEl.textContent = scene.sub;
-      applyTextEffect(subEl, 'fade-up', scene.sub, { dur: '0.6s', delay: '0.3s' });
+      var fakeScene = { effect: scene.effect === 'sub-big' ? 'sub-big' : 'sub' };
+      applyEffect(subEl, fakeScene);
     }
 
     if (scene.label) {
       labelEl.textContent = scene.label;
-      applyTextEffect(labelEl, 'fade-in', scene.label, { dur: '0.4s', delay: '0.1s' });
-    }
-
-    if (scene.themeName) {
-      themeNameEl.textContent = scene.themeName;
-      applyTextEffect(themeNameEl, 'scale', scene.themeName, { dur: '1s' });
+      var lblScene = { effect: 'subtitle' };
+      applyEffect(labelEl, lblScene);
     }
   }
 
   function hideText() {
-    titleEl.style.animation = 'cin-fade-out 0.3s ease forwards';
-    subEl.style.animation = 'cin-fade-out 0.3s ease forwards';
-    labelEl.style.animation = 'cin-fade-out 0.3s ease forwards';
+    [titleEl, subEl, labelEl, themeNameEl].forEach(function(el) {
+      if (el.style.opacity !== '0') {
+        el.style.animation = 'cin-fade-out 0.35s ease forwards';
+      }
+    });
   }
 
   function positionSpotlight(target) {
-    if (!target) {
-      spotlight.classList.remove('active');
-      return;
-    }
-
+    if (!target) { spotlight.classList.remove('active'); return; }
     var el = document.querySelector(target);
-    if (!el) {
-      spotlight.classList.remove('active');
-      return;
-    }
+    if (!el) { spotlight.classList.remove('active'); return; }
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 
     setTimeout(function() {
       var rect = el.getBoundingClientRect();
-      var pad = 12;
+      var pad = 14;
       spotlight.style.top = (rect.top - pad) + 'px';
       spotlight.style.left = (rect.left - pad) + 'px';
       spotlight.style.width = (rect.width + pad * 2) + 'px';
       spotlight.style.height = (rect.height + pad * 2) + 'px';
       spotlight.style.borderRadius = getComputedStyle(el).borderRadius || '8px';
       spotlight.classList.add('active');
-    }, 150);
+    }, 180);
   }
 
   function hideSpotlight() {
@@ -331,8 +347,8 @@
     if (idx === undefined) return;
 
     morphFlash.className = 'cinematic-morph-flash ' + theme;
-    morphFlash.style.animation = 'cin-morph-flash 0.8s ease forwards';
-    setTimeout(function() { morphFlash.style.animation = 'none'; }, 800);
+    morphFlash.style.animation = 'cin-morph-flash 0.9s ease forwards';
+    setTimeout(function() { morphFlash.style.animation = 'none'; }, 900);
 
     if (window.themesEngine && window.themesEngine.applyTheme) {
       window.themesEngine.applyTheme(idx);
@@ -353,15 +369,13 @@
 
   function runScene(scene) {
     if (!active) return;
-
     hideText();
     hideSpotlight();
 
     if (scene.transition === 'cut') {
-      overlay.style.opacity = '1';
-      setTimeout(function() { executeScene(scene); }, 50);
+      setTimeout(function() { executeScene(scene); }, 80);
     } else if (scene.transition === 'morph') {
-      setTimeout(function() { executeScene(scene); }, 100);
+      setTimeout(function() { executeScene(scene); }, 120);
     } else {
       executeScene(scene);
     }
@@ -370,37 +384,29 @@
   function executeScene(scene) {
     if (scene.page) {
       navigateToPage(scene.page);
-      setTimeout(function() { applySceneVisuals(scene); }, 350);
+      setTimeout(function() { applyVisuals(scene); }, 400);
     } else {
-      applySceneVisuals(scene);
+      applyVisuals(scene);
     }
   }
 
-  function applySceneVisuals(scene) {
-    if (scene.theme) {
-      switchTheme(scene.theme);
-    }
-
-    showText(scene);
-
-    if (scene.spotlight) {
-      positionSpotlight(scene.spotlight);
-    }
-
+  function applyVisuals(scene) {
+    if (scene.theme) switchTheme(scene.theme);
+    showSceneText(scene);
+    if (scene.spotlight) positionSpotlight(scene.spotlight);
     if (scene.transition === 'fade-out') {
-      setTimeout(function() { skip(); }, scene.dur || 1500);
+      setTimeout(function() { skip(); }, scene.dur || 1000);
     }
   }
 
-  var _sceneIdx = 0;
   function startTimeline() {
     _sceneIdx = 0;
     startTime = Date.now();
+    var totalDur = SCENES[SCENES.length - 1].t + SCENES[SCENES.length - 1].dur;
 
     function tick() {
       if (!active) return;
       var elapsed = Date.now() - startTime;
-      var totalDur = SCENES[SCENES.length - 1].t + SCENES[SCENES.length - 1].dur;
       updateProgress(Math.min(100, (elapsed / totalDur) * 100));
 
       while (_sceneIdx < SCENES.length && elapsed >= SCENES[_sceneIdx].t) {
@@ -414,19 +420,13 @@
         skip();
       }
     }
-
     _raf = requestAnimationFrame(tick);
   }
 
-  function play() {
-    if (active) return;
-    buildDOM();
+  function startTour() {
     active = true;
     _sceneIdx = 0;
-    startTime = 0;
-
     overlay.classList.add('active');
-    skipBtn.style.display = '';
     clearStage();
 
     spotlight.style.transition = 'none';
@@ -437,13 +437,34 @@
     setTimeout(function() {
       startTime = Date.now();
       startTimeline();
-    }, 400);
+    }, 500);
+  }
+
+  function play() {
+    if (active) return;
+    buildDOM();
+
+    if (!chosenStyle) {
+      showPicker();
+    } else {
+      startTour();
+    }
+  }
+
+  function playAuto() {
+    if (active) return;
+    buildDOM();
+
+    if (!chosenStyle) {
+      showPicker();
+    } else {
+      startTour();
+    }
   }
 
   function skip() {
     active = false;
     if (_raf) { cancelAnimationFrame(_raf); _raf = null; }
-    if (sceneTimer) { clearTimeout(sceneTimer); sceneTimer = null; }
 
     hideText();
     hideSpotlight();
@@ -451,8 +472,6 @@
 
     overlay.classList.remove('active');
     spotlight.classList.remove('active');
-
-    pageIndicator.classList.remove('show');
 
     document.querySelectorAll('.cinematic-bar').forEach(function(b) { b.style.height = '0'; });
 
@@ -467,7 +486,7 @@
   function playIfFirstVisit() {
     if (!localStorage.getItem('cinematicSeen')) {
       setTimeout(function() {
-        play();
+        playAuto();
         localStorage.setItem('cinematicSeen', '1');
       }, 3200);
     }
@@ -483,15 +502,16 @@
         play();
       });
     }
-    document.addEventListener('click', function(e) {
-      var b = e.target.closest('#cinematic-btn');
-      if (b) {
-        e.preventDefault();
-        e.stopPropagation();
-        play();
-      }
-    });
   }
+
+  document.addEventListener('click', function(e) {
+    var b = e.target.closest('#cinematic-btn');
+    if (b) {
+      e.preventDefault();
+      e.stopPropagation();
+      play();
+    }
+  });
 
   bindButton();
   document.addEventListener('DOMContentLoaded', bindButton);
