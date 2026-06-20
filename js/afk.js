@@ -4,7 +4,6 @@
 
 var _cinematicRunning = false;
 var _cleanup = null;
-var _originalToggleTheme = null;
 
 function getTheme() {
   return document.documentElement.getAttribute('data-theme') || 'nexus';
@@ -29,13 +28,9 @@ function loadThree() {
   _threePromise = new Promise(function(resolve) {
     if (window.THREE) { _threeLoaded = true; resolve(); return; }
     var s1 = document.createElement('script');
-    s1.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
-    s1.onload = function() {
-      var s2 = document.createElement('script');
-      s2.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js';
-      s2.onload = function() { _threeLoaded = true; resolve(); };
-      document.head.appendChild(s2);
-    };
+    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    s1.onload = function() { _threeLoaded = true; resolve(); };
+    s1.onerror = function() { resolve(); };
     document.head.appendChild(s1);
   });
   return _threePromise;
@@ -254,6 +249,9 @@ function runCinematic(targetThemeIdx) {
   return loadThree().then(function() {
     if (!window.THREE) { _cinematicRunning = false; applyThemeNow(targetThemeIdx); return; }
     return playScene(targetThemeIdx);
+  }).catch(function() {
+    _cinematicRunning = false;
+    applyThemeNow(targetThemeIdx);
   });
 }
 
@@ -483,9 +481,7 @@ export function enable() {
 }
 
 export function disable() {
-  if (_originalToggleTheme && window.themesEngine) {
-    window.themesEngine.toggleTheme = _originalToggleTheme;
-  }
+  window._themeSwitchHook = null;
   if (_cinematicRunning) {
     _cinematicRunning = false;
     if (_cleanup) _cleanup();
