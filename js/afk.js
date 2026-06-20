@@ -277,7 +277,7 @@ function playScene(targetThemeIdx) {
 
   return new Promise(function(resolve) {
     var scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a1628, 0.06);
+    scene.fog = new THREE.FogExp2(0x0a1628, 0.025);
 
     var camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100);
     camera.position.set(0, 0, 8);
@@ -286,18 +286,25 @@ function playScene(targetThemeIdx) {
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x0a1628, 0);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.5;
     renderer.domElement.style.cssText = 'position:fixed;inset:0;z-index:99999;pointer-events:none;';
     document.body.appendChild(renderer.domElement);
 
-    /* Lights */
-    scene.add(new THREE.AmbientLight(0x1a3050, 0.6));
-    var dirL = new THREE.DirectionalLight(0x6699cc, 1.2);
+    /* Lights — brighter for PBR materials in GLB models */
+    scene.add(new THREE.HemisphereLight(0x6699cc, 0x0a1628, 1.2));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    var dirL = new THREE.DirectionalLight(0xffffff, 1.8);
     dirL.position.set(5, 8, 3);
     scene.add(dirL);
-    var blueL = new THREE.PointLight(0x3b82f6, 0.8, 30);
+    var dirL2 = new THREE.DirectionalLight(0x6699cc, 0.8);
+    dirL2.position.set(-5, 3, -5);
+    scene.add(dirL2);
+    var blueL = new THREE.PointLight(0x3b82f6, 1.2, 40);
     blueL.position.set(-3, 2, 5);
     scene.add(blueL);
-    scene.add(new THREE.PointLight(0x34d399, 0.4, 20).translateZ(-5));
+    scene.add(new THREE.PointLight(0x34d399, 0.6, 30).translateZ(-5));
 
     /* Shark — GLB model or procedural fallback */
     var shark, mixer, glbClip;
@@ -306,7 +313,18 @@ function playScene(targetThemeIdx) {
     if (isGLB) {
       var gltf = _sharkGLB;
       shark = gltf.scene.clone();
-      shark.scale.set(1, 1, 1);
+
+      /* Traverse all meshes — ensure materials are visible */
+      shark.traverse(function(child) {
+        if (child.isMesh) {
+          child.material.side = THREE.DoubleSide;
+          if (child.material.transparent) {
+            child.material.opacity = Math.max(child.material.opacity, 0.6);
+          }
+          child.castShadow = false;
+          child.receiveShadow = false;
+        }
+      });
 
       /* Auto-face: find the longest axis and orient towards camera */
       var box = new THREE.Box3().setFromObject(shark);
@@ -315,6 +333,11 @@ function playScene(targetThemeIdx) {
       var maxDim = Math.max(size.x, size.y, size.z);
       var scaleF = 4.0 / maxDim;
       shark.scale.set(scaleF, scaleF, scaleF);
+
+      /* Center the model */
+      var center = new THREE.Vector3();
+      box.getCenter(center);
+      shark.position.sub(center.multiplyScalar(scaleF));
 
       /* Quaternius models face -Z by default, rotate to face +Z (camera) */
       shark.rotation.y = Math.PI;
@@ -436,7 +459,7 @@ function playScene(targetThemeIdx) {
         shark.scale.set(sc, sc, sc);
         shark.rotation.z = Math.sin(time * 0.04) * 0.08 * ease;
         shark.rotation.x = Math.sin(time * 0.025) * 0.05 * ease;
-        scene.fog.density = 0.06 - ease * 0.03;
+        scene.fog.density = 0.025 - ease * 0.015;
         blueL.intensity = 0.8 + ease * 1.5;
         if (p2 > 0.6) {
           var si = Math.pow((p2 - 0.6) / 0.4, 2) * 10;
@@ -525,7 +548,7 @@ function playScene(targetThemeIdx) {
         shark.rotation.z = Math.sin(time * 0.04) * 0.08 * ease;
         shark.rotation.x = Math.sin(time * 0.025) * 0.05 * ease;
         jaw.rotation.x = p2 > 0.5 ? (p2 - 0.5) * 2 * 0.6 : 0;
-        scene.fog.density = 0.06 - ease * 0.03;
+        scene.fog.density = 0.025 - ease * 0.015;
         blueL.intensity = 0.8 + ease * 1.5;
         if (p2 > 0.6) {
           var si = Math.pow((p2 - 0.6) / 0.4, 2) * 10;
