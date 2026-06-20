@@ -46,16 +46,18 @@ function loadSharkGLB(THREE) {
   if (_sharkGLBPending) return _sharkGLBPending;
 
   _sharkGLBPending = new Promise(function(resolve) {
-    if (!THREE.GLTFLoader) { resolve(null); return; }
+    if (!THREE.GLTFLoader) { console.log('[shark] GLTFLoader not available'); resolve(null); return; }
     var loader = new THREE.GLTFLoader();
+    console.log('[shark] Loading GLB model...');
     loader.load(
       'https://static.poly.pizza/d2d374ea-eb1d-4659-8cc7-816a83b82470.glb',
       function(gltf) {
+        console.log('[shark] GLB loaded:', gltf.scene ? 'scene ok' : 'no scene', gltf.animations.length, 'animations');
         _sharkGLB = gltf;
         resolve(gltf);
       },
       undefined,
-      function() { resolve(null); }
+      function(err) { console.log('[shark] GLB load failed:', err); resolve(null); }
     );
   });
   return _sharkGLBPending;
@@ -286,9 +288,6 @@ function playScene(targetThemeIdx) {
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x0a1628, 0);
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.5;
     renderer.domElement.style.cssText = 'position:fixed;inset:0;z-index:99999;pointer-events:none;';
     document.body.appendChild(renderer.domElement);
 
@@ -312,37 +311,52 @@ function playScene(targetThemeIdx) {
 
     if (isGLB) {
       var gltf = _sharkGLB;
-      shark = gltf.scene.clone();
+      shark = gltf.scene;
 
-      /* Traverse all meshes — ensure materials are visible */
+      /* Do NOT clone — breaks skinned meshes. Use original. */
+
+      /* Force all materials visible */
       shark.traverse(function(child) {
         if (child.isMesh) {
           child.material.side = THREE.DoubleSide;
-          if (child.material.transparent) {
-            child.material.opacity = Math.max(child.material.opacity, 0.6);
-          }
-          child.castShadow = false;
-          child.receiveShadow = false;
+          child.frustumCulled = false;
         }
       });
 
-      /* Auto-face: find the longest axis and orient towards camera */
+      /* Compute bounds BEFORE adding to scene */
+      shark.updateMatrixWorld(true);
       var box = new THREE.Box3().setFromObject(shark);
       var size = new THREE.Vector3();
       box.getSize(size);
       var maxDim = Math.max(size.x, size.y, size.z);
-      var scaleF = 4.0 / maxDim;
-      shark.scale.set(scaleF, scaleF, scaleF);
+      if (maxDim > 0) {
+        var scaleF = 5.0 / maxDim;
+        shark.scale.set(scaleF, scaleF, scaleF);
+      }
 
-      /* Center the model */
+      /* Recompute after scale, center in front of camera */
+      shark.updateMatrixWorld(true);
+      var box2 = new THREE.Box3().setFromObject(shark);
       var center = new THREE.Vector3();
-      box.getCenter(center);
-      shark.position.sub(center.multiplyScalar(scaleF));
+      box2.getCenter(center);
+      shark.position.sub(center);
+      shark.position.z += 0;
 
       /* Quaternius models face -Z by default, rotate to face +Z (camera) */
       shark.rotation.y = Math.PI;
 
       scene.add(shark);
+
+      /* Debug: check model bounds */
+      shark.updateMatrixWorld(true);
+      var dbgBox = new THREE.Box3().setFromObject(shark);
+      var dbgSize = new THREE.Vector3();
+      var dbgCenter = new THREE.Vector3();
+      dbgBox.getSize(dbgSize);
+      dbgBox.getCenter(dbgCenter);
+      console.log('[shark] Model bounds:', dbgSize.x.toFixed(2), dbgSize.y.toFixed(2), dbgSize.z.toFixed(2),
+        'center:', dbgCenter.x.toFixed(2), dbgCenter.y.toFixed(2), dbgCenter.z.toFixed(2),
+        'pos:', shark.position.x.toFixed(2), shark.position.y.toFixed(2), shark.position.z.toFixed(2));
 
       /* Setup animation mixer */
       if (gltf.animations && gltf.animations.length > 0) {
@@ -446,14 +460,14 @@ function playScene(targetThemeIdx) {
       if (progress < 0.12) {
         var p1 = progress / 0.12;
         overlay.style.opacity = p1 * 0.2;
-        shark.position.set(0, 0, -20);
+        shark.position.set(0, 0, -18);
 
       /* Phase 2: Shark charges (12-55%) */
       } else if (progress < 0.55) {
         var p2 = (progress - 0.12) / 0.43;
         var ease = p2 * p2 * p2;
         overlay.style.opacity = 0.2 + ease * 0.5;
-        shark.position.z = -20 + ease * 22;
+        shark.position.z = -18 + ease * 20;
         shark.position.y = Math.sin(time * 0.03) * 0.2 * (1 - ease);
         var sc = 1 + ease * 2;
         shark.scale.set(sc, sc, sc);
