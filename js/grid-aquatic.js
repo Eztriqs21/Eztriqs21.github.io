@@ -75,7 +75,7 @@
       speed: fromLeft ? speed : -speed,
       size: size,
       color: colors[Math.floor(Math.random() * colors.length)],
-      alpha: 0.12 + Math.random() * 0.15,
+      alpha: 0.15 + Math.random() * 0.2,
       tailPhase: Math.random() * Math.PI * 2,
       tailSpeed: 0.08 + Math.random() * 0.04,
       wobblePhase: Math.random() * Math.PI * 2,
@@ -88,13 +88,13 @@
     var fromLeft = Math.random() < 0.5;
     var y = 100 + Math.random() * (height - 200);
     return {
-      x: fromLeft ? -120 : width + 120,
+      x: fromLeft ? -150 : width + 150,
       y: y,
-      speed: fromLeft ? 1.5 : -1.5,
+      speed: fromLeft ? 1.8 : -1.8,
       alpha: 0,
-      maxAlpha: 0.08 + Math.random() * 0.06,
+      maxAlpha: 0.25 + Math.random() * 0.15,
       fadePhase: 0,
-      size: 40 + Math.random() * 20,
+      size: 50 + Math.random() * 25,
       wobblePhase: 0,
       active: true
     };
@@ -296,19 +296,24 @@
 
     if (shark && shark.active) {
       shark.x += shark.speed;
-      shark.fadePhase += 0.015;
+      shark.fadePhase += 0.012;
 
-      // Fade in / out
-      if (shark.fadePhase < Math.PI) {
-        shark.alpha = shark.maxAlpha * Math.sin(shark.fadePhase);
+      // Fade in for first 2s, hold, fade out for last 2s
+      var totalDuration = 500;
+      var fadeFrames = 120;
+      var progress = shark.fadePhase * 60;
+      if (progress < fadeFrames) {
+        shark.alpha = shark.maxAlpha * (progress / fadeFrames);
+      } else if (progress > totalDuration - fadeFrames) {
+        shark.alpha = shark.maxAlpha * ((totalDuration - progress) / fadeFrames);
       } else {
-        shark.alpha = shark.maxAlpha * Math.sin(shark.fadePhase);
+        shark.alpha = shark.maxAlpha;
       }
 
       drawShark(shark);
 
-      // Remove when off-screen and faded
-      if ((shark.speed > 0 && shark.x > width + 200) || (shark.speed < 0 && shark.x < -200)) {
+      // Remove when off-screen or fully faded
+      if ((shark.speed > 0 && shark.x > width + 200) || (shark.speed < 0 && shark.x < -200) || shark.alpha <= 0) {
         shark.active = false;
         shark = null;
       }
