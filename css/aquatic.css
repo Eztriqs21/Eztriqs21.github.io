@@ -11,7 +11,7 @@
   color: var(--text);
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
-.aq-card::before {
+.aq-card::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -28,7 +28,7 @@
   box-shadow: 0 0 30px rgba(59, 130, 246, 0.08), 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(59, 130, 246, 0.03);
   transform: translateY(-2px);
 }
-.aq-card:hover::before { opacity: 1; }
+.aq-card:hover::after { opacity: 1; }
 
 /* ─── Stat Cards ─── */
 .aq-stat-card {

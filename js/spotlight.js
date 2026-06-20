@@ -3,7 +3,7 @@
     if (window.matchMedia('(pointer: coarse)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var SELECTOR = '.nx-card, .bl-card, .nb-card, .fd-card, .au-card';
+    var SELECTOR = '.nx-card, .bl-card, .nb-card, .fd-card, .aq-card';
 
     document.addEventListener('mousemove', function(e) {
       var cards = document.querySelectorAll(SELECTOR);

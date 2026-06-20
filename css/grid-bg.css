@@ -96,3 +96,9 @@
 [data-theme="forge"] #grid-canvas {
   opacity: 0.8;
 }
+
+/* ═══════════════ REDUCED MOTION ═══════════════ */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="nexus"] #scanline-overlay { animation: none !important; }
+  [data-theme="bloom"] .corner-leaf { animation: none !important; }
+}

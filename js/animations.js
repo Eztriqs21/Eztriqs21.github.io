@@ -812,7 +812,7 @@ export function initInteractions() {
 
   // Ripple on buttons/chips
   document.addEventListener('pointerdown', e => {
-    const target = e.target.closest('.nx-btn, .bl-btn, .nb-btn, .fd-btn, .nx-chip, .bl-chip, .nb-chip, .fd-chip');
+    const target = e.target.closest('.nx-btn, .bl-btn, .nb-btn, .fd-btn, .aq-btn, .nx-chip, .bl-chip, .nb-chip, .fd-chip, .aq-chip');
     if (!target) return;
     const ripple = document.createElement('span');
     const size = Math.max(target.offsetWidth, target.offsetHeight);
@@ -864,7 +864,7 @@ export function initInteractions() {
 /* ═══════════════ MOUSE-FOLLOWING PARTICLES ═══════════════ */
 
 export function initMouseParticles() {
-  if (_reducedMq.matchMedia) return;
+  if (_reducedMq.matches) return;
 
   var canvas = document.getElementById('mouse-particles');
   if (!canvas) return;

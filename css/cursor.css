@@ -442,3 +442,10 @@ body.cursor-active, body.cursor-active * {
   .custom-cursor { display: none !important; }
   *, *::before, *::after { cursor: auto !important; }
 }
+
+/* ═══════════════ REDUCED MOTION ═══════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor { display: none !important; }
+  #cursor-ring, #cursor-dot, #cursor-trail { animation: none !important; transition: none !important; }
+  #cursor-ring::after { animation: none !important; }
+}

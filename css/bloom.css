@@ -11,7 +11,7 @@
   position: relative;
   overflow: hidden;
 }
-.bl-card::before {
+.bl-card::after {
   content: '';
   position: absolute;
   inset: 0;
