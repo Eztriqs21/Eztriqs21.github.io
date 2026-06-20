@@ -1121,3 +1121,16 @@
   [data-theme="bloom"] .bl-anim-pulse.bl-anim-active::before { animation: none; transform: scale(1.2); opacity: 1; }
   [data-theme="bloom"] .bl-anim-seed.bl-anim-active::after { animation: none; transform: translate(-50%, -60px); opacity: 1; }
 }
+
+/* ═══════════════ SI — Bloom Accents ═══════════════ */
+[data-theme="bloom"] .si-stat-icon { color: var(--accent); }
+[data-theme="bloom"] .si-game-icon { background: rgba(105,162,131,0.12); color: var(--accent); }
+[data-theme="bloom"] .si-game-btn { background: var(--accent); color: #fff; border: none; }
+[data-theme="bloom"] .si-game-btn:hover { background: rgba(105,162,131,0.85); box-shadow: 0 0 15px rgba(105,162,131,0.3); }
+[data-theme="bloom"] .si-start-btn { background: var(--accent); color: #fff; border: none; }
+[data-theme="bloom"] .si-start-btn:hover { background: rgba(105,162,131,0.85); }
+[data-theme="bloom"] .si-calc-timer-fill { background: var(--accent); }
+[data-theme="bloom"] .si-mem-cell.si-mem-flash { background: rgba(105,162,131,0.3) !important; box-shadow: 0 0 20px rgba(105,162,131,0.2); }
+[data-theme="bloom"] .si-new-high { color: #d4a373; background: rgba(212,163,115,0.08); }
+[data-theme="bloom"] .si-diff-btn.active { background: rgba(105,162,131,0.15); border-color: var(--accent); }
+[data-theme="bloom"] .si-select option { background: var(--bg-deep); }

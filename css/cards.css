@@ -153,3 +153,106 @@
   box-shadow: 0 0 30px rgba(59,130,246,0.1), inset 0 0 25px rgba(59,130,246,0.02);
   transform: translateY(-2px);
 }
+
+/* ═══════════════ SELF IMPROVEMENT — SHARED ═══════════════ */
+.si-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-sm); }
+.si-stat-card {
+  padding: var(--space-md) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+.si-stat-icon { font-size: 1.2rem; opacity: 0.6; }
+.si-stat-value { font-size: 1.5rem; font-weight: 700; font-family: var(--font-data); }
+.si-stat-label { font-size: 0.75rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; }
+
+.si-games-grid { display: flex; flex-direction: column; gap: var(--space-sm); }
+.si-game-card {
+  padding: var(--space-md) !important;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.si-game-icon { font-size: 1.6rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); flex-shrink: 0; }
+.si-game-info { flex: 1; min-width: 120px; }
+.si-game-title { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
+.si-game-desc { font-size: 0.8rem; opacity: 0.6; margin-bottom: 4px; }
+.si-game-stat { font-size: 0.75rem; font-family: var(--font-data); opacity: 0.5; }
+.si-game-btn { padding: 8px 20px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.85rem; cursor: pointer; flex-shrink: 0; }
+
+.si-sessions-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.si-sessions-table th { text-align: left; opacity: 0.5; font-weight: 500; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.si-sessions-table td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+.si-page-title { font-size: 1.4rem; font-weight: 700; margin-bottom: var(--space-xs); }
+.si-page-sub { font-size: 0.85rem; opacity: 0.6; margin-bottom: var(--space-md); }
+.si-back-row { margin-bottom: var(--space-sm); }
+.si-back-btn { padding: 6px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: inherit; }
+.si-back-btn:hover { background: rgba(255,255,255,0.1); }
+
+.si-setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+.si-setup-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; margin-bottom: 6px; }
+.si-diff-btns { display: flex; gap: 6px; }
+.si-diff-btn { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 0.8rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: inherit; transition: all 0.2s; }
+.si-diff-btn.active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+.si-select { padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.85rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: inherit; width: 100%; }
+.si-select option { background: #1a1a2e; color: #fff; }
+.si-start-btn { padding: 12px 28px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.95rem; cursor: pointer; display: block; width: 100%; margin-top: var(--space-sm); }
+
+.si-calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+.si-calc-progress { font-family: var(--font-data); font-size: 0.85rem; opacity: 0.6; }
+.si-calc-score { font-family: var(--font-data); font-size: 0.85rem; opacity: 0.6; }
+.si-calc-timer-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: var(--space-xs); overflow: hidden; }
+.si-calc-timer-fill { height: 100%; background: #22c55e; border-radius: 2px; transition: width 1s linear; }
+.si-calc-time { text-align: center; font-family: var(--font-data); font-size: 1.2rem; margin-bottom: var(--space-sm); }
+.si-calc-question { font-size: 1.1rem; font-weight: 600; text-align: center; margin-bottom: var(--space-md); padding: var(--space-sm); }
+.si-calc-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: var(--space-sm); }
+.si-calc-opt {
+  padding: 12px; border-radius: var(--radius-sm); font-size: 0.95rem; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: inherit;
+  transition: all 0.2s; text-align: center;
+}
+.si-calc-opt:hover { background: rgba(255,255,255,0.1); }
+.si-calc-opt.si-correct { background: rgba(34,197,94,0.2); border-color: #22c55e; }
+.si-calc-opt.si-wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+.si-calc-feedback { text-align: center; font-size: 0.9rem; min-height: 24px; }
+.si-fb-correct { color: #22c55e; font-weight: 600; }
+.si-fb-wrong { color: #ef4444; font-weight: 600; }
+
+.si-new-high { text-align: center; font-size: 1.2rem; font-weight: 700; color: #f59e0b; margin-bottom: var(--space-md); padding: var(--space-sm); border-radius: var(--radius-md); background: rgba(245,158,11,0.1); }
+.si-results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); }
+.si-result-item { text-align: center; padding: var(--space-sm); }
+.si-result-val { font-size: 1.5rem; font-weight: 700; font-family: var(--font-data); }
+.si-result-lbl { font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; }
+.si-results-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.si-reaction-area { user-select: none; -webkit-user-select: none; }
+.si-reaction-prompt { font-size: 1.2rem; font-weight: 600; opacity: 0.8; }
+.si-reaction-stim { font-weight: 700; }
+
+.si-mem-status { text-align: center; font-size: 1rem; font-weight: 600; margin-bottom: var(--space-md); min-height: 24px; }
+.si-mem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 320px; margin: 0 auto; }
+.si-mem-cell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+}
+.si-mem-cell:hover { background: rgba(255,255,255,0.1); }
+.si-mem-cell.si-mem-flash { background: rgba(255,255,255,0.3) !important; box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+
+@media (max-width: 600px) {
+  .si-stats-grid { grid-template-columns: 1fr 1fr; }
+  .si-setup-grid { grid-template-columns: 1fr; }
+  .si-calc-opts { grid-template-columns: 1fr; }
+  .si-results-grid { grid-template-columns: 1fr; }
+  .si-results-actions { grid-template-columns: 1fr; }
+  .si-mem-grid { max-width: 240px; }
+}

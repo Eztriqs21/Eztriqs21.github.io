@@ -1254,3 +1254,16 @@
   [data-theme="aquatic"] .aq-anim-shimmer { animation: none; opacity: 1; }
   [data-theme="aquatic"] .aq-anim-shimmer.aq-anim-active::before { animation: none; display: none; }
 }
+
+/* ═══════════════ SI — Aquatic Accents ═══════════════ */
+[data-theme="aquatic"] .si-stat-icon { color: var(--accent); }
+[data-theme="aquatic"] .si-game-icon { background: rgba(59,130,246,0.1); color: var(--accent); }
+[data-theme="aquatic"] .si-game-btn { background: var(--accent); color: #fff; border: none; }
+[data-theme="aquatic"] .si-game-btn:hover { background: rgba(59,130,246,0.85); box-shadow: 0 0 15px rgba(59,130,246,0.3); }
+[data-theme="aquatic"] .si-start-btn { background: var(--accent); color: #fff; border: none; }
+[data-theme="aquatic"] .si-start-btn:hover { background: rgba(59,130,246,0.85); }
+[data-theme="aquatic"] .si-calc-timer-fill { background: var(--accent); }
+[data-theme="aquatic"] .si-mem-cell.si-mem-flash { background: rgba(59,130,246,0.3) !important; box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+[data-theme="aquatic"] .si-new-high { color: var(--coral); background: rgba(249,115,22,0.08); }
+[data-theme="aquatic"] .si-diff-btn.active { background: rgba(59,130,246,0.15); border-color: var(--accent); }
+[data-theme="aquatic"] .si-select option { background: var(--bg-deep); }
