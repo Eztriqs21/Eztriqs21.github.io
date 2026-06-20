@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.gridBloom?.start();
       }
       go(getPage());
-      if (window.afkEngine) window.afkEngine.enable();
     });
   } else {
     const theme = document.documentElement.getAttribute('data-theme');
@@ -58,6 +57,5 @@ document.addEventListener('DOMContentLoaded', () => {
       window.gridBloom?.start();
     }
     go(getPage());
-    if (window.afkEngine) window.afkEngine.enable();
   }
 });

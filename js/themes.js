@@ -139,10 +139,6 @@ export function toggleTheme() {
   const i = themes.indexOf(next);
   if (i === -1) return;
 
-  if (typeof window._themeSwitchHook === 'function') {
-    if (window._themeSwitchHook(current, next, i)) return;
-  }
-
   if (window.cursorEngine && window.cursorEngine.morph) {
     window.cursorEngine.morph();
   }
