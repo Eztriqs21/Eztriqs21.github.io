@@ -124,7 +124,7 @@
 [data-theme="aquatic"] .aq-card {
   border: 1px solid transparent;
   background:
-    linear-gradient(rgba(10,22,40,0.65), rgba(10,22,40,0.65)) padding-box,
+    linear-gradient(rgba(17,34,64,0.75), rgba(17,34,64,0.75)) padding-box,
     linear-gradient(135deg, rgba(59,130,246,0.2), rgba(249,115,22,0.12), rgba(52,211,153,0.08)) border-box;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -140,7 +140,7 @@
 [data-theme="aquatic"] .aq-card:hover::before { opacity: 1; }
 [data-theme="aquatic"] .aq-card:hover {
   background:
-    linear-gradient(rgba(10,22,40,0.65), rgba(10,22,40,0.65)) padding-box,
+    linear-gradient(rgba(17,34,64,0.75), rgba(17,34,64,0.75)) padding-box,
     conic-gradient(from var(--border-angle), rgba(59,130,246,0.4), rgba(249,115,22,0.25), rgba(52,211,153,0.15), rgba(59,130,246,0.4)) border-box;
   box-shadow: 0 0 30px rgba(59,130,246,0.1), inset 0 0 25px rgba(59,130,246,0.02);
   transform: translateY(-2px);
