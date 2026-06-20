@@ -372,7 +372,7 @@ export function animateAllEntrance(scope) {
 
 export function pageLoadChoreography(scope) {
   if (!scope) return;
-  var cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .bl-stat-card, .bl-card, .bl-list-item, .nb-stat-card, .nb-card, .nb-list-item, .fd-stat-card, .fd-card, .fd-list-item, .au-stat-card, .au-card, .au-list-item, .test-card, .mt-card, .prep-card, .freq-card');
+  var cards = scope.querySelectorAll('.nx-stat-card, .nx-card, .nx-list-item, .bl-stat-card, .bl-card, .bl-list-item, .nb-stat-card, .nb-card, .nb-list-item, .fd-stat-card, .fd-card, .fd-list-item, .aq-stat-card, .aq-card, .aq-list-item, .test-card, .mt-card, .prep-card, .freq-card');
   for (var i = 0; i < cards.length; i++) {
     if (cards[i].style.opacity === '1' || cards[i].classList.contains('visible')) continue;
     cards[i].style.opacity = '0';
@@ -422,7 +422,7 @@ export function initScrollAnimations(scope) {
     '.bl-card, .bl-stat-card, .bl-hero-stat, .bl-list-item, .bl-chip, ' +
     '.nb-card, .nb-stat-card, .nb-hero-stat, .nb-list-item, .nb-section-block, ' +
     '.fd-card, .fd-stat-card, .fd-hero-stat, .fd-list-item, .fd-section-block, ' +
-    '.au-card, .au-stat-card, .au-hero-stat, .au-list-item, .au-section-block, ' +
+    '.aq-card, .aq-stat-card, .aq-hero-stat, .aq-list-item, .aq-section-block, ' +
     '.section-block, .gc, .test-card, .mt-card, .prep-card, .freq-card, ' +
     '.anim-entrance, .anim-up'
   );
@@ -545,7 +545,7 @@ function _showAllVisible(scope) {
     '.bl-card, .bl-stat-card, .bl-hero-stat, .bl-list-item, .bl-chip, ' +
     '.nb-card, .nb-stat-card, .nb-hero-stat, .nb-list-item, .nb-section-block, ' +
     '.fd-card, .fd-stat-card, .fd-hero-stat, .fd-list-item, .fd-section-block, ' +
-    '.au-card, .au-stat-card, .au-hero-stat, .au-list-item, .au-section-block, ' +
+    '.aq-card, .aq-stat-card, .aq-hero-stat, .aq-list-item, .aq-section-block, ' +
     '.section-block, .gc, .test-card, .mt-card, .prep-card, .freq-card, ' +
     '.anim-entrance, .anim-up'
   );
@@ -561,7 +561,7 @@ var _themeAnimMap = {
   bloom: ['bl-anim-leaf', 'bl-anim-vine', 'bl-anim-petal', 'bl-anim-pulse', 'bl-anim-seed'],
   nebula: ['nb-anim-twinkle', 'nb-anim-constellation', 'nb-anim-cloud', 'nb-anim-shooting', 'nb-anim-spiral'],
   forge: ['fd-anim-gear', 'fd-anim-steam', 'fd-anim-stamp', 'fd-anim-chain', 'fd-anim-spark'],
-  aurora: ['au-anim-wave', 'au-anim-shimmer', 'au-anim-twinkle', 'au-anim-drift', 'au-anim-pulse']
+  aquatic: ['aq-anim-wave', 'aq-anim-caustic', 'aq-anim-bubble', 'aq-anim-flow', 'aq-anim-shimmer']
 };
 
 var _typeAnimIndex = {
@@ -576,7 +576,7 @@ function initThemeAnimations(scope) {
   var animClasses = _themeAnimMap[theme];
   if (!animClasses) return;
 
-  var p = theme === 'nexus' ? 'nx' : theme === 'bloom' ? 'bl' : theme === 'nebula' ? 'nb' : theme === 'aurora' ? 'au' : 'fd';
+  var p = theme === 'nexus' ? 'nx' : theme === 'bloom' ? 'bl' : theme === 'nebula' ? 'nb' : theme === 'aquatic' ? 'aq' : 'fd';
 
   var cardSelectors = [
     '.' + p + '-card', '.' + p + '-stat-card', '.' + p + '-hero-stat',
@@ -865,7 +865,7 @@ export function initMouseParticles() {
     if (theme === 'bloom') return [107, 144, 128];
     if (theme === 'nebula') return [140, 122, 230];
     if (theme === 'forge') return [205, 127, 50];
-    if (theme === 'aurora') return [72, 199, 172];
+    if (theme === 'aquatic') return [59, 130, 246];
     return [0, 240, 255];
   }
 

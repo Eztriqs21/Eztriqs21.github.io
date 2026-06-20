@@ -1,6 +1,6 @@
 /* themes.js – 4-theme engine (nexus, bloom, nebula, forge) */
-const themes = ['nexus', 'bloom', 'nebula', 'forge', 'aurora'];
-const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE', aurora: 'AURORA' };
+const themes = ['nexus', 'bloom', 'nebula', 'forge', 'aquatic'];
+const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE', aquatic: 'AQUATIC' };
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
 if (!themes[idx]) idx = 0;
 
@@ -11,7 +11,7 @@ const THEME_BG_IMAGES = {
   bloom: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80',
   nebula: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1920&q=80',
   forge: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80',
-  aurora: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80'
+  aquatic: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80'
 };
 
 function showIndicator(name) {
@@ -56,7 +56,7 @@ export function applyTheme(i) {
   if (window.gridBloom) window.gridBloom.stop();
   if (window.gridNebula) window.gridNebula.stop();
   if (window.gridForge) window.gridForge.stop();
-  if (window.gridAurora) window.gridAurora.stop();
+  if (window.gridAquatic) window.gridAquatic.stop();
 
   var gridCanvas = document.getElementById('grid-canvas');
   if (gridCanvas) {
@@ -112,8 +112,8 @@ export function applyTheme(i) {
     } else if (t === 'forge' && window.gridForge) {
       window.gridForge.start();
       gridCanvas.classList.add('active');
-    } else if (t === 'aurora' && window.gridAurora) {
-      window.gridAurora.start();
+    } else if (t === 'aquatic' && window.gridAquatic) {
+      window.gridAquatic.start();
       gridCanvas.classList.add('active');
     }
   }
@@ -155,7 +155,7 @@ export function toggleTheme() {
     bloom: 'rgba(107,144,128,0.3)',
     nebula: 'rgba(140,122,230,0.3)',
     forge: 'rgba(205,127,50,0.3)',
-    aurora: 'rgba(72,199,172,0.3)'
+    aquatic: 'rgba(59,130,246,0.3)'
   };
 
   var wash = document.createElement('div');

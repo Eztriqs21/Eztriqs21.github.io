@@ -353,96 +353,81 @@ body.cursor-active, body.cursor-active * {
   100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-color: rgba(255, 182, 77, 0.2); }
 }
 
-/* ═══════════════ AURORA: Flowing Ribbon Cursor ═══════════════ */
-[data-theme="aurora"] #cursor-ring {
+/* ═══════════════ AQUATIC: Water Ripple Cursor ═══════════════ */
+[data-theme="aquatic"] #cursor-ring {
   width: 22px;
   height: 22px;
   border: none;
   border-radius: 50%;
   background: transparent;
   box-shadow:
-    0px -10px 0 1px rgba(72, 199, 172, 0.5),
-    10px 0px 0 1px rgba(224, 108, 159, 0.4),
-    0px 10px 0 1px rgba(123, 224, 168, 0.4),
-    -10px 0px 0 1px rgba(212, 165, 116, 0.3);
+    inset 0 0 0 1.5px rgba(59, 130, 246, 0.5),
+    0 0 12px rgba(59, 130, 246, 0.2);
   transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
   transform: translate(-50%, -50%);
 }
-[data-theme="aurora"] #cursor-ring::before {
+[data-theme="aquatic"] #cursor-ring::before {
   content: '';
   position: absolute;
-  inset: 2px;
-  border: 1px solid rgba(72, 199, 172, 0.15);
+  inset: 4px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(72,199,172,0.08) 0%, transparent 70%);
 }
-[data-theme="aurora"] #cursor-ring::after {
+[data-theme="aquatic"] #cursor-ring::after {
   content: '';
   position: absolute;
-  inset: -5px;
-  border: 1px dashed rgba(72, 199, 172, 0.1);
+  inset: -6px;
+  border: 1px dashed rgba(59, 130, 246, 0.1);
   border-radius: 50%;
-  animation: aurora-orbit 6s linear infinite;
+  animation: aquatic-ripple 3s ease-in-out infinite;
 }
-@keyframes aurora-orbit {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes aquatic-ripple {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.2; }
+  100% { transform: scale(1); opacity: 0.5; }
 }
 
-[data-theme="aurora"] #cursor-dot {
-  width: 5px;
-  height: 5px;
-  background: #48c7ac;
+[data-theme="aquatic"] #cursor-dot {
+  width: 4px;
+  height: 4px;
+  background: #3b82f6;
   border-radius: 50%;
   box-shadow:
-    0 0 8px rgba(72, 199, 172, 0.9),
-    0 0 16px rgba(72, 199, 172, 0.4),
-    2px -2px 0 rgba(224, 108, 159, 0.6),
-    -2px 2px 0 rgba(123, 224, 168, 0.6);
+    0 0 8px rgba(59, 130, 246, 0.8),
+    0 0 16px rgba(59, 130, 246, 0.3);
   transform: translate(-50%, -50%);
 }
 
-[data-theme="aurora"] #cursor-trail {
-  width: 22px;
-  height: 22px;
-  border: 1px solid rgba(72, 199, 172, 0.1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease;
+[data-theme="aquatic"] #cursor-trail {
+  display: none;
 }
 
-[data-theme="aurora"] #cursor-pulse {
+[data-theme="aquatic"] #cursor-pulse {
   width: 22px;
   height: 22px;
-  border: 2px solid rgba(72, 199, 172, 0.5);
+  border: 2px solid rgba(59, 130, 246, 0.5);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
   pointer-events: none;
 }
 
-[data-theme="aurora"] .cursor-hover #cursor-ring {
+[data-theme="aquatic"] .cursor-hover #cursor-ring {
   width: 36px;
   height: 36px;
   box-shadow:
-    0px -14px 0 1.5px rgba(72, 199, 172, 0.6),
-    14px 0px 0 1.5px rgba(224, 108, 159, 0.5),
-    0px 14px 0 1.5px rgba(123, 224, 168, 0.5),
-    -14px 0px 0 1.5px rgba(212, 165, 116, 0.4),
-    0 0 20px rgba(72, 199, 172, 0.2);
-}
-[data-theme="aurora"] .cursor-hover #cursor-trail {
-  width: 36px;
-  height: 36px;
+    inset 0 0 0 1.5px rgba(59, 130, 246, 0.7),
+    0 0 24px rgba(59, 130, 246, 0.3),
+    inset 0 0 12px rgba(59, 130, 246, 0.08);
 }
 
-[data-theme="aurora"].cursor-active.cursor-click #cursor-pulse {
-  animation: aurora-burst 0.5s ease-out forwards;
+[data-theme="aquatic"].cursor-active.cursor-click #cursor-pulse {
+  animation: aquatic-burst 0.5s ease-out forwards;
 }
-@keyframes aurora-burst {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; border-color: rgba(72, 199, 172, 0.8); }
-  50% { border-color: rgba(224, 108, 159, 0.6); }
-  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-color: rgba(123, 224, 168, 0.2); }
+@keyframes aquatic-burst {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; border-color: rgba(59, 130, 246, 0.8); }
+  50% { border-color: rgba(249, 115, 22, 0.5); }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-color: rgba(52, 211, 153, 0.2); }
 }
 
 /* ═══════════════ THEME TRANSITION ═══════════════ */

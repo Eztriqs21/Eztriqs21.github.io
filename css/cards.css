@@ -120,30 +120,32 @@
   to { --border-angle: 360deg; }
 }
 
-/* ─── AURORA ─── */
-[data-theme="aurora"] .au-card {
+/* ─── AQUATIC ─── */
+[data-theme="aquatic"] .aq-card {
   border: 1px solid transparent;
   background:
-    linear-gradient(rgba(15,35,41,0.7), rgba(15,35,41,0.7)) padding-box,
-    linear-gradient(135deg, rgba(72,199,172,0.2), rgba(224,108,159,0.12), rgba(123,224,168,0.08)) border-box;
+    linear-gradient(rgba(10,22,40,0.65), rgba(10,22,40,0.65)) padding-box,
+    linear-gradient(135deg, rgba(59,130,246,0.2), rgba(249,115,22,0.12), rgba(52,211,153,0.08)) border-box;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   --spotlight-x: 50%;
   --spotlight-y: 50%;
 }
-[data-theme="aurora"] .au-card::before {
-  background: radial-gradient(circle at var(--spotlight-x) var(--spotlight-y), rgba(72,199,172,0.08), transparent 50%);
+[data-theme="aquatic"] .aq-card::before {
+  background: radial-gradient(circle at var(--spotlight-x) var(--spotlight-y), rgba(59,130,246,0.08), transparent 50%);
   opacity: 0;
   transition: opacity 0.3s;
 }
-[data-theme="aurora"] .au-card:hover::before { opacity: 1; }
-[data-theme="aurora"] .au-card:hover {
+[data-theme="aquatic"] .aq-card:hover::before { opacity: 1; }
+[data-theme="aquatic"] .aq-card:hover {
   background:
-    linear-gradient(rgba(15,35,41,0.7), rgba(15,35,41,0.7)) padding-box,
-    conic-gradient(from var(--border-angle), rgba(72,199,172,0.4), rgba(224,108,159,0.25), rgba(123,224,168,0.15), rgba(212,165,116,0.12), rgba(72,199,172,0.4)) border-box;
-  box-shadow: 0 0 30px rgba(72,199,172,0.1), inset 0 0 25px rgba(72,199,172,0.02);
+    linear-gradient(rgba(10,22,40,0.65), rgba(10,22,40,0.65)) padding-box,
+    conic-gradient(from var(--border-angle), rgba(59,130,246,0.4), rgba(249,115,22,0.25), rgba(52,211,153,0.15), rgba(59,130,246,0.4)) border-box;
+  box-shadow: 0 0 30px rgba(59,130,246,0.1), inset 0 0 25px rgba(59,130,246,0.02);
   transform: translateY(-2px);
-  animation: au-border-spin 3s linear infinite;
+  animation: aq-border-spin 3s linear infinite;
 }
-@keyframes au-border-spin {
+@keyframes aq-border-spin {
   to { --border-angle: 360deg; }
 }

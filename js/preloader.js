@@ -4,7 +4,7 @@
   var bloomScreen = document.getElementById('preloader-bloom');
   var nebulaScreen = document.getElementById('preloader-nebula');
   var forgeScreen = document.getElementById('preloader-forge');
-  var auroraScreen = document.getElementById('preloader-aurora');
+  var aquaticScreen = document.getElementById('preloader-aquatic');
 
   if (!preloader) return;
 
@@ -45,16 +45,16 @@
       { text: 'Pressure makes diamonds.', author: 'George S. Patton' },
       { text: 'A diamond is a chunk of coal that did well under pressure.', author: 'Henry A. Kissinger' }
     ],
-    aurora: [
-      { text: 'The aurora paints the sky with the brush of the cosmos.', author: 'Unknown' },
-      { text: 'In the dance of light, we find the poetry of the universe.', author: 'Unknown' },
-      { text: 'The sky is not the limit — it is just the beginning.', author: 'Unknown' },
-      { text: 'Even in the darkest night, the aurora reminds us of beauty.', author: 'Unknown' },
-      { text: 'Nature drapes the sky in colors no artist can replicate.', author: 'Unknown' }
+    aquatic: [
+      { text: 'The sea is everything.', author: 'Jules Verne' },
+      { text: 'In the depth of the ocean, I found a universe within.', author: 'Unknown' },
+      { text: 'Be like water — formless, shapeless, flowing.', author: 'Bruce Lee' },
+      { text: 'The deeper the water, the calmer the surface.', author: 'Unknown' },
+      { text: 'Vast is the ocean, vaster still is the mind that studies it.', author: 'Unknown' }
     ]
   };
 
-  var _quoteIdx = { nexus: 0, bloom: 0, nebula: 0, forge: 0, aurora: 0 };
+  var _quoteIdx = { nexus: 0, bloom: 0, nebula: 0, forge: 0, aquatic: 0 };
 
   var _preloaderTimers = [];
   function _plSetTimeout(fn, ms) {
@@ -72,7 +72,7 @@
     if (bloomScreen) bloomScreen.style.display = name === 'bloom' ? 'flex' : 'none';
     if (nebulaScreen) nebulaScreen.style.display = name === 'nebula' ? 'flex' : 'none';
     if (forgeScreen) forgeScreen.style.display = name === 'forge' ? 'flex' : 'none';
-    if (auroraScreen) auroraScreen.style.display = name === 'aurora' ? 'flex' : 'none';
+    if (aquaticScreen) aquaticScreen.style.display = name === 'aquatic' ? 'flex' : 'none';
   }
 
   function fadeInPreloader(callback) {
@@ -318,51 +318,50 @@
     }, delay + 1200);
   }
 
-  function runAuroraShimmer(onComplete) {
+  function runAquaticBubbles(onComplete) {
     _plClearAll();
-    showScreen('aurora');
+    showScreen('aquatic');
 
-    var svg = auroraScreen?.querySelector('svg');
-    if (!svg) { showThemedQuote('aurora'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
+    var svg = aquaticScreen?.querySelector('svg');
+    if (!svg) { showThemedQuote('aquatic'); _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500); return; }
 
-    var paths = svg.querySelectorAll('path');
     var circles = svg.querySelectorAll('circle');
+    var ellipses = svg.querySelectorAll('ellipse');
 
-    paths.forEach(function(p) {
-      var len = p.getTotalLength ? p.getTotalLength() : 300;
-      p.style.strokeDasharray = len;
-      p.style.strokeDashoffset = len;
-      p.style.transition = 'none';
-    });
     circles.forEach(function(c) {
       c.style.opacity = '0';
+      c.style.transform = 'translateY(0)';
       c.style.transition = 'none';
+    });
+    ellipses.forEach(function(e) {
+      e.style.opacity = '0';
+      e.style.transition = 'none';
     });
 
     var delay = 0;
-    paths.forEach(function(p, i) {
-      _plSetTimeout(function() {
-        p.style.transition = 'stroke-dashoffset 1s ease';
-        p.style.strokeDashoffset = '0';
-      }, delay);
-      delay += 300;
-    });
-
     circles.forEach(function(c, i) {
       _plSetTimeout(function() {
-        c.style.transition = 'opacity 0.4s ease';
+        c.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
         c.style.opacity = '1';
       }, delay);
-      delay += 100;
+      delay += 120;
+    });
+
+    ellipses.forEach(function(e, i) {
+      _plSetTimeout(function() {
+        e.style.transition = 'opacity 0.6s ease';
+        e.style.opacity = '1';
+      }, delay);
+      delay += 200;
     });
 
     _plSetTimeout(function() {
       svg.style.transition = 'filter 0.5s ease';
-      svg.style.filter = 'drop-shadow(0 0 15px rgba(72,199,172,0.6))';
+      svg.style.filter = 'drop-shadow(0 0 15px rgba(59,130,246,0.6))';
     }, delay);
 
     _plSetTimeout(function() {
-      showThemedQuote('aurora');
+      showThemedQuote('aquatic');
       _plSetTimeout(function() { fadeOutPreloader(onComplete); }, 2500);
     }, delay + 600);
   }
@@ -378,8 +377,8 @@
         runNebulaConstellation(onComplete);
       } else if (theme === 'forge') {
         runForgeAssembly(onComplete);
-      } else if (theme === 'aurora') {
-        runAuroraShimmer(onComplete);
+      } else if (theme === 'aquatic') {
+        runAquaticBubbles(onComplete);
       } else {
         runBloomGrow(onComplete);
       }
@@ -399,8 +398,8 @@
         runNebulaConstellation(onComplete);
       } else if (theme === 'forge') {
         runForgeAssembly(onComplete);
-      } else if (theme === 'aurora') {
-        runAuroraShimmer(onComplete);
+      } else if (theme === 'aquatic') {
+        runAquaticBubbles(onComplete);
       } else {
         runBloomGrow(onComplete);
       }
