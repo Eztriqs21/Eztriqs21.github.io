@@ -664,38 +664,9 @@ export function cleanupScrollAnimations() {
   _disconnectScrollObservers();
 }
 
-/* ═══════════════ 3D CARD TILT (Nexus) ═══════════════ */
+/* ═══════════════ 3D CARD TILT (disabled — caused pop on hover) ═══════════════ */
 
-export function initTilt() {
-  if (_reducedMq.matches) return;
-  var ticking = false;
-  document.addEventListener('mousemove', function(e) {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function() {
-      var theme = document.documentElement.getAttribute('data-theme');
-      if (theme !== 'nexus' && theme !== 'nebula' && theme !== 'forge') { ticking = false; return; }
-
-        document.querySelectorAll('.nx-card, .nx-stat-card, .nx-hero-stat, .nb-card, .nb-stat-card, .nb-hero-stat, .fd-card, .fd-stat-card, .fd-hero-stat').forEach(function(card) {
-          if (card.hasAttribute('data-no-tilt')) return;
-          var rect = card.getBoundingClientRect();
-          var x = e.clientX - rect.left;
-          var y = e.clientY - rect.top;
-
-          if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-            var rotateX = ((y / rect.height) - 0.5) * -6;
-            var rotateY = ((x / rect.width) - 0.5) * 6;
-            card.style.transform = 'perspective(600px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-2px)';
-            card.style.willChange = 'transform';
-          } else {
-            card.style.transform = '';
-            card.style.willChange = '';
-          }
-        });
-      ticking = false;
-    });
-  }, { passive: true });
-}
+export function initTilt() {}
 
 /* ═══════════════ BLOOM PARALLAX CARDS (already in initInteractions) ═══════════════ */
 
