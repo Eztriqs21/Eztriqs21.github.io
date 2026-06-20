@@ -6,10 +6,9 @@
   border: 1px solid rgba(59, 130, 246, 0.12);
   border-radius: 14px;
   padding: 20px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   position: relative;
   overflow: hidden;
+  color: var(--text);
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 .aq-card::before {
