@@ -984,6 +984,16 @@ body::after {
 .quote-forge .quote-author {
   color: #CD7F32;
 }
+.quote-aquatic .quote-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #34d399 50%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(59,130,246,0.4));
+}
+.quote-aquatic .quote-author {
+  color: #3b82f6;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .quote-overlay { transition: none; }
@@ -1019,7 +1029,8 @@ body::after {
   opacity: 0.17;
 }
 [data-theme="aquatic"] #bg-image-overlay {
-  opacity: 0.18;
+  mix-blend-mode: overlay;
+  opacity: 0.17;
 }
 
 @media (prefers-reduced-motion: reduce) {
