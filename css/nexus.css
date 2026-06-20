@@ -169,12 +169,12 @@
 .glitch-text:hover::before {
   opacity: 0.8;
   color: var(--primary);
-  animation: glitch-1 0.3s linear infinite;
+  animation: glitch-1 0.3s linear forwards;
 }
 .glitch-text:hover::after {
   opacity: 0.8;
   color: var(--secondary);
-  animation: glitch-2 0.3s linear infinite;
+  animation: glitch-2 0.3s linear forwards;
 }
 
 /* Grid Layouts */
@@ -526,7 +526,7 @@
 }
 .nx-page-title:hover::before {
   opacity: 0.5;
-  animation: glitch-1 0.3s linear infinite;
+  animation: glitch-1 0.3s linear forwards;
 }
 .nx-page-sub {
   font-size: 13px;
