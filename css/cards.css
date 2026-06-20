@@ -29,10 +29,6 @@
     conic-gradient(from var(--border-angle), rgba(0,240,255,0.4), rgba(168,85,247,0.25), rgba(245,158,11,0.2), rgba(0,240,255,0.4)) border-box;
   box-shadow: 0 0 30px rgba(0,240,255,0.12), inset 0 0 30px rgba(0,240,255,0.03);
   transform: translateY(-2px);
-  animation: nx-border-spin 3s linear forwards;
-}
-@keyframes nx-border-spin {
-  to { --border-angle: 360deg; }
 }
 
 /* ─── BLOOM ─── */
@@ -58,10 +54,6 @@
     conic-gradient(from var(--border-angle), rgba(107,144,128,0.3), rgba(224,122,95,0.2), rgba(196,168,130,0.15), rgba(107,144,128,0.3)) border-box;
   box-shadow: 0 6px 20px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.06);
   transform: translateY(-3px);
-  animation: bl-border-spin 3s linear forwards;
-}
-@keyframes bl-border-spin {
-  to { --border-angle: 360deg; }
 }
 
 /* ─── NEBULA ─── */
@@ -86,10 +78,6 @@
     conic-gradient(from var(--border-angle), rgba(140,122,230,0.4), rgba(232,107,138,0.25), rgba(106,232,176,0.15), rgba(140,122,230,0.4)) border-box;
   box-shadow: 0 0 40px rgba(140,122,230,0.15), inset 0 0 30px rgba(140,122,230,0.03);
   transform: translateY(-2px);
-  animation: nb-border-spin 3s linear forwards;
-}
-@keyframes nb-border-spin {
-  to { --border-angle: 360deg; }
 }
 
 /* ─── FORGE ─── */
@@ -114,10 +102,6 @@
     conic-gradient(from var(--border-angle), rgba(205,127,50,0.35), rgba(184,115,51,0.2), rgba(255,182,77,0.15), rgba(205,127,50,0.35)) border-box;
   box-shadow: 0 0 30px rgba(205,127,50,0.1), inset 0 0 25px rgba(205,127,50,0.02);
   transform: translateY(-1px);
-  animation: fd-border-spin 3s linear forwards;
-}
-@keyframes fd-border-spin {
-  to { --border-angle: 360deg; }
 }
 
 /* ─── AQUATIC ─── */
@@ -142,8 +126,4 @@
     conic-gradient(from var(--border-angle), rgba(59,130,246,0.4), rgba(249,115,22,0.25), rgba(52,211,153,0.15), rgba(59,130,246,0.4)) border-box;
   box-shadow: 0 0 30px rgba(59,130,246,0.1), inset 0 0 25px rgba(59,130,246,0.02);
   transform: translateY(-2px);
-  animation: aq-border-spin 3s linear forwards;
-}
-@keyframes aq-border-spin {
-  to { --border-angle: 360deg; }
 }
