@@ -1082,7 +1082,7 @@
   border-radius: 50%;
   box-shadow: 0 0 6px rgba(140,122,230,0.8);
   pointer-events: none;
-  animation: nb-twinkle 2s ease-in-out infinite;
+  animation: nb-twinkle 2s ease-in-out forwards;
 }
 [data-theme="nebula"] .nb-anim-twinkle.nb-anim-active::before {
   top: 15%;
