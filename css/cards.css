@@ -6,13 +6,40 @@
   inherits: false;
 }
 
+@property --tilt-x {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --tilt-y {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ─── 3D TILT (Nexus + Nebula + Forge) ─── */
+[data-theme="nexus"] .nx-card,
+[data-theme="nexus"] .nx-stat-card,
+[data-theme="nexus"] .nx-hero-stat,
+[data-theme="nebula"] .nb-card,
+[data-theme="nebula"] .nb-stat-card,
+[data-theme="nebula"] .nb-hero-stat,
+[data-theme="forge"] .fd-card,
+[data-theme="forge"] .fd-stat-card,
+[data-theme="forge"] .fd-hero-stat {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
 /* ─── NEXUS ─── */
 [data-theme="nexus"] .nx-card {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
     linear-gradient(135deg, rgba(0,240,255,0.2), rgba(168,85,247,0.1), rgba(0,240,255,0.05)) border-box;
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   --spotlight-x: 50%;
   --spotlight-y: 50%;
 }
@@ -28,10 +55,13 @@
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
     conic-gradient(from var(--border-angle), rgba(0,240,255,0.4), rgba(168,85,247,0.25), rgba(245,158,11,0.2), rgba(0,240,255,0.4)) border-box;
   box-shadow: 0 0 30px rgba(0,240,255,0.12), inset 0 0 30px rgba(0,240,255,0.03);
-  transform: translateY(-2px);
+  animation: nx-border-spin 3s linear forwards;
+}
+@keyframes nx-border-spin {
+  to { --border-angle: 360deg; }
 }
 
-/* ─── BLOOM ─── */
+/* ─── BLOOM (no tilt) ─── */
 [data-theme="bloom"] .bl-card {
   border: 1px solid transparent;
   background:
@@ -62,7 +92,6 @@
   background:
     linear-gradient(rgba(30,26,61,0.7), rgba(30,26,61,0.7)) padding-box,
     linear-gradient(135deg, rgba(140,122,230,0.25), rgba(232,107,138,0.15), rgba(106,232,176,0.1)) border-box;
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   --spotlight-x: 50%;
   --spotlight-y: 50%;
 }
@@ -77,7 +106,6 @@
     linear-gradient(rgba(30,26,61,0.7), rgba(30,26,61,0.7)) padding-box,
     conic-gradient(from var(--border-angle), rgba(140,122,230,0.4), rgba(232,107,138,0.25), rgba(106,232,176,0.15), rgba(140,122,230,0.4)) border-box;
   box-shadow: 0 0 40px rgba(140,122,230,0.15), inset 0 0 30px rgba(140,122,230,0.03);
-  transform: translateY(-2px);
 }
 
 /* ─── FORGE ─── */
@@ -86,7 +114,6 @@
   background:
     linear-gradient(rgba(34,28,21,0.7), rgba(34,28,21,0.7)) padding-box,
     linear-gradient(135deg, rgba(205,127,50,0.2), rgba(184,115,51,0.12), rgba(255,182,77,0.08)) border-box;
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   --spotlight-x: 50%;
   --spotlight-y: 50%;
 }
@@ -101,7 +128,6 @@
     linear-gradient(rgba(34,28,21,0.7), rgba(34,28,21,0.7)) padding-box,
     conic-gradient(from var(--border-angle), rgba(205,127,50,0.35), rgba(184,115,51,0.2), rgba(255,182,77,0.15), rgba(205,127,50,0.35)) border-box;
   box-shadow: 0 0 30px rgba(205,127,50,0.1), inset 0 0 25px rgba(205,127,50,0.02);
-  transform: translateY(-1px);
 }
 
 /* ─── AQUATIC ─── */
