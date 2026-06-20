@@ -1,4 +1,5 @@
 /* themes.js – 4-theme engine (nexus, bloom, nebula, forge) */
+import { forceRender } from './nav.js';
 const themes = ['nexus', 'bloom', 'nebula', 'forge', 'aquatic'];
 const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE', aquatic: 'AQUATIC' };
 let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
@@ -125,10 +126,8 @@ export function applyTheme(i) {
   }
 
   requestAnimationFrame(function() {
-    if (prev !== t && contentWrap) {
-      window._forceRerender = true;
-      var currentPage = document.querySelector('.nav-item.active');
-      if (currentPage) currentPage.click();
+    if (prev !== t) {
+      forceRender();
     }
   });
 }

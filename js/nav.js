@@ -150,6 +150,14 @@ function clearRenderTimers() {
 }
 window._clearRenderTimers = clearRenderTimers;
 
+/* FORCE RE-RENDER — used by theme switch to bypass _renderLock */
+export function forceRender() {
+  _renderLock = false;
+  _pendingPage = null;
+  var el = document.getElementById('content-wrap');
+  if (el) _renderSwap(el);
+}
+
 /* WINDOW EXPORTS */
 window.PAGE = PAGE;
 window.go = go;

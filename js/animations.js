@@ -639,6 +639,25 @@ function initThemeAnimations(scope) {
     }
   }
   _scrollObservers.push(themeObserver);
+
+  var fallbackEls = [];
+  for (var fc = 0; fc < animClasses.length; fc++) {
+    var fEls = root.querySelectorAll('.' + animClasses[fc]);
+    for (var fe = 0; fe < fEls.length; fe++) {
+      if (!fEls[fe].classList.contains(prefix + '-anim-active')) {
+        fallbackEls.push(fEls[fe]);
+      }
+    }
+  }
+  if (fallbackEls.length > 0) {
+    setTimeout(function() {
+      for (var fi = 0; fi < fallbackEls.length; fi++) {
+        if (!fallbackEls[fi].classList.contains(prefix + '-anim-active')) {
+          fallbackEls[fi].classList.add(prefix + '-anim-active');
+        }
+      }
+    }, 600);
+  }
 }
 
 export function cleanupScrollAnimations() {
