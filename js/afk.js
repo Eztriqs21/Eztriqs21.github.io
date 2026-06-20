@@ -467,23 +467,12 @@ function applyThemeNow(idx) {
 /* ═══════════════ INTERCEPT THEME SWITCH ═══════════════ */
 
 function hookToggleTheme() {
-  if (!window.themesEngine) return;
-  _originalToggleTheme = window.themesEngine.toggleTheme;
-
-  window.themesEngine.toggleTheme = function() {
-    var current = getTheme();
+  window._themeSwitchHook = function(current, next, targetIdx) {
     if (current === 'aquatic') {
-      /* Calculate next theme */
-      var themes = ['nexus', 'bloom', 'nebula', 'forge', 'aquatic'];
-      var ci = themes.indexOf(current);
-      var next = themes[(ci + 1) % themes.length];
-      var targetIdx = themes.indexOf(next);
-
-      /* Play cinematic, then switch */
       runCinematic(targetIdx);
-    } else {
-      _originalToggleTheme.call(window.themesEngine);
+      return true; /* intercepted */
     }
+    return false; /* let normal switch happen */
   };
 }
 
