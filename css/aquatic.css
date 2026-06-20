@@ -16,6 +16,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
+  background: radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.06), transparent 60%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -932,69 +933,178 @@
 
 /* ═══════════════ SCROLL ANIMATIONS ═══════════════ */
 
-.aq-anim-wave { will-change: clip-path, opacity; }
+/* ─── Wave Reveal — clip-path curtain with ripple rings ─── */
+.aq-anim-wave { position: relative; will-change: clip-path, opacity; }
 [data-theme="aquatic"] .aq-anim-wave {
   clip-path: inset(0 0 100% 0);
   opacity: 0;
 }
 [data-theme="aquatic"] .aq-anim-wave.aq-anim-active {
-  animation: aq-wave-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: aq-wave-reveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+[data-theme="aquatic"] .aq-anim-wave.aq-anim-active::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid rgba(59, 130, 246, 0.25);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  animation: aq-ripple-ring 0.8s 0.3s ease-out forwards;
+}
+[data-theme="aquatic"] .aq-anim-wave.aq-anim-active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(52, 211, 153, 0.18);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  animation: aq-ripple-ring 0.8s 0.5s ease-out forwards;
 }
 @keyframes aq-wave-reveal {
   0% { clip-path: inset(0 0 100% 0); opacity: 0; }
+  60% { opacity: 1; }
   100% { clip-path: inset(0 0 0% 0); opacity: 1; }
 }
+@keyframes aq-ripple-ring {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(12); opacity: 0; }
+}
 
-.aq-anim-caustic { will-change: opacity, transform; }
+/* ─── Caustic Shimmer — pulsing underwater light (loops forever) ─── */
+.aq-anim-caustic { position: relative; will-change: opacity; }
 [data-theme="aquatic"] .aq-anim-caustic {
   opacity: 0;
-  transform: scale(0.96);
 }
 [data-theme="aquatic"] .aq-anim-caustic.aq-anim-active {
-  animation: aq-caustic-shimmer 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: aq-caustic-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-@keyframes aq-caustic-shimmer {
-  0% { opacity: 0; transform: scale(0.96); }
-  100% { opacity: 1; transform: scale(1); }
+[data-theme="aquatic"] .aq-anim-caustic.aq-anim-active::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 60% 40% at 25% 35%, rgba(59, 130, 246, 0.1), transparent),
+    radial-gradient(ellipse 40% 50% at 75% 65%, rgba(52, 211, 153, 0.08), transparent);
+  pointer-events: none;
+  animation: aq-caustic-pulse 3s ease-in-out 0.4s infinite;
+}
+@keyframes aq-caustic-reveal {
+  0% { opacity: 0; filter: brightness(0.7); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+@keyframes aq-caustic-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
 }
 
-.aq-anim-bubble { will-change: opacity, transform; }
+/* ─── Bubble Rise — multi-keyframe buoyancy physics ─── */
+.aq-anim-bubble { position: relative; will-change: opacity, transform; }
 [data-theme="aquatic"] .aq-anim-bubble {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(40px);
 }
 [data-theme="aquatic"] .aq-anim-bubble.aq-anim-active {
-  animation: aq-bubble-rise 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: aq-bubble-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+[data-theme="aquatic"] .aq-anim-bubble.aq-anim-active::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(224, 242, 254, 0.5), rgba(59, 130, 246, 0.2));
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  pointer-events: none;
+  animation: aq-float-bubble 2.5s ease-in-out 0.5s infinite;
 }
 @keyframes aq-bubble-rise {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+  30% { opacity: 0.7; transform: translateY(10px) scale(1.01); }
+  60% { opacity: 1; transform: translateY(-3px) scale(0.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes aq-float-bubble {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.5; }
+  25% { transform: translateY(-8px) translateX(2px); opacity: 0.8; }
+  50% { transform: translateY(-4px) translateX(-1px); opacity: 0.6; }
+  75% { transform: translateY(-10px) translateX(1px); opacity: 0.7; }
 }
 
-.aq-anim-flow { will-change: opacity, transform; }
+/* ─── Current Flow — slide with trailing water streak ─── */
+.aq-anim-flow { position: relative; will-change: opacity, transform; overflow: hidden; }
 [data-theme="aquatic"] .aq-anim-flow {
   opacity: 0;
-  transform: translateX(-25px);
+  transform: translateX(-30px);
 }
 [data-theme="aquatic"] .aq-anim-flow.aq-anim-active {
-  animation: aq-flow-slide 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: aq-flow-slide 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+[data-theme="aquatic"] .aq-anim-flow.aq-anim-active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.08), rgba(52, 211, 153, 0.04), transparent);
+  pointer-events: none;
+  animation: aq-current-streak 0.7s 0.2s ease-out forwards;
 }
 @keyframes aq-flow-slide {
-  0% { opacity: 0; transform: translateX(-25px); }
+  0% { opacity: 0; transform: translateX(-30px); }
   100% { opacity: 1; transform: translateX(0); }
 }
+@keyframes aq-current-streak {
+  0% { left: -100%; }
+  100% { left: 120%; }
+}
 
-.aq-anim-shimmer { will-change: opacity, filter; }
+/* ─── Light Refraction — diagonal light beam sweep ─── */
+.aq-anim-shimmer { position: relative; will-change: opacity; overflow: hidden; }
 [data-theme="aquatic"] .aq-anim-shimmer {
   opacity: 0;
-  filter: blur(4px);
 }
 [data-theme="aquatic"] .aq-anim-shimmer.aq-anim-active {
-  animation: aq-shimmer-glow 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: aq-shimmer-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-@keyframes aq-shimmer-glow {
-  0% { opacity: 0; filter: blur(4px); }
+[data-theme="aquatic"] .aq-anim-shimmer.aq-anim-active::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(59, 130, 246, 0.06) 45%,
+    rgba(224, 242, 254, 0.08) 50%,
+    rgba(59, 130, 246, 0.06) 55%,
+    transparent 70%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: aq-light-sweep 1.2s 0.3s ease-in-out forwards;
+}
+@keyframes aq-shimmer-reveal {
+  0% { opacity: 0; filter: blur(2px); }
   100% { opacity: 1; filter: blur(0); }
+}
+@keyframes aq-light-sweep {
+  0% { left: -50%; opacity: 0; }
+  20% { opacity: 1; }
+  100% { left: 150%; opacity: 0; }
 }
 
 /* ═══════════════ SPECIAL EFFECTS ═══════════════ */
@@ -1003,8 +1113,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 120px 80px at 30% 40%, rgba(59, 130, 246, 0.04), transparent),
-    radial-gradient(ellipse 80px 120px at 70% 60%, rgba(52, 211, 153, 0.03), transparent);
+    radial-gradient(ellipse 120px 80px at 30% 40%, rgba(59, 130, 246, 0.12), transparent),
+    radial-gradient(ellipse 80px 120px at 70% 60%, rgba(52, 211, 153, 0.1), transparent);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -1020,7 +1130,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.06), transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
   top: -30px;
   right: -30px;
   opacity: 0;
@@ -1041,7 +1151,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.08), rgba(52, 211, 153, 0.06), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.18), rgba(52, 211, 153, 0.12), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -1088,7 +1198,7 @@
   left: -100%;
   width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.03), transparent);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
   transition: left 0.6s ease;
   pointer-events: none;
   z-index: 0;
@@ -1122,7 +1232,7 @@
   right: -40px;
   width: 120px;
   height: 120px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.04), transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12), transparent 70%);
   border-radius: 50%;
   pointer-events: none;
   opacity: 0;
@@ -1130,3 +1240,17 @@
 }
 .aq-page-header { position: relative; overflow: visible; }
 .aq-page-header:hover::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="aquatic"] .aq-anim-wave { animation: none; clip-path: inset(0 0 0% 0); opacity: 1; }
+  [data-theme="aquatic"] .aq-anim-wave.aq-anim-active::before,
+  [data-theme="aquatic"] .aq-anim-wave.aq-anim-active::after { animation: none; display: none; }
+  [data-theme="aquatic"] .aq-anim-caustic { animation: none; opacity: 1; }
+  [data-theme="aquatic"] .aq-anim-caustic.aq-anim-active::before { animation: none; opacity: 0.7; }
+  [data-theme="aquatic"] .aq-anim-bubble { animation: none; opacity: 1; transform: none; }
+  [data-theme="aquatic"] .aq-anim-bubble.aq-anim-active::before { animation: none; opacity: 0.5; }
+  [data-theme="aquatic"] .aq-anim-flow { animation: none; opacity: 1; transform: none; }
+  [data-theme="aquatic"] .aq-anim-flow.aq-anim-active::after { animation: none; display: none; }
+  [data-theme="aquatic"] .aq-anim-shimmer { animation: none; opacity: 1; }
+  [data-theme="aquatic"] .aq-anim-shimmer.aq-anim-active::before { animation: none; display: none; }
+}
