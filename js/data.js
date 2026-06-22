@@ -1,7 +1,7 @@
 // js/data.js
 import { toast } from './helpers.js';
 /* ═══════════════ DATA & PERSISTENCE ═══════════════ */
-export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',sl:'jeehq3_sl',tab:'jeehq3_tab',mt:'jeehq3_mt',dsSettings:'jeehq3_ds_settings',prepChat:'jeehq3_prep',pyqs:'jeehq3_pyqs',calc:'jeehq3_calc',si:'jeehq3_si'};
+export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',sl:'jeehq3_sl',tab:'jeehq3_tab',mt:'jeehq3_mt',dsSettings:'jeehq3_ds_settings',prepChat:'jeehq3_prep',pyqs:'jeehq3_pyqs',calc:'jeehq3_calc',si:'jeehq3_si',cm:'jeehq3_cm'};
 export const ONE_SHOT_LINKS={
   physics:{teacher:'Saleem Sir',pw:'https://youtube.com/@PW-JEEWallah'},
   chemistry:{teacher:'Amit Sir',pw:'https://youtube.com/@PW-JEEWallah'},
@@ -12,7 +12,7 @@ export function oneShotURL(subj,id,name){
   if(!subjCfg)return null;
   return subjCfg[id]||'https://youtube.com/results?search_query='+encodeURIComponent('JEE '+name+' One Shot '+subjCfg.teacher);
 }
-export const DB={chapters:null,assignments:null,tests:null,studyLogs:null,mockTests:null,prepChat:null,pyqs:null,calculator:null,selfImprovement:null};
+export const DB={chapters:null,assignments:null,tests:null,studyLogs:null,mockTests:null,prepChat:null,pyqs:null,calculator:null,selfImprovement:null,customTests:null};
 export function load(){
   try{DB.chapters=JSON.parse(localStorage.getItem(KEYS.ch))||null;}catch(e){DB.chapters=null;}
   if(!DB.chapters)DB.chapters=defaultChapters();
@@ -28,6 +28,7 @@ export function load(){
   try{DB.calculator=JSON.parse(localStorage.getItem(KEYS.calc))||null;}catch(e){DB.calculator=null;}
   try{DB.selfImprovement=JSON.parse(localStorage.getItem(KEYS.si))||null;}catch(e){DB.selfImprovement=null;}
   if(!DB.selfImprovement)DB.selfImprovement={calc:{highScore:0,bestStreak:0,gamesPlayed:0,totalCorrect:0,totalTime:0},reaction:{bestTime:Infinity,avgTime:0,gamesPlayed:0,bestScore:0},memory:{maxLevel:0,gamesPlayed:0,totalCorrect:0,bestSequence:0},sessions:[]};
+  try{DB.customTests=JSON.parse(localStorage.getItem(KEYS.cm))||[];}catch(e){DB.customTests=[];}
 }
 export const LS_SAFE_BUDGET=4*1024*1024;
 export function usesCloudStorage(){return !!(window.supaClient&&window.supaConfig&&window.currentSyncKey);}
@@ -39,7 +40,7 @@ export function lsBytesUsed(){
 export const LS_HARD_LIMIT=5*1024*1024;
 export function sv(key,opts){
   opts=opts||{};
-  const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,studyLogs:KEYS.sl,mockTests:KEYS.mt,prepChat:KEYS.prepChat,pyqs:KEYS.pyqs,calculator:KEYS.calc,selfImprovement:KEYS.si};
+  const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,studyLogs:KEYS.sl,mockTests:KEYS.mt,prepChat:KEYS.prepChat,pyqs:KEYS.pyqs,calculator:KEYS.calc,selfImprovement:KEYS.si,customTests:KEYS.cm};
   const lsKey=m[key];
   if(!lsKey)return false;
   let serialized;
@@ -74,7 +75,7 @@ export function sv(key,opts){
   return true;
 }
 export function persistAllLocal(opts){
-  ['chapters','assignments','tests','studyLogs','mockTests','prepChat','pyqs','calculator','selfImprovement'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
+  ['chapters','assignments','tests','studyLogs','mockTests','prepChat','pyqs','calculator','selfImprovement','customTests'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
 }
 export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];
