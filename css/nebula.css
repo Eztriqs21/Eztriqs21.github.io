@@ -1206,12 +1206,8 @@
 [data-theme="nebula"] .si-reaction-zone:hover { border-color: var(--border-hover); }
 
 /* ─── CUSTOM MOCK TEST NEBULA ACCENTS ─── */
-[data-theme="nebula"] .cm-start-btn { background: var(--accent); color: #0d0b21; box-shadow: 0 0 20px rgba(106,232,176,0.15); }
-[data-theme="nebula"] .cm-start-btn:hover { box-shadow: 0 0 25px rgba(106,232,176,0.3); }
 [data-theme="nebula"] .cm-nav-btn.primary { background: var(--accent); color: #0d0b21; }
 [data-theme="nebula"] .cm-nav-btn.primary:hover { box-shadow: 0 0 15px rgba(106,232,176,0.25); }
-[data-theme="nebula"] .cm-submit-btn { background: var(--accent); color: #0d0b21; box-shadow: 0 0 20px rgba(106,232,176,0.15); }
-[data-theme="nebula"] .cm-submit-btn:hover { box-shadow: 0 0 25px rgba(106,232,176,0.3); }
 [data-theme="nebula"] .cm-option.selected { border-color: var(--accent); background: rgba(106,232,176,0.06); }
 [data-theme="nebula"] .cm-option.selected .cm-opt-letter { background: var(--accent); color: #0d0b21; border-color: var(--accent); }
 [data-theme="nebula"] .cm-timer-fill { background: var(--accent); }

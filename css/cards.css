@@ -343,40 +343,10 @@
 
 /* Setup */
 .cm-setup { display: flex; flex-direction: column; gap: var(--space-md); }
-.cm-back {
-  align-self: flex-start; padding: 6px 14px; border-radius: var(--radius-btn); font-size: 0.8rem;
-  cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: inherit;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.cm-back:hover { background: var(--hover); }
-.cm-header { margin-bottom: var(--space-xs); }
-.cm-title { font-size: 1.3rem; font-weight: 700; }
-.cm-sub { font-size: 0.8rem; opacity: 0.5; }
 .cm-form { display: flex; flex-direction: column; gap: var(--space-sm); }
-.cm-field { display: flex; flex-direction: column; gap: 4px; }
-.cm-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.4; }
-.cm-input {
-  padding: 8px 12px; border-radius: var(--radius-btn); font-size: 0.85rem;
-  background: var(--bg-card); border: 1px solid var(--border); color: inherit;
-}
-.cm-input:focus { border-color: var(--accent); outline: none; }
-.cm-textarea {
-  padding: 10px 12px; border-radius: var(--radius-btn); font-size: 0.8rem; font-family: var(--font-data);
-  background: var(--bg-card); border: 1px solid var(--border); color: inherit;
-  resize: vertical; min-height: 200px; line-height: 1.6; tab-size: 2;
-}
-.cm-textarea:focus { border-color: var(--accent); outline: none; }
-.cm-textarea::placeholder { opacity: 0.3; }
 .cm-parse-status { font-size: 0.75rem; padding: 4px 0; }
 .cm-parse-ok { color: var(--success); }
 .cm-parse-err { color: var(--danger); }
-.cm-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
-.cm-start-btn {
-  padding: 12px 24px; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.9rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; margin-top: var(--space-xs);
-}
-.cm-start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* Exam Layout */
 .cm-exam { display: flex; gap: var(--space-md); min-height: 70vh; }
@@ -400,7 +370,6 @@
 .cm-timer-track { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
 .cm-timer-fill { height: 100%; background: var(--success); border-radius: 2px; transition: width 1s linear; }
 .cm-timer-fill.danger { background: var(--danger); }
-.cm-timer-text { text-align: center; font-family: var(--font-data); font-size: 0.85rem; opacity: 0.5; margin-top: 4px; }
 
 /* Question */
 .cm-question { font-size: 1.05rem; font-weight: 500; line-height: 1.6; margin-bottom: var(--space-md); }
@@ -433,21 +402,18 @@
 .cm-fb-correct { color: var(--success); }
 .cm-fb-wrong { color: var(--danger); }
 
-/* Navigation */
-.cm-nav { display: flex; gap: 8px; margin-top: auto; padding-top: var(--space-sm); }
-.cm-nav-btn {
-  flex: 1; padding: 10px; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.85rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-  border: 1px solid var(--border); background: var(--bg-card); color: inherit; transition: all 0.15s;
+/* Footer (Submit + Nav) */
+.cm-exam-footer {
+  margin-top: auto; border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: var(--space-sm); display: flex; flex-direction: column; gap: 8px;
 }
-.cm-nav-btn:hover { background: var(--hover); }
-.cm-nav-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
-.cm-nav-btn.primary:hover { filter: brightness(1.1); }
 .cm-submit-btn {
   width: 100%; padding: 12px; border-radius: var(--radius-btn); font-weight: 700; font-size: 0.9rem;
-  cursor: pointer; background: var(--danger); color: #fff; border: none; margin-top: var(--space-sm);
+  cursor: pointer; background: var(--danger); color: #fff; border: none;
 }
 .cm-submit-btn:hover { filter: brightness(1.1); }
+.cm-nav { display: flex; gap: 8px; }
+.cm-nav-btn { flex: 1; }
 
 /* Question Palette */
 .cm-palette { display: flex; flex-direction: column; gap: var(--space-sm); }
@@ -504,12 +470,11 @@
 
 /* Analysis */
 .cm-analysis { display: flex; flex-direction: column; gap: var(--space-md); }
-.cm-analysis-title { font-size: 1.3rem; font-weight: 700; text-align: center; }
 .cm-score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm); }
 .cm-score-item { text-align: center; padding: var(--space-sm); }
 .cm-score-big { font-size: 1.5rem; font-weight: 700; font-family: var(--font-data); line-height: 1.2; }
 .cm-score-lbl { font-size: 0.65rem; opacity: 0.4; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
-.cm-time-summary { text-align: center; font-size: 0.85rem; opacity: 0.5; }
+.cm-time-summary { text-align: center; font-size: 0.85rem; opacity: 0.5; margin-top: var(--space-sm); }
 
 /* Question Breakdown */
 .cm-breakdown { display: flex; flex-direction: column; gap: 4px; }
@@ -540,13 +505,6 @@
 
 /* Actions */
 .cm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.cm-action-btn {
-  padding: 12px; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.9rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  border: 1px solid var(--border); background: var(--bg-card); color: inherit; transition: all 0.15s;
-}
-.cm-action-btn:hover { background: var(--hover); }
-.cm-action-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
 
 /* Confirm Dialog */
 .cm-confirm-overlay {
@@ -562,11 +520,6 @@
 .cm-confirm-title { font-size: 1rem; font-weight: 700; }
 .cm-confirm-msg { font-size: 0.85rem; opacity: 0.6; }
 .cm-confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.cm-confirm-btn {
-  padding: 8px 18px; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.85rem;
-  cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: inherit;
-}
-.cm-confirm-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
 
 /* Time's Up overlay */
 .cm-timeup-overlay {
@@ -584,5 +537,4 @@
   .cm-palette-toggle { display: flex; }
   .cm-score-grid { grid-template-columns: repeat(2, 1fr); }
   .cm-actions { grid-template-columns: 1fr; }
-  .cm-row { grid-template-columns: 1fr; }
 }

@@ -1185,12 +1185,8 @@
 [data-theme="nexus"] .si-reaction-zone:hover { border-color: var(--border-hover); }
 
 /* ─── CUSTOM MOCK TEST NEXUS ACCENTS ─── */
-[data-theme="nexus"] .cm-start-btn { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(0,240,255,0.15); }
-[data-theme="nexus"] .cm-start-btn:hover { box-shadow: 0 0 25px rgba(0,240,255,0.3); }
 [data-theme="nexus"] .cm-nav-btn.primary { background: var(--primary); color: #000; }
 [data-theme="nexus"] .cm-nav-btn.primary:hover { box-shadow: 0 0 15px rgba(0,240,255,0.25); }
-[data-theme="nexus"] .cm-submit-btn { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(0,240,255,0.15); }
-[data-theme="nexus"] .cm-submit-btn:hover { box-shadow: 0 0 25px rgba(0,240,255,0.3); }
 [data-theme="nexus"] .cm-option.selected { border-color: var(--primary); background: rgba(0,240,255,0.06); }
 [data-theme="nexus"] .cm-option.selected .cm-opt-letter { background: var(--primary); color: #000; border-color: var(--primary); }
 [data-theme="nexus"] .cm-timer-fill { background: var(--primary); }

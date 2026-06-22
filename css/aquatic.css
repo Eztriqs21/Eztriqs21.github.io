@@ -1276,12 +1276,8 @@
 [data-theme="aquatic"] .si-reaction-zone:hover { border-color: var(--border-hover); }
 
 /* ─── CUSTOM MOCK TEST AQUATIC ACCENTS ─── */
-[data-theme="aquatic"] .cm-start-btn { background: var(--primary); color: #fff; box-shadow: 0 0 20px rgba(59,130,246,0.15); }
-[data-theme="aquatic"] .cm-start-btn:hover { box-shadow: 0 0 25px rgba(59,130,246,0.3); }
 [data-theme="aquatic"] .cm-nav-btn.primary { background: var(--primary); color: #fff; }
 [data-theme="aquatic"] .cm-nav-btn.primary:hover { box-shadow: 0 0 15px rgba(59,130,246,0.25); }
-[data-theme="aquatic"] .cm-submit-btn { background: var(--primary); color: #fff; box-shadow: 0 0 20px rgba(59,130,246,0.15); }
-[data-theme="aquatic"] .cm-submit-btn:hover { box-shadow: 0 0 25px rgba(59,130,246,0.3); }
 [data-theme="aquatic"] .cm-option.selected { border-color: var(--primary); background: rgba(59,130,246,0.06); }
 [data-theme="aquatic"] .cm-option.selected .cm-opt-letter { background: var(--primary); color: #fff; border-color: var(--primary); }
 [data-theme="aquatic"] .cm-timer-fill { background: var(--primary); }

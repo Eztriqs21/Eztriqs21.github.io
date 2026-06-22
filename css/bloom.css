@@ -1143,12 +1143,8 @@
 [data-theme="bloom"] .si-reaction-zone:hover { border-color: var(--border-hover); }
 
 /* ─── CUSTOM MOCK TEST BLOOM ACCENTS ─── */
-[data-theme="bloom"] .cm-start-btn { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(107,144,128,0.2); }
-[data-theme="bloom"] .cm-start-btn:hover { box-shadow: 0 2px 18px rgba(107,144,128,0.35); }
 [data-theme="bloom"] .cm-nav-btn.primary { background: var(--primary); color: #fff; }
 [data-theme="bloom"] .cm-nav-btn.primary:hover { box-shadow: 0 2px 12px rgba(107,144,128,0.3); }
-[data-theme="bloom"] .cm-submit-btn { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(107,144,128,0.2); }
-[data-theme="bloom"] .cm-submit-btn:hover { box-shadow: 0 2px 18px rgba(107,144,128,0.35); }
 [data-theme="bloom"] .cm-option.selected { border-color: var(--primary); background: rgba(107,144,128,0.06); }
 [data-theme="bloom"] .cm-option.selected .cm-opt-letter { background: var(--primary); color: #fff; border-color: var(--primary); }
 [data-theme="bloom"] .cm-timer-fill { background: var(--primary); }

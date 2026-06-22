@@ -6,6 +6,7 @@
   function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
   function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'aquatic' ? 'aq' : 'fd'; }
   function fmtTime(sec) { var m = Math.floor(sec / 60); var s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
+  var FORMAT_TEMPLATE = 'What is 2+2?\nA) 3\nB) 4\nC) 5\nD) 6\nAnswer: B';
 
   const SUBJECT_ICONS = {
     physics: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
@@ -64,7 +65,7 @@
         </div>`}
         ${t.time ? `<div style="font-size:11px;color:var(--muted);margin-bottom:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${t.time} minutes</div>` : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="${p}-btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="window.delMockTest('${t.id}')">
+          <button class="btn btn-xs btn-danger" onclick="window.delMockTest('${t.id}')">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
           </button>
         </div>
@@ -131,33 +132,38 @@
     var P = pfx();
 
     el.innerHTML = `
-    <div class="cm-setup">
-      <button class="cm-back" data-cm-back><i class="fas fa-arrow-left"></i> Back</button>
-      <div class="cm-header">
-        <div class="cm-title">Create Custom Test</div>
-        <div class="cm-sub">Paste your questions and set a timer</div>
+    <div class="${P}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="${P}-page-title" data-text="Create Custom Test">Create Custom Test</div>
+        <div class="${P}-page-sub">Paste your questions and set a timer</div>
       </div>
+      <button class="btn btn-ghost" data-cm-back><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+    <div class="${P}-card anim-entrance" style="--delay:0.1s;padding:20px">
       <div class="cm-form">
-        <div class="cm-field">
-          <div class="cm-label">Test Name</div>
-          <input class="cm-input" id="cm-name" type="text" placeholder="e.g. JEE Physics Mock 1" />
+        <div class="fg">
+          <label>Test Name</label>
+          <input class="inp" id="cm-name" type="text" placeholder="e.g. JEE Physics Mock 1" />
         </div>
-        <div class="cm-row">
-          <div class="cm-field">
-            <div class="cm-label">Mode</div>
+        <div class="g2">
+          <div class="fg">
+            <label>Mode</label>
             <div style="display:flex;gap:4px">
-              <button class="cm-input" style="cursor:pointer;text-align:center;flex:1;border-color:var(--accent);background:var(--accent-bg)" data-cm-mode="exam" id="cm-mode-exam">Exam</button>
-              <button class="cm-input" style="cursor:pointer;text-align:center;flex:1" data-cm-mode="practice" id="cm-mode-practice">Practice</button>
+              <button class="btn btn-primary" style="flex:1" data-cm-mode="exam" id="cm-mode-exam">Exam</button>
+              <button class="btn btn-ghost" style="flex:1" data-cm-mode="practice" id="cm-mode-practice">Practice</button>
             </div>
           </div>
-          <div class="cm-field">
-            <div class="cm-label">Time Limit (minutes, 0 = unlimited)</div>
-            <input class="cm-input" id="cm-time" type="number" min="0" value="75" />
+          <div class="fg">
+            <label>Time Limit (minutes, 0 = unlimited)</label>
+            <input class="inp" id="cm-time" type="number" min="0" value="75" />
           </div>
         </div>
-        <div class="cm-field">
-          <div class="cm-label">Questions</div>
-          <textarea class="cm-textarea" id="cm-questions" placeholder="Paste questions in this format:
+        <div class="fg">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-1)">
+            <label style="margin:0">Questions</label>
+            <button class="btn btn-xs btn-ghost" id="cm-copy-format" type="button"><i class="fas fa-copy"></i> Copy Format</button>
+          </div>
+          <textarea class="inp" id="cm-questions" rows="10" style="font-family:var(--font-data);font-size:12px;line-height:1.6;tab-size:2" placeholder="Paste questions in this format:
 
 What is 2+2?
 A) 3
@@ -174,7 +180,7 @@ D) x=1, x=5
 Answer: B"></textarea>
           <div class="cm-parse-status" id="cm-parse-status"></div>
         </div>
-        <button class="cm-start-btn ${P}-btn-primary" id="cm-start" disabled>Start Test <i class="fas fa-play"></i></button>
+        <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px" id="cm-start" disabled>Start Test <i class="fas fa-play"></i></button>
       </div>
     </div>`;
 
@@ -183,15 +189,29 @@ Answer: B"></textarea>
 
     el.querySelector('[data-cm-back]').addEventListener('click', function() { window.renderMockTests(el); });
 
+    el.querySelector('#cm-copy-format').addEventListener('click', function() {
+      navigator.clipboard.writeText(FORMAT_TEMPLATE).then(function() {
+        window.toast && window.toast('Format copied to clipboard!');
+      }).catch(function() {
+        var ta = document.createElement('textarea');
+        ta.value = FORMAT_TEMPLATE;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        window.toast && window.toast('Format copied!');
+      });
+    });
+
     el.querySelectorAll('[data-cm-mode]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         mode = btn.getAttribute('data-cm-mode');
         el.querySelectorAll('[data-cm-mode]').forEach(function(b) {
-          b.style.borderColor = 'var(--border)';
-          b.style.background = 'var(--bg-card)';
+          b.className = 'btn btn-ghost';
+          b.style.flex = '1';
         });
-        btn.style.borderColor = 'var(--accent)';
-        btn.style.background = 'var(--accent-bg)';
+        btn.className = 'btn btn-primary';
+        btn.style.flex = '1';
       });
     });
 
@@ -321,14 +341,16 @@ Answer: B"></textarea>
           <div class="cm-question">${esc(q.q)}</div>
           <div class="cm-options">${optsHtml}</div>
           ${feedbackHtml}
-          <div class="cm-nav">
-            <button class="cm-nav-btn" data-cm-prev ${currentQ === 0 ? 'disabled style="opacity:0.3"' : ''}><i class="fas fa-chevron-left"></i> Prev</button>
-            ${currentQ < questions.length - 1
-              ? '<button class="cm-nav-btn primary" data-cm-next>Next <i class="fas fa-chevron-right"></i></button>'
-              : '<button class="cm-nav-btn primary" data-cm-finish>Finish <i class="fas fa-check"></i></button>'
-            }
+          <div class="cm-exam-footer">
+            <button class="cm-submit-btn" data-cm-submit><i class="fas fa-paper-plane"></i> Submit Test (${unattempted} unattempted)</button>
+            <div class="cm-nav">
+              <button class="cm-nav-btn btn btn-ghost" data-cm-prev ${currentQ === 0 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Prev</button>
+              ${currentQ < questions.length - 1
+                ? '<button class="cm-nav-btn btn btn-primary" data-cm-next>Next <i class="fas fa-chevron-right"></i></button>'
+                : '<button class="cm-nav-btn btn btn-primary" data-cm-finish>Finish <i class="fas fa-check"></i></button>'
+              }
+            </div>
           </div>
-          <button class="cm-submit-btn" data-cm-submit>Submit Test (${unattempted} unattempted)</button>
         </div>
         <div class="cm-exam-side">
           <div class="cm-palette">
@@ -438,8 +460,8 @@ Answer: B"></textarea>
           <div class="cm-confirm-title">Submit Test?</div>
           <div class="cm-confirm-msg">${unanswered > 0 ? unanswered + ' question' + (unanswered > 1 ? 's' : '') + ' unattempted. ' : ''}Are you sure you want to submit?</div>
           <div class="cm-confirm-actions">
-            <button class="cm-confirm-btn" data-cm-cancel>Cancel</button>
-            <button class="cm-confirm-btn primary" data-cm-confirm>Submit</button>
+            <button class="btn btn-ghost" data-cm-cancel>Cancel</button>
+            <button class="btn btn-primary" data-cm-confirm>Submit</button>
           </div>
         </div>`;
       document.body.appendChild(overlay);
@@ -561,35 +583,44 @@ Answer: B"></textarea>
 
       el.innerHTML = `
       <div class="cm-analysis">
-        <div class="cm-analysis-title">Test Complete!</div>
-        <div class="cm-score-grid">
-          <div class="cm-score-item">
-            <div class="cm-score-big" style="color:var(--success)">${data.totalCorrect}/${data.questions.length}</div>
-            <div class="cm-score-lbl">Correct</div>
-          </div>
-          <div class="cm-score-item">
-            <div class="cm-score-big" style="color:var(--danger)">${data.totalWrong}</div>
-            <div class="cm-score-lbl">Wrong</div>
-          </div>
-          <div class="cm-score-item">
-            <div class="cm-score-big" style="color:var(--accent)">${data.totalSkipped}</div>
-            <div class="cm-score-lbl">Skipped</div>
-          </div>
-          <div class="cm-score-item">
-            <div class="cm-score-big">${data.score}/${data.maxScore}</div>
-            <div class="cm-score-lbl">Score (${pct}%)</div>
+        <div class="${P}-page-header anim-entrance">
+          <div>
+            <div class="${P}-page-title" data-text="Test Complete!">Test Complete!</div>
+            <div class="${P}-page-sub">${data.name}</div>
           </div>
         </div>
-        <div class="cm-time-summary">
-          Total: ${fmtTime(data.totalTime)} · Accuracy: ${accuracy}% · Avg ${fmtTime(avgTime)}/question
+        <div class="${P}-card anim-entrance" style="--delay:0.1s;padding:20px">
+          <div class="cm-score-grid">
+            <div class="cm-score-item">
+              <div class="cm-score-big" style="color:var(--success)">${data.totalCorrect}/${data.questions.length}</div>
+              <div class="cm-score-lbl">Correct</div>
+            </div>
+            <div class="cm-score-item">
+              <div class="cm-score-big" style="color:var(--danger)">${data.totalWrong}</div>
+              <div class="cm-score-lbl">Wrong</div>
+            </div>
+            <div class="cm-score-item">
+              <div class="cm-score-big" style="color:var(--accent)">${data.totalSkipped}</div>
+              <div class="cm-score-lbl">Skipped</div>
+            </div>
+            <div class="cm-score-item">
+              <div class="cm-score-big">${data.score}/${data.maxScore}</div>
+              <div class="cm-score-lbl">Score (${pct}%)</div>
+            </div>
+          </div>
+          <div class="cm-time-summary">
+            Total: ${fmtTime(data.totalTime)} · Accuracy: ${accuracy}% · Avg ${fmtTime(avgTime)}/question
+          </div>
         </div>
-        <div class="cm-breakdown">
-          <div class="cm-breakdown-title">Question Breakdown</div>
-          ${breakdownHtml}
+        <div class="${P}-card anim-entrance" style="--delay:0.2s;padding:20px">
+          <div class="cm-breakdown">
+            <div class="cm-breakdown-title">Question Breakdown</div>
+            ${breakdownHtml}
+          </div>
         </div>
-        <div class="cm-actions">
-          <button class="cm-action-btn primary" data-cm-save><i class="fas fa-save"></i> Save to Mock Tests</button>
-          <button class="cm-action-btn" data-cm-hub><i class="fas fa-home"></i> Back to Hub</button>
+        <div class="cm-actions anim-entrance" style="--delay:0.3s">
+          <button class="btn btn-primary" data-cm-save style="padding:12px;font-size:14px"><i class="fas fa-save"></i> Save to Mock Tests</button>
+          <button class="btn btn-ghost" data-cm-hub style="padding:12px;font-size:14px"><i class="fas fa-home"></i> Back to Hub</button>
         </div>
       </div>`;
 
