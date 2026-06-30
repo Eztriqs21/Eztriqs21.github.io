@@ -191,14 +191,7 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
           <span>Score Analytics</span>
         </a>
-        <a href="#/study-log" class="nav-item" data-interactive>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>Study Log</span>
-        </a>
-        <a href="#/self-improvement" class="nav-item" data-interactive>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 12h4l2-8 4 16 2-8h4"/></svg>
-          <span>Self Improvement</span>
-        </a>
+
       </nav>
       <div class="sidebar-footer">
         <button id="cinematic-btn" class="cinematic-trigger" data-interactive>
@@ -527,31 +520,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   </div>
 </div>
 
-<!-- Study Log Modal -->
-<div class="mo" id="m-study-log" role="dialog" aria-modal="true">
-  <div class="md"><div class="md-handle"></div>
-    <div class="md-head"><div class="md-title">Log Study Session</div><button class="md-x" aria-label="Close" onclick="cm('m-study-log')">&#10005;</button></div>
-    <div class="md-body">
-      <div class="fg"><label>Subject</label>
-        <select class="inp" id="sl-subj">
-          <option value="Physics">Physics</option>
-          <option value="Chemistry">Chemistry</option>
-          <option value="Maths">Maths</option>
-          <option value="General">General</option>
-        </select>
-      </div>
-      <div class="fg"><label>Topic / Notes</label><input class="inp" id="sl-topic" type="text" placeholder="e.g. Rotational Motion &#8212; Numericals"/></div>
-      <div class="g2">
-        <div class="fg"><label>Duration (hrs)</label><input class="inp" id="sl-dur" type="number" step="0.25" min="0.25" max="12" placeholder="e.g. 1.5"/></div>
-        <div class="fg"><label>Date</label><input class="inp" id="sl-date" type="date"/></div>
-      </div>
-    </div>
-    <div class="md-foot">
-      <button class="btn btn-ghost btn-sm" onclick="cm('m-study-log')">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="saveStudyLog()">Log Session</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- Start Study Session Modal -->
 <div class="mo" id="m-study-session" role="dialog" aria-modal="true">
@@ -677,9 +646,7 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 
   <script src="page-js/pyq.js?v=2"></script>
   <script src="page-js/score-analytics.js?v=2"></script>
-  <script src="page-js/study-log.js?v=2"></script>
-  <script src="js/question-bank.js?v=1"></script>
-  <script src="page-js/self-improvement.js?v=1"></script>
+
   <script src="js/modal-handlers.js?v=2"></script>
   <script src="js/cinematic.js?v=1"></script>
   <script>

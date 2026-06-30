@@ -22,7 +22,6 @@ function _refreshPage() {
     assignments: window.renderAssignments,
     tests: window.renderTests,
     chapters: window.renderChapters,
-    'study-log': window.renderStudyLog,
     'mock-tests': window.renderMockTests,
   analytics: window.renderAnalytics,
     calculator: window.renderCalculator,
@@ -248,28 +247,6 @@ function deleteEditCh() {
   });
 }
 
-/* ═══════════════ STUDY LOG ═══════════════ */
-function saveStudyLog() {
-  var DB = window.DB;
-  var topicEl = document.getElementById('sl-topic');
-  var subjEl = document.getElementById('sl-subj');
-  var durEl = document.getElementById('sl-dur');
-  var dateEl = document.getElementById('sl-date');
-  if (!topicEl || !subjEl || !durEl || !dateEl) return;
-  var topic = topicEl.value.trim();
-  var subj = subjEl.value;
-  var dur = parseFloat(durEl.value) || 0;
-  var date = dateEl.value;
-  if (!topic) { toast('Enter a topic'); return; }
-  if (dur <= 0) { toast('Enter valid duration'); return; }
-  if (!DB.studyLogs) DB.studyLogs = [];
-  DB.studyLogs.unshift({ id: 'sl_' + Date.now(), subject: subj, topic: topic, duration: Math.round(dur * 10) / 10, date: date || new Date().toISOString().split('T')[0], createdAt: new Date().toISOString() });
-  window.sv('studyLogs');
-  window.cm('m-study-log');
-  toast('Session logged!');
-  _refreshPage();
-}
-
 /* ═══════════════ MOCK TEST ═══════════════ */
 function saveMockTest() {
   var DB = window.DB;
@@ -326,7 +303,6 @@ window.saveTest = saveTest;
 window.saveAddCh = saveAddCh;
 window.saveEditCh = saveEditCh;
 window.deleteEditCh = deleteEditCh;
-window.saveStudyLog = saveStudyLog;
 window.saveMockTest = saveMockTest;
 
 window._refreshPage = _refreshPage;

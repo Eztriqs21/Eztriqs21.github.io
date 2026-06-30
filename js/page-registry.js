@@ -7,9 +7,7 @@ export const PAGE_RENDERERS = {
   assignments: 'renderAssignments',
   'mock-tests': 'renderMockTests',
   pyq: 'renderPYQ',
-  'score-analytics': 'renderScoreAnalytics',
-  'study-log': 'renderStudyLog',
-  'self-improvement': 'renderSelfImprovement'
+  'score-analytics': 'renderScoreAnalytics'
 };
 
 export const PAGE_TITLES = {
@@ -21,9 +19,7 @@ export const PAGE_TITLES = {
   assignments: { title: 'Assignments', sub: 'Task management & tracking' },
   'mock-tests': { title: 'Mock Tests', sub: 'Full-length practice exams' },
   pyq: { title: 'PYQ Research', sub: 'Previous year question analysis' },
-  'score-analytics': { title: 'Score Analytics', sub: 'Detailed performance breakdown' },
-  'study-log': { title: 'Study Log', sub: 'Track your study sessions' },
-  'self-improvement': { title: 'Self Improvement', sub: 'Sharpen your mind — calculations, reactions, memory' }
+  'score-analytics': { title: 'Score Analytics', sub: 'Detailed performance breakdown' }
 };
 
 export function callPageRenderer(page, el) {

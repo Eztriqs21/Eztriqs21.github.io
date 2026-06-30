@@ -1164,26 +1164,6 @@
   [data-theme="nexus"] .nx-anim-node.nx-anim-active::after { transform: scaleY(1); }
 }
 
-/* ═══════════════ SI — Nexus Accents ═══════════════ */
-[data-theme="nexus"] .si-stat-icon { color: var(--accent); }
-[data-theme="nexus"] .si-game-ico { background: rgba(0,240,255,0.08); color: var(--primary); }
-[data-theme="nexus"] .si-play-btn { background: var(--primary); color: #000; }
-[data-theme="nexus"] .si-play-btn:hover { box-shadow: 0 0 15px rgba(0,240,255,0.3); }
-[data-theme="nexus"] .si-start { background: var(--primary); color: #000; }
-[data-theme="nexus"] .si-start:hover { box-shadow: 0 0 15px rgba(0,240,255,0.25); }
-[data-theme="nexus"] .si-start-outline { border-color: var(--border); color: var(--text); }
-[data-theme="nexus"] .si-start-outline:hover { background: var(--hover); }
-[data-theme="nexus"] .si-timer-fill { background: var(--primary); }
-[data-theme="nexus"] .si-mem-cell.si-mem-flash { background: rgba(0,240,255,0.2) !important; border-color: var(--primary); box-shadow: 0 0 20px rgba(0,240,255,0.15); }
-[data-theme="nexus"] .si-new-high { color: var(--accent); background: rgba(245,158,11,0.08); }
-[data-theme="nexus"] .si-opt.active { background: rgba(0,240,255,0.1); border-color: var(--primary); color: var(--primary); }
-[data-theme="nexus"] .si-select option { background: var(--bg); color: var(--text); }
-[data-theme="nexus"] .si-streak-display { background: rgba(245,158,11,0.15); color: var(--accent); }
-[data-theme="nexus"] .si-opt-btn.si-correct { background: rgba(34,197,94,0.12); border-color: var(--success); color: var(--success); }
-[data-theme="nexus"] .si-opt-btn.si-wrong { background: rgba(239,68,68,0.12); border-color: var(--danger); color: var(--danger); }
-[data-theme="nexus"] .si-reaction-zone { border-color: var(--border); }
-[data-theme="nexus"] .si-reaction-zone:hover { border-color: var(--border-hover); }
-
 /* ─── CUSTOM MOCK TEST NEXUS ACCENTS ─── */
 [data-theme="nexus"] .cm-nav-btn.primary { background: var(--primary); color: #000; }
 [data-theme="nexus"] .cm-nav-btn.primary:hover { box-shadow: 0 0 15px rgba(0,240,255,0.25); }

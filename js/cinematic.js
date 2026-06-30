@@ -51,13 +51,7 @@
     { t: 28500, dur: 2000, text: 'Practice with Purpose', effect: 'subtitle',
       spotlight: '[data-tutorial-id="pyq-card"]' },
 
-    { t: 30500, dur: 2500, text: 'STUDY LOG', label: 'TIME TRACKING', effect: 'title',
-      page: 'study-log', spotlight: '[data-tutorial-id="live-timer"]', transition: 'cut' },
-
-    { t: 33000, dur: 2000, text: 'Every Minute Counts', effect: 'subtitle',
-      spotlight: '[data-tutorial-id="live-timer"]' },
-
-    { t: 35000, dur: 2000, text: 'SWITCH', effect: 'morph',
+    { t: 30500, dur: 2000, text: 'SWITCH', effect: 'morph',
       theme: 'nebula', transition: 'morph' },
 
     { t: 37000, dur: 2500, text: 'ANALYTICS', label: 'INSIGHTS', effect: 'title',
