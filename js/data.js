@@ -1,7 +1,7 @@
 // js/data.js
 import { toast } from './helpers.js';
 /* ═══════════════ DATA & PERSISTENCE ═══════════════ */
-export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',tab:'jeehq3_tab',mt:'jeehq3_mt',dsSettings:'jeehq3_ds_settings',prepChat:'jeehq3_prep',pyqs:'jeehq3_pyqs',calc:'jeehq3_calc',cm:'jeehq3_cm'};
+export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',tab:'jeehq3_tab',mt:'jeehq3_mt',dsSettings:'jeehq3_ds_settings',prepChat:'jeehq3_prep',calc:'jeehq3_calc',cm:'jeehq3_cm'};
 export const ONE_SHOT_LINKS={
   physics:{teacher:'Saleem Sir',pw:'https://youtube.com/@PW-JEEWallah'},
   chemistry:{teacher:'Amit Sir',pw:'https://youtube.com/@PW-JEEWallah'},
@@ -12,7 +12,7 @@ export function oneShotURL(subj,id,name){
   if(!subjCfg)return null;
   return subjCfg[id]||'https://youtube.com/results?search_query='+encodeURIComponent('JEE '+name+' One Shot '+subjCfg.teacher);
 }
-export const DB={chapters:null,assignments:null,tests:null,mockTests:null,prepChat:null,pyqs:null,calculator:null,customTests:null};
+export const DB={chapters:null,assignments:null,tests:null,mockTests:null,prepChat:null,calculator:null,customTests:null};
 export function load(){
   try{DB.chapters=JSON.parse(localStorage.getItem(KEYS.ch))||null;}catch(e){DB.chapters=null;}
   if(!DB.chapters)DB.chapters=defaultChapters();
@@ -23,7 +23,6 @@ export function load(){
   try{DB.mockTests=JSON.parse(localStorage.getItem(KEYS.mt))||[];}catch(e){DB.mockTests=[];}
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
   if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
-  try{DB.pyqs=JSON.parse(localStorage.getItem(KEYS.pyqs))||[];}catch(e){DB.pyqs=[];}
   try{DB.calculator=JSON.parse(localStorage.getItem(KEYS.calc))||null;}catch(e){DB.calculator=null;}
   try{DB.customTests=JSON.parse(localStorage.getItem(KEYS.cm))||[];}catch(e){DB.customTests=[];}
 }
@@ -37,7 +36,7 @@ export function lsBytesUsed(){
 export const LS_HARD_LIMIT=5*1024*1024;
 export function sv(key,opts){
   opts=opts||{};
-  const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,mockTests:KEYS.mt,prepChat:KEYS.prepChat,pyqs:KEYS.pyqs,calculator:KEYS.calc,customTests:KEYS.cm};
+  const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,mockTests:KEYS.mt,prepChat:KEYS.prepChat,calculator:KEYS.calc,customTests:KEYS.cm};
   const lsKey=m[key];
   if(!lsKey)return false;
   let serialized;
@@ -72,7 +71,7 @@ export function sv(key,opts){
   return true;
 }
 export function persistAllLocal(opts){
-  ['chapters','assignments','tests','mockTests','prepChat','pyqs','calculator','customTests'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
+  ['chapters','assignments','tests','mockTests','prepChat','calculator','customTests'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
 }
 export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];

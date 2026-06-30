@@ -6,7 +6,6 @@ export const PAGE_RENDERERS = {
   calculator: 'renderCalculator',
   assignments: 'renderAssignments',
   'mock-tests': 'renderMockTests',
-  pyq: 'renderPYQ',
   'score-analytics': 'renderScoreAnalytics'
 };
 
@@ -18,7 +17,6 @@ export const PAGE_TITLES = {
   calculator: { title: 'Calculator', sub: 'Full JEE mock evaluation engine' },
   assignments: { title: 'Assignments', sub: 'Task management & tracking' },
   'mock-tests': { title: 'Mock Tests', sub: 'Full-length practice exams' },
-  pyq: { title: 'PYQ Research', sub: 'Previous year question analysis' },
   'score-analytics': { title: 'Score Analytics', sub: 'Detailed performance breakdown' }
 };
 

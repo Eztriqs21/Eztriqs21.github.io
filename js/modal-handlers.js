@@ -25,8 +25,6 @@ function _refreshPage() {
     'mock-tests': window.renderMockTests,
   analytics: window.renderAnalytics,
     calculator: window.renderCalculator,
-
-    pyq: window.renderPYQ,
     'score-analytics': window.renderScoreAnalytics
   };
   if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);

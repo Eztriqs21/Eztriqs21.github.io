@@ -30,7 +30,7 @@
         <div class="${p}-list-title" style="${ch.completed ? 'text-decoration:line-through;opacity:0.5' : ''}">${esc(ch.name)}</div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
           <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:${strBg};color:${strColor};font-weight:600;cursor:pointer" onclick="event.stopPropagation();window.setMF('${subj}','${ch.id}')">${str === 'none' ? 'Set strength' : str.charAt(0).toUpperCase() + str.slice(1)}</span>
-          ${ch.pyq ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);color:var(--accent);font-weight:600">PYQ</span>' : ''}
+
         </div>
       </div>
     </div>`;
