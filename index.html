@@ -334,28 +334,39 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
 
 <!-- File Preview Modal -->
 <div class="mo" id="m-preview" role="dialog" aria-modal="true">
-  <div class="md md-xl"><div class="md-handle"></div>
-    <div class="md-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <div class="md-title" id="pv-title" style="flex:1;min-width:120px">Preview</div>
-      <div id="pv-pdf-controls" style="display:none;align-items:center;gap:6px;font-size:12px">
-        <button class="btn btn-ghost btn-xs" onclick="pvPage(-1)" style="padding:4px 8px">&#9664;</button>
-        <span id="pv-page-info" style="color:var(--muted);min-width:50px;text-align:center">1 / 1</span>
-        <button class="btn btn-ghost btn-xs" onclick="pvPage(1)" style="padding:4px 8px">&#9654;</button>
-        <span style="width:1px;height:16px;background:var(--border);margin:0 4px"></span>
-        <button class="btn btn-ghost btn-xs" onclick="pvZoom(-0.25)" style="padding:4px 8px">&#8722;</button>
-        <span id="pv-zoom-label" style="color:var(--muted);min-width:40px;text-align:center">100%</span>
-        <button class="btn btn-ghost btn-xs" onclick="pvZoom(0.25)" style="padding:4px 8px">+</button>
+  <div class="md pv-modal"><div class="md-handle"></div>
+    <div class="pv-header">
+      <div class="pv-title" id="pv-title">Preview</div>
+      <div class="pv-controls" id="pv-pdf-controls" style="display:none">
+        <button onclick="pvPage(-1)" title="Previous page">&#9664;</button>
+        <input id="pv-page-input" type="number" min="1" value="1" onchange="pvGoToPage(this.value)"/>
+        <span id="pv-page-info" style="color:var(--muted);min-width:36px;text-align:center;font-size:12px">/ 1</span>
+        <button onclick="pvPage(1)" title="Next page">&#9654;</button>
+        <div class="pv-sep"></div>
+        <button onclick="pvZoom(-0.25)" title="Zoom out">&#8722;</button>
+        <span id="pv-zoom-label" style="color:var(--muted);min-width:42px;text-align:center;font-size:12px">100%</span>
+        <button onclick="pvZoom(0.25)" title="Zoom in">+</button>
+        <div class="pv-sep"></div>
+        <button onclick="pvFitWidth()" title="Fit width" id="pv-fitw-btn">&#8596;</button>
+        <button onclick="pvFitPage()" title="Fit page" id="pv-fitp-btn">&#8862;</button>
       </div>
-      <div id="pv-img-controls" style="display:none;align-items:center;gap:6px;font-size:12px">
-        <button class="btn btn-ghost btn-xs" onclick="pvZoomImg(-0.25)" style="padding:4px 8px">&#8722;</button>
-        <span id="pv-img-zoom-label" style="color:var(--muted);min-width:40px;text-align:center">100%</span>
-        <button class="btn btn-ghost btn-xs" onclick="pvZoomImg(0.25)" style="padding:4px 8px">+</button>
-        <button class="btn btn-ghost btn-xs" onclick="pvImgReset()" style="padding:4px 8px">&#8634;</button>
+      <div class="pv-controls" id="pv-img-controls" style="display:none">
+        <button onclick="pvZoomImg(-0.25)" title="Zoom out">&#8722;</button>
+        <span id="pv-img-zoom-label" style="color:var(--muted);min-width:42px;text-align:center;font-size:12px">100%</span>
+        <button onclick="pvZoomImg(0.25)" title="Zoom in">+</button>
+        <div class="pv-sep"></div>
+        <button onclick="pvImgReset()" title="Reset zoom">&#8634;</button>
       </div>
+      <button class="pv-fullscreen" onclick="pvToggleFullscreen()" title="Toggle fullscreen">&#9974;</button>
       <button class="md-x" aria-label="Close" onclick="cm('m-preview')">&#10005;</button>
     </div>
-    <div class="md-body" id="pv-body" style="position:relative;overflow:auto"></div>
-    <div id="pv-footer" style="display:none;padding:8px 12px;text-align:center;font-size:11px;color:var(--faint);background:var(--glass);border-radius:0 0 14px 14px;justify-content:center;align-items:center;flex-wrap:wrap"></div>
+    <div class="pv-body" id="pv-body">
+      <div class="pv-loading"><div class="pv-spinner"></div>Loading...</div>
+    </div>
+    <div class="pv-footer" id="pv-footer" style="display:none">
+      <a id="pv-open-tab" href="#" target="_blank" rel="noopener">Open in new tab &#10138;</a>
+      <a id="pv-download" href="#" download>&#11015; Download</a>
+    </div>
   </div>
 </div>
 
@@ -380,12 +391,13 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
       <div class="fg"><label>Due Date</label><input class="inp" id="a-due" type="date"/></div>
       <div class="fg">
         <label>Attachments (PDF / Images)</label>
-        <label class="dz" id="a-dz" for="a-finp">
-          <div class="dz-icon">&#128206;</div><div class="dz-title">Upload files</div>
-          <div class="dz-sub">PDF or images &#183; max 5MB each</div>
+        <div class="upload-zone" id="a-dz">
+          <div class="upload-zone-icon">&#128206;</div>
+          <div class="upload-zone-title">Drop files here or click to browse</div>
+          <div class="upload-zone-sub">PDF or images &#183; max 5MB each</div>
           <input type="file" id="a-finp" multiple accept=".pdf,image/*" onchange="handleAFiles(this.files)"/>
-        </label>
-        <div class="file-list" id="a-file-list"></div>
+        </div>
+        <div class="upload-preview-list" id="a-file-list"></div>
       </div>
     </div>
     <div class="md-foot">
@@ -449,13 +461,13 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
       <div class="syl-grid" id="t-syl-grid"></div>
       <div class="fg" style="margin-top:14px">
         <label>Upload Question Paper (optional)</label>
-        <label class="dz" id="t-dz" for="t-finp" style="padding:18px">
-          <div class="dz-icon" style="font-size:22px">&#128196;</div>
-          <div class="dz-title" style="font-size:12px">Upload Question Paper</div>
-          <div class="dz-sub">PDF or images &#183; max 5MB each</div>
+        <div class="upload-zone" id="t-dz">
+          <div class="upload-zone-icon">&#128196;</div>
+          <div class="upload-zone-title">Drop question paper here</div>
+          <div class="upload-zone-sub">PDF or images &#183; max 5MB each</div>
           <input type="file" id="t-finp" multiple accept=".pdf,image/*" onchange="handleTFiles(this.files)"/>
-        </label>
-        <div class="file-list" id="t-file-list"></div>
+        </div>
+        <div class="upload-preview-list" id="t-file-list"></div>
       </div>
     </div>
     <div class="md-foot">

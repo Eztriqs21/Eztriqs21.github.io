@@ -60,7 +60,10 @@ function refreshAFileList() {
   var el = document.getElementById('a-file-list');
   if (!el) return;
   el.innerHTML = window.pendingAFiles.map(function (f, i) {
-    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingAFiles.splice(' + i + ',1);window.refreshAFileList()">✕</button></div>';
+    var isPdf = (f.type || '').includes('pdf') || (f.name || '').toLowerCase().endsWith('.pdf');
+    var icon = isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (f.data || f.url || '') + '" alt=""/>';
+    var fid = window._fcache(f.data || f.url || '', f.name);
+    return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (f.name || '').replace(/'/g, "\\'") + '\')">' + icon + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + (f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAFiles.splice(' + i + ',1);window.refreshAFileList()">&#10005;</button></div>';
   }).join('');
 }
 
@@ -139,7 +142,10 @@ function refreshTFileList() {
   var el = document.getElementById('t-file-list');
   if (!el) return;
   el.innerHTML = window.pendingTFiles.map(function (f, i) {
-    return fItemHTML(f) + '<div style="margin:0 12px"><button class="btn btn-danger btn-xs" onclick="window.pendingTFiles.splice(' + i + ',1);window.refreshTFileList()">✕</button></div>';
+    var isPdf = (f.type || '').includes('pdf') || (f.name || '').toLowerCase().endsWith('.pdf');
+    var icon = isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (f.data || f.url || '') + '" alt=""/>';
+    var fid = window._fcache(f.data || f.url || '', f.name);
+    return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (f.name || '').replace(/'/g, "\\'") + '\')">' + icon + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + (f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTFiles.splice(' + i + ',1);window.refreshTFileList()">&#10005;</button></div>';
   }).join('');
 }
 

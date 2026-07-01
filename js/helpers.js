@@ -199,7 +199,7 @@ export async function rdFiles(files,cb){
 export function setupDZ(dzId,inpId,cb){
   const dz=document.getElementById(dzId);if(!dz)return;
   const inp=document.getElementById(inpId);
-  if(inp)dz.onclick=function(){inp.click();};
+  if(inp){dz.onclick=function(e){if(e.target===inp)return;inp.click();};}
   dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover');};
   dz.ondragleave=function(){dz.classList.remove('dragover');};
   dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer&&e.dataTransfer.files)cb(e.dataTransfer.files);};
@@ -294,34 +294,40 @@ export function _fget(id){return id&&_fileCache[id]?(_fileCache[id]):null;}
 export function fItemHTML(f){
   const icon=fileIcon(f);
   const fid=_fcache(f.url||f.data||'',f.name);
-  return `<div class="file-item" onclick="pvFile(_fget('${fid}'),'${esc(f.name).replace(/'/g,"\\'")}')"><div class="file-ico">${icon}</div><div class="file-name">${esc(f.name)}</div><div class="file-size">${fmtSz(f.size)}</div></div>`;
+  return `<div class="upload-preview-item" onclick="pvFile(_fget('${fid}'),'${esc(f.name).replace(/'/g,"\\'")}')"><div class="upload-preview-thumb">${icon==='🖼️'?`<img src="${esc(f.url||f.data||'')}" alt=""/>`:`<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>`}</div><div class="upload-preview-info"><div class="upload-preview-name">${esc(f.name)}</div><div class="upload-preview-size">${fmtSz(f.size)}</div></div></div>`;
 }
 export function fItemHTMLRaw(d,name){
   const data=typeof d==='object'&&d!==null?(d.d||d.data||''):String(d||'');
   const nm=(typeof d==='object'&&d!==null?(d.n||d.name):null)||name||'';
   const urlPath=(data.split('?')[0]||'').toLowerCase();
   const isPdfUrl=data.includes('application/pdf')||nm.toLowerCase().endsWith('.pdf')||urlPath.endsWith('.pdf')||urlPath.endsWith('.pdf/');
-  const icon=!isPdfUrl&&(data.startsWith('data:image')||(!data.includes('pdf')&&data.startsWith('data:')))?'🖼️':'📄';
+  const isImg=!isPdfUrl&&(data.startsWith('data:image')||(!data.includes('pdf')&&data.startsWith('data:')));
   const fid=_fcache(data,nm);
-  return `<div class="file-item" onclick="pvFile(_fget('${fid}'),'${esc(nm).replace(/'/g,"\\'")}')"><div class="file-ico">${icon}</div><div class="file-name">${esc(nm)}</div></div>`;
+  return `<div class="upload-preview-item" onclick="pvFile(_fget('${fid}'),'${esc(nm).replace(/'/g,"\\'")}')"><div class="upload-preview-thumb">${isImg?`<img src="${esc(data)}" alt=""/>`:`<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>`}</div><div class="upload-preview-info"><div class="upload-preview-name">${esc(nm)}</div></div></div>`;
 }
 
-/* ═══════════════ FILE PREVIEW ═══════════════ */
-let pv={type:null,data:null,name:null,pdfDoc:null,page:1,pages:0,zoom:1.5,imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
+/* ═══════════════ FILE PREVIEW (v2) ═══════════════ */
+let pv={type:null,data:null,name:null,pdfDoc:null,page:1,pages:0,zoom:1.5,fitMode:'default',imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
 export async function pvFile(data,name){
-  if(!data){toast('⚠️ File data not available');return;}
-  pv={type:null,data:data,name:name||'Preview',pdfDoc:null,page:1,pages:0,zoom:1.5,imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
+  if(!data){toast('File data not available');return;}
+  pv={type:null,data:data,name:name||'Preview',pdfDoc:null,page:1,pages:0,zoom:1.5,fitMode:'default',imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
   const titleEl=document.getElementById('pv-title');
   const body=document.getElementById('pv-body');
   const pdfCtrl=document.getElementById('pv-pdf-controls');
   const imgCtrl=document.getElementById('pv-img-controls');
   const footer=document.getElementById('pv-footer');
-  if(!body){return;}
+  const openTab=document.getElementById('pv-open-tab');
+  const downloadLink=document.getElementById('pv-download');
+  const pageInput=document.getElementById('pv-page-input');
+  const modal=document.querySelector('.pv-modal');
+  if(!body)return;
   if(titleEl)titleEl.textContent=pv.name;
   if(pdfCtrl)pdfCtrl.style.display='none';
   if(imgCtrl)imgCtrl.style.display='none';
   if(footer)footer.style.display='none';
-  body.innerHTML='<div class="pv-empty">⏳ Loading...</div>';
+  if(modal)modal.classList.remove('pv-modal-fullscreen');
+  if(pageInput)pageInput.value='1';
+  body.innerHTML='<div class="pv-loading"><div class="pv-spinner"></div>Loading...</div>';
   body.onscroll=null;
   om('m-preview');
   const nm=String(pv.name).toLowerCase();
@@ -331,31 +337,35 @@ export async function pvFile(data,name){
     pv.type='pdf';
     try{
       let binary;
-      if(data.startsWith('data:')){
-        const resp=await fetch(data);const blob=await resp.blob();
-        binary=await blob.arrayBuffer();
-      }else if(data.startsWith('http')){
-        const resp=await fetch(data);binary=await resp.arrayBuffer();
-      }else{binary=data;}
-      if(typeof pdfjsLib==='undefined'){body.innerHTML=`<div class="pv-empty" style="flex-direction:column;gap:12px"><div style="font-size:40px">📄</div><div style="font-weight:600;color:#fff">PDF Preview Unavailable</div><div style="font-size:12px;color:var(--muted)">PDF library not loaded. Try downloading the file instead.</div>${data.startsWith('data:')?`<a class="btn btn-primary btn-xs" href="${esc(data)}" download="${esc(pv.name)}">⬇ Download</a>`:''}</div>`;return;}
+      if(data.startsWith('data:')){const resp=await fetch(data);const blob=await resp.blob();binary=await blob.arrayBuffer();}
+      else if(data.startsWith('http')){const resp=await fetch(data);binary=await resp.arrayBuffer();}
+      else{binary=data;}
+      if(typeof pdfjsLib==='undefined'){
+        body.innerHTML='<div class="pv-empty"><div style="font-size:36px">&#128196;</div><div style="font-weight:600">PDF library not loaded</div><div>Try downloading the file instead.</div>'+(data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent)">&#11015; Download</a>`:'')+'</div>';
+        return;
+      }
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
       pv.pages=pv.pdfDoc.numPages;
       pv.zoom=1.5;
+      pv.fitMode='width';
       if(pdfCtrl)pdfCtrl.style.display='flex';
-      if(footer){footer.style.display='flex';
-      footer.innerHTML=`<a href="${esc(data.startsWith('data:')?data:data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>${data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--muted);text-decoration:underline">⬇ Download</a>`:''}`;}
-      await pvRenderPage(1);
+      if(footer)footer.style.display='flex';
+      if(openTab){const url=data.startsWith('data:')?data:data;openTab.href=url;}
+      if(downloadLink){downloadLink.href=data.startsWith('data:')?data:data;downloadLink.download=pv.name;downloadLink.style.display=data.startsWith('data:')?'':'none';}
+      await pvFitWidth();
     }catch(e){
       console.error('PDF load error:',e);
-      body.innerHTML=`<div class="pv-empty" style="flex-direction:column;gap:12px"><div style="font-size:40px">📄</div><div style="font-weight:600;color:#fff">PDF Preview Unavailable</div><div style="font-size:12px;color:var(--muted)">${esc(e.message||'Failed to load PDF')}</div>${data.startsWith('data:')?`<a class="btn btn-primary btn-xs" href="${esc(data)}" download="${esc(pv.name)}">⬇ Download</a>`:''}</div>`;
+      body.innerHTML='<div class="pv-empty"><div style="font-size:36px">&#128196;</div><div style="font-weight:600">Failed to load PDF</div><div>'+esc(e.message||'Unknown error')+'</div>'+(data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent)">&#11015; Download</a>`:'')+'</div>';
     }
     return;
   }
   pv.type='image';
   if(imgCtrl)imgCtrl.style.display='flex';
-  if(footer){footer.style.display='flex';
-  footer.innerHTML=`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent);text-decoration:underline">⬇ Download</a>`;}
-  body.innerHTML=`<img id="pv-img" src="${esc(data)}" style="max-width:100%;max-height:100%;object-fit:contain;cursor:grab" draggable="false" onload="pvImgFit(this)" onerror="pvFallbackLoad()"/>`;
+  if(footer)footer.style.display='flex';
+  if(openTab)openTab.href=data;
+  if(downloadLink){downloadLink.href=data;downloadLink.download=pv.name;downloadLink.style.display='';}
+  body.innerHTML='<img id="pv-img" src="'+esc(data)+'" draggable="false" onload="pvImgFit(this)" onerror="pvFallbackLoad()"/>';
   const img=document.getElementById('pv-img');
   if(img){
     img.addEventListener('mousedown',e=>{pv.dragging=true;pv.dragX=e.clientX-pv.imgPanX;pv.dragY=e.clientY-pv.imgPanY;img.style.cursor='grabbing';e.preventDefault();});
@@ -363,6 +373,7 @@ export async function pvFile(data,name){
     img.addEventListener('mouseup',()=>{pv.dragging=false;img.style.cursor='grab';});
     img.addEventListener('mouseleave',()=>{pv.dragging=false;img.style.cursor='grab';});
     img.addEventListener('wheel',e=>{e.preventDefault();pvZoomImg(e.deltaY<0?0.15:-0.15);},{passive:false});
+    img.addEventListener('dblclick',()=>{if(pv.imgZoom===1){pv.imgZoom=2;}else{pv.imgZoom=1;pv.imgPanX=0;pv.imgPanY=0;}pvImgApplyTransform();const lbl=document.getElementById('pv-img-zoom-label');if(lbl)lbl.textContent=Math.round(pv.imgZoom*100)+'%';});
     let lastTouchDist=0;
     img.addEventListener('touchstart',e=>{
       if(e.touches.length===1){pv.dragging=true;pv.dragX=e.touches[0].clientX-pv.imgPanX;pv.dragY=e.touches[0].clientY-pv.imgPanY;}
@@ -374,7 +385,7 @@ export async function pvFile(data,name){
       if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;const dist=Math.sqrt(dx*dx+dy*dy);if(lastTouchDist>0){const scale=dist/lastTouchDist;pvZoomImg((scale-1)*0.5);}lastTouchDist=dist;}
       e.preventDefault();
     },{passive:false});
-    img.addEventListener('touchend',e=>{pv.dragging=false;lastTouchDist=0;});
+    img.addEventListener('touchend',()=>{pv.dragging=false;lastTouchDist=0;});
   }
 }
 export async function pvRenderPage(num){
@@ -390,21 +401,68 @@ export async function pvRenderPage(num){
     const canvas=document.createElement('canvas');
     canvas.width=viewport.width;canvas.height=viewport.height;
     canvas.style.width=cssViewport.width+'px';canvas.style.height=cssViewport.height+'px';
+    canvas.style.display='block';canvas.style.margin='0 auto';
     await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
-    body.innerHTML='';
-    body.appendChild(canvas);
+    body.innerHTML='';body.appendChild(canvas);
     const infoEl=document.getElementById('pv-page-info');
     const zoomEl=document.getElementById('pv-zoom-label');
-    if(infoEl)infoEl.textContent=pv.page+' / '+pv.pages;
+    const pageInput=document.getElementById('pv-page-input');
+    if(infoEl)infoEl.textContent='/ '+pv.pages;
     if(zoomEl)zoomEl.textContent=Math.round(pv.zoom*100)+'%';
+    if(pageInput)pageInput.value=pv.page;
   }catch(e){
     if(e.name!=='AbortError')console.debug('pvRenderPage:',e);
   }
 }
 export function pvPage(d){pvRenderPage(pv.page+d);}
+export function pvGoToPage(v){const n=parseInt(v);if(!isNaN(n))pvRenderPage(n);}
 export function pvZoom(d){
-  pv.zoom=Math.max(0.5,Math.min(5,pv.zoom+d));
+  pv.fitMode='custom';
+  pv.zoom=Math.max(0.3,Math.min(5,pv.zoom+d));
   pvRenderPage(pv.page);
+  _updateFitButtons();
+}
+export async function pvFitWidth(){
+  if(!pv.pdfDoc)return;
+  try{
+    const page=await pv.pdfDoc.getPage(pv.page);
+    const unscaled=page.getViewport({scale:1});
+    const body=document.getElementById('pv-body');
+    const cw=body?body.clientWidth-20:800;
+    pv.zoom=cw/unscaled.width;
+    pv.fitMode='width';
+    await pvRenderPage(pv.page);
+    _updateFitButtons();
+  }catch(e){console.debug('pvFitWidth:',e);}
+}
+export async function pvFitPage(){
+  if(!pv.pdfDoc)return;
+  try{
+    const page=await pv.pdfDoc.getPage(pv.page);
+    const unscaled=page.getViewport({scale:1});
+    const body=document.getElementById('pv-body');
+    const cw=body?body.clientWidth-20:800;
+    const ch=body?body.clientHeight-20:600;
+    const zw=cw/unscaled.width;
+    const zh=ch/unscaled.height;
+    pv.zoom=Math.min(zw,zh);
+    pv.fitMode='page';
+    await pvRenderPage(pv.page);
+    _updateFitButtons();
+  }catch(e){console.debug('pvFitPage:',e);}
+}
+function _updateFitButtons(){
+  const wBtn=document.getElementById('pv-fitw-btn');
+  const pBtn=document.getElementById('pv-fitp-btn');
+  if(wBtn)wBtn.classList.toggle('active',pv.fitMode==='width');
+  if(pBtn)pBtn.classList.toggle('active',pv.fitMode==='page');
+}
+export function pvToggleFullscreen(){
+  const modal=document.querySelector('.pv-modal');
+  if(!modal)return;
+  modal.classList.toggle('pv-modal-fullscreen');
+  if(pv.type==='pdf'&&pv.fitMode==='width'){setTimeout(()=>pvFitWidth(),100);}
+  else if(pv.type==='pdf'&&pv.fitMode==='page'){setTimeout(()=>pvFitPage(),100);}
 }
 export function pvImgFit(img){
   if(!img||!img.naturalWidth)return;
@@ -422,38 +480,44 @@ export function pvZoomImg(d){
 export function pvImgReset(){pv.imgZoom=1;pv.imgPanX=0;pv.imgPanY=0;pvImgApplyTransform();const lbl=document.getElementById('pv-img-zoom-label');if(lbl)lbl.textContent='100%';}
 export function pvImgApplyTransform(){
   const img=document.getElementById('pv-img');
-  if(img)img.style.transform=`translate(${pv.imgPanX}px, ${pv.imgPanY}px) scale(${pv.imgZoom})`;
+  if(img)img.style.transform='translate('+pv.imgPanX+'px,'+pv.imgPanY+'px) scale('+pv.imgZoom+')';
 }
 export async function pvFallbackLoad(){
   if(!pv.data)return;
   try{
     let binary;
-    if(pv.data.startsWith('data:')){
-      const resp=await fetch(pv.data);const blob=await resp.blob();binary=await blob.arrayBuffer();
-    }else if(pv.data.startsWith('http')){
-      const resp=await fetch(pv.data);binary=await resp.arrayBuffer();
-    }else{binary=pv.data;}
+    if(pv.data.startsWith('data:')){const resp=await fetch(pv.data);const blob=await resp.blob();binary=await blob.arrayBuffer();}
+    else if(pv.data.startsWith('http')){const resp=await fetch(pv.data);binary=await resp.arrayBuffer();}
+    else{binary=pv.data;}
     if(typeof pdfjsLib==='undefined'){pv.type='other';return;}
     pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
-    pv.type='pdf';pv.pages=pv.pdfDoc.numPages;pv.zoom=1.5;
+    pv.type='pdf';pv.pages=pv.pdfDoc.numPages;pv.zoom=1.5;pv.fitMode='width';
     const pdfCtrl=document.getElementById('pv-pdf-controls');
     const imgCtrl=document.getElementById('pv-img-controls');
     const footer=document.getElementById('pv-footer');
     if(pdfCtrl)pdfCtrl.style.display='flex';
-    if(footer){footer.style.display='flex';footer.innerHTML=`<a href="${esc(pv.data)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline">Open in new tab ⤴</a>`;}
+    if(footer)footer.style.display='flex';
     if(imgCtrl)imgCtrl.style.display='none';
-    await pvRenderPage(1);
+    await pvFitWidth();
   }catch(e2){
     const body=document.getElementById('pv-body');
-    if(body)body.innerHTML=`<div class="pv-empty" style="flex-direction:column;gap:12px"><div style="font-size:40px">⚠️</div><div style="font-weight:600;color:#fff">Unable to load file</div><div style="font-size:12px;color:var(--muted)">${esc(e2.message||'Not a valid image or PDF')}</div><a class="btn btn-primary btn-xs" href="${esc(pv.data)}" download="${esc(pv.name)}">⬇ Download</a></div>`;
+    if(body)body.innerHTML='<div class="pv-empty"><div style="font-size:36px">&#9888;</div><div style="font-weight:600">Unable to load file</div><div>'+esc(e2.message||'Not a valid image or PDF')+'</div><a href="'+esc(pv.data)+'" download="'+esc(pv.name)+'" style="color:var(--accent)">&#11015; Download</a></div>';
   }
 }
 document.addEventListener('keydown',e=>{
-  if(!document.getElementById('m-preview')?.classList.contains('open'))return;
-  if(e.key==='Escape')cm('m-preview');
+  if(!document.getElementById('m-preview')||!document.getElementById('m-preview').classList.contains('open'))return;
+  if(e.key==='Escape'){
+    const modal=document.querySelector('.pv-modal');
+    if(modal&&modal.classList.contains('pv-modal-fullscreen')){pvToggleFullscreen();return;}
+    cm('m-preview');
+  }
   if(pv.type==='pdf'){
-    if(e.key==='ArrowLeft'||e.key==='ArrowUp')pvPage(-1);
-    if(e.key==='ArrowRight'||e.key==='ArrowDown')pvPage(1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();pvPage(-1);}
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();pvPage(1);}
+    if(e.key==='='||e.key==='+')pvZoom(0.25);
+    if(e.key==='-')pvZoom(-0.25);
+    if(e.key==='f'||e.key==='F')pvFitWidth();
+    if(e.key==='p'||e.key==='P')pvFitPage();
   }
   if(pv.type==='image'){
     if(e.key==='+'||e.key==='=')pvZoomImg(0.2);
@@ -477,6 +541,8 @@ window.debouncedUpdChList=debouncedUpdChList;window.debouncedUpdAsnList=debounce
 window.fileExt=fileExt;
 window._fcache=_fcache;window._fget=_fget;
 window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;window.pvZoom=pvZoom;
+window.pvGoToPage=pvGoToPage;window.pvFitWidth=pvFitWidth;window.pvFitPage=pvFitPage;
+window.pvToggleFullscreen=pvToggleFullscreen;
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;
 window.cfm2=cfm2;window.fItemHTML=fItemHTML;window.fItemHTMLRaw=fItemHTMLRaw;window.setupDZ=setupDZ;window.esc=esc;

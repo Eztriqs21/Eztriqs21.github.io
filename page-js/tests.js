@@ -43,7 +43,7 @@
             <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Maths</div>
           </div>
         </div>
-        ${papers.length ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">' + papers.map((d, fi) => '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--border-card);color:var(--text-muted);cursor:pointer" onclick="window.pvFile(\'' + esc(d.data || '') + '\',\'' + esc(d.name || 'Paper') + '\')">' + esc(d.name || 'File ' + (fi + 1)) + '</span>').join('') + '</div>' : ''}
+        ${papers.length ? '<div class="att-grid">' + papers.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Paper').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#128196;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'File ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="${p}-btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="window.delTest('${t.id}')">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
@@ -145,6 +145,7 @@
       });
       grid.innerHTML = html || '<div style="font-size:11px;color:var(--muted)">No chapters added yet</div>';
     }
+    if (window.setupDZ) window.setupDZ('t-dz', 't-finp', window.handleTFiles);
     if (window.om) window.om('m-test');
     setTimeout(function() { var t = document.getElementById('t-name'); if (t) t.focus(); }, 320);
   };
