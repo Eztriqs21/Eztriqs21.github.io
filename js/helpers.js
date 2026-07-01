@@ -199,7 +199,15 @@ export async function rdFiles(files,cb){
 export function setupDZ(dzId,inpId,cb){
   const dz=document.getElementById(dzId);if(!dz)return;
   const inp=document.getElementById(inpId);
-  if(inp){dz.onclick=function(e){if(e.target===inp)return;inp.click();};}
+  if(inp){
+    let _dzOpen=false;
+    dz.onclick=function(e){
+      if(e.target===inp||_dzOpen)return;
+      _dzOpen=true;
+      inp.click();
+      setTimeout(function(){_dzOpen=false;},500);
+    };
+  }
   dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover');};
   dz.ondragleave=function(){dz.classList.remove('dragover');};
   dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer&&e.dataTransfer.files)cb(e.dataTransfer.files);};

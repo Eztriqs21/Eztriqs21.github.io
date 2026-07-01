@@ -49,7 +49,7 @@
             <div style="font-size:11px;color:var(--muted)">${fmtDate(t.date)}${t.syllabus ? ' · ' + esc(t.syllabus) : ''}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:20px;font-weight:700;color:${color}">${total}</div>
+            <div style="font-size:20px;font-weight:700;color:${color}">${Math.max(0, total)}</div>
             <div style="font-size:10px;color:var(--muted)">/${maxScore}</div>
           </div>
         </div>
@@ -635,7 +635,7 @@ Answer: B"></textarea>
 
       el.querySelector('[data-cm-save]').addEventListener('click', function() {
         saveCustomResult(data);
-        window.toast('Mock test saved!');
+        if (window.toast) window.toast('Mock test saved!');
         window.renderMockTests(el);
       });
 
@@ -671,7 +671,7 @@ Answer: B"></textarea>
         totalTime: data.totalTime
       }
     });
-    window.sv('mockTests');
+    if (window.sv) window.sv('mockTests');
   }
 
   /* ═══════════════ CRUD (existing) ═══════════════ */
