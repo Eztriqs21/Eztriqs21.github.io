@@ -2,13 +2,10 @@
 (function() {
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
-  function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'aquatic' ? 'aq' : 'fd'; }
 
   let _testSearch = '';
 
   function tstCard(t, i) {
-    const p = pfx();
     const pct = t.maxScore > 0 ? Math.round(t.totalScore / t.maxScore * 100) : 0;
     const color = pct >= 70 ? 'var(--success)' : pct >= 50 ? 'var(--accent)' : 'var(--danger)';
     const phS = Math.max(0, (t.physics || {}).correct * 4 - (t.physics || {}).incorrect);
@@ -16,7 +13,7 @@
     const mS = Math.max(0, (t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
     const papers = t.papers || [];
 
-    return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="test-card">
+    return `<div class="card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="test-card">
       <div style="padding:16px 18px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <div style="width:32px;height:32px;border-radius:8px;background:var(--border-card);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-muted);flex-shrink:0">#${i + 1}</div>
@@ -45,7 +42,7 @@
         </div>
         ${papers.length ? '<div class="att-grid">' + papers.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Paper').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#128196;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'File ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="${p}-btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="window.delTest('${t.id}')">
+          <button class="btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="window.delTest('${t.id}')">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
           </button>
         </div>
@@ -54,15 +51,14 @@
   }
 
   function testResultsHTML(tests) {
-    const p = pfx();
-    return `<div class="${p}-section-block">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Test History (${tests.length})</div>
+    return `<div class="section-block">
+      <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Test History (${tests.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${tests.length === 0
-          ? `<div class="${p}-empty" style="padding:32px">
-              <div class="${p}-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-              <div class="${p}-empty-title">No tests recorded</div>
-              <div class="${p}-empty-sub">Click 'Add Test' above to record your first result</div>
+          ? `<div class="empty" style="padding:32px">
+              <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+              <div class="empty-title">No tests recorded</div>
+              <div class="empty-sub">Click 'Add Test' above to record your first result</div>
             </div>`
           : [...tests].sort((a, b) => new Date(b.date) - new Date(a.date)).map((t, i) => tstCard(t, i)).join('')}
       </div>
@@ -81,7 +77,6 @@
 
   window.renderTests = function(el) {
     if (!el) return;
-    const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
     var tests = getFilteredTests();
@@ -89,26 +84,26 @@
     const avg = allTests.length ? Math.round(allTests.reduce((s, t) => s + (t.maxScore > 0 ? (t.totalScore / t.maxScore) * 100 : 0), 0) / allTests.length) : 0;
 
     el.innerHTML = `
-    <div class="${p}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
-        <div class="${p}-page-title" data-text="Tests">Tests</div>
-        <div class="${p}-page-sub">Test history and performance analysis</div>
+        <div class="page-title" data-text="Tests">Tests</div>
+        <div class="page-sub">Test history and performance analysis</div>
       </div>
-      <button class="${p}-btn ${p}-btn-primary" data-tutorial-id="add-test" onclick="window.openAddTest()">+ Add Test</button>
+      <button class="btn btn-primary" data-tutorial-id="add-test" onclick="window.openAddTest()">+ Add Test</button>
     </div>
-    <input class="${p}-input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
-    <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        <div class="${p}-stat-val"><span data-count="${allTests.length}">0</span></div>
-        <div class="${p}-stat-label">Total Tests</div>
-        <div class="${p}-stat-sub">${_testSearch ? 'Filtered' : 'All time'}</div>
+    <input class="input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
+    <div class="stats-grid anim-entrance" style="--delay:0.1s">
+      <div class="stat-card">
+        <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <div class="stat-val"><span data-count="${allTests.length}">0</span></div>
+        <div class="stat-label">Total Tests</div>
+        <div class="stat-sub">${_testSearch ? 'Filtered' : 'All time'}</div>
       </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="${p}-stat-val" style="color:var(--accent)"><span data-count="${avg}">0</span>%</div>
-        <div class="${p}-stat-label">Average Score</div>
-        <div class="${p}-stat-sub">Across all tests</div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="stat-val" style="color:var(--accent)"><span data-count="${avg}">0</span>%</div>
+        <div class="stat-label">Average Score</div>
+        <div class="stat-sub">Across all tests</div>
       </div>
     </div>
     <div id="test-results">${testResultsHTML(tests)}</div>`;

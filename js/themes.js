@@ -1,63 +1,29 @@
-/* themes.js – 4-theme engine (nexus, bloom, nebula, forge) */
+/* themes.js – Single Obsidian theme engine */
 import { forceRender } from './nav.js';
-const themes = ['nexus', 'bloom', 'nebula', 'forge', 'aquatic'];
-const themeNames = { nexus: 'NEXUS', bloom: 'BLOOM', nebula: 'NEBULA', forge: 'FORGE', aquatic: 'AQUATIC' };
-let idx = parseInt(localStorage.getItem('themeIndex') || '0', 10);
-if (!themes[idx]) idx = 0;
 
-let _indicatorTimer = null;
+const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80';
 
-const THEME_BG_IMAGES = {
-  nexus: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80',
-  bloom: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80',
-  nebula: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1920&q=80',
-  forge: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80',
-  aquatic: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1920&q=80'
-};
-
-function showIndicator(name) {
-  const el = document.getElementById('theme-indicator');
-  if (!el) return;
-  if (_indicatorTimer) clearTimeout(_indicatorTimer);
-  el.textContent = name;
-  el.classList.remove('show');
-  void el.offsetWidth;
-  el.classList.add('show');
-  _indicatorTimer = setTimeout(() => el.classList.remove('show'), 1800);
-}
-
-function loadThemeBackground(theme) {
+function loadThemeBackground() {
   var overlay = document.getElementById('bg-image-overlay');
   if (!overlay) return;
   overlay.classList.remove('loaded');
-  overlay.style.backgroundImage = 'url(' + THEME_BG_IMAGES[theme] + ')';
+  overlay.style.backgroundImage = 'url(' + THEME_BG_IMAGE + ')';
   var img = new Image();
-  img.onload = function() {
-    overlay.classList.add('loaded');
-  };
-  img.onerror = function() {
-    overlay.classList.remove('loaded');
-  };
-  img.src = THEME_BG_IMAGES[theme];
+  img.onload = function() { overlay.classList.add('loaded'); };
+  img.onerror = function() { overlay.classList.remove('loaded'); };
+  img.src = THEME_BG_IMAGE;
 }
 
-export function applyTheme(i) {
-  const t = themes[i];
-  const prev = document.documentElement.getAttribute('data-theme');
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('themeIndex', i);
-  idx = i;
+export function applyTheme() {
+  document.documentElement.setAttribute('data-theme', 'obsidian');
+  localStorage.setItem('themeIndex', 0);
 
   document.documentElement.removeAttribute('data-theme-transitioning');
   document.body.classList.remove('cursor-hover', 'cursor-click');
 
-  loadThemeBackground(t);
+  loadThemeBackground();
 
-  if (window.gridNexus) window.gridNexus.stop();
-  if (window.gridBloom) window.gridBloom.stop();
-  if (window.gridNebula) window.gridNebula.stop();
-  if (window.gridForge) window.gridForge.stop();
-  if (window.gridAquatic) window.gridAquatic.stop();
+  if (window.gridObsidian) window.gridObsidian.stop();
 
   var gridCanvas = document.getElementById('grid-canvas');
   if (gridCanvas) {
@@ -100,23 +66,9 @@ export function applyTheme(i) {
     }
   }
 
-  if (gridCanvas) {
-    if (t === 'nexus' && window.gridNexus) {
-      window.gridNexus.start();
-      gridCanvas.classList.add('active');
-    } else if (t === 'bloom' && window.gridBloom) {
-      window.gridBloom.start();
-      gridCanvas.classList.add('active');
-    } else if (t === 'nebula' && window.gridNebula) {
-      window.gridNebula.start();
-      gridCanvas.classList.add('active');
-    } else if (t === 'forge' && window.gridForge) {
-      window.gridForge.start();
-      gridCanvas.classList.add('active');
-    } else if (t === 'aquatic' && window.gridAquatic) {
-      window.gridAquatic.start();
-      gridCanvas.classList.add('active');
-    }
+  if (gridCanvas && window.gridObsidian) {
+    window.gridObsidian.start();
+    gridCanvas.classList.add('active');
   }
 
   var mouseCanvas = document.getElementById('mouse-particles');
@@ -126,81 +78,12 @@ export function applyTheme(i) {
   }
 
   requestAnimationFrame(function() {
-    if (prev !== t) {
-      forceRender();
-    }
+    forceRender();
   });
-}
-
-export function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme');
-  const ci = themes.indexOf(current);
-  const next = themes[(ci + 1) % themes.length];
-  const i = themes.indexOf(next);
-  if (i === -1) return;
-
-  if (window.cursorEngine && window.cursorEngine.morph) {
-    window.cursorEngine.morph();
-  }
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    applyTheme(i);
-    showIndicator(themeNames[next]);
-    return;
-  }
-
-  var washColors = {
-    nexus: 'rgba(0,240,255,0.3)',
-    bloom: 'rgba(107,144,128,0.3)',
-    nebula: 'rgba(140,122,230,0.3)',
-    forge: 'rgba(205,127,50,0.3)',
-    aquatic: 'rgba(59,130,246,0.3)'
-  };
-
-  var wash = document.createElement('div');
-  wash.className = 'theme-wash';
-  wash.style.background = 'radial-gradient(circle, ' + (washColors[next] || washColors.nexus) + ', transparent 70%)';
-  document.body.appendChild(wash);
-
-  requestAnimationFrame(function() {
-    wash.classList.add('active');
-  });
-
-  setTimeout(function() {
-    applyTheme(i);
-    showIndicator(themeNames[next]);
-  }, 280);
-
-  setTimeout(function() {
-    if (wash.parentNode) wash.parentNode.removeChild(wash);
-  }, 750);
 }
 
 export function initThemes() {
-  applyTheme(idx);
-
-  const switcher = document.getElementById('theme-switcher');
-  if (switcher) {
-    switcher.addEventListener('click', toggleTheme);
-  }
-
-  const mobileBtn = document.getElementById('mobile-theme-btn');
-  if (mobileBtn) {
-    mobileBtn.addEventListener('click', toggleTheme);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === 't' || e.key === 'T') {
-      e.preventDefault();
-      toggleTheme();
-    }
-    const shortcuts = { '1': 'dashboard', '2': 'chapters', '3': 'tests', '4': 'analytics', '5': 'calculator' };
-    if (shortcuts[e.key]) {
-      e.preventDefault();
-      window.location.hash = '#/' + shortcuts[e.key];
-    }
-  });
+  applyTheme();
 }
 
-window.themesEngine = { applyTheme, toggleTheme };
+window.themesEngine = { applyTheme };

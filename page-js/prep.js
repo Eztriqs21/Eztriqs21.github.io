@@ -1,8 +1,7 @@
-// page-js/prep.js — Personalized Prep with AI Chat
+﻿// page-js/prep.js — Personalized Prep with AI Chat
 (function() {
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-  function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'aquatic' ? 'aq' : 'fd'; }
+
 
   function renderMd(text) {
     if (!text) return '';
@@ -28,7 +27,6 @@
 
   window.renderPrep = function(el) {
     if (!el) return;
-    var p = pfx();
     var DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
     var chat = DB.prepChat || { messages: [], notes: [] };
@@ -36,30 +34,30 @@
     var notes = chat.notes || [];
 
     el.innerHTML = '<div class="anim-entrance">'
-      + '<div class="' + p + '-page-header"><div class="' + p + '-page-title" data-text="Prep Chat">Prep Chat</div><div class="' + p + '-page-sub">AI study companion — ask questions, upload notes, prepare smarter</div></div>'
+      + '<div class="page-header"><div class="page-title" data-text="Prep Chat">Prep Chat</div><div class="page-sub">AI study companion — ask questions, upload notes, prepare smarter</div></div>'
       + '<div class="prep-layout" style="display:grid;gap:16px;height:calc(100vh - 200px);min-height:400px">'
       // Left: Notes panel
-      + '<div class="' + p + '-card anim-entrance" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
+      + '<div class="card anim-entrance" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
       + '<div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;justify-content:space-between"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Notes</span>'
-      + '<button class="' + p + '-btn-ghost" style="font-size:10px;padding:4px 8px" onclick="document.getElementById(\'prep-file-input\').click()">+ Upload</button></div>'
+      + '<button class="btn-ghost" style="font-size:10px;padding:4px 8px" onclick="document.getElementById(\'prep-file-input\').click()">+ Upload</button></div>'
       + '<div style="flex:1;overflow-y:auto;padding:12px" id="prep-notes">'
       + (notes.length === 0
         ? '<div style="text-align:center;padding:20px;font-size:11px;color:var(--muted)">No notes uploaded yet. Upload PDFs to give the AI context about your study material.</div>'
-        : notes.map(function(n, i) { return '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;margin-bottom:4px;background:var(--border-card)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(n.name) + '</span><button class="' + p + '-btn-ghost" style="font-size:10px;padding:2px 6px;color:var(--danger)" onclick="window._prepDelNote(' + i + ')">✕</button></div>'; }).join(''))
+        : notes.map(function(n, i) { return '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;margin-bottom:4px;background:var(--border-card)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span style="flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(n.name) + '</span><button class="btn-ghost" style="font-size:10px;padding:2px 6px;color:var(--danger)" onclick="window._prepDelNote(' + i + ')">✕</button></div>'; }).join(''))
       + '</div>'
       + '<input type="file" id="prep-file-input" accept=".pdf" multiple style="display:none" onchange="window._prepHandleFiles(this.files)">'
       + '</div>'
       // Right: Chat panel
-      + '<div class="' + p + '-card anim-entrance" style="--delay:0.15s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
+      + '<div class="card anim-entrance" style="--delay:0.15s;padding:0;overflow:hidden;display:flex;flex-direction:column">'
       + '<div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div> AI Study Planner</div>'
       + '<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px" id="prep-chat-msgs">'
       + (msgs.length === 0
-        ? '<div class="' + p + '-empty" style="padding:40px;margin:auto"><div class="' + p + '-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="' + p + '-empty-title">Start a conversation!</div><div class="' + p + '-empty-sub">Ask about any topic or upload notes for context.</div></div>'
+        ? '<div class="empty" style="padding:40px;margin:auto"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="empty-title">Start a conversation!</div><div class="empty-sub">Ask about any topic or upload notes for context.</div></div>'
         : msgs.map(function(m) { return chatBubble(m, p); }).join(''))
       + '</div>'
       + '<div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">'
-      + '<input class="' + p + '-input" type="text" id="prep-chat-input" placeholder="Ask anything about your notes..." style="flex:1;font-size:13px" onkeydown="if(event.key===\'Enter\')window._prepSend()">'
-      + '<button class="' + p + '-btn ' + p + '-btn-primary" onclick="window._prepSend()" style="padding:10px 16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'
+      + '<input class="input" type="text" id="prep-chat-input" placeholder="Ask anything about your notes..." style="flex:1;font-size:13px" onkeydown="if(event.key===\'Enter\')window._prepSend()">'
+      + '<button class="btn btn-primary" onclick="window._prepSend()" style="padding:10px 16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>'
       + '</div></div></div></div>';
   };
 

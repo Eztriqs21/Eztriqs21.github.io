@@ -1,10 +1,9 @@
-// js/pages/score-analytics.js — Score Analytics page renderer (Nexus & Bloom)
+﻿// js/pages/score-analytics.js — Score Analytics page renderer (Nexus & Bloom)
 (function() {
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
-  function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'aquatic' ? 'aq' : 'fd'; }
+
 
   const SUBJECTS = {
     physics:   { label: 'Physics',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', color: 'var(--primary)' },
@@ -13,7 +12,6 @@
   };
 
   function trendLineChart(data) {
-    const p = pfx();
     const w = 400, h = 140, pad = 24;
     if (data.length < 2) return '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Need more data points</div>';
 
@@ -59,7 +57,6 @@
   }
 
   function subjectBar(key, scores) {
-    const p = pfx();
     const info = SUBJECTS[key];
     const avg = Math.round(scores.reduce((s, v) => s + v, 0) / scores.length);
     const latest = scores[scores.length - 1] || 0;
@@ -76,26 +73,25 @@
         <span style="margin-left:auto;display:flex;align-items:center;gap:2px;font-size:10px;color:${change > 0 ? 'var(--success)' : change < 0 ? 'var(--danger)' : 'var(--muted)'}">${changeIcon}${Math.abs(change)}%</span>
       </div>
       <div style="font-size:24px;font-weight:700;margin-bottom:4px">${avg}%</div>
-      <div class="${p}-progress-wrap" style="height:6px"><div class="${p}-progress-bar" style="height:6px;width:${avg}%;background:${info.color}"></div></div>
+      <div class="progress-wrap" style="height:6px"><div class="progress-bar" style="height:6px;width:${avg}%;background:${info.color}"></div></div>
       <div style="font-size:10px;color:var(--muted);margin-top:4px">${scores.length} tests · Latest: ${latest}%</div>
     </div>`;
   }
 
   window.renderScoreAnalytics = function(el) {
     if (!el) return;
-    const p = pfx();
     const DB = window.DB;
     const allTests = (DB && DB.tests && DB.tests.length > 0) ? DB.tests : [];
     if (allTests.length === 0) {
       el.innerHTML = `
-      <div class="${p}-page-header anim-entrance">
-        <div class="${p}-page-title" data-text="Score Analytics">Score Analytics</div>
-        <div class="${p}-page-sub">Detailed performance breakdown</div>
+      <div class="page-header anim-entrance">
+        <div class="page-title" data-text="Score Analytics">Score Analytics</div>
+        <div class="page-sub">Detailed performance breakdown</div>
       </div>
-      <div class="${p}-empty anim-entrance" style="--delay:0.1s;padding:48px">
-        <div class="${p}-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="${p}-empty-title">No test data yet</div>
-        <div class="${p}-empty-sub">Record some tests to see your score analytics</div>
+      <div class="empty anim-entrance" style="--delay:0.1s;padding:48px">
+        <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="empty-title">No test data yet</div>
+        <div class="empty-sub">Record some tests to see your score analytics</div>
       </div>`;
       return;
     }
@@ -108,39 +104,39 @@
     const mathsScores = allTests.map(t => safePct((t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0), 100));
 
     el.innerHTML = `
-    <div class="${p}-page-header anim-entrance">
-      <div class="${p}-page-title" data-text="Score Analytics">Score Analytics</div>
-      <div class="${p}-page-sub">Detailed performance breakdown</div>
+    <div class="page-header anim-entrance">
+      <div class="page-title" data-text="Score Analytics">Score Analytics</div>
+      <div class="page-sub">Detailed performance breakdown</div>
     </div>
-    <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="${p}-stat-val"><span data-count="${avgPct}">0</span>%</div>
-        <div class="${p}-stat-label">Avg Score</div>
-        <div class="${p}-stat-sub">Across ${allTests.length} tests</div>
+    <div class="stats-grid anim-entrance" style="--delay:0.1s">
+      <div class="stat-card">
+        <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="stat-val"><span data-count="${avgPct}">0</span>%</div>
+        <div class="stat-label">Avg Score</div>
+        <div class="stat-sub">Across ${allTests.length} tests</div>
       </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-        <div class="${p}-stat-val" style="color:var(--success)"><span data-count="${bestPct}">0</span>%</div>
-        <div class="${p}-stat-label">Best Score</div>
-        <div class="${p}-stat-sub">Personal record</div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="stat-val" style="color:var(--success)"><span data-count="${bestPct}">0</span>%</div>
+        <div class="stat-label">Best Score</div>
+        <div class="stat-sub">Personal record</div>
       </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:${improvement >= 0 ? 'var(--success)' : 'var(--danger)'}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${improvement >= 0 ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"/></svg></div>
-        <div class="${p}-stat-val" style="color:${improvement >= 0 ? 'var(--success)' : 'var(--danger)'}"><span data-count="${Math.abs(improvement)}">0</span>%</div>
-        <div class="${p}-stat-label">Improvement</div>
-        <div class="${p}-stat-sub">${improvement >= 0 ? 'Upward trend' : 'Needs attention'}</div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:${improvement >= 0 ? 'var(--success)' : 'var(--danger)'}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${improvement >= 0 ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"/></svg></div>
+        <div class="stat-val" style="color:${improvement >= 0 ? 'var(--success)' : 'var(--danger)'}"><span data-count="${Math.abs(improvement)}">0</span>%</div>
+        <div class="stat-label">Improvement</div>
+        <div class="stat-sub">${improvement >= 0 ? 'Upward trend' : 'Needs attention'}</div>
       </div>
     </div>
-    <div class="${p}-section-block anim-entrance" style="--delay:0.2s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Performance Trend</div>
-      <div class="${p}-card" style="padding:20px;overflow-x:auto">
+    <div class="section-block anim-entrance" style="--delay:0.2s">
+      <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Performance Trend</div>
+      <div class="card" style="padding:20px;overflow-x:auto">
         ${trendLineChart(allTests)}
       </div>
     </div>
-    <div class="${p}-section-block anim-entrance" style="--delay:0.3s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Subject Breakdown</div>
-      <div class="${p}-card" style="padding:20px">
+    <div class="section-block anim-entrance" style="--delay:0.3s">
+      <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Subject Breakdown</div>
+      <div class="card" style="padding:20px">
         <div style="display:flex;gap:24px;flex-wrap:wrap">
           ${subjectBar('physics', physicsScores)}
           ${subjectBar('chemistry', chemScores)}

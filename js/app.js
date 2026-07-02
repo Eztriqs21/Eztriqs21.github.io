@@ -29,33 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (window.preloaderEngine) {
     window.preloaderEngine.run(() => {
-      const theme = document.documentElement.getAttribute('data-theme');
-      if (theme === 'nexus') {
-        window.gridNexus?.start();
-      } else if (theme === 'nebula') {
-        window.gridNebula?.start();
-      } else if (theme === 'forge') {
-        window.gridForge?.start();
-      } else if (theme === 'aquatic') {
-        window.gridAquatic?.start();
-      } else {
-        window.gridBloom?.start();
-      }
+      window.gridObsidian?.start();
       go(getPage());
     });
   } else {
-    const theme = document.documentElement.getAttribute('data-theme');
-    if (theme === 'nexus') {
-      window.gridNexus?.start();
-    } else if (theme === 'nebula') {
-      window.gridNebula?.start();
-    } else if (theme === 'forge') {
-      window.gridForge?.start();
-    } else if (theme === 'aquatic') {
-      window.gridAquatic?.start();
-    } else {
-      window.gridBloom?.start();
-    }
+    window.gridObsidian?.start();
     go(getPage());
   }
 });

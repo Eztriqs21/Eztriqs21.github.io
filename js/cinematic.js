@@ -19,7 +19,7 @@
     { t: 4400, dur: 1600,  sub: 'Let us show you around.', effect: 'sub', position: 'center' },
 
     { t: 6000,  dur: 2500, text: 'DASHBOARD', label: 'YOUR HUB', effect: 'title',
-      page: 'dashboard', spotlight: '[data-tutorial-id="stat-cards"]', theme: 'nexus', transition: 'cut' },
+      page: 'dashboard', spotlight: '[data-tutorial-id="stat-cards"]', transition: 'cut' },
 
     { t: 8500,  dur: 2000, text: 'Know Your Numbers', effect: 'subtitle',
       spotlight: '[data-tutorial-id="stat-cards"]' },
@@ -37,7 +37,7 @@
       spotlight: '[data-tutorial-id="test-card"]' },
 
     { t: 19500, dur: 2000, text: 'SWITCH', effect: 'morph',
-      theme: 'bloom', transition: 'morph' },
+      transition: 'morph' },
 
     { t: 21500, dur: 2500, text: 'ASSIGNMENTS', label: 'DEADLINES', effect: 'title',
       page: 'assignments', spotlight: '[data-tutorial-id="assignment-item"]', transition: 'cut' },
@@ -46,7 +46,7 @@
       spotlight: '[data-tutorial-id="assignment-item"]' },
 
     { t: 26000, dur: 2000, text: 'SWITCH', effect: 'morph',
-      theme: 'nebula', transition: 'morph' },
+      transition: 'morph' },
 
     { t: 37000, dur: 2500, text: 'ANALYTICS', label: 'INSIGHTS', effect: 'title',
       page: 'analytics', spotlight: '[data-tutorial-id="weekly-chart"]', transition: 'cut' },
@@ -66,7 +66,7 @@
     { t: 48500, dur: 2000, text: 'Simulate Exam Day', effect: 'subtitle',
       spotlight: '[data-tutorial-id="mock-card"]' },
 
-    { t: 50500, dur: 3000, text: 'Three Themes.', effect: 'title', position: 'center' },
+    { t: 50500, dur: 3000, text: 'One Theme.', effect: 'title', position: 'center' },
 
     { t: 53500, dur: 2500, text: 'One Mission.', effect: 'title', position: 'center' },
 

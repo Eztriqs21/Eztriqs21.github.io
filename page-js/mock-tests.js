@@ -1,10 +1,9 @@
-// page-js/mock-tests.js — Mock Tests page with Custom Test feature
+﻿// page-js/mock-tests.js — Mock Tests page with Custom Test feature
 (function() {
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
-  function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'aquatic' ? 'aq' : 'fd'; }
+
   function fmtTime(sec) { var m = Math.floor(sec / 60); var s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
   var FORMAT_TEMPLATE = 'What is 2+2?\nA) 3\nB) 4\nC) 5\nD) 6\nAnswer: B';
 
@@ -15,7 +14,6 @@
   };
 
   function subjectBreakdown(test, key) {
-    const p = pfx();
     const data = test[key] || { correct: 0, incorrect: 0, unattempted: 0 };
     const total = data.correct + data.incorrect + data.unattempted;
     const score = Math.max(0, data.correct * 4 - data.incorrect);
@@ -27,13 +25,12 @@
         <span style="font-size:12px;font-weight:600">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
       </div>
       <div style="font-size:20px;font-weight:700">${score}<span style="font-size:12px;font-weight:400;opacity:0.5">/${maxS}</span></div>
-      <div class="${p}-progress-wrap" style="height:4px;margin-top:6px"><div class="${p}-progress-bar" style="height:4px;width:${pct}%"></div></div>
+      <div class="progress-wrap" style="height:4px;margin-top:6px"><div class="progress-bar" style="height:4px;width:${pct}%"></div></div>
       <div style="font-size:10px;color:var(--muted);margin-top:4px">${data.correct}C ${data.incorrect}W ${data.unattempted || 0}S</div>
     </div>`;
   }
 
   function mockCard(t, i) {
-    const p = pfx();
     const total = (((t.physics||{}).correct||0)*4 - ((t.physics||{}).incorrect||0)) + (((t.chemistry||{}).correct||0)*4 - ((t.chemistry||{}).incorrect||0)) + (((t.maths||{}).correct||0)*4 - ((t.maths||{}).incorrect||0));
     const maxScore = t.total || 300;
     const pct = safePct(Math.max(0, total), maxScore);
@@ -41,7 +38,7 @@
     const isCustom = t.customTest;
     const badge = isCustom ? `<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:var(--accent-bg);color:var(--accent);font-weight:600;margin-left:6px">CUSTOM</span>` : '';
 
-    return `<div class="${p}-card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden">
+    return `<div class="card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden">
       <div style="padding:16px 18px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <div style="flex:1;min-width:0">
@@ -76,7 +73,6 @@
   /* ═══════════════ MAIN RENDER ═══════════════ */
   window.renderMockTests = function(el) {
     if (!el) return;
-    const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
     const tests = DB.mockTests || [];
@@ -87,38 +83,38 @@
     }, 0) / tests.length) : 0;
 
     el.innerHTML = `
-    <div class="${p}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
-        <div class="${p}-page-title" data-text="Mock Tests">Mock Tests</div>
-        <div class="${p}-page-sub">Full-length practice exams</div>
+        <div class="page-title" data-text="Mock Tests">Mock Tests</div>
+        <div class="page-sub">Full-length practice exams</div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="${p}-btn ${p}-btn-primary" onclick="window.startCustomMockSetup()">+ Create Custom Test</button>
-        <button class="${p}-btn ${p}-btn-primary" onclick="window.openAddMockTest()">+ Log Manual</button>
+        <button class="btn btn-primary" onclick="window.startCustomMockSetup()">+ Create Custom Test</button>
+        <button class="btn btn-primary" onclick="window.openAddMockTest()">+ Log Manual</button>
       </div>
     </div>
-    <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        <div class="${p}-stat-val"><span data-count="${tests.length}">0</span></div>
-        <div class="${p}-stat-label">Total Mocks</div>
-        <div class="${p}-stat-sub">All time</div>
+    <div class="stats-grid anim-entrance" style="--delay:0.1s">
+      <div class="stat-card">
+        <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <div class="stat-val"><span data-count="${tests.length}">0</span></div>
+        <div class="stat-label">Total Mocks</div>
+        <div class="stat-sub">All time</div>
       </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="${p}-stat-val" style="color:var(--accent)"><span data-count="${avg}">0</span>%</div>
-        <div class="${p}-stat-label">Average Score</div>
-        <div class="${p}-stat-sub">Across all mocks</div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="stat-val" style="color:var(--accent)"><span data-count="${avg}">0</span>%</div>
+        <div class="stat-label">Average Score</div>
+        <div class="stat-sub">Across all mocks</div>
       </div>
     </div>
-    <div class="${p}-section-block anim-entrance" style="--delay:0.2s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Mock Test History</div>
+    <div class="section-block anim-entrance" style="--delay:0.2s">
+      <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Mock Test History</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         ${tests.length === 0
-          ? `<div class="${p}-empty" style="padding:32px">
-              <div class="${p}-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-              <div class="${p}-empty-title">No mock tests yet</div>
-              <div class="${p}-empty-sub">Create a custom test or log a manual result</div>
+          ? `<div class="empty" style="padding:32px">
+              <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+              <div class="empty-title">No mock tests yet</div>
+              <div class="empty-sub">Create a custom test or log a manual result</div>
             </div>`
           : [...tests].sort((a, b) => new Date(b.date) - new Date(a.date)).map((t, i) => mockCard(t, i)).join('')}
       </div>
@@ -129,17 +125,16 @@
   window.startCustomMockSetup = function() {
     var el = document.getElementById('content-wrap');
     if (!el) return;
-    var P = pfx();
 
     el.innerHTML = `
-    <div class="${P}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
-        <div class="${P}-page-title" data-text="Create Custom Test">Create Custom Test</div>
-        <div class="${P}-page-sub">Paste your questions and set a timer</div>
+        <div class="page-title" data-text="Create Custom Test">Create Custom Test</div>
+        <div class="page-sub">Paste your questions and set a timer</div>
       </div>
       <button class="btn btn-ghost" data-cm-back><i class="fas fa-arrow-left"></i> Back</button>
     </div>
-    <div class="${P}-card anim-entrance" style="--delay:0.1s;padding:20px">
+    <div class="card anim-entrance" style="--delay:0.1s;padding:20px">
       <div class="cm-form">
         <div class="fg">
           <label>Test Name</label>
@@ -272,7 +267,6 @@ Answer: B"></textarea>
   function startExam(config) {
     var el = document.getElementById('content-wrap');
     if (!el) return;
-    var P = pfx();
     var questions = config.questions;
     var mode = config.mode;
     var timeLimit = config.timeLimit; // minutes
@@ -546,8 +540,7 @@ Answer: B"></textarea>
     }
 
     function showAnalysis(data) {
-      var P = pfx();
-      var pct = safePct(data.score, data.maxScore);
+        var pct = safePct(data.score, data.maxScore);
       var avgTime = data.totalCorrect + data.totalWrong > 0 ? Math.round(data.totalTime / (data.totalCorrect + data.totalWrong)) : 0;
       var accuracy = data.totalCorrect + data.totalWrong > 0 ? Math.round(data.totalCorrect / (data.totalCorrect + data.totalWrong) * 100) : 0;
       var letters = ['A', 'B', 'C', 'D'];
@@ -583,13 +576,13 @@ Answer: B"></textarea>
 
       el.innerHTML = `
       <div class="cm-analysis">
-        <div class="${P}-page-header anim-entrance">
+        <div class="page-header anim-entrance">
           <div>
-            <div class="${P}-page-title" data-text="Test Complete!">Test Complete!</div>
-            <div class="${P}-page-sub">${data.name}</div>
+            <div class="page-title" data-text="Test Complete!">Test Complete!</div>
+            <div class="page-sub">${data.name}</div>
           </div>
         </div>
-        <div class="${P}-card anim-entrance" style="--delay:0.1s;padding:20px">
+        <div class="card anim-entrance" style="--delay:0.1s;padding:20px">
           <div class="cm-score-grid">
             <div class="cm-score-item">
               <div class="cm-score-big" style="color:var(--success)">${data.totalCorrect}/${data.questions.length}</div>
@@ -612,7 +605,7 @@ Answer: B"></textarea>
             Total: ${fmtTime(data.totalTime)} · Accuracy: ${accuracy}% · Avg ${fmtTime(avgTime)}/question
           </div>
         </div>
-        <div class="${P}-card anim-entrance" style="--delay:0.2s;padding:20px">
+        <div class="card anim-entrance" style="--delay:0.2s;padding:20px">
           <div class="cm-breakdown">
             <div class="cm-breakdown-title">Question Breakdown</div>
             ${breakdownHtml}

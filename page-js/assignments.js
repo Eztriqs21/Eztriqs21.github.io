@@ -3,8 +3,6 @@
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
   function safePct(a, b) { return b > 0 ? Math.round((a / b) * 100) : 0; }
-  function getTheme() { return document.documentElement.getAttribute('data-theme') || 'nexus'; }
-  function pfx() { var t = getTheme(); return t === 'nexus' ? 'nx' : t === 'bloom' ? 'bl' : t === 'nebula' ? 'nb' : t === 'aquatic' ? 'aq' : 'fd'; }
 
   const PRIORITY = {
     high:   { label: 'High',   color: 'var(--danger)',  bg: 'var(--red-dim)' },
@@ -15,19 +13,18 @@
   let _asnSearch = '';
 
   function assignmentCard(a, index) {
-    const p = pfx();
     const pr = PRIORITY[a.priority] || { label: '', color: 'var(--muted)', bg: 'transparent' };
     const daysLeft = a.dueDate ? Math.ceil((new Date(a.dueDate) - new Date()) / 86400000) : null;
     const dueLabel = a.completed ? 'Completed' : daysLeft === null ? '' : daysLeft < 0 ? 'Overdue by ' + Math.abs(daysLeft) + 'd' : daysLeft === 0 ? 'Due today' : 'Due in ' + daysLeft + 'd';
     const dueColor = a.completed ? 'var(--success)' : daysLeft !== null && daysLeft < 0 ? 'var(--danger)' : daysLeft !== null && daysLeft <= 1 ? 'var(--accent)' : 'var(--muted)';
     const atts = a.attachments || [];
 
-    return `<div class="${p}-card anim-entrance" style="--delay:${index * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="assignment-item">
+    return `<div class="card anim-entrance" style="--delay:${index * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="assignment-item">
       <div style="display:flex;align-items:stretch">
         <div style="width:4px;background:${pr.color};flex-shrink:0;border-radius:4px 0 0 4px"></div>
         <div style="flex:1;padding:16px 18px">
           <div style="display:flex;align-items:flex-start;gap:12px">
-            <div class="${p}-chapter-check ${a.completed ? 'done' : ''}" style="margin-top:2px;cursor:pointer" onclick="event.stopPropagation();window.toggleAsnDone('${a.id}')">
+            <div class="chapter-check ${a.completed ? 'done' : ''}" style="margin-top:2px;cursor:pointer" onclick="event.stopPropagation();window.toggleAsnDone('${a.id}')">
               ${a.completed ? '<svg width="11" height="11" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>' : ''}
             </div>
             <div style="flex:1;min-width:0">
@@ -41,7 +38,7 @@
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
                 ${dueLabel ? `<div style="font-size:11px;color:${dueColor};display:flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${dueLabel}</div>` : '<div></div>'}
                 <div style="display:flex;gap:6px">
-                  <button class="${p}-btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="event.stopPropagation();window.delAsn('${a.id}')">
+                  <button class="btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="event.stopPropagation();window.delAsn('${a.id}')">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
                   </button>
                 </div>
@@ -54,11 +51,10 @@
   }
 
   function emptyState() {
-    const p = pfx();
-    return `<div class="${p}-empty" style="padding:48px 0">
-      <div class="${p}-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div class="${p}-empty-title">No assignments yet</div>
-      <div class="${p}-empty-sub">Tap the + button to create your first assignment</div>
+    return `<div class="empty" style="padding:48px 0">
+      <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="empty-title">No assignments yet</div>
+      <div class="empty-sub">Tap the + button to create your first assignment</div>
     </div>`;
   }
 
@@ -73,27 +69,25 @@
   }
 
   function assignmentsResultsHTML(all) {
-    const p = pfx();
     var pending = all.filter(function(a) { return !a.completed; });
     var done = all.filter(function(a) { return a.completed; });
     if (all.length === 0 && !_asnSearch) return emptyState();
-    return `<div class="${p}-section-block" style="--delay:0.2s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pending (${pending.length})</div>
+    return `<div class="section-block" style="--delay:0.2s">
+      <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pending (${pending.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
-        ${pending.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">${_asnSearch ? 'No pending assignments match your search' : 'All caught up!'}</div></div>` : pending.map(function(a, i) { return assignmentCard(a, i); }).join('')}
+        ${pending.length === 0 ? `<div class="empty" style="padding:20px"><div class="empty-sub">${_asnSearch ? 'No pending assignments match your search' : 'All caught up!'}</div></div>` : pending.map(function(a, i) { return assignmentCard(a, i); }).join('')}
       </div>
     </div>
-    <div class="${p}-section-block" style="--delay:0.3s">
-      <div class="${p}-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed (${done.length})</div>
+    <div class="section-block" style="--delay:0.3s">
+      <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Completed (${done.length})</div>
       <div style="display:flex;flex-direction:column;gap:10px">
-        ${done.length === 0 ? `<div class="${p}-empty" style="padding:20px"><div class="${p}-empty-sub">No completed assignments yet</div></div>` : done.map(function(a, i) { return assignmentCard(a, i); }).join('')}
+        ${done.length === 0 ? `<div class="empty" style="padding:20px"><div class="empty-sub">No completed assignments yet</div></div>` : done.map(function(a, i) { return assignmentCard(a, i); }).join('')}
       </div>
     </div>`;
   }
 
   window.renderAssignments = function(el) {
     if (!el) return;
-    const p = pfx();
     const DB = window.DB;
     if (!DB) { el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted)">Loading data...</div>'; return; }
     var all = getFilteredAssignments();
@@ -103,32 +97,32 @@
     var overdue = pending.filter(function(a) { return a.dueDate && new Date(a.dueDate) < new Date(); });
 
     el.innerHTML = `
-    <div class="${p}-page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
-        <div class="${p}-page-title" data-text="Assignments">Assignments</div>
-        <div class="${p}-page-sub">Tasks and study materials</div>
+        <div class="page-title" data-text="Assignments">Assignments</div>
+        <div class="page-sub">Tasks and study materials</div>
       </div>
-      <button class="${p}-btn ${p}-btn-primary" data-tutorial-id="add-assignment" onclick="window.openAddAssign()">+ Add Task</button>
+      <button class="btn btn-primary" data-tutorial-id="add-assignment" onclick="window.openAddAssign()">+ Add Task</button>
     </div>
-    <input class="${p}-input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
-    <div class="${p}-stats-grid anim-entrance" style="--delay:0.1s">
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div class="${p}-stat-val"><span data-count="${pending.length}">0</span></div>
-        <div class="${p}-stat-label">Pending</div>
-        <div class="${p}-stat-sub">${_asnSearch ? 'Filtered' : 'Active tasks'}</div>
+    <input class="input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
+    <div class="stats-grid anim-entrance" style="--delay:0.1s">
+      <div class="stat-card">
+        <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="stat-val"><span data-count="${pending.length}">0</span></div>
+        <div class="stat-label">Pending</div>
+        <div class="stat-sub">${_asnSearch ? 'Filtered' : 'Active tasks'}</div>
       </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:var(--danger)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-        <div class="${p}-stat-val" style="color:var(--danger)"><span data-count="${overdue.length}">0</span></div>
-        <div class="${p}-stat-label">Overdue</div>
-        <div class="${p}-stat-sub">Need attention</div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--danger)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="stat-val" style="color:var(--danger)"><span data-count="${overdue.length}">0</span></div>
+        <div class="stat-label">Overdue</div>
+        <div class="stat-sub">Need attention</div>
       </div>
-      <div class="${p}-stat-card">
-        <div class="${p}-stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <div class="${p}-stat-val" style="color:var(--success)"><span data-count="${done.length}">0</span></div>
-        <div class="${p}-stat-label">Completed</div>
-        <div class="${p}-stat-sub">${all.length > 0 ? safePct(done.length, all.length) : 0}% done</div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--success)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div class="stat-val" style="color:var(--success)"><span data-count="${done.length}">0</span></div>
+        <div class="stat-label">Completed</div>
+        <div class="stat-sub">${all.length > 0 ? safePct(done.length, all.length) : 0}% done</div>
       </div>
     </div>
     <div id="asn-results">${assignmentsResultsHTML(all)}</div>`;
