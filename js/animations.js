@@ -238,7 +238,7 @@ export function initScrollAnimations(scope) {
         else if (cl.indexOf('list-item') !== -1) { fromY = '0px'; fromScale = '1'; fromX = '-20px'; dur = 0.4; ease = [0.22, 1, 0.36, 1]; }
         else if (cl.indexOf('section-block') !== -1) {
           fromY = '0px'; fromScale = '1'; fromX = '0px'; dur = 0.6; ease = [0.22, 1, 0.36, 1];
-          try { _M.animate(el, { opacity: [0, 1], clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'] }, { duration: dur, delay: delay, easing: ease }); enterObserver.unobserve(el); continue; } catch(e) {}
+          try { _M.animate(el, { opacity: [0, 1], clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'] }, { duration: dur, delay: delay, easing: ease }); enterObserver.unobserve(el); continue; } catch(e) { el.style.opacity = '1'; }
         }
         else { fromY = '20px'; fromScale = '1'; fromX = '0px'; dur = 0.5; ease = [0.34, 1.56, 0.64, 1]; }
 
@@ -258,6 +258,15 @@ export function initScrollAnimations(scope) {
     }
   }
   _scrollObservers.push(enterObserver);
+
+  setTimeout(function() {
+    var stillHidden = root.querySelectorAll('.card:not(.visible), .stat-card:not(.visible), .hero-stat:not(.visible), .list-item:not(.visible), .section-block:not(.visible), .chip:not(.visible), .test-card:not(.visible), .mt-card:not(.visible), .prep-card:not(.visible), .freq-card:not(.visible), .anim-entrance:not(.visible), .anim-up:not(.visible)');
+    for (var k = 0; k < stillHidden.length; k++) {
+      stillHidden[k].style.opacity = '1';
+      stillHidden[k].style.transform = 'none';
+      stillHidden[k].classList.add('visible');
+    }
+  }, 1500);
 
   if (!_parallaxAttached) {
     _parallaxAttached = true;
