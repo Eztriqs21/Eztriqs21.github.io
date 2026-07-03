@@ -21,19 +21,26 @@ window.animateAllEntrance = animateAllEntrance;
 window.initScrollAnimations = initScrollAnimations;
 window.cleanupScrollAnimations = cleanupScrollAnimations;
 
-document.addEventListener('DOMContentLoaded', () => {
-  initThemes();
-  initInteractions();
-  load();
-  loadSupaConfig();
+function bootApp() {
+  try { initThemes(); } catch(e) { console.error('initThemes error:', e); }
+  try { initInteractions(); } catch(e) { console.error('initInteractions error:', e); }
+  try { load(); } catch(e) { console.error('load error:', e); }
+  try { loadSupaConfig(); } catch(e) { console.error('loadSupaConfig error:', e); }
+
+  function onComplete() {
+    try { window.gridObsidian?.start(); } catch(e) { console.error('grid start error:', e); }
+    try { go(getPage()); } catch(e) { console.error('go error:', e); }
+  }
 
   if (window.preloaderEngine) {
-    window.preloaderEngine.run(() => {
-      window.gridObsidian?.start();
-      go(getPage());
-    });
+    window.preloaderEngine.run(onComplete);
   } else {
-    window.gridObsidian?.start();
-    go(getPage());
+    onComplete();
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootApp);
+} else {
+  bootApp();
+}

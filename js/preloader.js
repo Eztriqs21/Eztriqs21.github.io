@@ -122,8 +122,17 @@
     cancel: function() {
       _plClearAll();
       removeQuoteOverlay();
-      preloader.style.display = 'none';
+      preloader.style.transition = 'opacity 0.3s ease';
       preloader.style.opacity = '0';
+      setTimeout(function() { preloader.style.display = 'none'; }, 300);
     }
   };
+
+  setTimeout(function() {
+    if (preloader.style.display !== 'none' && preloader.style.opacity !== '0') {
+      preloader.style.transition = 'opacity 0.3s ease';
+      preloader.style.opacity = '0';
+      setTimeout(function() { preloader.style.display = 'none'; }, 300);
+    }
+  }, 8000);
 })();
