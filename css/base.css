@@ -311,12 +311,11 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 #mob-overlay { display: none; position: fixed; inset: 0; z-index: 99; }
 
 /* ═══════════════ ENTRANCE ANIMATIONS ═══════════════ */
-.anim-entrance { opacity: 0; transform: translateY(12px); }
-.anim-entrance.visible { opacity: 1; transform: none; }
+.anim-entrance { opacity: 1; transform: none; }
 
 /* Page transition */
 .page-exit { animation: pageExit 0.15s ease forwards; }
-.page-enter { animation: pageEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.page-enter { }
 @keyframes pageExit { to { opacity: 0; transform: translateY(-10px) scale(0.98); } }
 @keyframes pageEnter { from { opacity: 0; transform: translateY(10px) scale(1.01); } to { opacity: 1; transform: scale(1); } }
 

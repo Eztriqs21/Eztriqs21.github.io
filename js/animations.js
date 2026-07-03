@@ -197,76 +197,11 @@ function initThemeAnimations(scope) {
 }
 
 export function initScrollAnimations(scope) {
-  if (noMotion()) { _showAllVisible(scope || document); return; }
   _disconnectScrollObservers();
   var root = scope || document;
-  initThemeAnimations(root);
 
-  var animEls = root.querySelectorAll(
-    '.card, .stat-card, .hero-stat, .list-item, .section-block, .chip, ' +
-    '.test-card, .mt-card, .prep-card, .freq-card, ' +
-    '.anim-entrance, .anim-up'
-  );
-
-  for (var i = 0; i < animEls.length; i++) {
-    var el = animEls[i];
-    if (el.classList.contains('visible') || el.style.opacity === '1') continue;
-    if (el.hasAttribute('data-theme-anim')) continue;
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-  }
-
-  var enterObserver = new IntersectionObserver(function(entries) {
-    for (var j = 0; j < entries.length; j++) {
-      var entry = entries[j];
-      if (entry.isIntersecting) {
-        var el = entry.target;
-        if (el.hasAttribute('data-theme-anim')) { enterObserver.unobserve(el); continue; }
-        var parent = el.parentElement;
-        var siblings = parent ? parent.children : [];
-        var idx = 0;
-        for (var s = 0; s < siblings.length; s++) { if (siblings[s] === el) { idx = s; break; } }
-        var delay = Math.min(idx * 0.06, 0.3);
-        el.style.opacity = '';
-        el.style.transform = '';
-        el.classList.add('visible');
-
-        var cl = el.className || '';
-        var fromY, fromScale, fromX, dur, ease;
-        if (cl.indexOf('stat-card') !== -1) { fromY = '12px'; fromScale = '0.85'; fromX = '0px'; dur = 0.6; ease = [0.34, 1.56, 0.64, 1]; }
-        else if (cl.indexOf('hero-stat') !== -1) { fromY = '0px'; fromScale = '1.12'; fromX = '0px'; dur = 0.5; ease = [0.22, 1, 0.36, 1]; }
-        else if (cl.indexOf('list-item') !== -1) { fromY = '0px'; fromScale = '1'; fromX = '-20px'; dur = 0.4; ease = [0.22, 1, 0.36, 1]; }
-        else if (cl.indexOf('section-block') !== -1) {
-          fromY = '0px'; fromScale = '1'; fromX = '0px'; dur = 0.6; ease = [0.22, 1, 0.36, 1];
-          try { _M.animate(el, { opacity: [0, 1], clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'] }, { duration: dur, delay: delay, easing: ease }); enterObserver.unobserve(el); continue; } catch(e) { el.style.opacity = '1'; }
-        }
-        else { fromY = '20px'; fromScale = '1'; fromX = '0px'; dur = 0.5; ease = [0.34, 1.56, 0.64, 1]; }
-
-        try {
-          if (fromScale !== '1') { _M.animate(el, { opacity: [0, 1], transform: ['translate(' + fromX + ',' + fromY + ') scale(' + fromScale + ')', 'translate(0px,0px) scale(1)'] }, { duration: dur, delay: delay, easing: ease }); }
-          else if (fromX !== '0px') { _M.animate(el, { opacity: [0, 1], transform: ['translateX(' + fromX + ')', 'translateX(0px)'] }, { duration: dur, delay: delay, easing: ease }); }
-          else { _M.animate(el, { opacity: [0, 1], transform: ['translateY(' + fromY + ')', 'translateY(0px)'] }, { duration: dur, delay: delay, easing: ease }); }
-        } catch(e) { el.style.opacity = '1'; }
-        enterObserver.unobserve(el);
-      }
-    }
-  }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
-
-  for (var i = 0; i < animEls.length; i++) {
-    if (!animEls[i].classList.contains('visible') && !animEls[i].hasAttribute('data-theme-anim')) {
-      enterObserver.observe(animEls[i]);
-    }
-  }
-  _scrollObservers.push(enterObserver);
-
-  setTimeout(function() {
-    var stillHidden = root.querySelectorAll('.card:not(.visible), .stat-card:not(.visible), .hero-stat:not(.visible), .list-item:not(.visible), .section-block:not(.visible), .chip:not(.visible), .test-card:not(.visible), .mt-card:not(.visible), .prep-card:not(.visible), .freq-card:not(.visible), .anim-entrance:not(.visible), .anim-up:not(.visible)');
-    for (var k = 0; k < stillHidden.length; k++) {
-      stillHidden[k].style.opacity = '1';
-      stillHidden[k].style.transform = 'none';
-      stillHidden[k].classList.add('visible');
-    }
-  }, 1500);
+  _showAllVisible(root);
+}
 
   if (!_parallaxAttached) {
     _parallaxAttached = true;
