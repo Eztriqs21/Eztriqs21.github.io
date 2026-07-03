@@ -26,15 +26,19 @@
 <body>
   <!-- PRELOADER -->
   <div id="preloader">
-    <div id="preloader-nexus" class="preloader-screen">
-      <div class="boot-text">
-        <span class="boot-line" data-delay="0">AURUM v2.0</span>
-        <span class="boot-line" data-delay="1">INITIALIZING DASHBOARD...</span>
-        <span class="boot-line" data-delay="2">LOADING MODULES...</span>
-        <span class="boot-line" data-delay="3">SYNCING DATA...</span>
-        <span class="boot-line" data-delay="4">READY.</span>
+    <div class="preloader-bg"></div>
+    <div class="preloader-vignette"></div>
+    <div class="preloader-letterbox top"></div>
+    <div class="preloader-letterbox bottom"></div>
+    <div class="preloader-center">
+      <svg class="preloader-logo" viewBox="0 0 32 32" width="64" height="64">
+        <polygon class="logo-hex" points="16,2 30,10 30,22 16,30 2,22 2,10" fill="none" stroke="#D4AF37" stroke-width="1.5"/>
+        <circle class="logo-dot" cx="16" cy="16" r="4" fill="#D4AF37" opacity="0.6"/>
+      </svg>
+      <div class="preloader-wordmark">JEE HQ</div>
+      <div class="preloader-progress">
+        <div class="preloader-progress-fill"></div>
       </div>
-      <div class="boot-cursor">_</div>
     </div>
   </div>
 

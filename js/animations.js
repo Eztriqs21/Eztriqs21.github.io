@@ -1,4 +1,4 @@
-// js/animations.js — Animation Library for JEE HQ (Obsidian Theme)
+// js/animations.js — Animation Library for JEE HQ (Gold Theme)
 const _M = window.Motion;
 const _reducedMq = window.matchMedia('(prefers-reduced-motion: reduce)');
 function noMotion() { return !_M || !_M.animate || _reducedMq.matches; }
@@ -7,53 +7,69 @@ function noMotion() { return !_M || !_M.animate || _reducedMq.matches; }
 export function pageExit(el) {
   if (!el) return Promise.resolve();
   if (noMotion()) return Promise.resolve();
-  try { return _M.animate(el, { opacity: [1, 0], transform: ['translateY(0px)', 'translateY(8px)'] }, { duration: 0.12, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve(); } catch(e) { return Promise.resolve(); }
+  try { return _M.animate(el, { opacity: [1, 0], transform: ['translateY(0px)', 'translateY(8px)'] }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve(); } catch(e) { return Promise.resolve(); }
 }
 export function pageEnter(el) {
   if (!el) return Promise.resolve();
   if (noMotion()) { el.style.opacity = '1'; return Promise.resolve(); }
   el.style.opacity = '0';
-  try { return _M.animate(el, { opacity: [0, 1], transform: ['translateY(8px)', 'translateY(0px)'] }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve(); } catch(e) { el.style.opacity = '1'; return Promise.resolve(); }
+  try { return _M.animate(el, { opacity: [0, 1], transform: ['translateY(8px)', 'translateY(0px)'] }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve(); } catch(e) { el.style.opacity = '1'; return Promise.resolve(); }
 }
 export function sidebarExpand(sb) {
   if (!sb || noMotion()) return;
-  _M.animate(sb, { width: ['60px', '240px'] }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
+  _M.animate(sb, { width: ['60px', '240px'] }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 export function sidebarCollapse(sb) {
   if (!sb || noMotion()) return;
-  _M.animate(sb, { width: ['240px', '60px'] }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] });
+  _M.animate(sb, { width: ['240px', '60px'] }, { duration: 0.35, easing: [0.4, 0, 0.2, 1] });
 }
 export function sidebarMobileOpen(sb) {
   if (!sb) return;
   if (noMotion()) { sb.classList.add('open'); return; }
   sb.classList.add('open');
-  _M.animate(sb, { transform: ['translateX(-100%)', 'translateX(0%)'] }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
+  _M.animate(sb, { transform: ['translateX(-100%)', 'translateX(0%)'] }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 export function bottomNavSwitch(el) {
   if (noMotion()) return;
   try {
-    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.92)'] }, { duration: 0.1, easing: [0.4, 0, 0.2, 1] });
-    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.92)', 'scale(1)'] }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] }); });
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.92)'] }, { duration: 0.12, easing: [0.4, 0, 0.2, 1] });
+    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.92)', 'scale(1)'] }, { duration: 0.3, easing: [0.4, 0, 0.2, 1] }); });
   } catch(e) {}
 }
 
 /* ═══════════════ B: SECTION & CONTENT ═══════════════ */
 export function staggerIn(els, opts = {}) {
-  if (noMotion()) { els.forEach(e => e.style.opacity = '1'); return; }
-  const { delay = 0, y = 16 } = opts;
+  if (noMotion()) { els.forEach(e => { e.style.opacity = '1'; e.style.transform = 'none'; }); return; }
+  const { delay = 0, y = 20 } = opts;
   els.forEach((el, i) => {
     el.style.opacity = '0';
-    _M.animate(el, { opacity: [0, 1], transform: [`translateY(${y}px)`, 'translateY(0px)'] }, { duration: 0.5, delay: delay + i * 0.06, easing: [0.4, 0, 0.2, 1] });
+    el.style.transform = 'translateY(' + y + 'px)';
+    el.style.transition = 'none';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        el.style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) ' + (delay + i * 0.1) + 's, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) ' + (delay + i * 0.1) + 's';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0px)';
+      });
+    });
   });
 }
 export function sectionReveal(el, opts = {}) {
   if (noMotion()) return;
-  const { y = 20 } = opts;
-  _M.animate(el, { opacity: [0, 1], transform: [`translateY(${y}px)`, 'translateY(0px)'] }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
+  const { y = 24 } = opts;
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(' + y + 'px)';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      el.style.transition = 'opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), transform 1.0s cubic-bezier(0.4, 0, 0.2, 1)';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0px)';
+    });
+  });
 }
 export function counterSpring(el, target, opts = {}) {
   if (noMotion()) { el.textContent = target; return; }
-  const { duration = 1.5 } = opts;
+  const { duration = 1.8 } = opts;
   const start = parseFloat(el.getAttribute('data-count-start') || '0');
   const diff = target - start;
   if (!diff) { el.textContent = target; return; }
@@ -70,31 +86,30 @@ export function counterSpring(el, target, opts = {}) {
 }
 export function buttonHoverLift(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['translateY(0px)', 'translateY(-2px)'] }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] });
+  _M.animate(el, { transform: ['translateY(0px)', 'translateY(-2px)'] }, { duration: 0.3, easing: [0.4, 0, 0.2, 1] });
 }
 export function buttonHoverReset(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['translateY(-2px)', 'translateY(0px)'] }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
+  _M.animate(el, { transform: ['translateY(-2px)', 'translateY(0px)'] }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 export function buttonPress(el) {
   if (noMotion()) return;
   try {
-    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.96)'] }, { duration: 0.08 });
-    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.15, easing: [0.4, 0, 0.2, 1] }); });
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.96)'] }, { duration: 0.1 });
+    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] }); });
   } catch(e) {}
 }
 export function inputFocusRing(el) {
   if (noMotion()) return;
-  _M.animate(el, { boxShadow: ['0 0 0 0px rgba(212,175,55,0)', '0 0 0 3px rgba(212,175,55,0.15)'] }, { duration: 0.2 });
+  _M.animate(el, { boxShadow: ['0 0 0 0px rgba(212,175,55,0)', '0 0 0 3px rgba(212,175,55,0.15)'] }, { duration: 0.3 });
 }
 export function inputBlurRing(el) {
   if (noMotion()) return;
-  _M.animate(el, { boxShadow: ['0 0 0 3px rgba(212,175,55,0.15)', '0 0 0 0px rgba(212,175,55,0)'] }, { duration: 0.15 });
+  _M.animate(el, { boxShadow: ['0 0 0 3px rgba(212,175,55,0.15)', '0 0 0 0px rgba(212,175,55,0)'] }, { duration: 0.2 });
 }
 
 /* ═══════════════ SCROLL OBSERVERS ═══════════════ */
 var _scrollObservers = [];
-var _parallaxAttached = false;
 function _disconnectScrollObservers() {
   for (var i = 0; i < _scrollObservers.length; i++) { try { _scrollObservers[i].disconnect(); } catch(e) {} }
   _scrollObservers = [];
@@ -132,8 +147,6 @@ function initThemeAnimations(scope) {
       }
       if (alreadyHasAnim) {
         el.setAttribute('data-theme-anim', '1');
-        el.classList.remove('anim-entrance', 'anim-up');
-        el.classList.add('visible');
         continue;
       }
 
@@ -153,8 +166,6 @@ function initThemeAnimations(scope) {
       var idx = _typeAnimIndex[typeKey] !== undefined ? _typeAnimIndex[typeKey] : s % animClasses.length;
       el.classList.add(animClasses[idx]);
       el.setAttribute('data-theme-anim', '1');
-      el.classList.remove('anim-entrance', 'anim-up');
-      el.classList.add('visible');
     }
   }
 
@@ -166,7 +177,7 @@ function initThemeAnimations(scope) {
         themeObserver.unobserve(el);
       }
     }
-  }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
   for (var c = 0; c < animClasses.length; c++) {
     var animEls = root.querySelectorAll('.' + animClasses[c]);
@@ -192,28 +203,14 @@ function initThemeAnimations(scope) {
           fallbackEls[fi].classList.add('anim-active');
         }
       }
-    }, 800);
+    }, 1200);
   }
 }
 
 export function initScrollAnimations(scope) {
   _disconnectScrollObservers();
   var root = scope || document;
-
-  _showAllVisible(root);
-}
-
-function _showAllVisible(scope) {
-  var els = scope.querySelectorAll(
-    '.card, .stat-card, .hero-stat, .list-item, .section-block, .chip, ' +
-    '.test-card, .mt-card, .prep-card, .freq-card, ' +
-    '.anim-entrance, .anim-up'
-  );
-  for (var i = 0; i < els.length; i++) {
-    els[i].style.opacity = '1';
-    els[i].style.transform = 'none';
-    els[i].classList.add('visible');
-  }
+  initThemeAnimations(root);
 }
 
 export function cleanupScrollAnimations() { _disconnectScrollObservers(); }
@@ -264,7 +261,7 @@ export function showSkeleton(container, count = 3) {
 export function removeSkeleton(container) {
   container.querySelectorAll('.skeleton').forEach(s => {
     if (noMotion()) { s.remove(); return; }
-    _M.animate(s, { opacity: [1, 0], height: ['60px', '0px'] }, { duration: 0.2 }).then(() => s.remove()).catch(() => { try { s.remove(); } catch(e) {} });
+    _M.animate(s, { opacity: [1, 0], height: ['60px', '0px'] }, { duration: 0.3 }).then(() => s.remove()).catch(() => { try { s.remove(); } catch(e) {} });
   });
 }
 
@@ -413,7 +410,7 @@ export function modalOpenMobile(md) {
   _M.animate(md, {
     opacity: [0, 1],
     transform: ['translateY(100%)', 'translateY(0%)']
-  }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
+  }, { duration: 0.6, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function modalOpenDesktop(md) {
@@ -421,7 +418,7 @@ export function modalOpenDesktop(md) {
   _M.animate(md, {
     opacity: [0, 1],
     transform: ['translateY(12px) scale(0.97)', 'translateY(0px) scale(1)']
-  }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
+  }, { duration: 0.6, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function modalClose(md) {
@@ -430,7 +427,7 @@ export function modalClose(md) {
     return _M.animate(md, {
       opacity: [1, 0],
       transform: ['translateY(0px) scale(1)', 'translateY(16px) scale(0.98)']
-    }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve();
+    }, { duration: 0.3, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve();
   } catch(e) { return Promise.resolve(); }
 }
 
@@ -438,14 +435,14 @@ export function toastSlideIn(el) {
   if (noMotion()) return;
   _M.animate(el, {
     transform: ['translateX(-50%) translateY(-120%)', 'translateX(-50%) translateY(0%)']
-  }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
+  }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function toastSlideOut(el) {
   if (noMotion()) return;
   _M.animate(el, {
     transform: ['translateX(-50%) translateY(0%)', 'translateX(-50%) translateY(-120%)']
-  }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] });
+  }, { duration: 0.35, easing: [0.4, 0, 0.2, 1] });
 }
 
 /* ═══════════════ CHART ANIMATIONS ═══════════════ */
@@ -453,7 +450,7 @@ export function barChartGrow(bar, height, delay) {
   if (noMotion()) { bar.style.height = height; return; }
   bar.style.height = '0%';
   _M.animate(bar, { height: ['0%', height] }, {
-    duration: 0.8,
+    duration: 1.2,
     delay: delay || 0,
     easing: [0.4, 0, 0.2, 1]
   });
@@ -466,9 +463,9 @@ export function svgLineDraw(path) {
   path.style.strokeDasharray = len;
   path.style.strokeDashoffset = len;
   _M.animate(path, { strokeDashoffset: [len, 0] }, {
-    duration: 1.5,
+    duration: 2.0,
     easing: [0.4, 0, 0.2, 1],
-    delay: 0.2
+    delay: 0.3
   });
 }
 
@@ -479,7 +476,7 @@ export function svgCirclePop(circle, delay) {
   _M.animate(circle, {
     opacity: ['0', '1'],
     transform: ['scale(0)', 'scale(1)']
-  }, { duration: 0.4, delay: 0.3 + (delay || 0) * 0.04, easing: [0.4, 0, 0.2, 1] });
+  }, { duration: 0.6, delay: 0.4 + (delay || 0) * 0.06, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function progressBarFill(bar, width) {
@@ -487,11 +484,19 @@ export function progressBarFill(bar, width) {
   if (noMotion()) { bar.style.width = width; return; }
   bar.style.width = '0%';
   _M.animate(bar, { width: ['0%', width] }, {
-    duration: 1.0,
+    duration: 1.5,
     easing: [0.4, 0, 0.2, 1]
   });
 }
 
 export function shouldAnimate() { return !_reducedMq.matches && !!_M && !!_M.animate; }
-export function animateAllEntrance() {}
+
+export function animateAllEntrance() {
+  var els = document.querySelectorAll('.anim-entrance');
+  if (!els.length) return;
+  var arr = [];
+  for (var i = 0; i < els.length; i++) arr.push(els[i]);
+  staggerIn(arr, { delay: 0.1, y: 20 });
+}
+
 export function animateAllCounters() {}

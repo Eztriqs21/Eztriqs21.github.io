@@ -1,7 +1,7 @@
 /* themes.js – Gold theme engine */
 import { forceRender } from './nav.js';
 
-const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80';
+const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1920&q=80';
 
 function loadThemeBackground() {
   var overlay = document.getElementById('bg-image-overlay');
@@ -12,6 +12,11 @@ function loadThemeBackground() {
   img.onload = function() { overlay.classList.add('loaded'); };
   img.onerror = function() { overlay.classList.remove('loaded'); };
   img.src = THEME_BG_IMAGE;
+
+  var preloaderBg = document.querySelector('.preloader-bg');
+  if (preloaderBg) {
+    preloaderBg.style.backgroundImage = 'url(' + THEME_BG_IMAGE + ')';
+  }
 }
 
 export function setTheme(theme) {
