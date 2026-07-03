@@ -19,70 +19,70 @@
 }
 
 /* ─── 3D TILT ─── */
-[data-theme="obsidian"] .card,
-[data-theme="obsidian"] .stat-card,
-[data-theme="obsidian"] .hero-stat {
+[data-theme="gold"] .card,
+[data-theme="gold"] .stat-card,
+[data-theme="gold"] .hero-stat {
   --tilt-x: 0deg;
   --tilt-y: 0deg;
   transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.4s, box-shadow 0.4s;
 }
 
 /* ─── OBSIDIAN CARD ─── */
-[data-theme="obsidian"] .card {
+[data-theme="gold"] .card {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    linear-gradient(135deg, rgba(41,141,255,0.2), rgba(108,92,231,0.1), rgba(0,212,170,0.05)) border-box;
+    linear-gradient(135deg, rgba(212,175,55,0.2), rgba(191,149,63,0.1), rgba(232,210,115,0.05)) border-box;
   --spotlight-x: 50%;
   --spotlight-y: 50%;
 }
-[data-theme="obsidian"] .card::before {
-  background: radial-gradient(circle at var(--spotlight-x) var(--spotlight-y), rgba(41,141,255,0.08), transparent 50%);
+[data-theme="gold"] .card::before {
+  background: radial-gradient(circle at var(--spotlight-x) var(--spotlight-y), rgba(212,175,55,0.08), transparent 50%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.4s;
 }
-[data-theme="obsidian"] .card:hover::before { opacity: 1; }
-[data-theme="obsidian"] .card:hover {
+[data-theme="gold"] .card:hover::before { opacity: 1; }
+[data-theme="gold"] .card:hover {
   border-color: transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    conic-gradient(from var(--border-angle), rgba(41,141,255,0.4), rgba(108,92,231,0.25), rgba(0,212,170,0.2), rgba(41,141,255,0.4)) border-box;
-  box-shadow: 0 0 30px rgba(41,141,255,0.12), inset 0 0 30px rgba(41,141,255,0.03);
-  animation: obsidian-border-spin 3s linear forwards;
+    conic-gradient(from var(--border-angle), rgba(212,175,55,0.4), rgba(191,149,63,0.25), rgba(232,210,115,0.2), rgba(212,175,55,0.4)) border-box;
+  box-shadow: 0 0 30px rgba(212,175,55,0.12), inset 0 0 30px rgba(212,175,55,0.03);
+  animation: gold-border-spin 3s linear forwards;
 }
-@keyframes obsidian-border-spin {
+@keyframes gold-border-spin {
   to { --border-angle: 360deg; }
 }
 
 /* ─── STAT CARDS ─── */
-[data-theme="obsidian"] .stat-card {
+[data-theme="gold"] .stat-card {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    linear-gradient(135deg, rgba(41,141,255,0.15), rgba(108,92,231,0.1), rgba(0,212,170,0.05)) border-box;
+    linear-gradient(135deg, rgba(212,175,55,0.15), rgba(191,149,63,0.1), rgba(232,210,115,0.05)) border-box;
 }
-[data-theme="obsidian"] .stat-card:hover {
+[data-theme="gold"] .stat-card:hover {
   border-color: transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    conic-gradient(from var(--border-angle), rgba(41,141,255,0.35), rgba(108,92,231,0.2), rgba(0,212,170,0.15), rgba(41,141,255,0.35)) border-box;
-  box-shadow: 0 0 25px rgba(41,141,255,0.1);
-  animation: obsidian-border-spin 3s linear forwards;
+    conic-gradient(from var(--border-angle), rgba(212,175,55,0.35), rgba(191,149,63,0.2), rgba(232,210,115,0.15), rgba(212,175,55,0.35)) border-box;
+  box-shadow: 0 0 25px rgba(212,175,55,0.1);
+  animation: gold-border-spin 3s linear forwards;
 }
 
 /* ─── HERO STATS ─── */
-[data-theme="obsidian"] .hero-stat {
+[data-theme="gold"] .hero-stat {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    linear-gradient(135deg, rgba(41,141,255,0.12), rgba(108,92,231,0.08)) border-box;
+    linear-gradient(135deg, rgba(212,175,55,0.12), rgba(191,149,63,0.08)) border-box;
 }
-[data-theme="obsidian"] .hero-stat:hover {
+[data-theme="gold"] .hero-stat:hover {
   border-color: transparent;
   background:
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
-    conic-gradient(from var(--border-angle), rgba(41,141,255,0.3), rgba(108,92,231,0.2), rgba(41,141,255,0.3)) border-box;
-  box-shadow: 0 0 20px rgba(41,141,255,0.08);
-  animation: obsidian-border-spin 3s linear forwards;
+    conic-gradient(from var(--border-angle), rgba(212,175,55,0.3), rgba(191,149,63,0.2), rgba(212,175,55,0.3)) border-box;
+  box-shadow: 0 0 20px rgba(212,175,55,0.08);
+  animation: gold-border-spin 3s linear forwards;
 }

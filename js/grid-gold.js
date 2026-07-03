@@ -1,4 +1,4 @@
-/* grid-obsidian.js — Electric blue particle network */
+/* grid-gold.js — Gold particle network */
 (function() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
   var canvas = document.getElementById('grid-canvas');
@@ -10,9 +10,9 @@
   var PARTICLE_COUNT = 55;
   var CONNECT_DIST = 150;
   var MOUSE_RADIUS = 180;
-  var PRIM = [41, 141, 255];
-  var SEC = [108, 92, 231];
-  var TEAL = [0, 212, 170];
+  var PRIM = [212, 175, 55];
+  var SEC = [191, 149, 63];
+  var TEAL = [255, 215, 80];
 
   function rand(min, max) { return Math.random() * (max - min) + min; }
 
@@ -79,7 +79,7 @@
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = 'rgba(41,141,255,' + alpha + ')';
+          ctx.strokeStyle = 'rgba(212,175,55,' + alpha + ')';
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
@@ -96,7 +96,7 @@
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(mouseX, mouseY);
-        ctx.strokeStyle = 'rgba(41,141,255,' + alpha + ')';
+        ctx.strokeStyle = 'rgba(212,175,55,' + alpha + ')';
         ctx.lineWidth = 0.5;
         ctx.stroke();
       }
@@ -133,7 +133,7 @@
     mouseY = e.clientY;
   }, { passive: true });
 
-  window.gridObsidian = {
+  window.gridGold = {
     start: function() {
       if (active) return;
       active = true;

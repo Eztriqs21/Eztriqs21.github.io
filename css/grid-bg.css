@@ -17,7 +17,7 @@
 }
 
 /* ═══════════════ OBSIDIAN SCAN-LINE OVERLAY ═══════════════ */
-[data-theme="obsidian"] #scanline-overlay {
+[data-theme="gold"] #scanline-overlay {
   display: block;
   position: fixed;
   inset: 0;
@@ -27,8 +27,8 @@
     0deg,
     transparent,
     transparent 2px,
-    rgba(41, 141, 255, 0.012) 2px,
-    rgba(41, 141, 255, 0.012) 4px
+    rgba(212, 175, 55, 0.012) 2px,
+    rgba(212, 175, 55, 0.012) 4px
   );
   animation: scan-line 8s linear infinite;
   opacity: 0.4;
@@ -36,5 +36,5 @@
 
 /* ═══════════════ REDUCED MOTION ═══════════════ */
 @media (prefers-reduced-motion: reduce) {
-  [data-theme="obsidian"] #scanline-overlay { animation: none !important; }
+  [data-theme="gold"] #scanline-overlay { animation: none !important; }
 }

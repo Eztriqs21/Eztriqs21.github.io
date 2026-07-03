@@ -28,7 +28,7 @@ function bootApp() {
   try { loadSupaConfig(); } catch(e) { console.error('loadSupaConfig error:', e); }
 
   function onComplete() {
-    try { window.gridObsidian?.start(); } catch(e) { console.error('grid start error:', e); }
+    try { window.gridGold?.start(); } catch(e) { console.error('grid start error:', e); }
     try { go(getPage()); } catch(e) { console.error('go error:', e); }
   }
 

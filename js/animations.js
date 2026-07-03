@@ -7,33 +7,33 @@ function noMotion() { return !_M || !_M.animate || _reducedMq.matches; }
 export function pageExit(el) {
   if (!el) return Promise.resolve();
   if (noMotion()) return Promise.resolve();
-  try { return _M.animate(el, { opacity: [1, 0], transform: ['translateY(0px)', 'translateY(8px)'] }, { duration: 0.12, easing: [0.25, 1, 0.5, 1] }) || Promise.resolve(); } catch(e) { return Promise.resolve(); }
+  try { return _M.animate(el, { opacity: [1, 0], transform: ['translateY(0px)', 'translateY(8px)'] }, { duration: 0.12, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve(); } catch(e) { return Promise.resolve(); }
 }
 export function pageEnter(el) {
   if (!el) return Promise.resolve();
   if (noMotion()) { el.style.opacity = '1'; return Promise.resolve(); }
   el.style.opacity = '0';
-  try { return _M.animate(el, { opacity: [0, 1], transform: ['translateY(8px)', 'translateY(0px)'] }, { duration: 0.25, easing: [0.34, 1.56, 0.64, 1] }) || Promise.resolve(); } catch(e) { el.style.opacity = '1'; return Promise.resolve(); }
+  try { return _M.animate(el, { opacity: [0, 1], transform: ['translateY(8px)', 'translateY(0px)'] }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve(); } catch(e) { el.style.opacity = '1'; return Promise.resolve(); }
 }
 export function sidebarExpand(sb) {
   if (!sb || noMotion()) return;
-  _M.animate(sb, { width: ['60px', '240px'] }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+  _M.animate(sb, { width: ['60px', '240px'] }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
 }
 export function sidebarCollapse(sb) {
   if (!sb || noMotion()) return;
-  _M.animate(sb, { width: ['240px', '60px'] }, { duration: 0.25, easing: [0.25, 1, 0.5, 1] });
+  _M.animate(sb, { width: ['240px', '60px'] }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] });
 }
 export function sidebarMobileOpen(sb) {
   if (!sb) return;
   if (noMotion()) { sb.classList.add('open'); return; }
   sb.classList.add('open');
-  _M.animate(sb, { transform: ['translateX(-100%)', 'translateX(0%)'] }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+  _M.animate(sb, { transform: ['translateX(-100%)', 'translateX(0%)'] }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
 }
 export function bottomNavSwitch(el) {
   if (noMotion()) return;
   try {
-    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.92)'] }, { duration: 0.1, easing: [0.25, 1, 0.5, 1] });
-    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.92)', 'scale(1)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] }); });
+    const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.92)'] }, { duration: 0.1, easing: [0.4, 0, 0.2, 1] });
+    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.92)', 'scale(1)'] }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] }); });
   } catch(e) {}
 }
 
@@ -43,17 +43,17 @@ export function staggerIn(els, opts = {}) {
   const { delay = 0, y = 16 } = opts;
   els.forEach((el, i) => {
     el.style.opacity = '0';
-    _M.animate(el, { opacity: [0, 1], transform: [`translateY(${y}px)`, 'translateY(0px)'] }, { duration: 0.35, delay: delay + i * 0.06, easing: [0.34, 1.56, 0.64, 1] });
+    _M.animate(el, { opacity: [0, 1], transform: [`translateY(${y}px)`, 'translateY(0px)'] }, { duration: 0.5, delay: delay + i * 0.06, easing: [0.4, 0, 0.2, 1] });
   });
 }
 export function sectionReveal(el, opts = {}) {
   if (noMotion()) return;
   const { y = 20 } = opts;
-  _M.animate(el, { opacity: [0, 1], transform: [`translateY(${y}px)`, 'translateY(0px)'] }, { duration: 0.4, easing: [0.34, 1.56, 0.64, 1] });
+  _M.animate(el, { opacity: [0, 1], transform: [`translateY(${y}px)`, 'translateY(0px)'] }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 export function counterSpring(el, target, opts = {}) {
   if (noMotion()) { el.textContent = target; return; }
-  const { duration = 1.2 } = opts;
+  const { duration = 1.5 } = opts;
   const start = parseFloat(el.getAttribute('data-count-start') || '0');
   const diff = target - start;
   if (!diff) { el.textContent = target; return; }
@@ -70,26 +70,26 @@ export function counterSpring(el, target, opts = {}) {
 }
 export function buttonHoverLift(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['translateY(0px)', 'translateY(-2px)'] }, { duration: 0.2, easing: [0.34, 1.56, 0.64, 1] });
+  _M.animate(el, { transform: ['translateY(0px)', 'translateY(-2px)'] }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] });
 }
 export function buttonHoverReset(el) {
   if (noMotion()) return;
-  _M.animate(el, { transform: ['translateY(-2px)', 'translateY(0px)'] }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+  _M.animate(el, { transform: ['translateY(-2px)', 'translateY(0px)'] }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
 }
 export function buttonPress(el) {
   if (noMotion()) return;
   try {
     const p = _M.animate(el, { transform: ['scale(1)', 'scale(0.96)'] }, { duration: 0.08 });
-    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.15, easing: [0.34, 1.56, 0.64, 1] }); });
+    if (p && p.then) p.then(() => { _M.animate(el, { transform: ['scale(0.96)', 'scale(1)'] }, { duration: 0.15, easing: [0.4, 0, 0.2, 1] }); });
   } catch(e) {}
 }
 export function inputFocusRing(el) {
   if (noMotion()) return;
-  _M.animate(el, { boxShadow: ['0 0 0 0px rgba(41,141,255,0)', '0 0 0 3px rgba(41,141,255,0.15)'] }, { duration: 0.2 });
+  _M.animate(el, { boxShadow: ['0 0 0 0px rgba(212,175,55,0)', '0 0 0 3px rgba(212,175,55,0.15)'] }, { duration: 0.2 });
 }
 export function inputBlurRing(el) {
   if (noMotion()) return;
-  _M.animate(el, { boxShadow: ['0 0 0 3px rgba(41,141,255,0.15)', '0 0 0 0px rgba(41,141,255,0)'] }, { duration: 0.15 });
+  _M.animate(el, { boxShadow: ['0 0 0 3px rgba(212,175,55,0.15)', '0 0 0 0px rgba(212,175,55,0)'] }, { duration: 0.15 });
 }
 
 /* ═══════════════ SCROLL OBSERVERS ═══════════════ */
@@ -100,11 +100,11 @@ function _disconnectScrollObservers() {
   _scrollObservers = [];
 }
 
-/* ═══════════════ OBSIDIAN THEME ANIMATIONS ═══════════════ */
-var _obsidianAnimClasses = [
-  'obsidian-fade-slide-up', 'obsidian-fade-scale', 'obsidian-blur-in',
-  'obsidian-zoom-bounce', 'obsidian-fade-slide-left', 'obsidian-morph-in',
-  'obsidian-glitch-in', 'obsidian-neon-flicker', 'obsidian-hologram', 'obsidian-chromatic'
+/* ═══════════════ GOLD THEME ANIMATIONS ═══════════════ */
+var _goldAnimClasses = [
+  'gold-fade-slide-up', 'gold-fade-scale', 'gold-blur-in',
+  'gold-zoom-bounce', 'gold-fade-slide-left', 'gold-morph-in',
+  'gold-glitch-in', 'gold-neon-flicker', 'gold-hologram', 'gold-chromatic'
 ];
 
 var _typeAnimIndex = {
@@ -115,7 +115,7 @@ var _typeAnimIndex = {
 function initThemeAnimations(scope) {
   if (noMotion()) return;
   var root = scope || document;
-  var animClasses = _obsidianAnimClasses;
+  var animClasses = _goldAnimClasses;
 
   var cardSelectors = [
     '.card', '.stat-card', '.hero-stat', '.list-item', '.section-block', '.chip',
@@ -192,7 +192,7 @@ function initThemeAnimations(scope) {
           fallbackEls[fi].classList.add('anim-active');
         }
       }
-    }, 600);
+    }, 800);
   }
 }
 
@@ -256,7 +256,7 @@ export function initTilt() {
 /* ═══════════════ LOADING STATES ═══════════════ */
 export function skeletonPulse(el) {
   if (noMotion()) return;
-  _M.animate(el, { opacity: [0.4, 0.8, 0.4] }, { duration: 1.5, easing: [0.42, 0, 0.58, 1], iterations: Infinity });
+  _M.animate(el, { opacity: [0.4, 0.8, 0.4] }, { duration: 2.0, easing: [0.4, 0, 0.2, 1], iterations: Infinity });
 }
 export function showSkeleton(container, count = 3) {
   container.innerHTML = Array(count).fill(0).map(() => '<div class="skeleton" style="height:60px;margin-bottom:8px"></div>').join('');
@@ -327,13 +327,13 @@ export function initInteractions() {
     if (!target) return;
     const ripple = document.createElement('span');
     const size = Math.max(target.offsetWidth, target.offsetHeight);
-    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.offsetX - size / 2) + 'px;top:' + (e.offsetY - size / 2) + 'px;border-radius:50%;background:rgba(255,255,255,0.2);transform:scale(0);animation:ripple-expand 0.6s ease-out;pointer-events:none;z-index:1;';
+    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.offsetX - size / 2) + 'px;top:' + (e.offsetY - size / 2) + 'px;border-radius:50%;background:rgba(212,175,55,0.2);transform:scale(0);animation:ripple-expand 0.8s cubic-bezier(0.4, 0, 0.2, 1);pointer-events:none;z-index:1;';
     var prevOverflow = target.style.overflow;
     var prevPosition = target.style.position;
     target.style.position = 'relative';
     target.style.overflow = 'hidden';
     target.appendChild(ripple);
-    setTimeout(function() { ripple.remove(); target.style.overflow = prevOverflow; target.style.position = prevPosition; }, 600);
+    setTimeout(function() { ripple.remove(); target.style.overflow = prevOverflow; target.style.position = prevPosition; }, 800);
   }, true);
 
   const logo = document.querySelector('.sidebar-logo');
@@ -373,7 +373,7 @@ export function initMouseParticles() {
   resize();
   window.addEventListener('resize', resize);
 
-  function getThemeColor() { return [41, 141, 255]; }
+  function getThemeColor() { return [212, 175, 55]; }
 
   function spawnParticle(x, y) {
     if (particles.length >= maxParticles) particles.shift();
@@ -413,7 +413,7 @@ export function modalOpenMobile(md) {
   _M.animate(md, {
     opacity: [0, 1],
     transform: ['translateY(100%)', 'translateY(0%)']
-  }, { duration: 0.35, easing: [0.34, 1.56, 0.64, 1] });
+  }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function modalOpenDesktop(md) {
@@ -421,7 +421,7 @@ export function modalOpenDesktop(md) {
   _M.animate(md, {
     opacity: [0, 1],
     transform: ['translateY(12px) scale(0.97)', 'translateY(0px) scale(1)']
-  }, { duration: 0.35, easing: [0.34, 1.56, 0.64, 1] });
+  }, { duration: 0.5, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function modalClose(md) {
@@ -430,7 +430,7 @@ export function modalClose(md) {
     return _M.animate(md, {
       opacity: [1, 0],
       transform: ['translateY(0px) scale(1)', 'translateY(16px) scale(0.98)']
-    }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] }) || Promise.resolve();
+    }, { duration: 0.2, easing: [0.4, 0, 0.2, 1] }) || Promise.resolve();
   } catch(e) { return Promise.resolve(); }
 }
 
@@ -438,14 +438,14 @@ export function toastSlideIn(el) {
   if (noMotion()) return;
   _M.animate(el, {
     transform: ['translateX(-50%) translateY(-120%)', 'translateX(-50%) translateY(0%)']
-  }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+  }, { duration: 0.4, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function toastSlideOut(el) {
   if (noMotion()) return;
   _M.animate(el, {
     transform: ['translateX(-50%) translateY(0%)', 'translateX(-50%) translateY(-120%)']
-  }, { duration: 0.25, easing: [0.25, 1, 0.5, 1] });
+  }, { duration: 0.25, easing: [0.4, 0, 0.2, 1] });
 }
 
 /* ═══════════════ CHART ANIMATIONS ═══════════════ */
@@ -453,9 +453,9 @@ export function barChartGrow(bar, height, delay) {
   if (noMotion()) { bar.style.height = height; return; }
   bar.style.height = '0%';
   _M.animate(bar, { height: ['0%', height] }, {
-    duration: 0.6,
+    duration: 0.8,
     delay: delay || 0,
-    easing: [0.34, 1.56, 0.64, 1]
+    easing: [0.4, 0, 0.2, 1]
   });
 }
 
@@ -466,8 +466,8 @@ export function svgLineDraw(path) {
   path.style.strokeDasharray = len;
   path.style.strokeDashoffset = len;
   _M.animate(path, { strokeDashoffset: [len, 0] }, {
-    duration: 1.2,
-    easing: [0.25, 1, 0.5, 1],
+    duration: 1.5,
+    easing: [0.4, 0, 0.2, 1],
     delay: 0.2
   });
 }
@@ -479,7 +479,7 @@ export function svgCirclePop(circle, delay) {
   _M.animate(circle, {
     opacity: ['0', '1'],
     transform: ['scale(0)', 'scale(1)']
-  }, { duration: 0.3, delay: 0.3 + (delay || 0) * 0.04, easing: [0.34, 1.56, 0.64, 1] });
+  }, { duration: 0.4, delay: 0.3 + (delay || 0) * 0.04, easing: [0.4, 0, 0.2, 1] });
 }
 
 export function progressBarFill(bar, width) {
@@ -487,8 +487,8 @@ export function progressBarFill(bar, width) {
   if (noMotion()) { bar.style.width = width; return; }
   bar.style.width = '0%';
   _M.animate(bar, { width: ['0%', width] }, {
-    duration: 0.7,
-    easing: [0.34, 1.56, 0.64, 1]
+    duration: 1.0,
+    easing: [0.4, 0, 0.2, 1]
   });
 }
 

@@ -2,6 +2,7 @@
   var preloader = document.getElementById('preloader');
   if (!preloader) return;
 
+  var _preloaderDismissed = false;
   var _preloaderTimers = [];
   function _plSetTimeout(fn, ms) {
     var id = setTimeout(fn, ms);
@@ -14,7 +15,7 @@
   }
 
   var BOOT_LINES = [
-    'OBSIDIAN v1.0',
+    'AURUM v2.0',
     'INITIALIZING DASHBOARD...',
     'LOADING MODULES...',
     'SYNCING DATA...',
@@ -53,13 +54,14 @@
   }
 
   function fadeOutPreloader(callback) {
-    preloader.style.transition = 'opacity 0.4s ease';
+    preloader.style.transition = 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)';
     preloader.style.opacity = '0';
     _plSetTimeout(function() {
       preloader.style.display = 'none';
       removeQuoteOverlay();
+      _preloaderDismissed = true;
       callback();
-    }, 400);
+    }, 1000);
   }
 
   function runBoot(onComplete) {
@@ -101,10 +103,10 @@
         if (charIndex < text.length) {
           line.textContent += text[charIndex];
           charIndex++;
-          _plSetTimeout(typeChar, 15 + Math.random() * 25);
+          _plSetTimeout(typeChar, 30 + Math.random() * 40);
         } else {
           lineIndex++;
-          _plSetTimeout(typeLine, 100);
+          _plSetTimeout(typeLine, 250);
         }
       }
 
@@ -122,17 +124,19 @@
     cancel: function() {
       _plClearAll();
       removeQuoteOverlay();
-      preloader.style.transition = 'opacity 0.3s ease';
+      preloader.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
       preloader.style.opacity = '0';
-      setTimeout(function() { preloader.style.display = 'none'; }, 300);
+      setTimeout(function() { preloader.style.display = 'none'; }, 400);
     }
   };
 
+  window.__preloaderDismissed = function() { return _preloaderDismissed; };
+
   setTimeout(function() {
     if (preloader.style.display !== 'none' && preloader.style.opacity !== '0') {
-      preloader.style.transition = 'opacity 0.3s ease';
+      preloader.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
       preloader.style.opacity = '0';
-      setTimeout(function() { preloader.style.display = 'none'; }, 300);
+      setTimeout(function() { preloader.style.display = 'none'; }, 400);
     }
-  }, 8000);
+  }, 10000);
 })();

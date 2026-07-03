@@ -22,9 +22,9 @@
     var _energyPhase = 0;
     var _traceHistory = [];
 
-    var COLOR_PRIM = '41,141,255';
-    var COLOR_SEC = '108,92,231';
-    var COLOR_TEAL = '0,212,170';
+    var COLOR_PRIM = '212,175,55';
+    var COLOR_SEC = '191,149,63';
+    var COLOR_TEAL = '255,215,0';
 
     function onMouseMove(e) {
       prevMouseX = mouseX;
