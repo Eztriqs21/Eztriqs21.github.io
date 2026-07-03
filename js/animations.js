@@ -407,6 +407,91 @@ export function initMouseParticles() {
   requestAnimationFrame(tick);
 }
 
+/* ═══════════════ MODAL & TOAST ANIMATIONS ═══════════════ */
+export function modalOpenMobile(md) {
+  if (noMotion()) return;
+  _M.animate(md, {
+    opacity: [0, 1],
+    transform: ['translateY(100%)', 'translateY(0%)']
+  }, { duration: 0.35, easing: [0.34, 1.56, 0.64, 1] });
+}
+
+export function modalOpenDesktop(md) {
+  if (noMotion()) return;
+  _M.animate(md, {
+    opacity: [0, 1],
+    transform: ['translateY(12px) scale(0.97)', 'translateY(0px) scale(1)']
+  }, { duration: 0.35, easing: [0.34, 1.56, 0.64, 1] });
+}
+
+export function modalClose(md) {
+  if (noMotion()) return Promise.resolve();
+  try {
+    return _M.animate(md, {
+      opacity: [1, 0],
+      transform: ['translateY(0px) scale(1)', 'translateY(16px) scale(0.98)']
+    }, { duration: 0.2, easing: [0.25, 1, 0.5, 1] }) || Promise.resolve();
+  } catch(e) { return Promise.resolve(); }
+}
+
+export function toastSlideIn(el) {
+  if (noMotion()) return;
+  _M.animate(el, {
+    transform: ['translateX(-50%) translateY(-120%)', 'translateX(-50%) translateY(0%)']
+  }, { duration: 0.3, easing: [0.34, 1.56, 0.64, 1] });
+}
+
+export function toastSlideOut(el) {
+  if (noMotion()) return;
+  _M.animate(el, {
+    transform: ['translateX(-50%) translateY(0%)', 'translateX(-50%) translateY(-120%)']
+  }, { duration: 0.25, easing: [0.25, 1, 0.5, 1] });
+}
+
+/* ═══════════════ CHART ANIMATIONS ═══════════════ */
+export function barChartGrow(bar, height, delay) {
+  if (noMotion()) { bar.style.height = height; return; }
+  bar.style.height = '0%';
+  _M.animate(bar, { height: ['0%', height] }, {
+    duration: 0.6,
+    delay: delay || 0,
+    easing: [0.34, 1.56, 0.64, 1]
+  });
+}
+
+export function svgLineDraw(path) {
+  if (noMotion()) return;
+  var len = path.getTotalLength ? path.getTotalLength() : 0;
+  if (!len) return;
+  path.style.strokeDasharray = len;
+  path.style.strokeDashoffset = len;
+  _M.animate(path, { strokeDashoffset: [len, 0] }, {
+    duration: 1.2,
+    easing: [0.25, 1, 0.5, 1],
+    delay: 0.2
+  });
+}
+
+export function svgCirclePop(circle, delay) {
+  if (noMotion()) return;
+  circle.style.opacity = '0';
+  circle.style.transformOrigin = 'center';
+  _M.animate(circle, {
+    opacity: ['0', '1'],
+    transform: ['scale(0)', 'scale(1)']
+  }, { duration: 0.3, delay: 0.3 + (delay || 0) * 0.04, easing: [0.34, 1.56, 0.64, 1] });
+}
+
+export function progressBarFill(bar, width) {
+  if (!bar) return;
+  if (noMotion()) { bar.style.width = width; return; }
+  bar.style.width = '0%';
+  _M.animate(bar, { width: ['0%', width] }, {
+    duration: 0.7,
+    easing: [0.34, 1.56, 0.64, 1]
+  });
+}
+
 export function shouldAnimate() { return !_reducedMq.matches && !!_M && !!_M.animate; }
 export function animateAllEntrance() {}
 export function animateAllCounters() {}
