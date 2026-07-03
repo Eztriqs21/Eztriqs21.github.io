@@ -203,38 +203,6 @@ export function initScrollAnimations(scope) {
   _showAllVisible(root);
 }
 
-  if (!_parallaxAttached) {
-    _parallaxAttached = true;
-    var contentWrap = document.getElementById('content-wrap');
-    if (contentWrap) {
-      var ticking = false;
-      contentWrap.addEventListener('scroll', function() {
-        if (!ticking) {
-          requestAnimationFrame(function() {
-            var scrollY = contentWrap.scrollTop;
-            var pgTitle = contentWrap.querySelector('.pg-title');
-            if (pgTitle && scrollY < 300) {
-              pgTitle.style.transform = 'translateY(' + (scrollY * -0.15) + 'px)';
-              pgTitle.style.opacity = Math.max(0, 1 - scrollY / 300);
-            }
-            var depthEls = contentWrap.querySelectorAll('[data-depth]');
-            for (var d = 0; d < depthEls.length; d++) {
-              var depth = parseFloat(depthEls[d].getAttribute('data-depth')) || 1;
-              var rect = depthEls[d].getBoundingClientRect();
-              var center = rect.top + rect.height / 2;
-              var viewCenter = window.innerHeight / 2;
-              var offset = (center - viewCenter) * depth * 0.04;
-              depthEls[d].style.transform = 'translateY(' + offset + 'px)';
-            }
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }, { passive: true });
-    }
-  }
-}
-
 function _showAllVisible(scope) {
   var els = scope.querySelectorAll(
     '.card, .stat-card, .hero-stat, .list-item, .section-block, .chip, ' +

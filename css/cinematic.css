@@ -27,8 +27,7 @@
   color: var(--primary);
 }
 .cinematic-trigger:hover svg { opacity: 1; }
-[data-theme="nexus"] .cinematic-trigger:hover { box-shadow: var(--glow-primary); }
-[data-theme="nebula"] .cinematic-trigger:hover { box-shadow: var(--glow-primary); }
+.cinematic-trigger:hover { box-shadow: var(--glow-primary); }
 
 /* ─── OVERLAY (transparent — site stays visible) ─── */
 .cinematic-overlay {
