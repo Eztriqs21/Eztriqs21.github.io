@@ -1,7 +1,7 @@
 /* themes.js – Gold theme engine */
 import { forceRender } from './nav.js';
 
-const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1920&q=80';
+const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-jdKMO0YqhXY?w=1920&q=80';
 
 function loadThemeBackground() {
   var overlay = document.getElementById('bg-image-overlay');

@@ -553,25 +553,32 @@
 /* ═══════════════ 100+ ANIMATIONS ═══════════════ */
 
 /* ─── CATEGORY 1: Card Entrance (20) ─── */
-.gold-fade-slide-up { animation: gld-fade-slide-up 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-fade-slide-up { opacity: 0; transform: translateY(24px); }
+.gold-fade-slide-up.anim-active { animation: gld-fade-slide-up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-fade-slide-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
-.gold-fade-slide-left { animation: gld-fade-slide-left 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-fade-slide-left { opacity: 0; transform: translateX(-24px); }
+.gold-fade-slide-left.anim-active { animation: gld-fade-slide-left 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-fade-slide-left { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
 
-.gold-fade-slide-right { animation: gld-fade-slide-right 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-fade-slide-right { opacity: 0; transform: translateX(24px); }
+.gold-fade-slide-right.anim-active { animation: gld-fade-slide-right 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-fade-slide-right { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
 
-.gold-fade-scale { animation: gld-fade-scale 0.7s cubic-bezier(0.34,1.56,0.64,1) both; }
+.gold-fade-scale { opacity: 0; transform: scale(0.9); }
+.gold-fade-scale.anim-active { animation: gld-fade-scale 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
 @keyframes gld-fade-scale { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
 
-.gold-fade-rotate { animation: gld-fade-rotate 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-fade-rotate { opacity: 0; transform: rotate(-5deg); }
+.gold-fade-rotate.anim-active { animation: gld-fade-rotate 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-fade-rotate { from { opacity: 0; transform: rotate(-3deg) scale(0.95); } to { opacity: 1; transform: rotate(0) scale(1); } }
 
-.gold-blur-in { animation: gld-blur-in 0.8s ease both; }
+.gold-blur-in { opacity: 0; filter: blur(8px); }
+.gold-blur-in.anim-active { animation: gld-blur-in 0.6s ease both; }
 @keyframes gld-blur-in { from { filter: blur(8px); opacity: 0; } to { filter: blur(0); opacity: 1; } }
 
-.gold-zoom-bounce { animation: gld-zoom-bounce 0.8s cubic-bezier(0.34,1.56,0.64,1) both; }
+.gold-zoom-bounce { opacity: 0; transform: scale(0.8); }
+.gold-zoom-bounce.anim-active { animation: gld-zoom-bounce 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
 @keyframes gld-zoom-bounce { from { opacity: 0; transform: scale(0.3); } 60% { transform: scale(1.05); } to { opacity: 1; transform: scale(1); } }
 
 .gold-flip-x { animation: gld-flip-x 0.8s ease both; }
@@ -580,16 +587,20 @@
 .gold-flip-y { animation: gld-flip-y 0.8s ease both; }
 @keyframes gld-flip-y { from { opacity: 0; transform: perspective(400px) rotateY(90deg); } to { opacity: 1; transform: perspective(400px) rotateY(0); } }
 
-.gold-morph-in { animation: gld-morph-in 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-morph-in { opacity: 0; transform: scale(0.95) translateY(8px); }
+.gold-morph-in.anim-active { animation: gld-morph-in 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-morph-in { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(100% at 50% 50%); } }
 
-.gold-morph-diamond { animation: gld-morph-diamond 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-morph-diamond { opacity: 0; transform: scale(0.8) rotate(45deg); }
+.gold-morph-diamond.anim-active { animation: gld-morph-diamond 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-morph-diamond { from { clip-path: polygon(50% 0%, 50% 0%, 50% 50%, 50% 50%); } to { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); } }
 
-.gold-morph-hex { animation: gld-morph-hex 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.gold-morph-hex { opacity: 0; transform: scale(0.8) rotate(30deg); }
+.gold-morph-hex.anim-active { animation: gld-morph-hex 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes gld-morph-hex { from { clip-path: polygon(50% 0%, 50% 0%, 50% 50%, 50% 50%, 50% 50%, 50% 50%); } to { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); } }
 
-.gold-glitch-in { animation: gld-glitch-in 0.5s ease both; }
+.gold-glitch-in { opacity: 0; }
+.gold-glitch-in.anim-active { animation: gld-glitch-in 0.4s ease both; }
 @keyframes gld-glitch-in {
   0% { transform: translate(0); filter: hue-rotate(0deg); opacity: 0; }
   20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); opacity: 0.8; }
@@ -629,14 +640,16 @@
 @keyframes gld-circuit-h { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes gld-circuit-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
-.gold-neon-flicker { animation: gld-neon-flicker 0.7s ease both; }
+.gold-neon-flicker { opacity: 0; }
+.gold-neon-flicker.anim-active { animation: gld-neon-flicker 0.5s ease both; }
 @keyframes gld-neon-flicker {
   0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(212,175,55,0.8); }
   10% { opacity: 0.8; } 20% { opacity: 1; } 30% { opacity: 0.6; }
   40% { opacity: 1; } 50% { opacity: 0.9; } 60% { opacity: 1; }
 }
 
-.gold-hologram { animation: gld-hologram 0.8s ease both; }
+.gold-hologram { opacity: 0; }
+.gold-hologram.anim-active { animation: gld-hologram 0.6s ease both; }
 @keyframes gld-hologram {
   0% { filter: hue-rotate(0deg) saturate(2); opacity: 0; }
   30% { filter: hue-rotate(90deg) saturate(3); opacity: 0.8; }
@@ -651,7 +664,8 @@
   100% { filter: blur(0); opacity: 1; }
 }
 
-.gold-chromatic { animation: gld-chromatic 0.5s ease both; }
+.gold-chromatic { opacity: 0; }
+.gold-chromatic.anim-active { animation: gld-chromatic 0.4s ease both; }
 @keyframes gld-chromatic {
   0% { text-shadow: -2px 0 #FF4757, 2px 0 #D4AF37; opacity: 0; }
   50% { text-shadow: -1px 0 #FF4757, 1px 0 #D4AF37; opacity: 0.8; }
@@ -659,7 +673,8 @@
 }
 
 /* ─── CATEGORY 2: Hover Effects (20) ─── */
-.gold-glow-pulse { animation: gld-glow-pulse 2s ease-in-out infinite; }
+.gold-glow-pulse { transition: box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.gold-glow-pulse:hover { box-shadow: 0 0 20px rgba(212,175,55,0.3); }
 @keyframes gld-glow-pulse {
   0%, 100% { box-shadow: 0 0 5px rgba(212,175,55,0.1); }
   50% { box-shadow: 0 0 20px rgba(212,175,55,0.3); }
@@ -669,9 +684,9 @@
 .gold-shimmer::after {
   content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent);
-  transition: none; pointer-events: none;
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
 }
-.gold-shimmer:hover::after { animation: gld-shimmer-sweep 0.8s ease forwards; }
+.gold-shimmer:hover::after { left: 150%; }
 @keyframes gld-shimmer-sweep { from { left: -50%; } to { left: 150%; } }
 
 .gold-neon-border { transition: box-shadow 0.4s; }
@@ -680,16 +695,12 @@
 .gold-electric-ring { position: relative; }
 .gold-electric-ring::after {
   content: ''; position: absolute; inset: -2px; border-radius: inherit;
-  border: 1px solid transparent; transition: all 0.4s; pointer-events: none;
+  border: 1px solid transparent; transition: inset 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s, box-shadow 0.4s; pointer-events: none;
 }
 .gold-electric-ring:hover::after {
+  inset: -8px;
   border-color: var(--primary);
   box-shadow: 0 0 8px rgba(212,175,55,0.2);
-  animation: gld-electric-ring-expand 0.7s ease-out;
-}
-@keyframes gld-electric-ring-expand {
-  from { inset: 0; opacity: 1; }
-  to { inset: -8px; opacity: 0; }
 }
 
 .gold-glass-blur { transition: backdrop-filter 0.4s, background 0.4s; }

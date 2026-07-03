@@ -40,14 +40,14 @@ export function bottomNavSwitch(el) {
 /* ═══════════════ B: SECTION & CONTENT ═══════════════ */
 export function staggerIn(els, opts = {}) {
   if (noMotion()) { els.forEach(e => { e.style.opacity = '1'; e.style.transform = 'none'; }); return; }
-  const { delay = 0, y = 20 } = opts;
+  const { delay = 0, y = 16 } = opts;
   els.forEach((el, i) => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(' + y + 'px)';
     el.style.transition = 'none';
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
-        el.style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) ' + (delay + i * 0.1) + 's, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) ' + (delay + i * 0.1) + 's';
+        el.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ' + (delay + i * 0.06) + 's, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ' + (delay + i * 0.06) + 's';
         el.style.opacity = '1';
         el.style.transform = 'translateY(0px)';
       });
@@ -56,12 +56,12 @@ export function staggerIn(els, opts = {}) {
 }
 export function sectionReveal(el, opts = {}) {
   if (noMotion()) return;
-  const { y = 24 } = opts;
+  const { y = 16 } = opts;
   el.style.opacity = '0';
   el.style.transform = 'translateY(' + y + 'px)';
   requestAnimationFrame(function() {
     requestAnimationFrame(function() {
-      el.style.transition = 'opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), transform 1.0s cubic-bezier(0.4, 0, 0.2, 1)';
+      el.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
       el.style.opacity = '1';
       el.style.transform = 'translateY(0px)';
     });
@@ -197,13 +197,13 @@ function initThemeAnimations(scope) {
     }
   }
   if (fallbackEls.length > 0) {
-    setTimeout(function() {
-      for (var fi = 0; fi < fallbackEls.length; fi++) {
-        if (!fallbackEls[fi].classList.contains('anim-active')) {
-          fallbackEls[fi].classList.add('anim-active');
+    fallbackEls.forEach(function(el, i) {
+      setTimeout(function() {
+        if (!el.classList.contains('anim-active')) {
+          el.classList.add('anim-active');
         }
-      }
-    }, 1200);
+      }, 600 + i * 60);
+    });
   }
 }
 

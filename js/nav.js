@@ -80,11 +80,11 @@ function _renderSwap(el) {
 
   if (shouldAnimate()) {
     el.classList.add('page-enter');
+    initScrollAnimations(el);
     _pageEnterTimer = setTimeout(function() {
       el.classList.remove('page-enter');
-      initScrollAnimations(el);
       _finishRender(el);
-    }, 220);
+    }, 200);
   } else {
     el.style.opacity = '1';
     initScrollAnimations(el);

@@ -25,10 +25,10 @@
   --tilt-x: 0deg;
   --tilt-y: 0deg;
   transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
-  transition: border-color 0.4s, box-shadow 0.4s;
+  transition: border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1), --border-angle 3s linear;
 }
 
-/* ─── OBSIDIAN CARD ─── */
+/* ─── GOLD CARD ─── */
 [data-theme="gold"] .card {
   border: 1px solid transparent;
   background:
@@ -40,7 +40,7 @@
 [data-theme="gold"] .card::before {
   background: radial-gradient(circle at var(--spotlight-x) var(--spotlight-y), rgba(212,175,55,0.08), transparent 50%);
   opacity: 0;
-  transition: opacity 0.4s;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 [data-theme="gold"] .card:hover::before { opacity: 1; }
 [data-theme="gold"] .card:hover {
@@ -49,10 +49,7 @@
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
     conic-gradient(from var(--border-angle), rgba(212,175,55,0.4), rgba(191,149,63,0.25), rgba(232,210,115,0.2), rgba(212,175,55,0.4)) border-box;
   box-shadow: 0 0 30px rgba(212,175,55,0.12), inset 0 0 30px rgba(212,175,55,0.03);
-  animation: gold-border-spin 3s linear forwards;
-}
-@keyframes gold-border-spin {
-  to { --border-angle: 360deg; }
+  --border-angle: 360deg;
 }
 
 /* ─── STAT CARDS ─── */
@@ -68,7 +65,7 @@
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
     conic-gradient(from var(--border-angle), rgba(212,175,55,0.35), rgba(191,149,63,0.2), rgba(232,210,115,0.15), rgba(212,175,55,0.35)) border-box;
   box-shadow: 0 0 25px rgba(212,175,55,0.1);
-  animation: gold-border-spin 3s linear forwards;
+  --border-angle: 360deg;
 }
 
 /* ─── HERO STATS ─── */
@@ -84,5 +81,5 @@
     linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
     conic-gradient(from var(--border-angle), rgba(212,175,55,0.3), rgba(191,149,63,0.2), rgba(212,175,55,0.3)) border-box;
   box-shadow: 0 0 20px rgba(212,175,55,0.08);
-  animation: gold-border-spin 3s linear forwards;
+  --border-angle: 360deg;
 }
