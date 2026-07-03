@@ -122,7 +122,7 @@
 
     function updateParticles() {
       if (!particleCanvas) {
-        particleCanvas = document.getElementById('grid-canvas');
+        particleCanvas = document.getElementById('mouse-particles');
         if (particleCanvas) particleCtx = particleCanvas.getContext('2d');
       }
       if (!particleCanvas || !particleCtx || particles.length === 0) return;
