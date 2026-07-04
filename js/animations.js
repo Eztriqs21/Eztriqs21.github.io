@@ -205,6 +205,11 @@ function initThemeAnimations(scope) {
       }, 600 + i * 60);
     });
   }
+
+  var bareAnimEls = root.querySelectorAll('.anim-entrance:not(.card):not(.stat-card):not(.hero-stat):not(.list-item):not(.section-block):not(.chip):not(.test-card):not(.mt-card):not(.prep-card):not(.freq-card)');
+  for (var bi = 0; bi < bareAnimEls.length; bi++) {
+    bareAnimEls[bi].classList.add('anim-active');
+  }
 }
 
 export function initScrollAnimations(scope) {
@@ -217,7 +222,7 @@ export function cleanupScrollAnimations() { _disconnectScrollObservers(); }
 
 /* ═══════════════ 3D CARD TILT ═══════════════ */
 export function initTilt() {
-  if (_reducedMq.matches) return;
+  if (_reducedMq.matches || 'ontouchstart' in window) return;
   var ticking = false;
   document.addEventListener('mousemove', function(e) {
     if (ticking) return;
@@ -324,7 +329,10 @@ export function initInteractions() {
     if (!target) return;
     const ripple = document.createElement('span');
     const size = Math.max(target.offsetWidth, target.offsetHeight);
-    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (e.offsetX - size / 2) + 'px;top:' + (e.offsetY - size / 2) + 'px;border-radius:50%;background:rgba(212,175,55,0.2);transform:scale(0);animation:ripple-expand 0.8s cubic-bezier(0.4, 0, 0.2, 1);pointer-events:none;z-index:1;';
+    const rect = target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    ripple.style.cssText = 'position:absolute;width:' + size + 'px;height:' + size + 'px;left:' + (x - size / 2) + 'px;top:' + (y - size / 2) + 'px;border-radius:50%;background:rgba(212,175,55,0.2);transform:scale(0);animation:ripple-expand 0.8s cubic-bezier(0.4, 0, 0.2, 1);pointer-events:none;z-index:1;';
     var prevOverflow = target.style.overflow;
     var prevPosition = target.style.position;
     target.style.position = 'relative';
@@ -353,7 +361,7 @@ export function initInteractions() {
 
 /* ═══════════════ MOUSE-FOLLOWING PARTICLES ═══════════════ */
 export function initMouseParticles() {
-  if (_reducedMq.matches) return;
+  if (_reducedMq.matches || 'ontouchstart' in window) return;
   var canvas = document.getElementById('mouse-particles');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
@@ -498,5 +506,3 @@ export function animateAllEntrance() {
   for (var i = 0; i < els.length; i++) arr.push(els[i]);
   staggerIn(arr, { delay: 0.1, y: 20 });
 }
-
-export function animateAllCounters() {}

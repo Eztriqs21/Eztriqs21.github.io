@@ -24,9 +24,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ═══════════════ GOLD THEME ═══════════════ */
 :root, [data-theme="gold"] {
-  --font-heading: 'Playfair Display', serif;
-  --font-data: 'IBM Plex Mono', monospace;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-data: 'JetBrains Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
   --bg: #0a0a0a;
   --bg-surface: #111118;
   --bg-card: rgba(215, 190, 150, 0.03);
@@ -754,5 +754,4 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   #bg-image-overlay { transition: none; }
-  .quote-overlay { transition: none; }
 }

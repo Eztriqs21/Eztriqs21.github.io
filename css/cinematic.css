@@ -427,9 +427,6 @@
   opacity: 0;
 }
 .cinematic-morph-flash.gold { background: radial-gradient(circle, rgba(212,175,55,0.4), transparent 70%); }
-.cinematic-morph-flash.nexus { background: radial-gradient(circle, rgba(212,175,55,0.35), transparent 70%); }
-.cinematic-morph-flash.bloom { background: radial-gradient(circle, rgba(212,175,55,0.35), transparent 70%); }
-.cinematic-morph-flash.nebula { background: radial-gradient(circle, rgba(212,175,55,0.35), transparent 70%); }
 
 /* ─── PAGE INDICATOR ─── */
 .cinematic-page-indicator {

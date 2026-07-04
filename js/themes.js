@@ -1,7 +1,7 @@
 /* themes.js – Gold theme engine */
 import { forceRender } from './nav.js';
 
-const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-jdKMO0YqhXY?w=1920&q=80';
+const THEME_BG_IMAGE = 'https://images.unsplash.com/photo-1761138385170-3fbf7548ada5?w=1920&q=80';
 
 function loadThemeBackground() {
   var overlay = document.getElementById('bg-image-overlay');
@@ -28,9 +28,6 @@ export function getTheme() {
 }
 
 export function cycleTheme() {
-  var current = getTheme();
-  var next = (current + 1) % themes.length;
-  setTheme(next);
   applyTheme();
 }
 
@@ -43,8 +40,11 @@ export function getThemeCSS(varName) {
   return getComputedStyle(document.documentElement).getPropertyValue(varName);
 }
 
+let _themeObserver = null;
+
 function applyObserver() {
-  var observer = new MutationObserver(function(mutations) {
+  if (_themeObserver) _themeObserver.disconnect();
+  _themeObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       if (mutation.attributeName === 'data-theme') {
         var newTheme = document.documentElement.getAttribute('data-theme');
@@ -58,7 +58,7 @@ function applyObserver() {
       }
     });
   });
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  _themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 }
 
 export function applyTheme() {

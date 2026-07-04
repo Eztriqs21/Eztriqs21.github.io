@@ -25,7 +25,7 @@
 
     el.innerHTML =
       '<div class="page-header anim-entrance"><div class="page-title" data-text="Calculator">Calculator</div><div class="page-sub">Full JEE mock evaluation engine</div></div>' +
-      '<div class="card anim-entrance" style="padding:20px">' +
+      '<div class="card anim-entrance" style="padding:20px;margin-bottom:16px">' +
         '<div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Answer Key <span style="font-size:10px;font-weight:400;color:var(--faint)">(required)</span></div>' +
         '<p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">Enter official key for exact scoring. Supports MCQ (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:A, 2:C</code>), Integer (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:25, 2:100</code>), and Multi-Correct (<code style="background:var(--surface2);padding:1px 6px;border-radius:4px">1:ABD, 2:CD</code>).</p>' +
         '<textarea class="input" id="calc-key-txt" rows="3" placeholder="Paste answer key...\ne.g. 1:A, 2:C, 3:D, 4:B, 5:A ...\ninteger: 1:25, 2:100, 3:45 ...\nmulti-correct: 1:ABD, 2:CD, 3:ABC" data-tutorial-id="answer-key"></textarea>' +

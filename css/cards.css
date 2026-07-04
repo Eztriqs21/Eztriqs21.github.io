@@ -25,7 +25,7 @@
   --tilt-x: 0deg;
   --tilt-y: 0deg;
   transform: perspective(600px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
-  transition: border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1), --border-angle 3s linear;
+  transition: border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1), --border-angle 3s linear, scale 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── GOLD CARD ─── */
@@ -50,6 +50,7 @@
     conic-gradient(from var(--border-angle), rgba(212,175,55,0.4), rgba(191,149,63,0.25), rgba(232,210,115,0.2), rgba(212,175,55,0.4)) border-box;
   box-shadow: 0 0 30px rgba(212,175,55,0.12), inset 0 0 30px rgba(212,175,55,0.03);
   --border-angle: 360deg;
+  scale: 1.02;
 }
 
 /* ─── STAT CARDS ─── */
@@ -66,6 +67,7 @@
     conic-gradient(from var(--border-angle), rgba(212,175,55,0.35), rgba(191,149,63,0.2), rgba(232,210,115,0.15), rgba(212,175,55,0.35)) border-box;
   box-shadow: 0 0 25px rgba(212,175,55,0.1);
   --border-angle: 360deg;
+  scale: 1.03;
 }
 
 /* ─── HERO STATS ─── */
@@ -82,4 +84,5 @@
     conic-gradient(from var(--border-angle), rgba(212,175,55,0.3), rgba(191,149,63,0.2), rgba(212,175,55,0.3)) border-box;
   box-shadow: 0 0 20px rgba(212,175,55,0.08);
   --border-angle: 360deg;
+  scale: 1.03;
 }
