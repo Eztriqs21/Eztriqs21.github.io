@@ -107,7 +107,7 @@
     <aside id="sidebar" data-tutorial-id="sidebar">
       <div class="sidebar-logo" data-interactive data-easter-egg>
         <span class="logo-icon">
-          <svg viewBox="0 0 200 200" width="44" height="44">
+          <svg viewBox="0 0 200 200" width="52" height="52">
             <defs>
               <linearGradient id="logoGold" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#8b6914"/>
@@ -357,6 +357,16 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
           <input type="file" id="a-finp" multiple accept=".pdf,image/*" onchange="handleAFiles(this.files)"/>
         </div>
         <div class="upload-preview-list" id="a-file-list"></div>
+      </div>
+      <div class="fg" style="margin-top:14px">
+        <label>Answer Key (optional)</label>
+        <div class="upload-zone" id="a-ak-dz">
+          <div class="upload-zone-icon">&#9989;</div>
+          <div class="upload-zone-title">Drop answer key here</div>
+          <div class="upload-zone-sub">PDF, image, or text file</div>
+          <input type="file" id="a-ak-finp" accept=".pdf,image/*,.txt" onchange="handleAAnswerKey(this.files)"/>
+        </div>
+        <div class="upload-preview-list" id="a-ak-file-list"></div>
       </div>
     </div>
     <div class="md-foot">

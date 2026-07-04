@@ -80,19 +80,19 @@
 
     function spawnTrailParticles() {
       var now = performance.now();
-      if (now - lastParticleTime < 50 || speed < 3) return;
+      if (now - lastParticleTime < 80 || speed < 4) return;
       lastParticleTime = now;
       var color = Math.random() < 0.7 ? COLOR_PRIM : COLOR_TEAL;
       particles.push({
         x: mouseX, y: mouseY,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
         life: 1,
-        decay: 0.03 + Math.random() * 0.02,
-        size: 1 + Math.random() * 2,
+        decay: 0.04 + Math.random() * 0.03,
+        size: 1 + Math.random() * 1.5,
         color: color
       });
-      if (particles.length > 80) particles.splice(0, particles.length - 80);
+      if (particles.length > 50) particles.splice(0, particles.length - 50);
     }
 
     var particleCanvas = null;
@@ -114,7 +114,7 @@
         if (p.life <= 0) { particles.splice(i, 1); continue; }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(' + p.color + ',' + (p.life * 0.6) + ')';
+        ctx.fillStyle = 'rgba(' + p.color + ',' + (p.life * 0.4) + ')';
         ctx.fill();
       }
     }

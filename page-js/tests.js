@@ -136,7 +136,7 @@
       ['physics', 'chemistry', 'maths'].forEach(function(subj) {
         var chapters = (DB.chapters || {})[subj] || [];
         chapters.forEach(function(ch) {
-          html += '<label style="display:flex;align-items:center;gap:4px;font-size:11px;padding:3px 6px;border-radius:4px;border:1px solid var(--border);cursor:pointer"><input type="checkbox" class="t-syl-cb" data-subj="' + subj + '" value="' + esc(ch.name) + '"/> ' + esc(ch.name) + '</label>';
+          html += '<label class="syl-cb"><input type="checkbox" class="t-syl-cb" data-subj="' + subj + '" value="' + esc(ch.name) + '"/> ' + esc(ch.name) + '</label>';
         });
       });
       grid.innerHTML = html || '<div style="font-size:11px;color:var(--muted)">No chapters added yet</div>';

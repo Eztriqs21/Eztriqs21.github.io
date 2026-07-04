@@ -138,11 +138,14 @@
   /* CRUD FUNCTIONS */
   window.openAddAssign = function() {
     window.pendingAFiles = [];
+    window.pendingAAnswerKey = [];
     window.aPriority = 'none';
     if (window.setAP) window.setAP('none');
     ['a-title', 'a-desc', 'a-syl', 'a-due'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
     var fl = document.getElementById('a-file-list'); if (fl) fl.innerHTML = '';
+    var akFl = document.getElementById('a-ak-file-list'); if (akFl) akFl.innerHTML = '';
     if (window.setupDZ) window.setupDZ('a-dz', 'a-finp', window.handleAFiles);
+    if (window.setupDZ) window.setupDZ('a-ak-dz', 'a-ak-finp', window.handleAAnswerKey);
     if (window.om) window.om('m-asgn');
     setTimeout(function() { var t = document.getElementById('a-title'); if (t) t.focus(); }, 320);
   };
@@ -174,6 +177,22 @@
       if (window.sv) window.sv('assignments');
       if (window._refreshPage) window._refreshPage();
     }
+  };
+
+  window.handleAAnswerKey = function(files) {
+    if (!files || !files.length) return;
+    window.pendingAAnswerKey = window.pendingAAnswerKey || [];
+    var list = document.getElementById('a-ak-file-list');
+    Array.from(files).forEach(function(file) {
+      if (file.size > 5 * 1024 * 1024) { if (window.toast) window.toast('File too large: ' + file.name); return; }
+      window.pendingAAnswerKey.push(file);
+      if (list) {
+        var div = document.createElement('div');
+        div.className = 'upload-preview-item';
+        div.innerHTML = '<span class="upload-preview-name">' + esc(file.name) + '</span><span class="upload-preview-size">' + (file.size / 1024).toFixed(1) + 'KB</span><button class="upload-preview-remove" onclick="this.parentElement.remove()">&#10005;</button>';
+        list.appendChild(div);
+      }
+    });
   };
 
   window._asnSearchFn = function(val) {
