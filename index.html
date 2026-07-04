@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="css/grid-bg.css?v=5">
   <link rel="stylesheet" href="css/gold.css?v=1">
   <link rel="stylesheet" href="css/cards.css?v=5">
-  <link rel="stylesheet" href="css/cinematic.css?v=3">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -26,20 +25,58 @@
 <body>
   <!-- PRELOADER -->
   <div id="preloader">
-    <div class="preloader-bg"></div>
+    <svg style="position:absolute;width:0;height:0">
+      <defs>
+        <filter id="gooey" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/>
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -11"/>
+        </filter>
+      </defs>
+    </svg>
     <div class="preloader-vignette"></div>
-    <div class="preloader-letterbox top"></div>
-    <div class="preloader-letterbox bottom"></div>
+    <div class="preloader-blobs" style="filter:url(#gooey)">
+      <div class="preloader-blob" style="width:100px;height:100px;top:35%;left:42%;--delay:0s"></div>
+      <div class="preloader-blob" style="width:70px;height:70px;top:50%;left:55%;--delay:0.4s"></div>
+      <div class="preloader-blob" style="width:55px;height:55px;top:40%;left:60%;--delay:0.8s"></div>
+    </div>
+    <div class="preloader-3d-scene">
+      <div class="preloader-cube">
+        <div class="preloader-cube-face front"></div>
+        <div class="preloader-cube-face back"></div>
+        <div class="preloader-cube-face right"></div>
+        <div class="preloader-cube-face left"></div>
+        <div class="preloader-cube-face top"></div>
+        <div class="preloader-cube-face bottom"></div>
+      </div>
+    </div>
     <div class="preloader-center">
-      <svg class="preloader-logo" viewBox="0 0 32 32" width="64" height="64">
-        <polygon class="logo-hex" points="16,2 30,10 30,22 16,30 2,22 2,10" fill="none" stroke="#D4AF37" stroke-width="1.5"/>
-        <circle class="logo-dot" cx="16" cy="16" r="4" fill="#D4AF37" opacity="0.6"/>
+      <svg class="preloader-logo" viewBox="0 0 200 200" width="80" height="80">
+        <defs>
+          <linearGradient id="preloaderGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#8b6914"/>
+            <stop offset="30%" stop-color="#daa520"/>
+            <stop offset="50%" stop-color="#ffd700"/>
+            <stop offset="70%" stop-color="#daa520"/>
+            <stop offset="100%" stop-color="#8b6914"/>
+          </linearGradient>
+          <filter id="preloaderGlow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <polygon class="logo-hex" points="100,12 178,56 178,144 100,188 22,144 22,56" fill="none" stroke="url(#preloaderGold)" stroke-width="4" filter="url(#preloaderGlow)"/>
+        <polygon points="100,32 160,64 160,136 100,168 40,136 40,64" fill="none" stroke="url(#preloaderGold)" stroke-width="1.5" opacity="0.4"/>
+        <text x="100" y="110" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="58" font-weight="700" fill="url(#preloaderGold)">JEE</text>
+        <line x1="58" y1="120" x2="142" y2="120" stroke="url(#preloaderGold)" stroke-width="1.5" opacity="0.6"/>
+        <text x="100" y="145" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="22" font-weight="500" fill="url(#preloaderGold)" letter-spacing="8">HQ</text>
       </svg>
       <div class="preloader-wordmark">JEE HQ</div>
+      <div class="preloader-counter"><span id="preloader-count">0</span><span class="preloader-percent">%</span></div>
       <div class="preloader-progress">
         <div class="preloader-progress-fill"></div>
       </div>
     </div>
+    <div class="preloader-shimmer-overlay"></div>
   </div>
 
   <!-- GRID BACKGROUND -->
@@ -83,7 +120,26 @@
     <aside id="sidebar" data-tutorial-id="sidebar">
       <div class="sidebar-logo" data-interactive data-easter-egg>
         <span class="logo-icon">
-          <svg viewBox="0 0 32 32" width="32" height="32"><polygon points="16,2 30,10 30,22 16,30 2,22 2,10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="16" r="4" fill="currentColor" opacity="0.6"/></svg>
+          <svg viewBox="0 0 200 200" width="32" height="32">
+            <defs>
+              <linearGradient id="logoGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#8b6914"/>
+                <stop offset="30%" stop-color="#daa520"/>
+                <stop offset="50%" stop-color="#ffd700"/>
+                <stop offset="70%" stop-color="#daa520"/>
+                <stop offset="100%" stop-color="#8b6914"/>
+              </linearGradient>
+              <filter id="logoGlow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <polygon points="100,12 178,56 178,144 100,188 22,144 22,56" fill="none" stroke="url(#logoGold)" stroke-width="4" filter="url(#logoGlow)"/>
+            <polygon points="100,32 160,64 160,136 100,168 40,136 40,64" fill="none" stroke="url(#logoGold)" stroke-width="1.5" opacity="0.4"/>
+            <text x="100" y="110" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="58" font-weight="700" fill="url(#logoGold)">JEE</text>
+            <line x1="58" y1="120" x2="142" y2="120" stroke="url(#logoGold)" stroke-width="1.5" opacity="0.6"/>
+            <text x="100" y="145" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="22" font-weight="500" fill="url(#logoGold)" letter-spacing="8">HQ</text>
+          </svg>
         </span>
         <span class="logo-text">JEE HQ</span>
       </div>
@@ -124,12 +180,6 @@
         </a>
 
       </nav>
-      <div class="sidebar-footer">
-        <button id="cinematic-btn" class="cinematic-trigger" data-interactive>
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-          <span>Show Me Around</span>
-        </button>
-      </div>
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -511,16 +561,6 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   <script src="page-js/score-analytics.js?v=4"></script>
 
   <script src="js/modal-handlers.js?v=4"></script>
-  <script src="js/cinematic.js?v=3"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        if (window.cinematicEngine && window.cinematicEngine.playIfFirstVisit) {
-          window.cinematicEngine.playIfFirstVisit();
-        }
-      }, 2000);
-    });
-  </script>
   <script type="module" src="js/app.js?v=4"></script>
 </body>
 </html>

@@ -97,13 +97,6 @@
     var overdue = pending.filter(function(a) { return a.dueDate && new Date(a.dueDate) < new Date(); });
 
     el.innerHTML = `
-    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div>
-        <div class="page-title" data-text="Assignments">Assignments</div>
-        <div class="page-sub">Tasks and study materials</div>
-      </div>
-      <button class="btn btn-primary" data-tutorial-id="add-assignment" onclick="window.openAddAssign()">+ Add Task</button>
-    </div>
     <input class="input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">

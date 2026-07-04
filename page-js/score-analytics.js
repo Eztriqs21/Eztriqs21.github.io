@@ -84,10 +84,6 @@
     const allTests = (DB && DB.tests && DB.tests.length > 0) ? DB.tests : [];
     if (allTests.length === 0) {
       el.innerHTML = `
-      <div class="page-header anim-entrance">
-        <div class="page-title" data-text="Score Analytics">Score Analytics</div>
-        <div class="page-sub">Detailed performance breakdown</div>
-      </div>
       <div class="empty anim-entrance" style="--delay:0.1s;padding:48px">
         <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         <div class="empty-title">No test data yet</div>
@@ -104,10 +100,6 @@
     const mathsScores = allTests.map(t => safePct((t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0), 100));
 
     el.innerHTML = `
-    <div class="page-header anim-entrance">
-      <div class="page-title" data-text="Score Analytics">Score Analytics</div>
-      <div class="page-sub">Detailed performance breakdown</div>
-    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>

@@ -34,7 +34,6 @@
     var notes = chat.notes || [];
 
     el.innerHTML = '<div class="anim-entrance">'
-      + '<div class="page-header"><div class="page-title" data-text="Prep Chat">Prep Chat</div><div class="page-sub">AI study companion — ask questions, upload notes, prepare smarter</div></div>'
       + '<div class="prep-layout" style="display:grid;gap:16px;height:calc(100vh - 200px);min-height:400px">'
       // Left: Notes panel
       + '<div class="card anim-entrance" style="--delay:0.1s;padding:0;overflow:hidden;display:flex;flex-direction:column">'

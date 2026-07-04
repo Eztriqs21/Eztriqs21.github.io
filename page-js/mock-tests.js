@@ -83,16 +83,6 @@
     }, 0) / tests.length) : 0;
 
     el.innerHTML = `
-    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div>
-        <div class="page-title" data-text="Mock Tests">Mock Tests</div>
-        <div class="page-sub">Full-length practice exams</div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="window.startCustomMockSetup()">+ Create Custom Test</button>
-        <button class="btn btn-primary" onclick="window.openAddMockTest()">+ Log Manual</button>
-      </div>
-    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
@@ -127,13 +117,6 @@
     if (!el) return;
 
     el.innerHTML = `
-    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div>
-        <div class="page-title" data-text="Create Custom Test">Create Custom Test</div>
-        <div class="page-sub">Paste your questions and set a timer</div>
-      </div>
-      <button class="btn btn-ghost" data-cm-back><i class="fas fa-arrow-left"></i> Back</button>
-    </div>
     <div class="card anim-entrance" style="--delay:0.1s;padding:20px">
       <div class="cm-form">
         <div class="fg">
@@ -576,13 +559,7 @@ Answer: B"></textarea>
 
       el.innerHTML = `
       <div class="cm-analysis">
-        <div class="page-header anim-entrance">
-          <div>
-            <div class="page-title" data-text="Test Complete!">Test Complete!</div>
-            <div class="page-sub">${data.name}</div>
-          </div>
-        </div>
-        <div class="card anim-entrance" style="--delay:0.1s;padding:20px">
+          <div class="card anim-entrance" style="--delay:0.1s;padding:20px">
           <div class="cm-score-grid">
             <div class="cm-score-item">
               <div class="cm-score-big" style="color:var(--success)">${data.totalCorrect}/${data.questions.length}</div>

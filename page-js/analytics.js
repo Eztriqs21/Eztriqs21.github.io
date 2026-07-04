@@ -40,10 +40,6 @@
     const worstPct = worstTest && worstTest.maxScore > 0 ? Math.round(worstTest.totalScore / worstTest.maxScore * 100) : 0;
 
     el.innerHTML = `
-    <div class="page-header anim-entrance">
-      <div class="page-title" data-text="Analytics">Analytics</div>
-      <div class="page-sub">Performance insights across all tests</div>
-    </div>
     <div class="hero-stats" data-tutorial-id="hero-stats">
       ${heroStat(tests.length, 'Total Tests', 'var(--accent)', '0.1s')}
       ${heroStat(testAvg + '%', 'Avg Score', 'var(--success)', '0.15s')}

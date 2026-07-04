@@ -66,6 +66,7 @@
       ring.style.transform = 'translate3d(-9999px, -9999px, 0)';
       dot.style.transform = 'translate3d(-9999px, -9999px, 0)';
       if (trail) trail.style.transform = 'translate3d(-9999px, -9999px, 0)';
+      if (pulse) pulse.style.transform = 'translate3d(-9999px, -9999px, 0)';
     }
     function onMouseEnter() {
       ringX = mouseX; ringY = mouseY;
@@ -160,6 +161,9 @@
       dot.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
       if (trail) {
         trail.style.transform = 'translate3d(' + trailX + 'px,' + trailY + 'px,0) translate(-50%,-50%) scale(' + (hoverScale * 0.9) + ')';
+      }
+      if (pulse) {
+        pulse.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
       }
 
       _traceHistory.push({ x: ringX, y: ringY });

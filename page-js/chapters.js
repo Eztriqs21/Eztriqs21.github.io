@@ -72,13 +72,6 @@
     const total = allCh.length;
 
     el.innerHTML = `
-    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div>
-        <div class="page-title" data-text="Chapters">Chapters</div>
-        <div class="page-sub">Syllabus mastery & tracking</div>
-      </div>
-      <button class="btn btn-primary" data-tutorial-id="add-chapter" onclick="window.openAddCh()">+ Add Chapter</button>
-    </div>
     <input class="input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_chSearch)}" autocomplete="off" data-tutorial-id="chapter-search">
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">

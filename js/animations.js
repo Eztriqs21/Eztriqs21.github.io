@@ -355,61 +355,7 @@ export function initInteractions() {
   document.addEventListener('focusout', e => { if (e.target.classList.contains('inp')) inputBlurRing(e.target); }, true);
 
   initTilt();
-  initMouseParticles();
   initAccessibility();
-}
-
-/* ═══════════════ MOUSE-FOLLOWING PARTICLES ═══════════════ */
-export function initMouseParticles() {
-  if (_reducedMq.matches || 'ontouchstart' in window) return;
-  var canvas = document.getElementById('mouse-particles');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  var particles = [];
-  var maxParticles = 15;
-  var lastSpawn = 0;
-  var spawnInterval = 120;
-  var mouseX = -100, mouseY = -100;
-  var isMoving = false;
-  var moveTimer = null;
-
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-
-  function getThemeColor() { return [212, 175, 55]; }
-
-  function spawnParticle(x, y) {
-    if (particles.length >= maxParticles) particles.shift();
-    var col = getThemeColor();
-    var angle = Math.random() * Math.PI * 2;
-    var speed = 0.3 + Math.random() * 0.5;
-    particles.push({ x: x + (Math.random() - 0.5) * 8, y: y + (Math.random() - 0.5) * 8, vx: Math.cos(angle) * speed, vy: -0.4 - Math.random() * 0.6, size: 2 + Math.random() * 2.5, life: 1, decay: 0.008 + Math.random() * 0.012, r: col[0], g: col[1], b: col[2] });
-  }
-
-  document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX; mouseY = e.clientY; isMoving = true;
-    clearTimeout(moveTimer);
-    moveTimer = setTimeout(function() { isMoving = false; }, 100);
-  }, { passive: true });
-
-  function tick() {
-    if (_reducedMq.matches) { requestAnimationFrame(tick); return; }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    var now = Date.now();
-    if (isMoving && now - lastSpawn > spawnInterval) { spawnParticle(mouseX, mouseY); lastSpawn = now; }
-    for (var i = particles.length - 1; i >= 0; i--) {
-      var p = particles[i]; p.x += p.vx; p.y += p.vy; p.life -= p.decay;
-      if (p.life <= 0) { particles.splice(i, 1); continue; }
-      ctx.globalAlpha = p.life * 0.6;
-      ctx.fillStyle = 'rgb(' + p.r + ',' + p.g + ',' + p.b + ')';
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
 }
 
 /* ═══════════════ MODAL & TOAST ANIMATIONS ═══════════════ */

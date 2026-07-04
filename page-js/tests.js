@@ -84,13 +84,6 @@
     const avg = allTests.length ? Math.round(allTests.reduce((s, t) => s + (t.maxScore > 0 ? (t.totalScore / t.maxScore) * 100 : 0), 0) / allTests.length) : 0;
 
     el.innerHTML = `
-    <div class="page-header anim-entrance" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div>
-        <div class="page-title" data-text="Tests">Tests</div>
-        <div class="page-sub">Test history and performance analysis</div>
-      </div>
-      <button class="btn btn-primary" data-tutorial-id="add-test" onclick="window.openAddTest()">+ Add Test</button>
-    </div>
     <input class="input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">

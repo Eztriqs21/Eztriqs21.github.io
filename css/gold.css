@@ -536,13 +536,6 @@
 }
 .theme-wash.active { opacity: 1; }
 
-/* ─── CINEMATIC ─── */
-.cinematic-trigger {
-  display: flex; align-items: center; gap: 8px; padding: 8px 12px;
-  border-radius: var(--radius); font-size: 12px; color: var(--text-muted);
-  transition: all 0.2s; width: 100%;
-}
-.cinematic-trigger:hover { color: var(--text); background: var(--hover); }
 
 /* ─── STRENGTH ─── */
 .strength { display: flex; gap: 4px; }
