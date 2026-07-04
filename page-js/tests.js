@@ -84,7 +84,13 @@
     const avg = allTests.length ? Math.round(allTests.reduce((s, t) => s + (t.maxScore > 0 ? (t.totalScore / t.maxScore) * 100 : 0), 0) / allTests.length) : 0;
 
     el.innerHTML = `
-    <input class="input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+      <input class="input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
+      <button class="btn btn-primary btn-sm anim-entrance" onclick="window.openAddTest()" style="--delay:0.05s">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Test
+      </button>
+    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
@@ -113,7 +119,9 @@
   /* CRUD */
   window.openAddTest = function() {
     window.pendingTFiles = [];
+    window.pendingTAnswerKey = [];
     var fl = document.getElementById('t-file-list'); if (fl) fl.innerHTML = '';
+    var akFl = document.getElementById('t-ak-file-list'); if (akFl) akFl.innerHTML = '';
     ['t-name', 't-direct-marks', 't-direct-max', 'tp-c', 'tp-w', 'tp-s', 'tc-c', 'tc-w', 'tc-s', 'tm-c', 'tm-w', 'tm-s', 'test-t-p', 'test-t-c', 'test-t-m', 'test-t-tot'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.value = '';
@@ -134,6 +142,7 @@
       grid.innerHTML = html || '<div style="font-size:11px;color:var(--muted)">No chapters added yet</div>';
     }
     if (window.setupDZ) window.setupDZ('t-dz', 't-finp', window.handleTFiles);
+    if (window.setupDZ) window.setupDZ('t-ak-dz', 't-ak-finp', window.handleTAnswerKey);
     if (window.om) window.om('m-test');
     setTimeout(function() { var t = document.getElementById('t-name'); if (t) t.focus(); }, 320);
   };
@@ -153,6 +162,22 @@
       if (window.sv) window.sv('tests');
       if (window._refreshPage) window._refreshPage();
     }
+  };
+
+  window.handleTAnswerKey = function(files) {
+    if (!files || !files.length) return;
+    window.pendingTAnswerKey = window.pendingTAnswerKey || [];
+    var list = document.getElementById('t-ak-file-list');
+    Array.from(files).forEach(function(file) {
+      if (file.size > 5 * 1024 * 1024) { if (window.toast) window.toast('File too large: ' + file.name); return; }
+      window.pendingTAnswerKey.push(file);
+      if (list) {
+        var div = document.createElement('div');
+        div.className = 'upload-preview-item';
+        div.innerHTML = '<span class="upload-preview-name">' + esc(file.name) + '</span><span class="upload-preview-size">' + (file.size / 1024).toFixed(1) + 'KB</span><button class="upload-preview-remove" onclick="this.parentElement.remove()">&#10005;</button>';
+        list.appendChild(div);
+      }
+    });
   };
 
   window._testSearchFn = function(val) {

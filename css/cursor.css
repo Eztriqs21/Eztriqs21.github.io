@@ -68,17 +68,6 @@ body.cursor-active, body.cursor-active * {
               height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-[data-theme="gold"] #cursor-pulse,
-#cursor-pulse {
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--primary);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  pointer-events: none;
-}
-
 [data-theme="gold"] .cursor-hover #cursor-ring,
 .cursor-hover #cursor-ring {
   width: 40px;
@@ -93,16 +82,6 @@ body.cursor-active, body.cursor-active * {
 .cursor-hover #cursor-trail {
   width: 40px;
   height: 40px;
-}
-
-[data-theme="gold"].cursor-active.cursor-click #cursor-pulse,
-body.cursor-active.cursor-click #cursor-pulse {
-  animation: premium-pulse 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-@keyframes premium-pulse {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; border-color: #D4AF37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
-  50% { opacity: 0.5; border-color: #FCF6BA; }
-  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; border-color: #BF953F; box-shadow: 0 0 40px rgba(252, 246, 186, 0.2); }
 }
 
 /* ═══════════════ CURSOR TRAIL PARTICLES ═══════════════ */

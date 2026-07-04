@@ -4,7 +4,6 @@
     var ring = document.getElementById('cursor-ring');
     var dot = document.getElementById('cursor-dot');
     var trail = document.getElementById('cursor-trail');
-    var pulse = document.getElementById('cursor-pulse');
     if (!ring || !dot) return;
 
     var mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
@@ -55,18 +54,14 @@
     }
 
     function onMouseDown() {
-      document.body.classList.add('cursor-click');
-      spawnClickParticles();
     }
     function onMouseUp() {
-      setTimeout(function() { document.body.classList.remove('cursor-click'); }, 400);
     }
 
     function onMouseLeave() {
       ring.style.transform = 'translate3d(-9999px, -9999px, 0)';
       dot.style.transform = 'translate3d(-9999px, -9999px, 0)';
       if (trail) trail.style.transform = 'translate3d(-9999px, -9999px, 0)';
-      if (pulse) pulse.style.transform = 'translate3d(-9999px, -9999px, 0)';
     }
     function onMouseEnter() {
       ringX = mouseX; ringY = mouseY;
@@ -82,24 +77,6 @@
     document.addEventListener('mouseenter', onMouseEnter);
 
     function lerp(a, b, f) { return a + (b - a) * f; }
-
-    function spawnClickParticles() {
-      for (var i = 0; i < 8; i++) {
-        var angle = (Math.PI * 2 / 8) * i + Math.random() * 0.5;
-        var vel = 1.5 + Math.random() * 2;
-        var color = Math.random() < 0.6 ? COLOR_PRIM : Math.random() < 0.5 ? COLOR_SEC : COLOR_TEAL;
-        particles.push({
-          x: mouseX, y: mouseY,
-          vx: Math.cos(angle) * vel,
-          vy: Math.sin(angle) * vel,
-          life: 1,
-          decay: 0.02 + Math.random() * 0.02,
-          size: 2 + Math.random() * 3,
-          color: color
-        });
-      }
-      if (particles.length > 80) particles.splice(0, particles.length - 80);
-    }
 
     function spawnTrailParticles() {
       var now = performance.now();
@@ -161,9 +138,6 @@
       dot.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
       if (trail) {
         trail.style.transform = 'translate3d(' + trailX + 'px,' + trailY + 'px,0) translate(-50%,-50%) scale(' + (hoverScale * 0.9) + ')';
-      }
-      if (pulse) {
-        pulse.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
       }
 
       _traceHistory.push({ x: ringX, y: ringY });

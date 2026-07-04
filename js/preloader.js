@@ -14,7 +14,7 @@
     _preloaderTimers = [];
   }
 
-  var progressFill = preloader.querySelector('.preloader-progress-fill');
+  var liquidFill = preloader.querySelector('.preloader-liquid-fill');
   var counterEl = document.getElementById('preloader-count');
 
   function fadeOutPreloader(callback) {
@@ -27,14 +27,13 @@
     }, 1000);
   }
 
-  function runFluidGold(onComplete) {
+  function runLavaGold(onComplete) {
     _plClearAll();
     preloader.style.display = 'flex';
     preloader.style.opacity = '1';
 
-    if (progressFill) {
-      progressFill.style.width = '0%';
-      progressFill.style.transition = 'none';
+    if (liquidFill) {
+      liquidFill.style.height = '0%';
     }
 
     void preloader.offsetWidth;
@@ -42,25 +41,19 @@
     var count = 0;
     var targetCount = 100;
     var countInterval = setInterval(function() {
-      count += Math.random() * 4 + 1;
+      count += Math.random() * 3.5 + 0.8;
       if (count >= targetCount) {
         count = targetCount;
         clearInterval(countInterval);
       }
       if (counterEl) counterEl.textContent = Math.floor(count);
-    }, 50);
-
-    _plSetTimeout(function() {
-      if (progressFill) {
-        progressFill.style.transition = 'width 4.5s cubic-bezier(0.4, 0, 0.2, 1)';
-        progressFill.style.width = '100%';
-      }
-    }, 800);
+      if (liquidFill) liquidFill.style.height = count + '%';
+    }, 60);
 
     _plSetTimeout(function() {
       if (counterEl) {
         counterEl.style.transition = 'opacity 0.6s ease';
-        counterEl.style.opacity = '0.5';
+        counterEl.style.opacity = '0.4';
       }
     }, 5200);
 
@@ -72,7 +65,7 @@
   window.preloaderEngine = {
     run: function(onComplete) {
       _plClearAll();
-      runFluidGold(onComplete);
+      runLavaGold(onComplete);
     },
     cancel: function() {
       _plClearAll();

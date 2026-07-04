@@ -72,7 +72,13 @@
     const total = allCh.length;
 
     el.innerHTML = `
-    <input class="input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_chSearch)}" autocomplete="off" data-tutorial-id="chapter-search">
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+      <input class="input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_chSearch)}" autocomplete="off" data-tutorial-id="chapter-search">
+      <button class="btn btn-primary btn-sm anim-entrance" onclick="window.openAddCh()" style="--delay:0.05s">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Chapter
+      </button>
+    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>

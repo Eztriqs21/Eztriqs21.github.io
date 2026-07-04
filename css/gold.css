@@ -183,7 +183,7 @@
 }
 .tag {
   display: inline-flex; align-items: center; padding: 3px 10px;
-  border-radius: var(--radius); font-size: 10px; font-family: var(--font-data);
+  border-radius: var(--radius); font-size: 11px; font-family: var(--font-data);
   text-transform: uppercase; letter-spacing: 1px;
 }
 .tag-mains { background: rgba(212, 175, 55, 0.06); color: var(--primary); border: 1px solid rgba(212, 175, 55, 0.15); }
@@ -215,7 +215,7 @@
 .test-card-score { text-align: right; }
 .test-card-score-big { font-family: var(--font-data); font-size: 24px; font-weight: 700; color: var(--primary); }
 .test-card-score-max { font-size: 11px; color: var(--text-muted); }
-.test-card-chevron { font-size: 10px; color: var(--text-muted); transition: transform 0.4s; }
+.test-card-chevron { font-size: 11px; color: var(--text-muted); transition: transform 0.4s; }
 .test-card.expanded .test-card-chevron { transform: rotate(180deg); }
 .test-card-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; padding: 0 20px; }
 .test-card.expanded .test-card-body { max-height: 1000px; padding: 0 20px 20px; }
@@ -243,7 +243,7 @@
 .accordion-title { font-size: 16px; font-weight: 600; color: var(--text); }
 .accordion-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .accordion-pct { font-family: var(--font-data); font-size: 18px; font-weight: 700; color: var(--primary); margin-right: 8px; }
-.accordion-chevron { font-size: 10px; color: var(--text-muted); transition: transform 0.4s; }
+.accordion-chevron { font-size: 11px; color: var(--text-muted); transition: transform 0.4s; }
 .accordion.open .accordion-chevron { transform: rotate(180deg); }
 .accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
 .accordion.open .accordion-body { max-height: 2000px; }
@@ -272,7 +272,7 @@
 .strength-dot.uncovered.on { background: var(--text-muted); }
 .chapter-meta { display: flex; gap: 6px; }
 .chapter-badge {
-  padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: var(--font-data);
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: var(--font-data);
   text-transform: uppercase; letter-spacing: 0.5px;
   background: rgba(212, 175, 55, 0.06); color: var(--primary);
 }
@@ -316,7 +316,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.ring-label { font-size: 10px; color: var(--text-muted); }
+.ring-label { font-size: 11px; color: var(--text-muted); }
 
 /* ─── QUESTION GRID ─── */
 .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 6px; }
@@ -331,14 +331,14 @@
 .freq-card { padding: 12px; position: relative; overflow: hidden; }
 .freq-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--primary); }
 .freq-name { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
-.freq-sub { font-size: 10px; color: var(--text-muted); }
+.freq-sub { font-size: 11px; color: var(--text-muted); }
 .freq-count { font-family: var(--font-data); font-size: 18px; font-weight: 700; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
 
 /* ─── RESULT BADGES ─── */
 .results-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 .res-badge { padding: 12px 16px; border-radius: var(--radius); text-align: center; min-width: 80px; }
 .res-badge-val { font-family: var(--font-data); font-size: 20px; font-weight: 700; }
-.res-badge-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.res-badge-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
 /* ─── PAGE HEADER ─── */
 .page-header { margin-bottom: 24px; }
@@ -374,7 +374,7 @@
 .calc-num { font-family: var(--font-data); font-weight: 600; min-width: 30px; }
 .calc-subj { font-size: 11px; color: var(--text-muted); min-width: 70px; }
 .calc-type {
-  font-family: var(--font-data); font-size: 10px; padding: 2px 8px;
+  font-family: var(--font-data); font-size: 11px; padding: 2px 8px;
   border: 1px solid rgba(215, 190, 150, 0.08); border-radius: var(--radius); cursor: pointer;
 }
 
@@ -389,7 +389,7 @@
   background: linear-gradient(180deg, #D4AF37, rgba(212, 175, 55, 0.3));
   transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.bar-label { font-size: 9px; color: var(--text-muted); font-family: var(--font-data); text-align: center; }
+.bar-label { font-size: 11px; color: var(--text-muted); font-family: var(--font-data); text-align: center; }
 
 /* ─── MOCK TEST (Custom) ─── */
 .cm-nav-btn.primary { background: linear-gradient(135deg, #D4AF37, #BF953F); color: #0a0a0a; }
@@ -434,7 +434,7 @@
   position: absolute; top: -4px; right: -4px; width: 18px; height: 18px;
   border-radius: 50%; background: var(--danger); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; cursor: pointer; border: none;
+  font-size: 11px; cursor: pointer; border: none;
 }
 
 /* ─── PDF VIEWER ─── */
@@ -506,7 +506,6 @@
   color: var(--primary); background: rgba(212, 175, 55, 0.04);
   border-left-color: var(--primary);
 }
-.nav-divider { height: 1px; background: rgba(215, 190, 150, 0.08); margin: 8px 0; }
 
 /* ─── TOPBAR ─── */
 .page-title-wrap { flex: 1; }
@@ -514,7 +513,7 @@
 /* ─── BOTTOM NAV ─── */
 .bni {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 6px 12px; font-size: 10px; color: var(--text-muted);
+  padding: 6px 12px; font-size: 11px; color: var(--text-muted);
   transition: all 0.2s; border-radius: var(--radius);
 }
 .bni.active { color: var(--primary); }
@@ -610,7 +609,7 @@
 .gold-data-stream.anim-active::after {
   content: '01001 10110 00110 11001';
   position: absolute; top: 0; left: -100%; width: 200%; height: 100%;
-  font-family: var(--font-data); font-size: 10px; color: rgba(212,175,55,0.12);
+  font-family: var(--font-data); font-size: 11px; color: rgba(212,175,55,0.12);
   white-space: nowrap; overflow: hidden; pointer-events: none;
   display: flex; align-items: center; letter-spacing: 2px;
   animation: gld-datastream-slide 0.8s linear forwards;
@@ -870,7 +869,7 @@
 }
 
 .gold-binary {
-  font-family: var(--font-data); font-size: 10px; color: rgba(212,175,55,0.3);
+  font-family: var(--font-data); font-size: 11px; color: rgba(212,175,55,0.3);
   overflow: hidden; white-space: nowrap;
   animation: gld-binary-scroll 3s linear infinite;
 }

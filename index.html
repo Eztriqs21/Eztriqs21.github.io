@@ -8,7 +8,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/base.css?v=5">
   <link rel="stylesheet" href="css/cursor.css?v=5">
@@ -25,20 +25,8 @@
 <body>
   <!-- PRELOADER -->
   <div id="preloader">
-    <svg style="position:absolute;width:0;height:0">
-      <defs>
-        <filter id="gooey" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/>
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -11"/>
-        </filter>
-      </defs>
-    </svg>
+    <div class="preloader-glow-bg"></div>
     <div class="preloader-vignette"></div>
-    <div class="preloader-blobs" style="filter:url(#gooey)">
-      <div class="preloader-blob" style="width:100px;height:100px;top:35%;left:42%;--delay:0s"></div>
-      <div class="preloader-blob" style="width:70px;height:70px;top:50%;left:55%;--delay:0.4s"></div>
-      <div class="preloader-blob" style="width:55px;height:55px;top:40%;left:60%;--delay:0.8s"></div>
-    </div>
     <div class="preloader-3d-scene">
       <div class="preloader-cube">
         <div class="preloader-cube-face front"></div>
@@ -50,30 +38,30 @@
       </div>
     </div>
     <div class="preloader-center">
-      <svg class="preloader-logo" viewBox="0 0 200 200" width="80" height="80">
+      <svg class="preloader-logo" viewBox="0 0 200 200" width="120" height="120">
         <defs>
           <linearGradient id="preloaderGold" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#8b6914"/>
-            <stop offset="30%" stop-color="#daa520"/>
+            <stop offset="25%" stop-color="#daa520"/>
             <stop offset="50%" stop-color="#ffd700"/>
-            <stop offset="70%" stop-color="#daa520"/>
+            <stop offset="75%" stop-color="#daa520"/>
             <stop offset="100%" stop-color="#8b6914"/>
           </linearGradient>
           <filter id="preloaderGlow">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feGaussianBlur stdDeviation="6" result="blur"/>
             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <polygon class="logo-hex" points="100,12 178,56 178,144 100,188 22,144 22,56" fill="none" stroke="url(#preloaderGold)" stroke-width="4" filter="url(#preloaderGlow)"/>
-        <polygon points="100,32 160,64 160,136 100,168 40,136 40,64" fill="none" stroke="url(#preloaderGold)" stroke-width="1.5" opacity="0.4"/>
+        <polygon class="logo-hex" points="100,12 178,56 178,144 100,188 22,144 22,56" fill="none" stroke="url(#preloaderGold)" stroke-width="5" filter="url(#preloaderGlow)"/>
+        <polygon points="100,32 160,64 160,136 100,168 40,136 40,64" fill="none" stroke="url(#preloaderGold)" stroke-width="1.5" opacity="0.35"/>
         <text x="100" y="110" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="58" font-weight="700" fill="url(#preloaderGold)">JEE</text>
-        <line x1="58" y1="120" x2="142" y2="120" stroke="url(#preloaderGold)" stroke-width="1.5" opacity="0.6"/>
-        <text x="100" y="145" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="22" font-weight="500" fill="url(#preloaderGold)" letter-spacing="8">HQ</text>
+        <text x="100" y="148" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="22" font-weight="500" fill="url(#preloaderGold)" letter-spacing="8">HQ</text>
       </svg>
-      <div class="preloader-wordmark">JEE HQ</div>
       <div class="preloader-counter"><span id="preloader-count">0</span><span class="preloader-percent">%</span></div>
-      <div class="preloader-progress">
-        <div class="preloader-progress-fill"></div>
+      <div class="preloader-liquid-bar">
+        <div class="preloader-liquid-fill">
+          <div class="preloader-liquid-wave"></div>
+        </div>
       </div>
     </div>
     <div class="preloader-shimmer-overlay"></div>
@@ -94,7 +82,6 @@
   <div id="cursor-ring" class="custom-cursor"></div>
   <div id="cursor-dot" class="custom-cursor"></div>
   <div id="cursor-trail" class="custom-cursor"></div>
-  <div id="cursor-pulse" class="custom-cursor"></div>
 
   <!-- BACKGROUND IMAGE OVERLAY -->
   <div id="bg-image-overlay"></div>
@@ -120,7 +107,7 @@
     <aside id="sidebar" data-tutorial-id="sidebar">
       <div class="sidebar-logo" data-interactive data-easter-egg>
         <span class="logo-icon">
-          <svg viewBox="0 0 200 200" width="32" height="32">
+          <svg viewBox="0 0 200 200" width="44" height="44">
             <defs>
               <linearGradient id="logoGold" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#8b6914"/>
@@ -135,13 +122,11 @@
               </filter>
             </defs>
             <polygon points="100,12 178,56 178,144 100,188 22,144 22,56" fill="none" stroke="url(#logoGold)" stroke-width="4" filter="url(#logoGlow)"/>
-            <polygon points="100,32 160,64 160,136 100,168 40,136 40,64" fill="none" stroke="url(#logoGold)" stroke-width="1.5" opacity="0.4"/>
+            <polygon points="100,32 160,64 160,136 100,168 40,136 40,64" fill="none" stroke="url(#logoGold)" stroke-width="1.5" opacity="0.35"/>
             <text x="100" y="110" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="58" font-weight="700" fill="url(#logoGold)">JEE</text>
-            <line x1="58" y1="120" x2="142" y2="120" stroke="url(#logoGold)" stroke-width="1.5" opacity="0.6"/>
-            <text x="100" y="145" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="22" font-weight="500" fill="url(#logoGold)" letter-spacing="8">HQ</text>
+            <text x="100" y="148" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="22" font-weight="500" fill="url(#logoGold)" letter-spacing="8">HQ</text>
           </svg>
         </span>
-        <span class="logo-text">JEE HQ</span>
       </div>
       <nav class="sidebar-nav">
         <a href="#/dashboard" class="nav-item active" data-interactive>
@@ -164,7 +149,6 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/><line x1="16" y1="18" x2="16" y2="18.01"/></svg>
           <span>Calculator</span>
         </a>
-        <div class="nav-divider" role="separator" aria-orientation="horizontal"></div>
         <a href="#/assignments" class="nav-item" data-interactive>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           <span>Assignments</span>
@@ -443,6 +427,16 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
           <input type="file" id="t-finp" multiple accept=".pdf,image/*" onchange="handleTFiles(this.files)"/>
         </div>
         <div class="upload-preview-list" id="t-file-list"></div>
+      </div>
+      <div class="fg" style="margin-top:14px">
+        <label>Upload Answer Key (optional)</label>
+        <div class="upload-zone" id="t-ak-dz">
+          <div class="upload-zone-icon">&#9989;</div>
+          <div class="upload-zone-title">Drop answer key here</div>
+          <div class="upload-zone-sub">PDF, image, or text file</div>
+          <input type="file" id="t-ak-finp" accept=".pdf,image/*,.txt" onchange="handleTAnswerKey(this.files)"/>
+        </div>
+        <div class="upload-preview-list" id="t-ak-file-list"></div>
       </div>
     </div>
     <div class="md-foot">

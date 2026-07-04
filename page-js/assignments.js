@@ -97,7 +97,13 @@
     var overdue = pending.filter(function(a) { return a.dueDate && new Date(a.dueDate) < new Date(); });
 
     el.innerHTML = `
-    <input class="input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;margin-bottom:16px" value="${esc(_asnSearch)}" autocomplete="off">
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+      <input class="input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_asnSearch)}" autocomplete="off">
+      <button class="btn btn-primary btn-sm anim-entrance" onclick="window.openAddAssign()" style="--delay:0.05s">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Task
+      </button>
+    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
