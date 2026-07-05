@@ -40,6 +40,9 @@
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
                 ${dueLabel ? `<div style="font-size:11px;color:${dueColor};display:flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${dueLabel}</div>` : '<div></div>'}
                 <div style="display:flex;gap:6px">
+                  <button class="btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--primary)" onclick="event.stopPropagation();window.editAsn('${a.id}')">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit
+                  </button>
                   <button class="btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="event.stopPropagation();window.delAsn('${a.id}')">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
                   </button>
@@ -100,7 +103,11 @@
 
     el.innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-      <input class="input anim-entrance" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_asnSearch)}" autocomplete="off">
+      <div class="search-wrap anim-entrance" style="flex:1;min-width:200px">
+        <input class="search-input" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" value="${esc(_asnSearch)}" autocomplete="off"/>
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <button class="search-clear" onclick="this.previousElementSibling.previousElementSibling.value='';window._asnSearchFn('')">&#10005;</button>
+      </div>
       <button class="btn btn-primary btn-sm anim-entrance" onclick="window.openAddAssign()" style="--delay:0.05s">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Task
@@ -179,6 +186,48 @@
       if (window.sv) window.sv('assignments');
       if (window._refreshPage) window._refreshPage();
     }
+  };
+
+  window.editAsn = function(id) {
+    var DB = window.DB;
+    if (!DB || !DB.assignments) return;
+    var a = DB.assignments.find(x => x.id === id);
+    if (!a) return;
+    window._editingAsnId = id;
+    window.pendingAFiles = [];
+    window.pendingAAnswerKey = [];
+    var titleEl = document.getElementById('a-title');
+    if (titleEl) titleEl.value = a.title || '';
+    var descEl = document.getElementById('a-desc');
+    if (descEl) descEl.value = a.description || '';
+    var sylEl = document.getElementById('a-syl');
+    if (sylEl) sylEl.value = a.syllabus || '';
+    var dueEl = document.getElementById('a-due');
+    if (dueEl) dueEl.value = a.dueDate ? new Date(a.dueDate).toISOString().split('T')[0] : '';
+    if (window.setAP) window.setAP(a.priority || 'none');
+    var fl = document.getElementById('a-file-list'); if (fl) fl.innerHTML = '';
+    var akFl = document.getElementById('a-ak-file-list'); if (akFl) akFl.innerHTML = '';
+    if (a.attachments && a.attachments.length) {
+      window.pendingAFiles = a.attachments.slice();
+      if (fl) {
+        fl.innerHTML = a.attachments.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+(d.name||'').replace(/'/g,"\\'")+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAFiles.splice('+i+',1);window.refreshAFileList()">&#10005;</button></div>';
+      }).join('');
+      }
+    }
+    if (a.answerKey && a.answerKey.length) {
+      window.pendingAAnswerKey = a.answerKey.slice();
+      if (akFl) {
+        akFl.innerHTML = a.answerKey.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+(d.name||'').replace(/'/g,"\\'")+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button></div>';
+      }).join('');
+      }
+    }
+    var mdTitle = document.querySelector('#m-asgn .md-title');
+    if (mdTitle) mdTitle.textContent = 'Edit Assignment';
+    var saveBtn = document.querySelector('#m-asgn .md-foot .btn-primary');
+    if (saveBtn) saveBtn.textContent = 'Save Changes';
+    if (window.setupDZ) window.setupDZ('a-dz','a-finp',window.handleAFiles);
+    if (window.setupDZ) window.setupDZ('a-ak-dz','a-ak-finp',window.handleAAnswerKey);
+    if (window.om) window.om('m-asgn');
   };
 
   window.handleAAnswerKey = function(files) {

@@ -76,8 +76,8 @@ function saveAssignment() {
   if (!DB.assignments) DB.assignments = [];
   var dueEl = document.getElementById('a-due');
   var dueVal = dueEl ? dueEl.value : '';
-  DB.assignments.unshift({
-    id: 'a_' + Date.now(), title: t,
+  var asnData = {
+    title: t,
     description: (document.getElementById('a-desc') || {}).value || '',
     priority: aPriority || 'none',
     completed: false,
@@ -85,14 +85,33 @@ function saveAssignment() {
     attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     answerKey: (window.pendingAAnswerKey || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: ((document.getElementById('a-syl') || {}).value || '').trim() || undefined,
-    createdAt: new Date().toISOString()
-  });
+  };
+  var editId = window._editingAsnId;
+  if (editId) {
+    var existing = DB.assignments.find(function(a){return a.id===editId;});
+    if (existing) { Object.assign(existing, asnData); toast('Assignment updated!'); }
+    else { asnData.id = 'a_' + Date.now(); asnData.createdAt = new Date().toISOString(); DB.assignments.unshift(asnData); toast('Task added!'); }
+    window._editingAsnId = null;
+  } else {
+    asnData.id = 'a_' + Date.now();
+    asnData.createdAt = new Date().toISOString();
+    DB.assignments.unshift(asnData);
+    toast('Task added!');
+  }
   window.sv('assignments');
   window.pendingAFiles = [];
   window.pendingAAnswerKey = [];
   window.cm('m-asgn');
-  toast('Task added!');
+  _resetAsnModal();
   _refreshPage();
+}
+
+function _resetAsnModal() {
+  var mdTitle = document.querySelector('#m-asgn .md-title');
+  if (mdTitle) mdTitle.textContent = 'Add Assignment';
+  var saveBtn = document.querySelector('#m-asgn .md-foot .btn-primary');
+  if (saveBtn) saveBtn.textContent = 'Add Task';
+  window._editingAsnId = null;
 }
 
 /* ═══════════════ TESTS ═══════════════ */
@@ -186,8 +205,8 @@ function saveTest() {
   if (!DB.tests) DB.tests = [];
   var rankVal = parseInt((document.getElementById('t-rank') || {}).value) || null;
   var pctileVal = parseFloat((document.getElementById('t-percentile') || {}).value) || null;
-  DB.tests.unshift({
-    id: 't_' + Date.now(), name: name,
+  var testData = {
+    name: name,
     date: (document.getElementById('t-date') || {}).value || new Date().toISOString().split('T')[0],
     physics: p, chemistry: c, maths: m,
     totalScore: Math.max(0, total), maxScore: maxScore,
@@ -197,13 +216,32 @@ function saveTest() {
     papers: (window.pendingTFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     answerKey: (window.pendingTAnswerKey || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: syllabus
-  });
+  };
+  var editId = window._editingTestId;
+  if (editId) {
+    var existing = DB.tests.find(function(t){return t.id===editId;});
+    if (existing) { Object.assign(existing, testData); toast('Test updated!'); }
+    else { testData.id = 't_' + Date.now(); DB.tests.unshift(testData); toast('Test saved!'); }
+    window._editingTestId = null;
+  } else {
+    testData.id = 't_' + Date.now();
+    DB.tests.unshift(testData);
+    toast('Test saved!');
+  }
   window.sv('tests');
   window.pendingTFiles = [];
   window.pendingTAnswerKey = [];
   window.cm('m-test');
-  toast('Test saved!');
+  _resetTestModal();
   _refreshPage();
+}
+
+function _resetTestModal() {
+  var mdTitle = document.querySelector('#m-test .md-title');
+  if (mdTitle) mdTitle.textContent = 'Add Test Result';
+  var saveBtn = document.querySelector('#m-test .md-foot .btn-primary');
+  if (saveBtn) saveBtn.textContent = 'Save';
+  window._editingTestId = null;
 }
 
 /* ═══════════════ CHAPTERS ═══════════════ */
