@@ -345,6 +345,22 @@
 .ch-filter-chip:hover { opacity: 0.85; }
 .ch-filter-chip.active { box-shadow: 0 0 8px rgba(212, 175, 55, 0.15); }
 
+/* ─── CALCULATOR KEY TEXTAREA ─── */
+.calc-key-textarea {
+  width: 100%; padding: 12px 14px;
+  background: rgba(17, 17, 24, 0.7); border: 1px solid rgba(215, 190, 150, 0.12);
+  border-radius: 10px; color: var(--text); font-size: 13px;
+  font-family: var(--font-data); resize: vertical; min-height: 80px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.calc-key-textarea:focus {
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08), 0 4px 20px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+.calc-key-textarea::placeholder { color: var(--text-muted); font-family: var(--font-body); }
+
 /* ─── SCORE RING ─── */
 .score-ring {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
@@ -966,6 +982,89 @@
   .nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
   .page-title { text-shadow: none; }
   .page-title:hover { text-shadow: none; }
+}
+
+/* ─── GRAPH GLOW ─── */
+.card svg {
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.25)) drop-shadow(0 0 12px rgba(191, 149, 63, 0.15));
+}
+.card:hover svg {
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.35)) drop-shadow(0 0 16px rgba(191, 149, 63, 0.2));
+}
+.progress-bar-fill {
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4), 0 0 16px rgba(191, 149, 63, 0.2);
+}
+.stat-val {
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+.hero-stat-val {
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+}
+.chart-svg text {
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.2));
+}
+
+/* ─── CHART ENTRANCE ANIMATIONS ─── */
+.chart-entrance {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chart-entrance.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@keyframes chartGrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes chartFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CHAPTER SEARCH MODAL ─── */
+#m-chapter-search .md-body {
+  padding: 16px;
+}
+.ch-search-subj-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.ch-search-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.syl-cb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-card);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.syl-cb:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  color: var(--text);
+}
+.syl-cb input[type="checkbox"] {
+  accent-color: var(--primary);
+  width: 13px;
+  height: 13px;
+}
+.syl-cb:has(input:checked) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(212, 175, 55, 0.12);
 }
 
 /* ─── REDUCED MOTION ─── */

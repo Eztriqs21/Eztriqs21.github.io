@@ -49,8 +49,8 @@
 
     for (var i = 0; i < particles.length; i++) {
       var p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
+      p.x += p.vx + Math.sin(time * 0.003 + p.pulsePhase) * 0.12;
+      p.y += p.vy + Math.cos(time * 0.002 + p.pulsePhase) * 0.08;
       if (p.x < 0) p.x = width;
       if (p.x > width) p.x = 0;
       if (p.y < 0) p.y = height;

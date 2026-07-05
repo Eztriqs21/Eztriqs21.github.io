@@ -81,6 +81,7 @@
     function spawnTrailParticles() {
       var now = performance.now();
       if (now - lastParticleTime < 80 || speed < 4) return;
+      if (mouseX < 260) return;
       lastParticleTime = now;
       var color = Math.random() < 0.7 ? COLOR_PRIM : COLOR_TEAL;
       particles.push({

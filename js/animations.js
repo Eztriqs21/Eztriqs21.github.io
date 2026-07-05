@@ -455,3 +455,17 @@ export function animateAllEntrance() {
   for (var i = 0; i < els.length; i++) arr.push(els[i]);
   staggerIn(arr, { delay: 0.1, y: 20 });
 }
+
+export function initChartEntrance() {
+  var charts = document.querySelectorAll('.chart-entrance');
+  if (!charts.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  charts.forEach(function(c) { obs.observe(c); });
+}

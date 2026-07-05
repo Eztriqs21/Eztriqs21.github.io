@@ -255,7 +255,7 @@
     <!-- ═══ PERFORMANCE TREND ═══ -->
     <div class="section-block anim-entrance" style="--delay:0.3s">
       <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Performance Trend</div>
-      <div class="card" style="padding:20px;overflow-x:auto">
+      <div class="card chart-entrance" style="padding:20px;overflow-x:auto">
         ${trendLineChart(tests)}
       </div>
     </div>
@@ -263,7 +263,7 @@
     <!-- ═══ SUBJECT BREAKDOWN ═══ -->
     <div class="section-block anim-entrance" style="--delay:0.4s">
       <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Subject Breakdown</div>
-      <div class="card" style="padding:20px">
+      <div class="card chart-entrance" style="padding:20px">
         <div style="display:flex;gap:24px;flex-wrap:wrap">
           ${subjectBar('physics', physicsScores, hasSynthetic)}
           ${subjectBar('chemistry', chemScores, hasSynthetic)}
@@ -275,7 +275,7 @@
     <!-- ═══ TEST AVERAGES ═══ -->
     <div class="section-block anim-entrance" style="--delay:0.45s">
       <div class="section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Test Averages</div>
-      <div class="stats-grid">
+      <div class="stats-grid chart-entrance">
         <div class="stat-card anim-entrance" style="--delay:0.5s"><div class="stat-val" style="color:var(--success)">${avgPct}%</div><div class="stat-label">Avg Total</div><div class="stat-sub">/300</div></div>
         <div class="stat-card anim-entrance" style="--delay:0.52s"><div class="stat-val" style="color:var(--primary)">${physicsScores.length ? Math.round(physicsScores.reduce((a,b)=>a+b,0)/physicsScores.length) : 0}%</div><div class="stat-label">Avg Physics</div><div class="stat-sub">/100</div></div>
         <div class="stat-card anim-entrance" style="--delay:0.54s"><div class="stat-val" style="color:var(--secondary)">${chemScores.length ? Math.round(chemScores.reduce((a,b)=>a+b,0)/chemScores.length) : 0}%</div><div class="stat-label">Avg Chemistry</div><div class="stat-sub">/100</div></div>
@@ -286,7 +286,7 @@
     <!-- ═══ SCORE DISTRIBUTION ═══ -->
     <div class="section-block anim-entrance" style="--delay:0.55s">
       <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Score Distribution</div>
-      <div class="card" style="padding:20px;overflow-x:auto">
+      <div class="card chart-entrance" style="padding:20px;overflow-x:auto">
         ${scoreDistribution(tests)}
       </div>
     </div>
@@ -294,7 +294,7 @@
     <!-- ═══ PER-SUBJECT ACCURACY ═══ -->
     <div class="section-block anim-entrance" style="--delay:0.6s">
       <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg> Per-Subject Accuracy</div>
-      <div class="card" style="padding:20px">
+      <div class="card chart-entrance" style="padding:20px">
         <div style="display:flex;gap:24px;flex-wrap:wrap">
           ${subjectAccuracy(tests)}
         </div>
@@ -304,7 +304,7 @@
     <!-- ═══ RANK & PERCENTILE TREND ═══ -->
     <div class="section-block anim-entrance" style="--delay:0.65s">
       <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> Rank & Percentile Trend</div>
-      <div class="card" style="padding:20px;overflow-x:auto">
+      <div class="card chart-entrance" style="padding:20px;overflow-x:auto">
         ${rankPercentileTrend(tests)}
       </div>
     </div>
@@ -376,5 +376,6 @@
         ${subjectTimeCard('Maths', avgTimeM, 'var(--accent)', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l5-5"/></svg>')}
       </div>
     </div>`;
+    if (window.initChartEntrance) setTimeout(function() { window.initChartEntrance(); }, 50);
   };
 })();

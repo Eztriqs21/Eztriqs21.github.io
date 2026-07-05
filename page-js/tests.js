@@ -34,21 +34,50 @@
     return list;
   }
 
-  function _buildFilterChipsHTML(page) {
-    var chapters = _getAllChapters();
-    if (!chapters.length) return '';
-    var state = page === 'tests' ? _testChapterFilter : [];
-    var labels = { physics: 'P', chemistry: 'C', maths: 'M' };
-    var colors = { physics: 'var(--phys)', chemistry: 'var(--chem)', maths: 'var(--math)' };
-    var html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">';
-    chapters.forEach(function(ch) {
-      var active = state.indexOf(ch.name) !== -1;
-      var fn = page === 'tests' ? 'window._toggleTestFilter' : 'window._toggleAsnFilter';
-      html += '<button class="ch-filter-chip' + (active ? ' active' : '') + '" data-chapter="' + esc(ch.name) + '" onclick="' + fn + '(\'' + esc(ch.name).replace(/'/g, "\\'") + '\')" style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid ' + (active ? colors[ch.subject] : 'var(--border-card)') + ';background:' + (active ? 'rgba(212,175,55,0.12)' : 'transparent') + ';color:' + (active ? colors[ch.subject] : 'var(--muted)') + ';font-weight:600;cursor:pointer;transition:all 0.15s"><span style="opacity:0.5">' + labels[ch.subject] + ':</span> ' + esc(ch.name) + '</button>';
+  function _renderChapterSearchModal() {
+    var DB = window.DB;
+    if (!DB || !DB.chapters) return;
+    var body = document.getElementById('ch-search-body');
+    if (!body) return;
+    var subjInfo = { physics: { label: 'Physics', color: 'var(--phys)' }, chemistry: { label: 'Chemistry', color: 'var(--chem)' }, maths: { label: 'Mathematics', color: 'var(--math)' } };
+    var html = '';
+    ['physics', 'chemistry', 'maths'].forEach(function(subj) {
+      var chapters = (DB.chapters[subj] || []);
+      if (!chapters.length) return;
+      var info = subjInfo[subj];
+      html += '<div style="margin-bottom:16px">';
+      html += '<div style="font-size:12px;font-weight:700;color:' + info.color + ';margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">' + info.label + '</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+      chapters.forEach(function(ch) {
+        var checked = _testChapterFilter.indexOf(ch.name) !== -1;
+        html += '<label class="syl-cb" style="font-size:11px"><input type="checkbox" class="ch-search-cb" data-subj="' + subj + '" value="' + esc(ch.name) + '"' + (checked ? ' checked' : '') + '/> ' + esc(ch.name) + '</label>';
+      });
+      html += '</div></div>';
     });
-    html += '</div>';
-    return html;
+    body.innerHTML = html || '<div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">No chapters added yet</div>';
   }
+
+  window._openTestChapterSearch = function() {
+    window._chapterSearchPage = 'tests';
+    var titleEl = document.getElementById('ch-search-title');
+    if (titleEl) titleEl.textContent = 'Filter Tests by Chapter';
+    _renderChapterSearchModal();
+    if (window.om) window.om('m-chapter-search');
+  };
+
+  window._applyChapterFilter = function() {
+    _testChapterFilter = window._testChapterFilterInternal || [];
+    window._testChapterFilterInternal = null;
+    if (window.cm) window.cm('m-chapter-search');
+    _updateTestResults();
+  };
+
+  window._clearChapterFilter = function() {
+    _testChapterFilter = [];
+    var cbs = document.querySelectorAll('.ch-search-cb');
+    cbs.forEach(function(cb) { cb.checked = false; });
+    _updateTestResults();
+  };
 
   window._toggleTestFilter = function(chapter) {
     var idx = _testChapterFilter.indexOf(chapter);
@@ -172,7 +201,13 @@
         Add Test
       </button>
     </div>
-    <div id="test-filter-chips">${_buildFilterChipsHTML('tests')}</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="window._openTestChapterSearch()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Specific Search${_testChapterFilter.length ? ' (' + _testChapterFilter.length + ')' : ''}
+      </button>
+      ${_testChapterFilter.length ? '<button class="btn btn-ghost btn-sm" onclick="window._clearChapterFilter()" style="font-size:10px;color:var(--danger)">Clear Filters</button>' : ''}
+    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
@@ -196,8 +231,6 @@
     var tests = getFilteredTests();
     container.innerHTML = testResultsHTML(tests);
     container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
-    var chipsEl = document.getElementById('test-filter-chips');
-    if (chipsEl) chipsEl.innerHTML = _buildFilterChipsHTML('tests');
   }
 
   /* CRUD */

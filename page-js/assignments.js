@@ -13,33 +13,57 @@
   let _asnSearch = '';
   let _asnChapterFilter = [];
 
+  function _renderAsnChapterModal() {
+    var DB = window.DB;
+    if (!DB || !DB.chapters) return;
+    var body = document.getElementById('ch-search-body');
+    if (!body) return;
+    var subjInfo = { physics: { label: 'Physics', color: 'var(--phys)' }, chemistry: { label: 'Chemistry', color: 'var(--chem)' }, maths: { label: 'Mathematics', color: 'var(--math)' } };
+    var html = '';
+    ['physics', 'chemistry', 'maths'].forEach(function(subj) {
+      var chapters = (DB.chapters[subj] || []);
+      if (!chapters.length) return;
+      var info = subjInfo[subj];
+      html += '<div style="margin-bottom:16px">';
+      html += '<div style="font-size:12px;font-weight:700;color:' + info.color + ';margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">' + info.label + '</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+      chapters.forEach(function(ch) {
+        var checked = _asnChapterFilter.indexOf(ch.name) !== -1;
+        html += '<label class="syl-cb" style="font-size:11px"><input type="checkbox" class="asn-ch-search-cb" data-subj="' + subj + '" value="' + esc(ch.name) + '"' + (checked ? ' checked' : '') + '/> ' + esc(ch.name) + '</label>';
+      });
+      html += '</div></div>';
+    });
+    body.innerHTML = html || '<div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">No chapters added yet</div>';
+  }
+
+  window._openAsnChapterSearch = function() {
+    window._chapterSearchPage = 'assignments';
+    var titleEl = document.getElementById('ch-search-title');
+    if (titleEl) titleEl.textContent = 'Filter Assignments by Chapter';
+    _renderAsnChapterModal();
+    if (window.om) window.om('m-chapter-search');
+  };
+
+  window._applyAsnChapterFilter = function() {
+    _asnChapterFilter = window._asnChapterFilterInternal || [];
+    window._asnChapterFilterInternal = null;
+    if (window.cm) window.cm('m-chapter-search');
+    _updateAsnResults();
+  };
+
+  window._clearAsnChapterFilter = function() {
+    _asnChapterFilter = [];
+    var cbs = document.querySelectorAll('.asn-ch-search-cb');
+    cbs.forEach(function(cb) { cb.checked = false; });
+    _updateAsnResults();
+  };
+
   window._toggleAsnFilter = function(chapter) {
     var idx = _asnChapterFilter.indexOf(chapter);
     if (idx === -1) _asnChapterFilter.push(chapter);
     else _asnChapterFilter.splice(idx, 1);
     _updateAsnResults();
   };
-
-  function _buildAsnFilterChipsHTML() {
-    var DB = window.DB;
-    if (!DB || !DB.chapters) return '';
-    var list = [];
-    ['physics', 'chemistry', 'maths'].forEach(function(subj) {
-      (DB.chapters[subj] || []).forEach(function(ch) {
-        list.push({ name: ch.name, subject: subj });
-      });
-    });
-    if (!list.length) return '';
-    var labels = { physics: 'P', chemistry: 'C', maths: 'M' };
-    var colors = { physics: 'var(--phys)', chemistry: 'var(--chem)', maths: 'var(--math)' };
-    var html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">';
-    list.forEach(function(ch) {
-      var active = _asnChapterFilter.indexOf(ch.name) !== -1;
-      html += '<button class="ch-filter-chip' + (active ? ' active' : '') + '" data-chapter="' + esc(ch.name) + '" onclick="window._toggleAsnFilter(\'' + esc(ch.name).replace(/'/g, "\\'") + '\')" style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid ' + (active ? colors[ch.subject] : 'var(--border-card)') + ';background:' + (active ? 'rgba(212,175,55,0.12)' : 'transparent') + ';color:' + (active ? colors[ch.subject] : 'var(--muted)') + ';font-weight:600;cursor:pointer;transition:all 0.15s"><span style="opacity:0.5">' + labels[ch.subject] + ':</span> ' + esc(ch.name) + '</button>';
-    });
-    html += '</div>';
-    return html;
-  }
 
   function assignmentCard(a, index) {
     const pr = PRIORITY[a.priority] || { label: '', color: 'var(--muted)', bg: 'transparent' };
@@ -149,7 +173,13 @@
         Add Task
       </button>
     </div>
-    <div id="asn-filter-chips">${_buildAsnFilterChipsHTML()}</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="window._openAsnChapterSearch()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Specific Search${_asnChapterFilter.length ? ' (' + _asnChapterFilter.length + ')' : ''}
+      </button>
+      ${_asnChapterFilter.length ? '<button class="btn btn-ghost btn-sm" onclick="window._clearAsnChapterFilter()" style="font-size:10px;color:var(--danger)">Clear Filters</button>' : ''}
+    </div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
@@ -179,8 +209,6 @@
     var all = getFilteredAssignments();
     container.innerHTML = assignmentsResultsHTML(all);
     container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
-    var chipsEl = document.getElementById('asn-filter-chips');
-    if (chipsEl) chipsEl.innerHTML = _buildAsnFilterChipsHTML();
   }
 
   /* CRUD FUNCTIONS */

@@ -27,15 +27,25 @@
   <div id="preloader">
     <div class="preloader-glow-bg"></div>
     <div class="preloader-vignette"></div>
-    <div class="preloader-3d-scene">
-      <div class="preloader-cube">
-        <div class="preloader-cube-face front"></div>
-        <div class="preloader-cube-face back"></div>
-        <div class="preloader-cube-face right"></div>
-        <div class="preloader-cube-face left"></div>
-        <div class="preloader-cube-face top"></div>
-        <div class="preloader-cube-face bottom"></div>
-      </div>
+    <div class="preloader-volcano-scene">
+      <svg class="preloader-volcano-svg" viewBox="0 0 240 100" width="240" height="100">
+        <!-- Left volcano -->
+        <path d="M0 100 L30 40 L45 60 L60 35 L80 100 Z" fill="#1a1a24" opacity="0.9"/>
+        <!-- Left eruption particles -->
+        <circle class="preloader-particle pp-1" cx="45" cy="30" r="1.5"/>
+        <circle class="preloader-particle pp-2" cx="42" cy="20" r="1"/>
+        <circle class="preloader-particle pp-3" cx="48" cy="15" r="1.2"/>
+        <circle class="preloader-particle pp-4" cx="40" cy="10" r="0.8"/>
+        <circle class="preloader-particle pp-5" cx="50" cy="8" r="1"/>
+        <!-- Right volcano -->
+        <path d="M160 100 L185 30 L200 55 L215 25 L240 100 Z" fill="#1a1a24" opacity="0.9"/>
+        <!-- Right eruption particles -->
+        <circle class="preloader-particle pp-6" cx="200" cy="20" r="1.5"/>
+        <circle class="preloader-particle pp-7" cx="197" cy="12" r="1"/>
+        <circle class="preloader-particle pp-8" cx="203" cy="8" r="1.2"/>
+        <circle class="preloader-particle pp-9" cx="195" cy="5" r="0.8"/>
+        <circle class="preloader-particle pp-10" cx="205" cy="3" r="1"/>
+      </svg>
     </div>
     <div class="preloader-center">
       <svg class="preloader-logo" viewBox="0 0 200 200" width="120" height="120">
@@ -168,8 +178,18 @@
           <button class="theme-btn" onclick="openAuthModal()" title="Set Sync Key" style="width:32px;height:32px;font-size:14px">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
           </button>
-          <button class="theme-btn" onclick="openSupabaseConfig()" title="Supabase Config" style="width:32px;height:32px;font-size:14px">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </nav>
+      <div class="sidebar-footer">
+        <div style="flex:1;min-width:0;padding-right:8px">
+          <div id="supa-status" style="font-size:12px;color:var(--faint)">Not configured</div>
+          <div id="auth-status" style="font-size:12px;color:var(--faint);margin-top:3px">No sync key</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="theme-btn" onclick="openAuthModal()" title="Set Sync Key" style="width:38px;height:38px">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          </button>
+          <button class="theme-btn" onclick="openSupabaseConfig()" title="Supabase Config" style="width:38px;height:38px">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
           <button class="theme-btn" onclick="pushToSupabase()" title="Push to Cloud" style="width:32px;height:32px;font-size:13px">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
@@ -278,6 +298,19 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
     <div class="md-foot">
       <button class="btn btn-ghost btn-sm" onclick="cm('m-supa-config')">Cancel</button>
       <button class="btn btn-primary btn-sm" onclick="saveSupabaseConfig()">Save &amp; Test</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chapter Search Modal -->
+<div class="mo" id="m-chapter-search" role="dialog" aria-modal="true">
+  <div class="md"><div class="md-handle"></div>
+    <div class="md-head"><div class="md-title" id="ch-search-title">Filter by Chapter</div><button class="md-x" aria-label="Close" onclick="cm('m-chapter-search')">&#10005;</button></div>
+    <div class="md-body" id="ch-search-body" style="max-height:60vh;overflow-y:auto">
+    </div>
+    <div class="md-foot">
+      <button class="btn btn-ghost btn-sm" onclick="window._clearChapterSearchModal()">Clear All</button>
+      <button class="btn btn-primary btn-sm" onclick="window._applyChapterSearchModal()">Apply</button>
     </div>
   </div>
 </div>

@@ -367,3 +367,31 @@ window.saveMockTest = saveMockTest;
 window.pickChSubj = pickChSubj;
 
 window._refreshPage = _refreshPage;
+
+/* ═══════════════ CHAPTER SEARCH MODAL ═══════════════ */
+window._applyChapterSearchModal = function() {
+  var page = window._chapterSearchPage;
+  if (page === 'tests') {
+    var cbs = document.querySelectorAll('.ch-search-cb');
+    var filter = [];
+    cbs.forEach(function(cb) { if (cb.checked) filter.push(cb.value); });
+    window._testChapterFilterInternal = filter;
+    if (typeof window._applyChapterFilter === 'function') window._applyChapterFilter();
+  } else if (page === 'assignments') {
+    var cbs = document.querySelectorAll('.asn-ch-search-cb');
+    var filter = [];
+    cbs.forEach(function(cb) { if (cb.checked) filter.push(cb.value); });
+    window._asnChapterFilterInternal = filter;
+    if (typeof window._applyAsnChapterFilter === 'function') window._applyAsnChapterFilter();
+  }
+  if (window.cm) window.cm('m-chapter-search');
+};
+
+window._clearChapterSearchModal = function() {
+  var page = window._chapterSearchPage;
+  if (page === 'tests') {
+    if (typeof window._clearChapterFilter === 'function') window._clearChapterFilter();
+  } else if (page === 'assignments') {
+    if (typeof window._clearAsnChapterFilter === 'function') window._clearAsnChapterFilter();
+  }
+};
