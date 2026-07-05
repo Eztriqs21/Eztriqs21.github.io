@@ -4,6 +4,7 @@
 
   var _preloaderDismissed = false;
   var _preloaderTimers = [];
+  var _preloaderIntervals = [];
   function _plSetTimeout(fn, ms) {
     var id = setTimeout(fn, ms);
     _preloaderTimers.push(id);
@@ -12,6 +13,8 @@
   function _plClearAll() {
     _preloaderTimers.forEach(function(id) { clearTimeout(id); });
     _preloaderTimers = [];
+    _preloaderIntervals.forEach(function(id) { clearInterval(id); });
+    _preloaderIntervals = [];
   }
 
   var liquidFill = preloader.querySelector('.preloader-liquid-fill');
@@ -49,6 +52,7 @@
       if (counterEl) counterEl.textContent = Math.floor(count);
       if (liquidFill) liquidFill.style.height = count + '%';
     }, 60);
+    _preloaderIntervals.push(countInterval);
 
     _plSetTimeout(function() {
       if (counterEl) {

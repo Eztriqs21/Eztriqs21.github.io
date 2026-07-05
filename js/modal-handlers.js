@@ -3,8 +3,6 @@
 // They rely on window.DB, window.sv, window.cm, window.om, window.toast, window.findCh
 
 /* ═══════════════ SHARED HELPERS ═══════════════ */
-function fmtDate(d) { if (!d) return '—'; try { var dt = new Date(d); if (isNaN(dt.getTime())) return d; return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); } catch(e) { return d || '—'; } }
-function fmtDateTime(d) { if (!d) return '—'; try { var dt = new Date(d); if (isNaN(dt.getTime())) return d; return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch(e) { return d || '—'; } }
 
 function _refreshPage() {
   var el = document.getElementById('content-wrap');
@@ -13,6 +11,9 @@ function _refreshPage() {
 
   // Clear pending render timers from nav.js to prevent race conditions
   if (typeof window._clearRenderTimers === 'function') window._clearRenderTimers();
+
+  // Clean up calculator keyboard handler when leaving calculator page
+  if (page !== 'calculator' && typeof window._detachCalcKeyboard === 'function') window._detachCalcKeyboard();
 
   // Reset animation state on the container
   el.classList.remove('page-exit', 'page-enter');
@@ -23,9 +24,8 @@ function _refreshPage() {
     tests: window.renderTests,
     chapters: window.renderChapters,
     'mock-tests': window.renderMockTests,
-  analytics: window.renderAnalytics,
-    calculator: window.renderCalculator,
-    'score-analytics': window.renderScoreAnalytics
+    analytics: window.renderAnalytics,
+    calculator: window.renderCalculator
   };
   if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);
   else if (renderers[page]) renderers[page](el);
@@ -52,7 +52,7 @@ function setAP(pri) {
 }
 
 function handleAFiles(files) {
-  rdFiles(files, function (obj) { window.pendingAFiles.push(obj); refreshAFileList(); });
+  rdFiles(files, function (obj) { if (!obj) return; window.pendingAFiles.push(obj); refreshAFileList(); });
 }
 
 function refreshAFileList() {
@@ -83,11 +83,13 @@ function saveAssignment() {
     completed: false,
     dueDate: dueVal ? new Date(dueVal).toISOString() : null,
     attachments: (window.pendingAFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
+    answerKey: (window.pendingAAnswerKey || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: ((document.getElementById('a-syl') || {}).value || '').trim() || undefined,
     createdAt: new Date().toISOString()
   });
   window.sv('assignments');
   window.pendingAFiles = [];
+  window.pendingAAnswerKey = [];
   window.cm('m-asgn');
   toast('Task added!');
   _refreshPage();
@@ -133,7 +135,7 @@ function syncDirectToBreakdown() {
 }
 
 function handleTFiles(files) {
-  rdFiles(files, function (obj) { window.pendingTFiles.push(obj); refreshTFileList(); });
+  rdFiles(files, function (obj) { if (!obj) return; window.pendingTFiles.push(obj); refreshTFileList(); });
 }
 
 function refreshTFileList() {
@@ -159,11 +161,14 @@ function saveTest() {
   if (testEntryMode === 'direct') {
     total = parseInt((document.getElementById('t-direct-marks') || {}).value) || 0;
     maxScore = parseInt((document.getElementById('t-direct-max') || {}).value) || 300;
+    var qsPerSubject = Math.round(maxScore / 4 / 3) || 25;
     var estCorrect = Math.round(total / 4);
-    var estWrong = Math.max(0, Math.round((maxScore - total) / 4 - estCorrect * 0));
-    p = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.round((25 - estCorrect - estWrong) / 3) };
-    c = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.round((25 - estCorrect - estWrong) / 3) };
-    m = { correct: estCorrect - Math.round(estCorrect / 3) * 2, incorrect: estWrong - Math.round(estWrong / 3) * 2, unattempted: 25 - (estCorrect - Math.round(estCorrect / 3) * 2) - (estWrong - Math.round(estWrong / 3) * 2) };
+    var estWrong = Math.max(0, Math.round((maxScore - total) / 4));
+    var estUnattempted = Math.max(0, qsPerSubject * 3 - estCorrect - estWrong);
+    p = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.max(0, Math.round(estUnattempted / 3)) };
+    c = { correct: Math.round(estCorrect / 3), incorrect: Math.round(estWrong / 3), unattempted: Math.max(0, Math.round(estUnattempted / 3)) };
+    m = { correct: estCorrect - Math.round(estCorrect / 3) * 2, incorrect: estWrong - Math.round(estWrong / 3) * 2, unattempted: Math.max(0, estUnattempted - Math.round(estUnattempted / 3) * 2) };
+    p._synthetic = true; c._synthetic = true; m._synthetic = true;
   } else {
     p = { correct: gn('tp-c'), incorrect: gn('tp-w'), unattempted: gn('tp-s') };
     c = { correct: gn('tc-c'), incorrect: gn('tc-w'), unattempted: gn('tc-s') };
@@ -179,17 +184,23 @@ function saveTest() {
     if (subj && syllabus[subj]) syllabus[subj].push(cb.value);
   });
   if (!DB.tests) DB.tests = [];
+  var rankVal = parseInt((document.getElementById('t-rank') || {}).value) || null;
+  var pctileVal = parseFloat((document.getElementById('t-percentile') || {}).value) || null;
   DB.tests.unshift({
     id: 't_' + Date.now(), name: name,
     date: (document.getElementById('t-date') || {}).value || new Date().toISOString().split('T')[0],
     physics: p, chemistry: c, maths: m,
     totalScore: Math.max(0, total), maxScore: maxScore,
     timing: timing,
+    rank: rankVal,
+    percentile: pctileVal,
     papers: (window.pendingTFiles || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
+    answerKey: (window.pendingTAnswerKey || []).map(function (f) { return { data: f.url || f.data, name: f.name, type: f.type || '', size: f.size || 0 }; }),
     syllabus: syllabus
   });
   window.sv('tests');
   window.pendingTFiles = [];
+  window.pendingTAnswerKey = [];
   window.cm('m-test');
   toast('Test saved!');
   _refreshPage();
@@ -269,9 +280,9 @@ function saveMockTest() {
     id: 'mt_' + Date.now(), name: name, subject: subj,
     date: (document.getElementById('mt-date') || {}).value || new Date().toISOString().split('T')[0],
     total: total,
-    physics: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
-    chemistry: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33) },
-    maths: { correct: correct - Math.round(correct * 0.33) * 2, incorrect: incorrect - Math.round(incorrect * 0.33) * 2, unattempted: unattempted - Math.round(unattempted * 0.33) * 2 },
+    physics: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33), _synthetic: true },
+    chemistry: { correct: Math.round(correct * 0.33), incorrect: Math.round(incorrect * 0.33), unattempted: Math.round(unattempted * 0.33), _synthetic: true },
+    maths: { correct: correct - Math.round(correct * 0.33) * 2, incorrect: incorrect - Math.round(incorrect * 0.33) * 2, unattempted: unattempted - Math.round(unattempted * 0.33) * 2, _synthetic: true },
     syllabus: (document.getElementById('mt-syllabus') || {}).value || '',
     time: (document.getElementById('mt-time') || {}).value || '',
     review: (document.getElementById('mt-review') || {}).value || ''
@@ -290,6 +301,15 @@ function saveMockTest() {
   _refreshPage();
 }
 
+/* ═══════════════ CHAPTER SUBJECT PICKER ═══════════════ */
+function pickChSubj(btn) {
+  var pills = btn.parentElement.querySelectorAll('.subj-pill');
+  pills.forEach(function (p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  var subjEl = document.getElementById('addch-subj');
+  if (subjEl) subjEl.value = btn.dataset.subj;
+}
+
 /* ═══════════════ GLOBAL EXPORTS ═══════════════ */
 window.setAP = setAP;
 window.handleAFiles = handleAFiles;
@@ -306,5 +326,6 @@ window.saveAddCh = saveAddCh;
 window.saveEditCh = saveEditCh;
 window.deleteEditCh = deleteEditCh;
 window.saveMockTest = saveMockTest;
+window.pickChSubj = pickChSubj;
 
 window._refreshPage = _refreshPage;

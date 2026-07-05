@@ -31,7 +31,7 @@
 
     return `<svg width="100%" viewBox="0 0 ${w} ${h}" style="overflow:visible">
       <defs>
-        <linearGradient id="trendGrad-${Date.now()}" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
           <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
         </linearGradient>
@@ -56,7 +56,7 @@
     </svg>`;
   }
 
-  function subjectBar(key, scores) {
+  function subjectBar(key, scores, hasSynthetic) {
     const info = SUBJECTS[key];
     const avg = Math.round(scores.reduce((s, v) => s + v, 0) / scores.length);
     const latest = scores[scores.length - 1] || 0;
@@ -65,11 +65,12 @@
     const changeIcon = change > 0 ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>'
       : change < 0 ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>'
       : '';
+    const estLabel = hasSynthetic ? '<span style="font-size:9px;color:var(--muted);font-weight:400;margin-left:4px">(est.)</span>' : '';
 
     return `<div style="flex:1;min-width:140px">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
         <span style="opacity:0.7">${info.icon}</span>
-        <span style="font-size:12px;font-weight:600">${info.label}</span>
+        <span style="font-size:12px;font-weight:600">${info.label}${estLabel}</span>
         <span style="margin-left:auto;display:flex;align-items:center;gap:2px;font-size:10px;color:${change > 0 ? 'var(--success)' : change < 0 ? 'var(--danger)' : 'var(--muted)'}">${changeIcon}${Math.abs(change)}%</span>
       </div>
       <div style="font-size:24px;font-weight:700;margin-bottom:4px">${avg}%</div>
@@ -98,6 +99,7 @@
     const physicsScores = allTests.map(t => safePct((t.physics?.correct || 0) * 4 - (t.physics?.incorrect || 0), 100));
     const chemScores = allTests.map(t => safePct((t.chemistry?.correct || 0) * 4 - (t.chemistry?.incorrect || 0), 100));
     const mathsScores = allTests.map(t => safePct((t.maths?.correct || 0) * 4 - (t.maths?.incorrect || 0), 100));
+    const hasSynthetic = allTests.some(t => t.physics?._synthetic || t.chemistry?._synthetic || t.maths?._synthetic);
 
     el.innerHTML = `
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
@@ -130,9 +132,9 @@
       <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Subject Breakdown</div>
       <div class="card" style="padding:20px">
         <div style="display:flex;gap:24px;flex-wrap:wrap">
-          ${subjectBar('physics', physicsScores)}
-          ${subjectBar('chemistry', chemScores)}
-          ${subjectBar('maths', mathsScores)}
+          ${subjectBar('physics', physicsScores, hasSynthetic)}
+          ${subjectBar('chemistry', chemScores, hasSynthetic)}
+          ${subjectBar('maths', mathsScores, hasSynthetic)}
         </div>
       </div>
     </div>`;

@@ -1,6 +1,6 @@
 // js/supabase-sync.js
 import { DB } from './data.js';
-import { om, cm, toast, getStorageBucket, storageErrorMessage, uid, fileExt, isAllowedUpload, isPdfFile, isImageFile } from './helpers.js';
+import { om, cm, toast, getStorageBucket, storageErrorMessage } from './helpers.js';
 
 const SUPA_KEY='jeehq_supa_config';
 const SYNC_KEY_STORAGE='jeehq_sync_key';

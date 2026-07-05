@@ -99,9 +99,9 @@
     var particleCtx = null;
 
     function updateParticles() {
-      if (!particleCanvas) {
+      if (!particleCanvas || !particleCanvas.isConnected) {
         particleCanvas = document.getElementById('mouse-particles');
-        if (particleCanvas) particleCtx = particleCanvas.getContext('2d');
+        particleCtx = particleCanvas ? particleCanvas.getContext('2d') : null;
       }
       if (!particleCanvas || !particleCtx || particles.length === 0) return;
       var ctx = particleCtx;

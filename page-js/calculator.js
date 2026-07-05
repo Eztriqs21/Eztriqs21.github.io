@@ -262,6 +262,14 @@
     document.addEventListener('keydown', window._calcKeyHandler);
   }
 
+  function detachCalcKeyboard() {
+    if (window._calcKeyHandler) {
+      document.removeEventListener('keydown', window._calcKeyHandler);
+      window._calcKeyHandler = null;
+    }
+  }
+  window._detachCalcKeyboard = detachCalcKeyboard;
+
   function evalCalc() {
     if (Object.keys(calcAnsKey).length === 0) { if (window.toast) window.toast('Answer key is required. Paste the key above and click Apply Key first.'); return; }
     calcShowResults = true;
@@ -368,27 +376,43 @@
   }
 
   function saveCalcAsMockTest() {
-    var tot = calcQuestions.reduce(function (s, q) {
-      var sc = scoreQ(q, calcAnsKey[q.num]);
-      if (Number.isNaN(sc)) return s;
-      return s + sc;
-    }, 0);
-    var mtScored = document.getElementById('mt-scored');
-    var mtTotal = document.getElementById('mt-total');
-    var mtDate = document.getElementById('mt-date');
-    var mtSubj = document.getElementById('mt-subj');
-    var mtTime = document.getElementById('mt-time');
-    var mtSyllabus = document.getElementById('mt-syllabus');
-    var mtReview = document.getElementById('mt-review');
-    if (mtScored) mtScored.value = Math.max(0, tot);
-    if (mtTotal) mtTotal.value = 300;
-    if (mtDate) mtDate.value = new Date().toISOString().split('T')[0];
-    if (mtSubj) mtSubj.value = 'Full Syllabus';
-    if (mtTime) mtTime.value = '';
-    if (mtSyllabus) mtSyllabus.value = '';
-    if (mtReview) mtReview.value = '';
-    if (window.om) window.om('m-mocktest');
-    setTimeout(function () { if (mtScored) mtScored.focus(); }, 320);
+    var tot = 0, totC = 0, totW = 0, totS = 0;
+    var subjStats = { physics: { c: 0, w: 0, s: 0 }, chemistry: { c: 0, w: 0, s: 0 }, maths: { c: 0, w: 0, s: 0 } };
+    calcQuestions.forEach(function (q) {
+      var k = calcAnsKey[q.num];
+      var unatt = q.unattempted || !q.selected;
+      var noKey = k === undefined || k === null;
+      var sc = noKey ? 0 : (unatt ? 0 : scoreQ(q, k));
+      if (Number.isNaN(sc)) return;
+      tot += sc;
+      var st = subjStats[q.subj];
+      if (unatt || noKey) { st.s++; totS++; }
+      else if (sc >= 4) { st.c++; totC++; }
+      else { st.w++; totW++; }
+    });
+    if (tot < 0) tot = 0;
+    var DB = window.DB;
+    if (!DB.mockTests) DB.mockTests = [];
+    var toSubj = function (st) {
+      return { correct: st.c, incorrect: st.w, unattempted: st.s };
+    };
+    DB.mockTests.unshift({
+      id: 'mt_' + Date.now(),
+      name: 'Calculator Import',
+      subject: 'Full Syllabus',
+      date: new Date().toISOString().split('T')[0],
+      total: 300,
+      physics: toSubj(subjStats.physics),
+      chemistry: toSubj(subjStats.chemistry),
+      maths: toSubj(subjStats.maths),
+      syllabus: '',
+      time: '',
+      review: '',
+      customTest: false
+    });
+    if (window.sv) window.sv('mockTests');
+    if (window.toast) window.toast('Mock test saved with per-subject breakdown!');
+    if (window._refreshPage) window._refreshPage();
   }
 
   function buildCalcRes() {

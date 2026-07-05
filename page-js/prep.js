@@ -52,7 +52,7 @@
       + '<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px" id="prep-chat-msgs">'
       + (msgs.length === 0
         ? '<div class="empty" style="padding:40px;margin:auto"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="empty-title">Start a conversation!</div><div class="empty-sub">Ask about any topic or upload notes for context.</div></div>'
-        : msgs.map(function(m) { return chatBubble(m, p); }).join(''))
+        : msgs.map(function(m) { return chatBubble(m); }).join(''))
       + '</div>'
       + '<div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">'
       + '<input class="input" type="text" id="prep-chat-input" placeholder="Ask anything about your notes..." style="flex:1;font-size:13px" onkeydown="if(event.key===\'Enter\')window._prepSend()">'

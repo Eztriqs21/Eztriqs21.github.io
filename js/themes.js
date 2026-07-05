@@ -31,10 +31,7 @@ export function cycleTheme() {
   applyTheme();
 }
 
-export const pfx = (function() {
-  var styles = window.getComputedStyle(document.documentElement, '');
-  return (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
-})();
+
 
 export function getThemeCSS(varName) {
   return getComputedStyle(document.documentElement).getPropertyValue(varName);

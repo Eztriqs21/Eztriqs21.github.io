@@ -277,9 +277,12 @@ export function initAccessibility() {
     if (mq.matches) { document.querySelectorAll('[style*="transform"]').forEach(el => { el.style.transform = ''; }); }
   });
   document.querySelectorAll('.orb, .noise, .ambient').forEach(el => { el.setAttribute('aria-hidden', 'true'); });
-  const style = document.createElement('style');
-  style.textContent = '.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}';
-  document.head.appendChild(style);
+  if (!document.getElementById('a11y-sr-only')) {
+    const style = document.createElement('style');
+    style.id = 'a11y-sr-only';
+    style.textContent = '.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}';
+    document.head.appendChild(style);
+  }
 }
 
 /* ═══════════════ INITIALIZATION ═══════════════ */

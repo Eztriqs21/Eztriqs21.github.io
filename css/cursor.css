@@ -84,14 +84,6 @@ body.cursor-active, body.cursor-active * {
   height: 40px;
 }
 
-/* ═══════════════ CURSOR TRAIL PARTICLES ═══════════════ */
-#cursor-particles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99998;
-}
-
 /* ═══════════════ HIDE ON TOUCH ═══════════════ */
 @media (pointer: coarse) {
   .custom-cursor { display: none !important; }

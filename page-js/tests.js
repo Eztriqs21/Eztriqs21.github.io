@@ -12,6 +12,7 @@
     const chS = Math.max(0, (t.chemistry || {}).correct * 4 - (t.chemistry || {}).incorrect);
     const mS = Math.max(0, (t.maths || {}).correct * 4 - (t.maths || {}).incorrect);
     const papers = t.papers || [];
+    const answerKey = t.answerKey || [];
 
     return `<div class="card anim-entrance" style="--delay:${i * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="test-card">
       <div style="padding:16px 18px">
@@ -40,7 +41,9 @@
             <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Maths</div>
           </div>
         </div>
+        ${(t.rank || t.percentile) ? '<div style="display:flex;gap:8px;margin-bottom:10px">' + (t.rank ? '<span style="font-size:10px;padding:3px 8px;border-radius:6px;background:var(--border-card);color:var(--text);font-weight:600">Rank #'+t.rank+'</span>' : '') + (t.percentile ? '<span style="font-size:10px;padding:3px 8px;border-radius:6px;background:var(--border-card);color:var(--success);font-weight:600">'+t.percentile+'%ile</span>' : '') + '</div>' : ''}
         ${papers.length ? '<div class="att-grid">' + papers.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Paper').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#128196;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'File ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
+        ${answerKey.length ? '<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px">Answer Key</div><div class="att-grid">' + answerKey.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Answer Key').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#9989;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'Answer Key ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-ghost" style="font-size:10px;padding:4px 10px;color:var(--danger)" onclick="window.delTest('${t.id}')">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete
@@ -70,7 +73,16 @@
     var tests = (DB && DB.tests) || [];
     if (_testSearch.trim()) {
       var q = _testSearch.trim().toLowerCase();
-      tests = tests.filter(function(t) { return (t.name || '').toLowerCase().includes(q); });
+      tests = tests.filter(function(t) {
+        if ((t.name || '').toLowerCase().includes(q)) return true;
+        var syl = t.syllabus;
+        if (syl && typeof syl === 'object') {
+          if ((syl.physics || []).some(function(c) { return c.toLowerCase().includes(q); })) return true;
+          if ((syl.chemistry || []).some(function(c) { return c.toLowerCase().includes(q); })) return true;
+          if ((syl.maths || []).some(function(c) { return c.toLowerCase().includes(q); })) return true;
+        }
+        return false;
+      });
     }
     return tests;
   }
@@ -85,7 +97,7 @@
 
     el.innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-      <input class="input anim-entrance" id="test-search-input" type="text" placeholder="Search tests by name..." oninput="window._testSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
+      <input class="input anim-entrance" id="test-search-input" type="text" placeholder="Search by name or syllabus chapter..." oninput="window._testSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search">
       <button class="btn btn-primary btn-sm anim-entrance" onclick="window.openAddTest()" style="--delay:0.05s">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Test
@@ -168,13 +180,15 @@
     if (!files || !files.length) return;
     window.pendingTAnswerKey = window.pendingTAnswerKey || [];
     var list = document.getElementById('t-ak-file-list');
-    Array.from(files).forEach(function(file) {
-      if (file.size > 5 * 1024 * 1024) { if (window.toast) window.toast('File too large: ' + file.name); return; }
-      window.pendingTAnswerKey.push(file);
+    window.rdFiles(files, function(obj) {
+      if (!obj) return;
+      window.pendingTAnswerKey.push(obj);
       if (list) {
+        var fid = window._fcache(obj.data || '', obj.name);
+        var isPdf = (obj.type || '').includes('pdf') || (obj.name || '').toLowerCase().endsWith('.pdf');
         var div = document.createElement('div');
         div.className = 'upload-preview-item';
-        div.innerHTML = '<span class="upload-preview-name">' + esc(file.name) + '</span><span class="upload-preview-size">' + (file.size / 1024).toFixed(1) + 'KB</span><button class="upload-preview-remove" onclick="this.parentElement.remove()">&#10005;</button>';
+        div.innerHTML = '<div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (obj.name || '').replace(/'/g, "\\'") + '\')">' + (isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (obj.data || '') + '" alt=""/>') + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + esc(obj.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(obj.size) + '</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button>';
         list.appendChild(div);
       }
     });

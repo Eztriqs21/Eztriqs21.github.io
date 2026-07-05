@@ -5,19 +5,17 @@ export const PAGE_RENDERERS = {
   analytics: 'renderAnalytics',
   calculator: 'renderCalculator',
   assignments: 'renderAssignments',
-  'mock-tests': 'renderMockTests',
-  'score-analytics': 'renderScoreAnalytics'
+  'mock-tests': 'renderMockTests'
 };
 
 export const PAGE_TITLES = {
   dashboard: { title: 'Dashboard', sub: 'Your JEE preparation intelligence dashboard' },
   chapters: { title: 'Chapters', sub: 'Syllabus mastery & tracking' },
   tests: { title: 'Tests', sub: 'Test history and performance analysis' },
-  analytics: { title: 'Analytics', sub: 'Performance insights and study tracking' },
+  analytics: { title: 'Analytics', sub: 'Performance insights and detailed breakdown' },
   calculator: { title: 'Calculator', sub: 'Full JEE mock evaluation engine' },
   assignments: { title: 'Assignments', sub: 'Task management & tracking' },
-  'mock-tests': { title: 'Mock Tests', sub: 'Full-length practice exams' },
-  'score-analytics': { title: 'Score Analytics', sub: 'Detailed performance breakdown' }
+  'mock-tests': { title: 'Mock Tests', sub: 'Full-length practice exams' }
 };
 
 export function callPageRenderer(page, el) {

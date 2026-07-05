@@ -61,9 +61,6 @@ export function debounce(fn,ms){
     timer=setTimeout(()=>fn.apply(this,args),ms);
   };
 }
-export const debouncedUpdChList=debounce(()=>window.updateChapterList&&window.updateChapterList(),200);
-export const debouncedUpdAsnList=debounce(()=>window.updateAssignmentList&&window.updateAssignmentList(),200);
-export const debouncedUpdTstList=debounce(()=>window.updateTestList&&window.updateTestList(),200);
 
 /* ═══════════════ CORE HELPERS & SUPABASE STORAGE ═══════════════ */
 export function fileExt(name){return (String(name||'').split('.').pop()||'').toLowerCase();}
@@ -261,14 +258,14 @@ export function cm(id){
     m.classList.remove('open');
   }
 }
-document.addEventListener('pointerdown',e=>{const mo=e.target.closest('.mo');if(mo&&e.target===mo)mo.classList.remove('open');},{passive:true});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){const ms=document.querySelectorAll('.mo.open');if(ms.length){ms[ms.length-1].classList.remove('open');}}},{passive:true});
+document.addEventListener('pointerdown',e=>{const mo=e.target.closest('.mo');if(mo&&e.target===mo&&mo.id)cm(mo.id);},{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const ms=document.querySelectorAll('.mo.open');if(ms.length){const last=ms[ms.length-1];if(last.id&&last.id!=='m-preview')cm(last.id);}}},{passive:true});
 
 /* CONFIRM */
 export function cfm2(title,sub,cb){
   const div=document.createElement('div');div.className='cfm-overlay';
   div.innerHTML=`<div class="cfm-box"><div class="cfm-title">${esc(title)}</div><div class="cfm-sub">${esc(sub)}</div><div class="cfm-btns"><button class="btn btn-ghost btn-sm" onclick="this.closest('.cfm-overlay').remove()">Cancel</button><button class="btn btn-danger btn-sm" id="cfm-ok">Confirm</button></div></div>`;
-  div.querySelector('#cfm-ok').onclick=()=>{cb();div.remove();};
+  div.querySelector('#cfm-ok').onclick=()=>{try{cb();}finally{div.remove();}};
   document.body.appendChild(div);
 }
 
@@ -316,8 +313,10 @@ export function fItemHTMLRaw(d,name){
 
 /* ═══════════════ FILE PREVIEW (v2) ═══════════════ */
 let pv={type:null,data:null,name:null,pdfDoc:null,page:1,pages:0,zoom:1.5,fitMode:'default',imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
+let _pvGen=0;
 export async function pvFile(data,name){
   if(!data){toast('File data not available');return;}
+  const gen=++_pvGen;
   pv={type:null,data:data,name:name||'Preview',pdfDoc:null,page:1,pages:0,zoom:1.5,fitMode:'default',imgZoom:1,imgPanX:0,imgPanY:0,dragging:false,dragX:0,dragY:0};
   const titleEl=document.getElementById('pv-title');
   const body=document.getElementById('pv-body');
@@ -348,12 +347,14 @@ export async function pvFile(data,name){
       if(data.startsWith('data:')){const resp=await fetch(data);const blob=await resp.blob();binary=await blob.arrayBuffer();}
       else if(data.startsWith('http')){const resp=await fetch(data);binary=await resp.arrayBuffer();}
       else{binary=data;}
+      if(gen!==_pvGen)return;
       if(typeof pdfjsLib==='undefined'){
         body.innerHTML='<div class="pv-empty"><div style="font-size:36px">&#128196;</div><div style="font-weight:600">PDF library not loaded</div><div>Try downloading the file instead.</div>'+(data.startsWith('data:')?`<a href="${esc(data)}" download="${esc(pv.name)}" style="color:var(--accent)">&#11015; Download</a>`:'')+'</div>';
         return;
       }
       pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
+      if(gen!==_pvGen)return;
       pv.pages=pv.pdfDoc.numPages;
       pv.zoom=1.5;
       pv.fitMode='width';
@@ -400,6 +401,7 @@ export async function pvRenderPage(num){
   if(!pv.pdfDoc)return;
   num=Math.max(1,Math.min(pv.pages,num));
   pv.page=num;
+  pv.imgPanX=0;pv.imgPanY=0;
   const body=document.getElementById('pv-body');
   if(!body)return;
   try{
@@ -412,6 +414,13 @@ export async function pvRenderPage(num){
     canvas.style.display='block';canvas.style.margin='0 auto';
     await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
     body.innerHTML='';body.appendChild(canvas);
+    canvas.style.cursor='grab';
+    canvas.addEventListener('mousedown',e=>{pv.dragging=true;pv.dragX=e.clientX-pv.imgPanX;pv.dragY=e.clientY-pv.imgPanY;canvas.style.cursor='grabbing';e.preventDefault();});
+    canvas.addEventListener('mousemove',e=>{if(!pv.dragging)return;pv.imgPanX=e.clientX-pv.dragX;pv.imgPanY=e.clientY-pv.dragY;pvImgApplyTransform();});
+    canvas.addEventListener('mouseup',()=>{pv.dragging=false;canvas.style.cursor='grab';});
+    canvas.addEventListener('mouseleave',()=>{pv.dragging=false;canvas.style.cursor='grab';});
+    canvas.addEventListener('wheel',e=>{e.preventDefault();pvZoom(e.deltaY<0?0.15:-0.15);},{passive:false});
+    canvas.addEventListener('dblclick',()=>{if(pv.zoom<=1.2){pv.zoom=2;}else{pv.zoom=1.2;}pvRenderPage(pv.page);});
     const infoEl=document.getElementById('pv-page-info');
     const zoomEl=document.getElementById('pv-zoom-label');
     const pageInput=document.getElementById('pv-page-input');
@@ -488,7 +497,9 @@ export function pvZoomImg(d){
 export function pvImgReset(){pv.imgZoom=1;pv.imgPanX=0;pv.imgPanY=0;pvImgApplyTransform();const lbl=document.getElementById('pv-img-zoom-label');if(lbl)lbl.textContent='100%';}
 export function pvImgApplyTransform(){
   const img=document.getElementById('pv-img');
-  if(img)img.style.transform='translate('+pv.imgPanX+'px,'+pv.imgPanY+'px) scale('+pv.imgZoom+')';
+  if(img){img.style.transform='translate('+pv.imgPanX+'px,'+pv.imgPanY+'px) scale('+pv.imgZoom+')';return;}
+  const body=document.getElementById('pv-body');
+  if(body){const canvas=body.querySelector('canvas');if(canvas)canvas.style.transform='translate('+pv.imgPanX+'px,'+pv.imgPanY+'px)';}
 }
 export async function pvFallbackLoad(){
   if(!pv.data)return;

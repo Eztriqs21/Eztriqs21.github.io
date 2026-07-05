@@ -8,6 +8,7 @@ export let PAGE = 'dashboard';
 let _renderLock = false;
 let _lastPage = null;
 let _pendingPage = null;
+let _pageTitleTimer = null;
 let _pageSwapTimer = null;
 let _pageEnterTimer = null;
 
@@ -36,7 +37,8 @@ export function go(page) {
       pageTitle.classList.remove('page-title-sweep', 'active');
       void pageTitle.offsetWidth;
       pageTitle.classList.add('page-title-sweep', 'active');
-      setTimeout(function() { pageTitle.classList.remove('page-title-sweep', 'active'); }, 1100);
+      if (_pageTitleTimer) clearTimeout(_pageTitleTimer);
+      _pageTitleTimer = setTimeout(function() { pageTitle.classList.remove('page-title-sweep', 'active'); }, 1100);
     }
   }
   if (pageSubtitle) pageSubtitle.textContent = info.sub;
@@ -97,7 +99,7 @@ function _renderSwap(el) {
 function _finishRender(el) {
   _renderLock = false;
   _lastPage = PAGE;
-  setTimeout(function() { if (el) animateAllCounters(el); }, 50);
+  setTimeout(function() { if (el && el.isConnected) animateAllCounters(el); }, 50);
   if (_pendingPage && _pendingPage !== PAGE) {
     var pp = _pendingPage;
     _pendingPage = null;
@@ -152,6 +154,7 @@ window._clearRenderTimers = clearRenderTimers;
 
 /* FORCE RE-RENDER — used by theme switch to bypass _renderLock */
 export function forceRender() {
+  clearRenderTimers();
   _renderLock = false;
   _pendingPage = null;
   var el = document.getElementById('content-wrap');

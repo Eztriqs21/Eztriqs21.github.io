@@ -75,6 +75,7 @@ export function persistAllLocal(opts){
 }
 export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];
+  window.pendingAAnswerKey=[];window.pendingTAnswerKey=[];
 }
 
 /* ═══════════════ DEFAULT DATA (WITH FULL SUBTOPICS) ═══════════════ */

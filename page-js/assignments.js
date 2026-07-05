@@ -18,6 +18,7 @@
     const dueLabel = a.completed ? 'Completed' : daysLeft === null ? '' : daysLeft < 0 ? 'Overdue by ' + Math.abs(daysLeft) + 'd' : daysLeft === 0 ? 'Due today' : 'Due in ' + daysLeft + 'd';
     const dueColor = a.completed ? 'var(--success)' : daysLeft !== null && daysLeft < 0 ? 'var(--danger)' : daysLeft !== null && daysLeft <= 1 ? 'var(--accent)' : 'var(--muted)';
     const atts = a.attachments || [];
+    const answerKey = a.answerKey || [];
 
     return `<div class="card anim-entrance" style="--delay:${index * 0.04}s;padding:0;overflow:hidden" data-tutorial-id="assignment-item">
       <div style="display:flex;align-items:stretch">
@@ -35,6 +36,7 @@
               ${a.description ? `<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">${esc(a.description)}</div>` : ''}
               ${a.syllabus ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;padding:6px 10px;background:var(--border-card);border-radius:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> ${esc(a.syllabus)}</div>` : ''}
               ${atts.length ? '<div class="att-grid">' + atts.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'File').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#128196;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'File ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
+              ${answerKey.length ? '<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px">Answer Key</div><div class="att-grid">' + answerKey.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Answer Key').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#9989;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'Answer Key ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
                 ${dueLabel ? `<div style="font-size:11px;color:${dueColor};display:flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${dueLabel}</div>` : '<div></div>'}
                 <div style="display:flex;gap:6px">
@@ -183,13 +185,15 @@
     if (!files || !files.length) return;
     window.pendingAAnswerKey = window.pendingAAnswerKey || [];
     var list = document.getElementById('a-ak-file-list');
-    Array.from(files).forEach(function(file) {
-      if (file.size > 5 * 1024 * 1024) { if (window.toast) window.toast('File too large: ' + file.name); return; }
-      window.pendingAAnswerKey.push(file);
+    window.rdFiles(files, function(obj) {
+      if (!obj) return;
+      window.pendingAAnswerKey.push(obj);
       if (list) {
+        var fid = window._fcache(obj.data || '', obj.name);
+        var isPdf = (obj.type || '').includes('pdf') || (obj.name || '').toLowerCase().endsWith('.pdf');
         var div = document.createElement('div');
         div.className = 'upload-preview-item';
-        div.innerHTML = '<span class="upload-preview-name">' + esc(file.name) + '</span><span class="upload-preview-size">' + (file.size / 1024).toFixed(1) + 'KB</span><button class="upload-preview-remove" onclick="this.parentElement.remove()">&#10005;</button>';
+        div.innerHTML = '<div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (obj.name || '').replace(/'/g, "\\'") + '\')">' + (isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (obj.data || '') + '" alt=""/>') + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + esc(obj.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(obj.size) + '</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button>';
         list.appendChild(div);
       }
     });
