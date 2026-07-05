@@ -556,7 +556,7 @@ window.getStorageBucket=getStorageBucket;window.storageFolderKey=storageFolderKe
 window.animateValue=animateValue;window.animateAllCounters=animateAllCounters;
 window.animateBarCharts=animateBarCharts;window.animateSVGDraw=animateSVGDraw;window.animateChartBars=animateChartBars;
 window.debounce=debounce;
-window.debouncedUpdChList=debouncedUpdChList;window.debouncedUpdAsnList=debouncedUpdAsnList;window.debouncedUpdTstList=debouncedUpdTstList;
+
 window.fileExt=fileExt;
 window._fcache=_fcache;window._fget=_fget;
 window.pvFile=pvFile;window.pvRenderPage=pvRenderPage;window.pvPage=pvPage;window.pvZoom=pvZoom;
