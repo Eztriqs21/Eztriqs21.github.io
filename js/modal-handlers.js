@@ -38,6 +38,16 @@ function _refreshPage() {
 
   if (window.initScrollAnimations) window.initScrollAnimations(el);
   if (window.animateAllCounters) window.animateAllCounters(el);
+
+  // Restore search input focus after re-render
+  requestAnimationFrame(function() {
+    var searchInput = el.querySelector('#test-search-input, #asn-search-input');
+    if (searchInput && searchInput.value) {
+      searchInput.focus();
+      var len = searchInput.value.length;
+      searchInput.setSelectionRange(len, len);
+    }
+  });
 }
 
 /* ═══════════════ ASSIGNMENTS ═══════════════ */
