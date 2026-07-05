@@ -145,9 +145,9 @@
 
   /* ═══════════════ RANK & PERCENTILE TREND ═══════════════ */
   function rankPercentileTrend(allTests) {
-    const withRank = allTests.filter(t => t.rank || t.percentile);
+    const withRank = allTests.filter(t => t.rank || t.percentile).slice().sort((a, b) => new Date(a.date) - new Date(b.date));
     if (withRank.length < 2) return '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Add rank/percentile to 2+ tests to see trend</div>';
-    const w = 400, h = 120, pad = 30;
+    const w = 400, h = 130, pad = 30;
     const pcts = withRank.map(t => t.percentile || 0);
     const ranks = withRank.map(t => t.rank || 0);
     const maxPct = Math.max(...pcts, 100);
@@ -168,8 +168,8 @@
         const x = pad + i * step;
         const y = h - pad - (pct / maxPct) * (h - pad * 2);
         return `<circle cx="${x}" cy="${y}" r="4" fill="var(--bg)" stroke="var(--success)" stroke-width="2"/>
-          <text x="${x}" y="${y - 10}" text-anchor="middle" fill="var(--text)" font-size="9" font-weight="600">${pct}%ile</text>
-          ${ranks[i] ? `<text x="${x}" y="${y + 16}" text-anchor="middle" fill="var(--muted)" font-size="7">Rank #${ranks[i]}</text>` : ''}`;
+          <text x="${x}" y="${y - 14}" text-anchor="middle" fill="var(--text)" font-size="9" font-weight="600">${pct}%ile</text>
+          ${ranks[i] ? `<text x="${x}" y="${y + 22}" text-anchor="middle" fill="var(--muted)" font-size="7">Rank #${ranks[i]}</text>` : ''}`;
       }).join('')}
       ${withRank.map((t, i) => {
         const x = pad + i * step;
