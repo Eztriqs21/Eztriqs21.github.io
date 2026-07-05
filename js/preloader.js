@@ -26,6 +26,7 @@
     _plSetTimeout(function() {
       preloader.style.display = 'none';
       _preloaderDismissed = true;
+      window.__preloaderRunning = false;
       if (callback) callback();
     }, 1000);
   }
@@ -69,23 +70,28 @@
   window.preloaderEngine = {
     run: function(onComplete) {
       _plClearAll();
+      window.__preloaderRunning = true;
       runLavaGold(onComplete);
     },
     cancel: function() {
       _plClearAll();
+      window.__preloaderRunning = false;
       preloader.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
       preloader.style.opacity = '0';
-      setTimeout(function() { preloader.style.display = 'none'; }, 400);
+      var t = setTimeout(function() { preloader.style.display = 'none'; }, 400);
+      _preloaderTimers.push(t);
     }
   };
 
   window.__preloaderDismissed = function() { return _preloaderDismissed; };
 
-  setTimeout(function() {
+  var safetyT = setTimeout(function() {
     if (preloader.style.display !== 'none' && preloader.style.opacity !== '0') {
       preloader.style.transition = 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
       preloader.style.opacity = '0';
-      setTimeout(function() { preloader.style.display = 'none'; }, 600);
+      var t2 = setTimeout(function() { preloader.style.display = 'none'; }, 600);
+      _preloaderTimers.push(t2);
     }
   }, 10000);
+  _preloaderTimers.push(safetyT);
 })();

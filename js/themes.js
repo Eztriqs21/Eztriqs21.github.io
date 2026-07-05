@@ -20,7 +20,7 @@ function loadThemeBackground() {
 }
 
 export function setTheme(theme) {
-  localStorage.setItem('themeIndex', theme);
+  try{localStorage.setItem('themeIndex', theme);}catch(e){}
 }
 
 export function getTheme() {
@@ -60,7 +60,7 @@ function applyObserver() {
 
 export function applyTheme() {
   document.documentElement.setAttribute('data-theme', 'gold');
-  localStorage.setItem('themeIndex', 0);
+  try{localStorage.setItem('themeIndex', 0);}catch(e){}
 
   document.documentElement.removeAttribute('data-theme-transitioning');
   document.body.classList.remove('cursor-hover', 'cursor-click');
@@ -123,9 +123,11 @@ export function applyTheme() {
 
   applyObserver();
 
-  requestAnimationFrame(function() {
-    forceRender();
-  });
+  if (!window.__preloaderRunning) {
+    requestAnimationFrame(function() {
+      forceRender();
+    });
+  }
 }
 
 export function initThemes() {

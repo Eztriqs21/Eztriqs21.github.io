@@ -67,7 +67,7 @@
 
   function assignmentCard(a, index) {
     const pr = PRIORITY[a.priority] || { label: '', color: 'var(--muted)', bg: 'transparent' };
-    const daysLeft = a.dueDate ? Math.ceil((new Date(a.dueDate) - new Date()) / 86400000) : null;
+    const daysLeft = a.dueDate && !isNaN(new Date(a.dueDate).getTime()) ? Math.ceil((new Date(a.dueDate) - new Date()) / 86400000) : null;
     const dueLabel = a.completed ? 'Completed' : daysLeft === null ? '' : daysLeft < 0 ? 'Overdue by ' + Math.abs(daysLeft) + 'd' : daysLeft === 0 ? 'Due today' : 'Due in ' + daysLeft + 'd';
     const dueColor = a.completed ? 'var(--success)' : daysLeft !== null && daysLeft < 0 ? 'var(--danger)' : daysLeft !== null && daysLeft <= 1 ? 'var(--accent)' : 'var(--muted)';
     const atts = a.attachments || [];
@@ -213,6 +213,7 @@
 
   /* CRUD FUNCTIONS */
   window.openAddAssign = function() {
+    window._editingAsnId = null;
     window.pendingAFiles = [];
     window.pendingAAnswerKey = [];
     window.aPriority = 'none';
@@ -277,14 +278,14 @@
     if (a.attachments && a.attachments.length) {
       window.pendingAFiles = a.attachments.slice();
       if (fl) {
-        fl.innerHTML = a.attachments.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+(d.name||'').replace(/'/g,"\\'")+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAFiles.splice('+i+',1);window.refreshAFileList()">&#10005;</button></div>';
+        fl.innerHTML = a.attachments.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+window.escAttr(d.name||'')+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+window.esc(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAFiles.splice('+i+',1);window.refreshAFileList()">&#10005;</button></div>';
       }).join('');
       }
     }
     if (a.answerKey && a.answerKey.length) {
       window.pendingAAnswerKey = a.answerKey.slice();
       if (akFl) {
-        akFl.innerHTML = a.answerKey.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+(d.name||'').replace(/'/g,"\\'")+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button></div>';
+        akFl.innerHTML = a.answerKey.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+window.escAttr(d.name||'')+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+window.esc(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAAnswerKey.splice('+i+',1);window.refreshAAnswerKeyList()">&#10005;</button></div>';
       }).join('');
       }
     }
@@ -300,19 +301,21 @@
   window.handleAAnswerKey = function(files) {
     if (!files || !files.length) return;
     window.pendingAAnswerKey = window.pendingAAnswerKey || [];
-    var list = document.getElementById('a-ak-file-list');
     window.rdFiles(files, function(obj) {
       if (!obj) return;
       window.pendingAAnswerKey.push(obj);
-      if (list) {
-        var fid = window._fcache(obj.data || '', obj.name);
-        var isPdf = (obj.type || '').includes('pdf') || (obj.name || '').toLowerCase().endsWith('.pdf');
-        var div = document.createElement('div');
-        div.className = 'upload-preview-item';
-        div.innerHTML = '<div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (obj.name || '').replace(/'/g, "\\'") + '\')">' + (isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (obj.data || '') + '" alt=""/>') + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + esc(obj.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(obj.size) + '</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button>';
-        list.appendChild(div);
-      }
+      window.refreshAAnswerKeyList();
     });
+  };
+
+  window.refreshAAnswerKeyList = function() {
+    var list = document.getElementById('a-ak-file-list');
+    if (!list) return;
+    list.innerHTML = (window.pendingAAnswerKey || []).map(function(f, i) {
+      var fid = window._fcache(f.data || '', f.name);
+      var isPdf = (f.type || '').includes('pdf') || (f.name || '').toLowerCase().endsWith('.pdf');
+      return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + window.escAttr(f.name || '') + '\')">' + (isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + window.esc(f.data || '') + '" alt=""/>') + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + esc(f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAAnswerKey.splice(' + i + ',1);window.refreshAAnswerKeyList()">&#10005;</button></div>';
+    }).join('');
   };
 
   window._asnSearchFn = function(val) {

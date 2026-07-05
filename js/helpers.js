@@ -212,6 +212,7 @@ export function setupDZ(dzId,inpId,cb){
 export function safePct(num,den){if(!den||!num)return 0;return Math.round(Math.min(100,Math.max(0,num/den*100)));}
 export function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 export function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+export function escAttr(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&/g,'&amp;');}
 export function fmtSz(b){if(!b)return'';return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
 export function fmtDate(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt.getTime()))return d;return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return d||'—';}}
 export function fmt12(t){if(!t||!t.includes(':'))return t;const[h,m]=t.split(':').map(Number);const ap=h>=12?'PM':'AM';const h12=h%12||12;return`${h12}:${String(m).padStart(2,'0')} ${ap}`;}
@@ -299,7 +300,7 @@ export function _fget(id){return id&&_fileCache[id]?(_fileCache[id]):null;}
 export function fItemHTML(f){
   const icon=fileIcon(f);
   const fid=_fcache(f.url||f.data||'',f.name);
-  return `<div class="upload-preview-item" onclick="pvFile(_fget('${fid}'),'${esc(f.name).replace(/'/g,"\\'")}')"><div class="upload-preview-thumb">${icon==='🖼️'?`<img src="${esc(f.url||f.data||'')}" alt=""/>`:`<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>`}</div><div class="upload-preview-info"><div class="upload-preview-name">${esc(f.name)}</div><div class="upload-preview-size">${fmtSz(f.size)}</div></div></div>`;
+  return `<div class="upload-preview-item" onclick="pvFile(_fget('${fid}'),'${escAttr(f.name)}')"><div class="upload-preview-thumb">${icon==='🖼️'?`<img src="${esc(f.url||f.data||'')}" alt=""/>`:`<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>`}</div><div class="upload-preview-info"><div class="upload-preview-name">${esc(f.name)}</div><div class="upload-preview-size">${fmtSz(f.size)}</div></div></div>`;
 }
 export function fItemHTMLRaw(d,name){
   const data=typeof d==='object'&&d!==null?(d.d||d.data||''):String(d||'');
@@ -308,7 +309,7 @@ export function fItemHTMLRaw(d,name){
   const isPdfUrl=data.includes('application/pdf')||nm.toLowerCase().endsWith('.pdf')||urlPath.endsWith('.pdf')||urlPath.endsWith('.pdf/');
   const isImg=!isPdfUrl&&(data.startsWith('data:image')||(!data.includes('pdf')&&data.startsWith('data:')));
   const fid=_fcache(data,nm);
-  return `<div class="upload-preview-item" onclick="pvFile(_fget('${fid}'),'${esc(nm).replace(/'/g,"\\'")}')"><div class="upload-preview-thumb">${isImg?`<img src="${esc(data)}" alt=""/>`:`<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>`}</div><div class="upload-preview-info"><div class="upload-preview-name">${esc(nm)}</div></div></div>`;
+  return `<div class="upload-preview-item" onclick="pvFile(_fget('${fid}'),'${escAttr(nm)}')"><div class="upload-preview-thumb">${isImg?`<img src="${esc(data)}" alt=""/>`:`<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>`}</div><div class="upload-preview-info"><div class="upload-preview-name">${esc(nm)}</div></div></div>`;
 }
 
 /* ═══════════════ FILE PREVIEW (v2) ═══════════════ */
@@ -353,8 +354,9 @@ export async function pvFile(data,name){
         return;
       }
       pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      pv.pdfDoc=await pdfjsLib.getDocument({data:binary}).promise;
+      const doc=await pdfjsLib.getDocument({data:binary}).promise;
       if(gen!==_pvGen)return;
+      pv.pdfDoc=doc;
       pv.pages=pv.pdfDoc.numPages;
       pv.zoom=1.5;
       pv.fitMode='width';
@@ -377,6 +379,7 @@ export async function pvFile(data,name){
   body.innerHTML='<img id="pv-img" src="'+esc(data)+'" draggable="false" onload="pvImgFit(this)" onerror="pvFallbackLoad()"/>';
   const img=document.getElementById('pv-img');
   if(img){
+    try{
     img.addEventListener('mousedown',e=>{pv.dragging=true;pv.dragX=e.clientX-pv.imgPanX;pv.dragY=e.clientY-pv.imgPanY;img.style.cursor='grabbing';e.preventDefault();});
     img.addEventListener('mousemove',e=>{if(!pv.dragging)return;pv.imgPanX=e.clientX-pv.dragX;pv.imgPanY=e.clientY-pv.dragY;pvImgApplyTransform();});
     img.addEventListener('mouseup',()=>{pv.dragging=false;img.style.cursor='grab';});
@@ -395,6 +398,7 @@ export async function pvFile(data,name){
       e.preventDefault();
     },{passive:false});
     img.addEventListener('touchend',()=>{pv.dragging=false;lastTouchDist=0;});
+    }catch(err){console.error('Image preview setup error:',err);}
   }
 }
 export async function pvRenderPage(num){
@@ -564,6 +568,6 @@ window.pvGoToPage=pvGoToPage;window.pvFitWidth=pvFitWidth;window.pvFitPage=pvFit
 window.pvToggleFullscreen=pvToggleFullscreen;
 window.pvImgFit=pvImgFit;window.pvZoomImg=pvZoomImg;window.pvImgReset=pvImgReset;
 window.pvImgApplyTransform=pvImgApplyTransform;window.pvFallbackLoad=pvFallbackLoad;
-window.cfm2=cfm2;window.fItemHTML=fItemHTML;window.fItemHTMLRaw=fItemHTMLRaw;window.setupDZ=setupDZ;window.esc=esc;
+window.cfm2=cfm2;window.fItemHTML=fItemHTML;window.fItemHTMLRaw=fItemHTMLRaw;window.setupDZ=setupDZ;window.esc=esc;window.escAttr=escAttr;
 
 

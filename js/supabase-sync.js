@@ -71,7 +71,7 @@ export function saveSyncKey(){
   const key=el.value.trim();
   if(!key){toast('⚠️ Enter a sync key');return;}
   currentSyncKey=key;
-  localStorage.setItem(SYNC_KEY_STORAGE,key);
+  try{localStorage.setItem(SYNC_KEY_STORAGE,key);}catch(e){console.warn('Failed to save sync key:',e);}
   updateSyncUI();
   cm('m-auth');
   toast('✅ Sync key saved! Use same key on other devices.');
@@ -114,7 +114,7 @@ export function saveSupabaseConfig(){
   if(!url.startsWith('https://')||!url.includes('.supabase.co')){toast('⚠️ Invalid Supabase URL');return;}
   if(!/^[a-z0-9][a-z0-9._-]{0,62}$/i.test(bucket)){toast('⚠️ Invalid bucket name');return;}
   supaConfig={url,key,table,bucket};
-  localStorage.setItem(SUPA_KEY,JSON.stringify(supaConfig));
+  try{localStorage.setItem(SUPA_KEY,JSON.stringify(supaConfig));}catch(e){console.warn('Failed to save Supabase config:',e);}
   try{const { createClient } = window.supabase;supaClient=createClient(url,key);}catch(e){toast('⚠️ Init failed: '+e.message);return;}
   updateSupaStatus();cm('m-supa-config');toast('☁️ Saved! Testing connection...');testSupabaseConnection();
 }

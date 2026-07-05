@@ -15,16 +15,18 @@ export function oneShotURL(subj,id,name){
 export const DB={chapters:null,assignments:null,tests:null,mockTests:null,prepChat:null,calculator:null,customTests:null};
 export function load(){
   try{DB.chapters=JSON.parse(localStorage.getItem(KEYS.ch))||null;}catch(e){DB.chapters=null;}
-  if(!DB.chapters)DB.chapters=defaultChapters();
+  if(!DB.chapters||typeof DB.chapters!=='object'||Array.isArray(DB.chapters))DB.chapters=defaultChapters();
   try{DB.assignments=JSON.parse(localStorage.getItem(KEYS.asn))||null;}catch(e){DB.assignments=null;}
-  if(!DB.assignments)DB.assignments=defaultAssignments();
+  if(!DB.assignments||!Array.isArray(DB.assignments))DB.assignments=defaultAssignments();
   try{DB.tests=JSON.parse(localStorage.getItem(KEYS.tst))||null;}catch(e){DB.tests=null;}
-  if(!DB.tests)DB.tests=defaultTests();
+  if(!DB.tests||!Array.isArray(DB.tests))DB.tests=defaultTests();
   try{DB.mockTests=JSON.parse(localStorage.getItem(KEYS.mt))||[];}catch(e){DB.mockTests=[];}
+  if(!Array.isArray(DB.mockTests))DB.mockTests=[];
   try{DB.prepChat=JSON.parse(localStorage.getItem(KEYS.prepChat))||null;}catch(e){DB.prepChat=null;}
-  if(!DB.prepChat)DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
+  if(!DB.prepChat||typeof DB.prepChat!=='object')DB.prepChat={messages:[],notes:[],createdAt:null,updatedAt:null};
   try{DB.calculator=JSON.parse(localStorage.getItem(KEYS.calc))||null;}catch(e){DB.calculator=null;}
   try{DB.customTests=JSON.parse(localStorage.getItem(KEYS.cm))||[];}catch(e){DB.customTests=[];}
+  if(!Array.isArray(DB.customTests))DB.customTests=[];
 }
 export const LS_SAFE_BUDGET=4*1024*1024;
 export function usesCloudStorage(){return !!(window.supaClient&&window.supaConfig&&window.currentSyncKey);}
@@ -38,7 +40,7 @@ export function sv(key,opts){
   opts=opts||{};
   const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,mockTests:KEYS.mt,prepChat:KEYS.prepChat,calculator:KEYS.calc,customTests:KEYS.cm};
   const lsKey=m[key];
-  if(!lsKey)return false;
+  if(!lsKey){console.warn('sv(): unknown key "'+key+'"');return false;}
   let serialized;
   try{serialized=JSON.stringify(DB[key]);}catch(e){console.error('Serialization failed for key:',key,e);toast('⚠️ Failed to save data — possible corruption');return false;}
   if(!opts.skipBudgetCheck&&!usesCloudStorage()){

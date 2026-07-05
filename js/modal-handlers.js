@@ -3,6 +3,9 @@
 // They rely on window.DB, window.sv, window.cm, window.om, window.toast, window.findCh
 
 /* ═══════════════ SHARED HELPERS ═══════════════ */
+var toast = function() { var fn = window.toast; return fn ? fn.apply(this, arguments) : console.warn('toast not ready'); };
+var rdFiles = function() { var fn = window.rdFiles; return fn ? fn.apply(this, arguments) : console.warn('rdFiles not ready'); };
+var cfm2 = function() { var fn = window.cfm2; return fn ? fn.apply(this, arguments) : Promise.resolve(false); };
 
 function _refreshPage() {
   var el = document.getElementById('content-wrap');
@@ -60,9 +63,9 @@ function refreshAFileList() {
   if (!el) return;
   el.innerHTML = window.pendingAFiles.map(function (f, i) {
     var isPdf = (f.type || '').includes('pdf') || (f.name || '').toLowerCase().endsWith('.pdf');
-    var icon = isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (f.data || f.url || '') + '" alt=""/>';
+    var icon = isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + window.esc(f.data || f.url || '') + '" alt=""/>';
     var fid = window._fcache(f.data || f.url || '', f.name);
-    return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (f.name || '').replace(/'/g, "\\'") + '\')">' + icon + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + (f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAFiles.splice(' + i + ',1);window.refreshAFileList()">&#10005;</button></div>';
+    return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + window.escAttr(f.name || '') + '\')">' + icon + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + window.esc(f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingAFiles.splice(' + i + ',1);window.refreshAFileList()">&#10005;</button></div>';
   }).join('');
 }
 
@@ -89,7 +92,7 @@ function saveAssignment() {
   var editId = window._editingAsnId;
   if (editId) {
     var existing = DB.assignments.find(function(a){return a.id===editId;});
-    if (existing) { Object.assign(existing, asnData); toast('Assignment updated!'); }
+    if (existing) { asnData.completed = existing.completed; Object.assign(existing, asnData); toast('Assignment updated!'); }
     else { asnData.id = 'a_' + Date.now(); asnData.createdAt = new Date().toISOString(); DB.assignments.unshift(asnData); toast('Task added!'); }
     window._editingAsnId = null;
   } else {
@@ -162,9 +165,9 @@ function refreshTFileList() {
   if (!el) return;
   el.innerHTML = window.pendingTFiles.map(function (f, i) {
     var isPdf = (f.type || '').includes('pdf') || (f.name || '').toLowerCase().endsWith('.pdf');
-    var icon = isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (f.data || f.url || '') + '" alt=""/>';
+    var icon = isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + window.esc(f.data || f.url || '') + '" alt=""/>';
     var fid = window._fcache(f.data || f.url || '', f.name);
-    return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (f.name || '').replace(/'/g, "\\'") + '\')">' + icon + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + (f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTFiles.splice(' + i + ',1);window.refreshTFileList()">&#10005;</button></div>';
+    return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + window.escAttr(f.name || '') + '\')">' + icon + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + window.esc(f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTFiles.splice(' + i + ',1);window.refreshTFileList()">&#10005;</button></div>';
   }).join('');
 }
 
@@ -253,7 +256,7 @@ function saveAddCh() {
   var subj = subjEl.value;
   var name = nameEl.value.trim();
   if (!name) { toast('Enter chapter name'); return; }
-  var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'uncovered' };
+  var newCh = { id: 'ch_' + Date.now(), name: name, completed: false, strength: 'none', notes: { detailed: [], revision: [] }, subTopics: [] };
   if (!DB.chapters) DB.chapters = {};
   if (!DB.chapters[subj]) DB.chapters[subj] = [];
   DB.chapters[subj].push(newCh);

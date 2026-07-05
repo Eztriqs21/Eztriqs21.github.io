@@ -235,6 +235,7 @@
 
   /* CRUD */
   window.openAddTest = function() {
+    window._editingTestId = null;
     window.pendingTFiles = [];
     window.pendingTAnswerKey = [];
     var fl = document.getElementById('t-file-list'); if (fl) fl.innerHTML = '';
@@ -305,14 +306,14 @@
     if (t.papers && t.papers.length) {
       window.pendingTFiles = t.papers.slice();
       if (fl) {
-        fl.innerHTML = t.papers.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+(d.name||'').replace(/'/g,"\\'")+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTFiles.splice('+i+',1);window.refreshTFileList()">&#10005;</button></div>';
+        fl.innerHTML = t.papers.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+window.escAttr(d.name||'')+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+window.esc(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTFiles.splice('+i+',1);window.refreshTFileList()">&#10005;</button></div>';
       }).join('');
       }
     }
     if (t.answerKey && t.answerKey.length) {
       window.pendingTAnswerKey = t.answerKey.slice();
       if (akFl) {
-        akFl.innerHTML = t.answerKey.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+(d.name||'').replace(/'/g,"\\'")+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button></div>';
+        akFl.innerHTML = t.answerKey.map(function(d,i){var fid=window._fcache(d.data||d.url||'',d.name);var isPdf=(d.type||'').includes('pdf')||(d.name||'').toLowerCase().endsWith('.pdf');return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\''+fid+'\'),\''+window.escAttr(d.name||'')+'\')">'+(isPdf?'<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>':'<img src="'+window.esc(d.data||'')+'" alt=""/>')+'</div><div class="upload-preview-info"><div class="upload-preview-name">'+esc(d.name||'File')+'</div><div class="upload-preview-size">'+window.fmtSz(d.size)+'</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTAnswerKey.splice('+i+',1);window.refreshTAnswerKeyList()">&#10005;</button></div>';
       }).join('');
       }
     }
@@ -358,19 +359,21 @@
   window.handleTAnswerKey = function(files) {
     if (!files || !files.length) return;
     window.pendingTAnswerKey = window.pendingTAnswerKey || [];
-    var list = document.getElementById('t-ak-file-list');
     window.rdFiles(files, function(obj) {
       if (!obj) return;
       window.pendingTAnswerKey.push(obj);
-      if (list) {
-        var fid = window._fcache(obj.data || '', obj.name);
-        var isPdf = (obj.type || '').includes('pdf') || (obj.name || '').toLowerCase().endsWith('.pdf');
-        var div = document.createElement('div');
-        div.className = 'upload-preview-item';
-        div.innerHTML = '<div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (obj.name || '').replace(/'/g, "\\'") + '\')">' + (isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + (obj.data || '') + '" alt=""/>') + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + esc(obj.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(obj.size) + '</div></div><button class="upload-preview-remove" onclick="this.closest(\'.upload-preview-item\').remove()">&#10005;</button>';
-        list.appendChild(div);
-      }
+      window.refreshTAnswerKeyList();
     });
+  };
+
+  window.refreshTAnswerKeyList = function() {
+    var list = document.getElementById('t-ak-file-list');
+    if (!list) return;
+    list.innerHTML = (window.pendingTAnswerKey || []).map(function(f, i) {
+      var fid = window._fcache(f.data || '', f.name);
+      var isPdf = (f.type || '').includes('pdf') || (f.name || '').toLowerCase().endsWith('.pdf');
+      return '<div class="upload-preview-item"><div class="upload-preview-thumb" onclick="pvFile(_fget(\'' + fid + '\'),\'' + window.escAttr(f.name || '') + '\')">' + (isPdf ? '<div class="pdf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF</div>' : '<img src="' + window.esc(f.data || '') + '" alt=""/>') + '</div><div class="upload-preview-info"><div class="upload-preview-name">' + esc(f.name || 'File') + '</div><div class="upload-preview-size">' + window.fmtSz(f.size) + '</div></div><button class="upload-preview-remove" onclick="event.stopPropagation();window.pendingTAnswerKey.splice(' + i + ',1);window.refreshTAnswerKeyList()">&#10005;</button></div>';
+    }).join('');
   };
 
   window._testSearchFn = function(val) {
