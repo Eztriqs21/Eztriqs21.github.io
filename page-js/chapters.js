@@ -73,7 +73,11 @@
 
     el.innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-      <input class="input anim-entrance" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" style="font-size:13px;flex:1;min-width:200px" value="${esc(_chSearch)}" autocomplete="off" data-tutorial-id="chapter-search">
+      <div class="search-wrap anim-entrance" style="flex:1;min-width:200px;margin-bottom:0">
+        <input class="search-input" id="ch-search-input" type="text" placeholder="Search chapters..." oninput="window._chSearchFn(this.value)" value="${esc(_chSearch)}" autocomplete="off" data-tutorial-id="chapter-search"/>
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <button class="search-clear" onclick="this.previousElementSibling.previousElementSibling.value='';window._chSearchFn('')">&#10005;</button>
+      </div>
       <button class="btn btn-primary btn-sm anim-entrance" onclick="window.openAddCh()" style="--delay:0.05s">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Chapter

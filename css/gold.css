@@ -340,6 +340,11 @@
 .search-input:not(:placeholder-shown) ~ .search-clear { opacity: 1; pointer-events: auto; }
 .search-clear:hover { background: rgba(212, 175, 55, 0.2); color: var(--primary); }
 
+/* ─── CHAPTER FILTER CHIPS ─── */
+.ch-filter-chip { font-family: var(--font-body); }
+.ch-filter-chip:hover { opacity: 0.85; }
+.ch-filter-chip.active { box-shadow: 0 0 8px rgba(212, 175, 55, 0.15); }
+
 /* ─── SCORE RING ─── */
 .score-ring {
   position: relative; display: inline-flex; align-items: center; justify-content: center;

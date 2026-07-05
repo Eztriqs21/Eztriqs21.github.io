@@ -11,6 +11,35 @@
   };
 
   let _asnSearch = '';
+  let _asnChapterFilter = [];
+
+  window._toggleAsnFilter = function(chapter) {
+    var idx = _asnChapterFilter.indexOf(chapter);
+    if (idx === -1) _asnChapterFilter.push(chapter);
+    else _asnChapterFilter.splice(idx, 1);
+    _updateAsnResults();
+  };
+
+  function _buildAsnFilterChipsHTML() {
+    var DB = window.DB;
+    if (!DB || !DB.chapters) return '';
+    var list = [];
+    ['physics', 'chemistry', 'maths'].forEach(function(subj) {
+      (DB.chapters[subj] || []).forEach(function(ch) {
+        list.push({ name: ch.name, subject: subj });
+      });
+    });
+    if (!list.length) return '';
+    var labels = { physics: 'P', chemistry: 'C', maths: 'M' };
+    var colors = { physics: 'var(--phys)', chemistry: 'var(--chem)', maths: 'var(--math)' };
+    var html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">';
+    list.forEach(function(ch) {
+      var active = _asnChapterFilter.indexOf(ch.name) !== -1;
+      html += '<button class="ch-filter-chip' + (active ? ' active' : '') + '" data-chapter="' + esc(ch.name) + '" onclick="window._toggleAsnFilter(\'' + esc(ch.name).replace(/'/g, "\\'") + '\')" style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid ' + (active ? colors[ch.subject] : 'var(--border-card)') + ';background:' + (active ? 'rgba(212,175,55,0.12)' : 'transparent') + ';color:' + (active ? colors[ch.subject] : 'var(--muted)') + ';font-weight:600;cursor:pointer;transition:all 0.15s"><span style="opacity:0.5">' + labels[ch.subject] + ':</span> ' + esc(ch.name) + '</button>';
+    });
+    html += '</div>';
+    return html;
+  }
 
   function assignmentCard(a, index) {
     const pr = PRIORITY[a.priority] || { label: '', color: 'var(--muted)', bg: 'transparent' };
@@ -70,6 +99,13 @@
       var q = _asnSearch.trim().toLowerCase();
       all = all.filter(function(a) { return (a.title || '').toLowerCase().includes(q) || (a.description || '').toLowerCase().includes(q) || (a.syllabus || '').toLowerCase().includes(q); });
     }
+    if (_asnChapterFilter.length) {
+      all = all.filter(function(a) {
+        if (!a.syllabus) return false;
+        var syl = (a.syllabus || '').toLowerCase();
+        return _asnChapterFilter.some(function(ch) { return syl.indexOf(ch.toLowerCase()) !== -1; });
+      });
+    }
     return all;
   }
 
@@ -103,7 +139,7 @@
 
     el.innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-      <div class="search-wrap anim-entrance" style="flex:1;min-width:200px">
+      <div class="search-wrap anim-entrance" style="flex:1;min-width:200px;margin-bottom:0">
         <input class="search-input" id="asn-search-input" type="text" placeholder="Search assignments..." oninput="window._asnSearchFn(this.value)" value="${esc(_asnSearch)}" autocomplete="off"/>
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <button class="search-clear" onclick="this.previousElementSibling.previousElementSibling.value='';window._asnSearchFn('')">&#10005;</button>
@@ -113,6 +149,7 @@
         Add Task
       </button>
     </div>
+    <div id="asn-filter-chips">${_buildAsnFilterChipsHTML()}</div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
@@ -142,6 +179,8 @@
     var all = getFilteredAssignments();
     container.innerHTML = assignmentsResultsHTML(all);
     container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
+    var chipsEl = document.getElementById('asn-filter-chips');
+    if (chipsEl) chipsEl.innerHTML = _buildAsnFilterChipsHTML();
   }
 
   /* CRUD FUNCTIONS */

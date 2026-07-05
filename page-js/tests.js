@@ -4,6 +4,58 @@
   function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }); }
 
   let _testSearch = '';
+  let _testChapterFilter = [];
+
+  function _buildSyllabusHTML(t) {
+    var syl = t.syllabus;
+    if (!syl || typeof syl !== 'object') return '';
+    var tags = [];
+    var subjColors = { physics: 'var(--phys)', chemistry: 'var(--chem)', maths: 'var(--math)' };
+    var subjLabels = { physics: 'P', chemistry: 'C', maths: 'M' };
+    ['physics', 'chemistry', 'maths'].forEach(function(subj) {
+      var chapters = syl[subj] || [];
+      chapters.forEach(function(ch) {
+        tags.push('<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(212,175,55,0.06);color:' + subjColors[subj] + ';font-weight:600;white-space:nowrap"><span style="opacity:0.5">' + subjLabels[subj] + ':</span> ' + esc(ch) + '</span>');
+      });
+    });
+    if (!tags.length) return '';
+    return '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">' + tags.join('') + '</div>';
+  }
+
+  function _getAllChapters() {
+    var DB = window.DB;
+    if (!DB || !DB.chapters) return [];
+    var list = [];
+    ['physics', 'chemistry', 'maths'].forEach(function(subj) {
+      (DB.chapters[subj] || []).forEach(function(ch) {
+        list.push({ name: ch.name, subject: subj });
+      });
+    });
+    return list;
+  }
+
+  function _buildFilterChipsHTML(page) {
+    var chapters = _getAllChapters();
+    if (!chapters.length) return '';
+    var state = page === 'tests' ? _testChapterFilter : [];
+    var labels = { physics: 'P', chemistry: 'C', maths: 'M' };
+    var colors = { physics: 'var(--phys)', chemistry: 'var(--chem)', maths: 'var(--math)' };
+    var html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">';
+    chapters.forEach(function(ch) {
+      var active = state.indexOf(ch.name) !== -1;
+      var fn = page === 'tests' ? 'window._toggleTestFilter' : 'window._toggleAsnFilter';
+      html += '<button class="ch-filter-chip' + (active ? ' active' : '') + '" data-chapter="' + esc(ch.name) + '" onclick="' + fn + '(\'' + esc(ch.name).replace(/'/g, "\\'") + '\')" style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid ' + (active ? colors[ch.subject] : 'var(--border-card)') + ';background:' + (active ? 'rgba(212,175,55,0.12)' : 'transparent') + ';color:' + (active ? colors[ch.subject] : 'var(--muted)') + ';font-weight:600;cursor:pointer;transition:all 0.15s"><span style="opacity:0.5">' + labels[ch.subject] + ':</span> ' + esc(ch.name) + '</button>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  window._toggleTestFilter = function(chapter) {
+    var idx = _testChapterFilter.indexOf(chapter);
+    if (idx === -1) _testChapterFilter.push(chapter);
+    else _testChapterFilter.splice(idx, 1);
+    _updateTestResults();
+  };
 
   function tstCard(t, i) {
     const pct = t.maxScore > 0 ? Math.round(t.totalScore / t.maxScore * 100) : 0;
@@ -41,6 +93,7 @@
             <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Maths</div>
           </div>
         </div>
+        ${_buildSyllabusHTML(t)}
         ${(t.rank || t.percentile) ? '<div style="display:flex;gap:8px;margin-bottom:10px">' + (t.rank ? '<span style="font-size:10px;padding:3px 8px;border-radius:6px;background:var(--border-card);color:var(--text);font-weight:600">Rank #'+t.rank+'</span>' : '') + (t.percentile ? '<span style="font-size:10px;padding:3px 8px;border-radius:6px;background:var(--border-card);color:var(--success);font-weight:600">'+t.percentile+'%ile</span>' : '') + '</div>' : ''}
         ${papers.length ? '<div class="att-grid">' + papers.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Paper').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#128196;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'File ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
         ${answerKey.length ? '<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px">Answer Key</div><div class="att-grid">' + answerKey.map((d, fi) => { var fid = window._fcache(d.data || d.url || '', d.name); var isPdf = (d.type || '').includes('pdf') || (d.name || '').toLowerCase().endsWith('.pdf'); return '<div class="att-chip" onclick="pvFile(_fget(\'' + fid + '\'),\'' + (d.name || 'Answer Key').replace(/'/g, "\\'") + '\')"><span class="att-icon">' + (isPdf ? '&#9989;' : '&#128444;') + '</span><span class="att-name">' + esc(d.name || 'Answer Key ' + (fi + 1)) + '</span></div>'; }).join('') + '</div>' : ''}
@@ -87,6 +140,15 @@
         return false;
       });
     }
+    if (_testChapterFilter.length) {
+      tests = tests.filter(function(t) {
+        var syl = t.syllabus;
+        if (!syl || typeof syl !== 'object') return false;
+        return _testChapterFilter.some(function(ch) {
+          return (syl.physics || []).indexOf(ch) !== -1 || (syl.chemistry || []).indexOf(ch) !== -1 || (syl.maths || []).indexOf(ch) !== -1;
+        });
+      });
+    }
     return tests;
   }
 
@@ -100,7 +162,7 @@
 
     el.innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
-      <div class="search-wrap anim-entrance" style="flex:1;min-width:200px">
+      <div class="search-wrap anim-entrance" style="flex:1;min-width:200px;margin-bottom:0">
         <input class="search-input" id="test-search-input" type="text" placeholder="Search by name or syllabus chapter..." oninput="window._testSearchFn(this.value)" value="${esc(_testSearch)}" autocomplete="off" data-tutorial-id="test-search"/>
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <button class="search-clear" onclick="this.previousElementSibling.previousElementSibling.value='';window._testSearchFn('')">&#10005;</button>
@@ -110,6 +172,7 @@
         Add Test
       </button>
     </div>
+    <div id="test-filter-chips">${_buildFilterChipsHTML('tests')}</div>
     <div class="stats-grid anim-entrance" style="--delay:0.1s">
       <div class="stat-card">
         <div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
@@ -133,6 +196,8 @@
     var tests = getFilteredTests();
     container.innerHTML = testResultsHTML(tests);
     container.querySelectorAll('.anim-entrance, .anim-up').forEach(function(e) { e.classList.add('visible'); e.style.opacity = '1'; e.style.transform = 'none'; });
+    var chipsEl = document.getElementById('test-filter-chips');
+    if (chipsEl) chipsEl.innerHTML = _buildFilterChipsHTML('tests');
   }
 
   /* CRUD */
