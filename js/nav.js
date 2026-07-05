@@ -23,8 +23,8 @@ export function go(page) {
   PAGE = page;
   window.PAGE = page;
 
-  document.querySelectorAll('.nav-item.active, .bni.active').forEach(el => el.classList.remove('active'));
-  const navEl = document.querySelector(`.nav-item[href="#/${page}"], .bni[href="#/${page}"]`);
+  document.querySelectorAll('.nav-item.active').forEach(el => el.classList.remove('active'));
+  const navEl = document.querySelector(`.nav-item[href="#/${page}"]`);
   if (navEl) navEl.classList.add('active');
 
   const info = PAGE_TITLES[page] || PAGE_TITLES.dashboard;
