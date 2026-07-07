@@ -69,6 +69,9 @@ export function render() {
 function _renderSwap(el) {
   if (!el) { _renderLock = false; return; }
 
+  // Cleanup previous page resources
+  if (typeof window._schoolCleanup === 'function') window._schoolCleanup();
+
   el.classList.remove('page-exit');
   el.innerHTML = '';
   try {

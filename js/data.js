@@ -1,7 +1,7 @@
 // js/data.js
 import { toast } from './helpers.js';
 /* ═══════════════ DATA & PERSISTENCE ═══════════════ */
-export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',tab:'jeehq3_tab',mt:'jeehq3_mt',dsSettings:'jeehq3_ds_settings',prepChat:'jeehq3_prep',calc:'jeehq3_calc',cm:'jeehq3_cm'};
+export const KEYS={ch:'jeehq3_ch',asn:'jeehq3_asn',tst:'jeehq3_tst',tab:'jeehq3_tab',mt:'jeehq3_mt',dsSettings:'jeehq3_ds_settings',prepChat:'jeehq3_prep',calc:'jeehq3_calc',cm:'jeehq3_cm',school:'jeehq3_school'};
 export const ONE_SHOT_LINKS={
   physics:{teacher:'Saleem Sir',pw:'https://youtube.com/@PW-JEEWallah'},
   chemistry:{teacher:'Amit Sir',pw:'https://youtube.com/@PW-JEEWallah'},
@@ -12,7 +12,7 @@ export function oneShotURL(subj,id,name){
   if(!subjCfg)return null;
   return subjCfg[id]||'https://youtube.com/results?search_query='+encodeURIComponent('JEE '+name+' One Shot '+subjCfg.teacher);
 }
-export const DB={chapters:null,assignments:null,tests:null,mockTests:null,prepChat:null,calculator:null,customTests:null};
+export const DB={chapters:null,assignments:null,tests:null,mockTests:null,prepChat:null,calculator:null,customTests:null,school:null};
 export function load(){
   try{DB.chapters=JSON.parse(localStorage.getItem(KEYS.ch))||null;}catch(e){DB.chapters=null;}
   if(!DB.chapters||typeof DB.chapters!=='object'||Array.isArray(DB.chapters))DB.chapters=defaultChapters();
@@ -27,6 +27,9 @@ export function load(){
   try{DB.calculator=JSON.parse(localStorage.getItem(KEYS.calc))||null;}catch(e){DB.calculator=null;}
   try{DB.customTests=JSON.parse(localStorage.getItem(KEYS.cm))||[];}catch(e){DB.customTests=[];}
   if(!Array.isArray(DB.customTests))DB.customTests=[];
+  try{DB.school=JSON.parse(localStorage.getItem(KEYS.school))||null;}catch(e){DB.school=null;}
+  if(!DB.school||typeof DB.school!=='object'||Array.isArray(DB.school))DB.school={boards:[],activeBoard:null};
+  if(!Array.isArray(DB.school.boards))DB.school.boards=[];
 }
 export const LS_SAFE_BUDGET=4*1024*1024;
 export function usesCloudStorage(){return !!(window.supaClient&&window.supaConfig&&window.currentSyncKey);}
@@ -38,7 +41,7 @@ export function lsBytesUsed(){
 export const LS_HARD_LIMIT=5*1024*1024;
 export function sv(key,opts){
   opts=opts||{};
-  const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,mockTests:KEYS.mt,prepChat:KEYS.prepChat,calculator:KEYS.calc,customTests:KEYS.cm};
+  const m={chapters:KEYS.ch,assignments:KEYS.asn,tests:KEYS.tst,mockTests:KEYS.mt,prepChat:KEYS.prepChat,calculator:KEYS.calc,customTests:KEYS.cm,school:KEYS.school};
   const lsKey=m[key];
   if(!lsKey){console.warn('sv(): unknown key "'+key+'"');return false;}
   let serialized;
@@ -73,7 +76,7 @@ export function sv(key,opts){
   return true;
 }
 export function persistAllLocal(opts){
-  ['chapters','assignments','tests','mockTests','prepChat','calculator','customTests'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
+  ['chapters','assignments','tests','mockTests','prepChat','calculator','customTests','school'].forEach(k=>sv(k,Object.assign({skipAutoSync:true},opts||{})));
 }
 export function resetEphemeralUiState(){
   window.pendingAFiles=[];window.pendingTFiles=[];

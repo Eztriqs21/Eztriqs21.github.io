@@ -28,7 +28,8 @@ function _refreshPage() {
     chapters: window.renderChapters,
     'mock-tests': window.renderMockTests,
     analytics: window.renderAnalytics,
-    calculator: window.renderCalculator
+    calculator: window.renderCalculator,
+    school: window.renderSchool
   };
   if (page === 'dashboard' && window.renderDashboard) window.renderDashboard(el);
   else if (renderers[page]) renderers[page](el);

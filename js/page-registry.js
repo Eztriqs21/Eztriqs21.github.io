@@ -5,7 +5,8 @@ export const PAGE_RENDERERS = {
   analytics: 'renderAnalytics',
   calculator: 'renderCalculator',
   assignments: 'renderAssignments',
-  'mock-tests': 'renderMockTests'
+  'mock-tests': 'renderMockTests',
+  school: 'renderSchool'
 };
 
 export const PAGE_TITLES = {
@@ -15,7 +16,8 @@ export const PAGE_TITLES = {
   analytics: { title: 'Analytics', sub: 'Performance insights and detailed breakdown' },
   calculator: { title: 'Calculator', sub: 'Full JEE mock evaluation engine' },
   assignments: { title: 'Assignments', sub: 'Task management & tracking' },
-  'mock-tests': { title: 'Mock Tests', sub: 'Full-length practice exams' }
+  'mock-tests': { title: 'Mock Tests', sub: 'Full-length practice exams' },
+  school: { title: 'School', sub: 'Visual folder graph for test materials' }
 };
 
 export function callPageRenderer(page, el) {
