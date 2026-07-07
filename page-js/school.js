@@ -140,15 +140,18 @@
       }
     });
 
-    // Load existing data
+    // Load existing data (skip empty boards to avoid corrupting Drawflow state)
     var board = _getActiveBoard();
-    if (board && board.drawflow) {
-      try {
-        _editor.import(board.drawflow);
-      } catch(e) {
-        console.warn('Drawflow import failed, resetting board data:', e);
-        board.drawflow = { drawflow: { Home: { data: {} } } };
-        _saveSchool();
+    if (board && board.drawflow && board.drawflow.drawflow && board.drawflow.drawflow.Home) {
+      var nodeData = board.drawflow.drawflow.Home.data;
+      if (nodeData && Object.keys(nodeData).length > 0) {
+        try {
+          _editor.import(board.drawflow);
+        } catch(e) {
+          console.warn('[School] Drawflow import failed, resetting board:', e);
+          board.drawflow = { drawflow: { Home: { data: {} } } };
+          _saveSchool();
+        }
       }
     }
   }
