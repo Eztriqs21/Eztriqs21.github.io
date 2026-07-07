@@ -142,7 +142,13 @@
     // Load existing data
     var board = _getActiveBoard();
     if (board && board.drawflow) {
-      _editor.import(board.drawflow);
+      try {
+        _editor.import(board.drawflow);
+      } catch(e) {
+        console.warn('Drawflow import failed, resetting board data:', e);
+        board.drawflow = { drawflow: { Home: { data: {} } } };
+        _saveSchool();
+      }
     }
   }
 
@@ -260,11 +266,13 @@
     if (_selectedNodes.length < 2) return;
     var modal = document.getElementById('m-school-merge');
     if (!modal) return;
+    var listEl = document.getElementById('merge-node-list');
+    if (!listEl) return;
     var nodeNames = _selectedNodes.map(function(id) {
-      var info = _editor.getNodeFromId(id);
+      var info = _editor ? _editor.getNodeFromId(id) : null;
       return info ? info.data.name : 'Unknown';
     });
-    document.getElementById('merge-node-list').innerHTML = nodeNames.map(function(n) {
+    listEl.innerHTML = nodeNames.map(function(n) {
       return '<div style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;font-size:12px">' + esc(n) + '</div>';
     }).join('');
     modal.classList.add('open');
@@ -624,7 +632,10 @@
 
   /* ═══════════════ CLEANUP ═══════════════ */
   window._schoolCleanup = function() {
-    if (_editor) { _editor.destroy(); _editor = null; }
+    try {
+      if (_editor) { _editor.destroy(); }
+    } catch(e) { console.warn('Drawflow destroy error:', e); }
+    _editor = null;
     _selectedNodes = [];
     _detailPanel = null;
   };

@@ -50,6 +50,8 @@ export function go(page) {
 export function render() {
   if (_renderLock) return;
   _renderLock = true;
+  // Safety: auto-release after 5s if something goes wrong
+  setTimeout(function() { if (_renderLock) { _renderLock = false; } }, 5000);
   const el = document.getElementById('content-wrap');
   if (!el) { _renderLock = false; return; }
 
@@ -69,8 +71,10 @@ export function render() {
 function _renderSwap(el) {
   if (!el) { _renderLock = false; return; }
 
-  // Cleanup previous page resources
-  if (typeof window._schoolCleanup === 'function') window._schoolCleanup();
+  // Cleanup previous page resources (must not throw — it locks the render)
+  try {
+    if (typeof window._schoolCleanup === 'function') window._schoolCleanup();
+  } catch(e) { console.warn('schoolCleanup error:', e); }
 
   el.classList.remove('page-exit');
   el.innerHTML = '';
@@ -85,14 +89,14 @@ function _renderSwap(el) {
 
   if (shouldAnimate()) {
     el.classList.add('page-enter');
-    initScrollAnimations(el);
+    try { initScrollAnimations(el); } catch(e) { console.warn('scrollAnim error:', e); }
     _pageEnterTimer = setTimeout(function() {
       el.classList.remove('page-enter');
       _finishRender(el);
     }, 200);
   } else {
     el.style.opacity = '1';
-    initScrollAnimations(el);
+    try { initScrollAnimations(el); } catch(e) { console.warn('scrollAnim error:', e); }
     _finishRender(el);
   }
 

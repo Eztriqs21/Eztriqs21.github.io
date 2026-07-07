@@ -18,6 +18,11 @@ function _refreshPage() {
   // Clean up calculator keyboard handler when leaving calculator page
   if (page !== 'calculator' && typeof window._detachCalcKeyboard === 'function') window._detachCalcKeyboard();
 
+  // Clean up school Drawflow editor before re-rendering (prevents stale references)
+  if (page === 'school' && typeof window._schoolCleanup === 'function') {
+    try { window._schoolCleanup(); } catch(e) { console.warn('schoolCleanup in refresh error:', e); }
+  }
+
   // Reset animation state on the container
   el.classList.remove('page-exit', 'page-enter');
   el.style.opacity = '1';
