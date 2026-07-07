@@ -83,8 +83,26 @@
   /* ═══════════════ DRAWFLOW INIT ═══════════════ */
 
   function _initDrawflow(container) {
-    if (_editor) { _editor.destroy(); _editor = null; }
-    _editor = new Drawflow(container);
+    if (_editor) { try { _editor.destroy(); } catch(e) {} _editor = null; }
+    if (typeof Drawflow === 'undefined') {
+      container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--text-muted)">' +
+        '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+        '<div style="font-size:14px;font-weight:600">Could not load node editor</div>' +
+        '<div style="font-size:12px">Drawflow library failed to load. Check your internet connection.</div>' +
+        '<button class="btn btn-ghost btn-sm" onclick="window.renderSchool(document.getElementById(\'content-wrap\'))">Retry</button>' +
+      '</div>';
+      return;
+    }
+    try {
+      _editor = new Drawflow(container);
+    } catch(e) {
+      console.error('Drawflow init error:', e);
+      container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--text-muted)">' +
+        '<div style="font-size:14px;font-weight:600">Failed to initialize node editor</div>' +
+        '<div style="font-size:12px">' + esc(e.message) + '</div>' +
+      '</div>';
+      return;
+    }
     _editor.reroute = true;
     _editor.reroute_fix_curvature = true;
     _editor.force_first_input = false;
