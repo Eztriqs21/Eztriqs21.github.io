@@ -106,6 +106,7 @@
     _editor.reroute = true;
     _editor.reroute_fix_curvature = true;
     _editor.force_first_input = false;
+    console.log('[School] Drawflow initialized on', container);
 
     _editor.on('nodeCreated', function(id) { _persistDrawflow(); });
     _editor.on('nodeRemoved', function(id) { _persistDrawflow(); _removeFromSelection(id); });
@@ -162,22 +163,31 @@
 
   function _addFolderNode() {
     if (!_editor) {
-      if (window.toast) window.toast('Node editor not ready — try refreshing', 'error');
+      console.warn('[School] _editor is null — Drawflow not initialized');
+      if (window.toast) window.toast('Node editor not ready — refresh the page', 'error');
+      var btn = document.getElementById('school-add-folder-btn');
+      if (btn) { btn.style.animation = 'shake 0.4s'; setTimeout(function(){ btn.style.animation = ''; }, 400); }
       return;
     }
     var name = 'New Folder';
     var pos_x = 300 + Math.random() * 200;
     var pos_y = 200 + Math.random() * 100;
-    var nodeId = _editor.addNode(
-      'folder',           // name
-      1,                  // inputs
-      1,                  // outputs
-      pos_x, pos_y,      // position
-      'school-folder',    // class
-      { name: name, files: [], color: '#D4AF37' },  // data
-      _folderNodeHTML(name, 0, '#D4AF37')  // HTML
-    );
-    return nodeId;
+    try {
+      var nodeId = _editor.addNode(
+        'folder',           // name
+        1,                  // inputs
+        1,                  // outputs
+        pos_x, pos_y,      // position
+        'school-folder',    // class
+        { name: name, files: [], color: '#D4AF37' },  // data
+        _folderNodeHTML(name, 0, '#D4AF37')  // HTML
+      );
+      console.log('[School] Folder node created, id=' + nodeId + ' at (' + Math.round(pos_x) + ',' + Math.round(pos_y) + ')');
+      return nodeId;
+    } catch(e) {
+      console.error('[School] addNode failed:', e);
+      if (window.toast) window.toast('Failed to create folder: ' + e.message, 'error');
+    }
   }
 
   function _renameNode(nodeId, newName) {
