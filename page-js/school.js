@@ -161,7 +161,10 @@
   /* ═══════════════ NODE OPERATIONS ═══════════════ */
 
   function _addFolderNode() {
-    if (!_editor) return;
+    if (!_editor) {
+      if (window.toast) window.toast('Node editor not ready — try refreshing', 'error');
+      return;
+    }
     var name = 'New Folder';
     var pos_x = 300 + Math.random() * 200;
     var pos_y = 200 + Math.random() * 100;
@@ -480,6 +483,30 @@
     }
   };
 
+  /* ═══════════════ HELPER: count stats ═══════════════ */
+  function _getStats() {
+    var school = _getSchool();
+    var boardCount = school.boards.length;
+    var folderCount = 0;
+    var connectionCount = 0;
+    var totalFiles = 0;
+    school.boards.forEach(function(b) {
+      if (b.drawflow && b.drawflow.drawflow && b.drawflow.drawflow.Home && b.drawflow.drawflow.Home.data) {
+        var data = b.drawflow.drawflow.Home.data;
+        Object.keys(data).forEach(function(k) {
+          folderCount++;
+          totalFiles += (data[k].data && data[k].data.files) ? data[k].data.files.length : 0;
+          if (data[k].outputs) {
+            Object.keys(data[k].outputs).forEach(function(outK) {
+              connectionCount += (data[k].outputs[outK].connections || []).length;
+            });
+          }
+        });
+      }
+    });
+    return { boards: boardCount, folders: folderCount, connections: connectionCount, files: totalFiles };
+  }
+
   /* ═══════════════ BOARD UI ═══════════════ */
 
   function _renderBoardSelector() {
@@ -491,24 +518,11 @@
       return '<option value="' + b.id + '"' + (b.id === activeId ? ' selected' : '') + '>' + esc(b.name) + '</option>';
     }).join('');
 
-    return '<div class="school-board-bar">' +
-      '<div style="display:flex;align-items:center;gap:8px">' +
-        '<label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Board</label>' +
-        '<select class="inp" id="school-board-select" style="width:auto;min-width:160px;padding:6px 10px;font-size:12px" onchange="window._schoolSwitchBoard(this.value)">' +
-          (optionsHTML || '<option value="">No boards</option>') +
-        '</select>' +
-      '</div>' +
-      '<div style="display:flex;gap:6px">' +
-        '<button class="btn btn-ghost btn-sm" onclick="window._schoolNewBoard()" title="New Board">' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Board' +
-        '</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="window._schoolRenameBoard()" title="Rename Board">' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-        '</button>' +
-        '<button class="btn btn-ghost btn-sm" onclick="window._schoolDeleteBoard()" title="Delete Board" style="color:var(--danger)">' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
-        '</button>' +
-      '</div>' +
+    return '<div style="display:flex;align-items:center;gap:8px">' +
+      '<label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em">Board</label>' +
+      '<select class="inp" id="school-board-select" style="width:auto;min-width:160px;padding:6px 10px;font-size:12px" onchange="window._schoolSwitchBoard(this.value)">' +
+        (optionsHTML || '<option value="">No boards</option>') +
+      '</select>' +
     '</div>';
   }
 
@@ -561,11 +575,11 @@
     container.innerHTML = '';
     var board = _getActiveBoard();
     if (!board) {
-      container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--text-muted)">' +
-        '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
-        '<div style="font-size:14px;font-weight:600">No boards yet</div>' +
-        '<div style="font-size:12px">Create a board to start organizing folders</div>' +
-        '<button class="btn btn-primary btn-sm" onclick="window._schoolNewBoard()">Create First Board</button>' +
+      container.innerHTML = '<div class="empty" style="padding:48px 0">' +
+        '<div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>' +
+        '<div class="empty-title">No boards yet</div>' +
+        '<div class="empty-sub">Create a board to start organizing folders</div>' +
+        '<button class="btn btn-primary btn-sm" onclick="window._schoolNewBoard()" style="margin-top:12px">Create First Board</button>' +
       '</div>';
       return;
     }
@@ -586,25 +600,55 @@
       _saveSchool();
     }
 
+    var stats = _getStats();
+    var board = _getActiveBoard();
+    var isEmpty = !board;
+
     el.innerHTML =
-      _renderBoardSelector() +
-      '<div class="school-toolbar">' +
-        '<button class="btn btn-primary btn-sm" onclick="window._schoolAddFolder()">' +
+      '<div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap">' +
+        _renderBoardSelector() +
+        '<button class="btn btn-ghost btn-sm anim-entrance" onclick="window._schoolNewBoard()" style="--delay:0.02s">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Board' +
+        '</button>' +
+        '<button class="btn btn-ghost btn-sm anim-entrance" onclick="window._schoolRenameBoard()" style="--delay:0.04s" title="Rename Board">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+        '</button>' +
+        '<button class="btn btn-ghost btn-sm anim-entrance" onclick="window._schoolDeleteBoard()" title="Delete Board" style="color:var(--danger);--delay:0.06s">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+        '</button>' +
+        '<div style="flex:1"></div>' +
+        '<button class="btn btn-primary btn-sm anim-entrance" onclick="window._schoolAddFolder()" style="--delay:0.08s" id="school-add-folder-btn">' +
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
           ' Add Folder' +
         '</button>' +
-        '<button class="btn btn-ghost btn-sm" id="school-merge-btn" style="display:none" onclick="window._openSchoolMerge()">' +
+        '<button class="btn btn-ghost btn-sm anim-entrance" id="school-merge-btn" style="display:none;--delay:0.1s" onclick="window._openSchoolMerge()">' +
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 19H5c-1 0-2-1-2-2V7c0-1 1-2 2-2h3"/><path d="M16 5h3c1 0 2 1 2 2v10c0 1-1 2-2 2h-3"/><line x1="12" y1="4" x2="12" y2="20"/></svg>' +
           ' Merge' +
         '</button>' +
-        '<div style="flex:1"></div>' +
-        '<div style="font-size:11px;color:var(--text-faint);display:flex;align-items:center;gap:6px">' +
-          '<span style="background:var(--surface-2);padding:2px 8px;border-radius:4px;border:1px solid var(--border)">Ctrl+Click</span> to select' +
-          '<span style="background:var(--surface-2);padding:2px 8px;border-radius:4px;border:1px solid var(--border)">Double-click</span> to edit' +
-          '<span style="background:var(--surface-2);padding:2px 8px;border-radius:4px;border:1px solid var(--border)">Drag</span> from ports to connect' +
+      '</div>' +
+      '<div class="stats-grid anim-entrance" style="--delay:0.12s;margin-bottom:16px">' +
+        '<div class="stat-card">' +
+          '<div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>' +
+          '<div class="stat-val">' + stats.boards + '</div>' +
+          '<div class="stat-label">Boards</div>' +
+        '</div>' +
+        '<div class="stat-card">' +
+          '<div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>' +
+          '<div class="stat-val">' + stats.folders + '</div>' +
+          '<div class="stat-label">Folders</div>' +
+        '</div>' +
+        '<div class="stat-card">' +
+          '<div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>' +
+          '<div class="stat-val">' + stats.connections + '</div>' +
+          '<div class="stat-label">Links</div>' +
+        '</div>' +
+        '<div class="stat-card">' +
+          '<div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>' +
+          '<div class="stat-val">' + stats.files + '</div>' +
+          '<div class="stat-label">Files</div>' +
         '</div>' +
       '</div>' +
-      '<div class="school-canvas-wrap">' +
+      '<div class="school-canvas-wrap anim-entrance" style="--delay:0.16s">' +
         '<div id="school-canvas"></div>' +
       '</div>' +
       '<div class="school-detail-panel" id="school-detail-panel">' +
