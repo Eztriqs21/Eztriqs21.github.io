@@ -539,6 +539,18 @@ CREATE POLICY "jeehq_objects_delete" ON storage.objects
   </div>
 </div>
 
+<!-- School File Viewer Modal -->
+<div class="mo" id="m-school-viewer" role="dialog" aria-modal="true">
+  <div class="md" style="max-width:800px"><div class="md-handle"></div>
+    <div class="md-head"><div class="md-title" id="school-viewer-title">File</div><button class="md-x" aria-label="Close" onclick="cm('m-school-viewer')">&#10005;</button></div>
+    <div class="md-body" id="school-viewer-body" style="padding:0;display:flex;align-items:center;justify-content:center;min-height:300px;background:var(--bg)"></div>
+    <div class="md-foot">
+      <button class="btn btn-ghost btn-sm" onclick="window._schoolViewerDownload()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
+      <button class="btn btn-primary btn-sm" onclick="cm('m-school-viewer')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- School Merge Modal -->
 <div class="mo" id="m-school-merge" role="dialog" aria-modal="true">
   <div class="md"><div class="md-handle"></div>

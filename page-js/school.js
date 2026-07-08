@@ -8,6 +8,7 @@
   var _detailPanel = null;
   var _ctxNodeId = null;
   var _searchTimeout = null;
+  var _viewerFile = null;
 
   /* ═══════════════ BOARD MANAGEMENT ═══════════════ */
 
@@ -131,15 +132,20 @@
       }
     });
 
-    container.addEventListener('click', function(e) {
-      if (e.target.closest('.school-ctx-menu')) return;
-      _hideContextMenu();
+    // Use mousedown for Ctrl+Click — fires BEFORE Drawflow's click handler
+    container.addEventListener('mousedown', function(e) {
       var nodeEl = e.target.closest('.drawflow-node');
       if (nodeEl && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
         e.stopPropagation();
         var nodeId = nodeEl.id.replace('node-', '');
         _toggleNodeSelection(nodeId, nodeEl);
       }
+    });
+
+    container.addEventListener('click', function(e) {
+      if (e.target.closest('.school-ctx-menu')) return;
+      _hideContextMenu();
     });
 
     container.addEventListener('contextmenu', function(e) {
@@ -355,10 +361,7 @@
   function _updateMergeButton() {
     var btn = document.getElementById('school-merge-btn');
     if (!btn) return;
-    var folderNodes = _selectedNodes.filter(function(id) {
-      var info = _editor ? _editor.getNodeFromId(id) : null;
-      return info && info.name === 'folder';
-    });
+    var folderNodes = _getSelectedFolderNodes();
     if (folderNodes.length >= 2) {
       btn.style.display = 'inline-flex';
       btn.textContent = 'Merge (' + folderNodes.length + ')';
@@ -367,11 +370,15 @@
     }
   }
 
-  function _openMergeModal() {
-    var folderNodes = _selectedNodes.filter(function(id) {
+  function _getSelectedFolderNodes() {
+    return _selectedNodes.filter(function(id) {
       var info = _editor ? _editor.getNodeFromId(id) : null;
       return info && info.name === 'folder';
     });
+  }
+
+  function _openMergeModal() {
+    var folderNodes = _getSelectedFolderNodes();
     if (folderNodes.length < 2) return;
     var modal = document.getElementById('m-school-merge');
     if (!modal) return;
@@ -385,13 +392,6 @@
       return '<div style="padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;font-size:12px">' + esc(n) + '</div>';
     }).join('');
     modal.classList.add('open');
-  }
-
-  function _getSelectedFolderNodes() {
-    return _selectedNodes.filter(function(id) {
-      var info = _editor ? _editor.getNodeFromId(id) : null;
-      return info && info.name === 'folder';
-    });
   }
 
   function _mergeFolders(folderIds, mode) {
@@ -449,7 +449,6 @@
     var info = _editor.getNodeFromId(nodeId);
     var isFolder = info && info.name === 'folder';
 
-    // If only one folder node and we have selection with 2+ folders, show merge option
     var selectedFolders = _getSelectedFolderNodes();
     var canMerge = selectedFolders.length >= 2 && isFolder && selectedFolders.indexOf(nodeId) !== -1;
 
@@ -555,6 +554,7 @@
           return '<div class="school-file-item" data-idx="' + i + '">' +
             '<span class="school-file-icon">' + icon + '</span>' +
             '<span class="school-file-name">' + esc(f.name) + '</span>' +
+            '<button class="school-file-view" onclick="window._schoolViewFile(\'' + nodeId + '\',' + i + ')" title="View">&#128065;</button>' +
             '<button class="school-file-del" onclick="window._schoolDeleteFile(\'' + nodeId + '\',' + i + ')" title="Remove">&#10005;</button>' +
           '</div>';
         }).join('')
@@ -601,6 +601,38 @@
     if (panel) panel.classList.remove('open');
     _detailPanel = null;
   }
+
+  /* ═══════════════ FILE VIEWER ═══════════════ */
+
+  window._schoolViewFile = function(nodeId, idx) {
+    if (!_editor) return;
+    var info = _editor.getNodeFromId(nodeId);
+    if (!info || !info.data.files || !info.data.files[idx]) return;
+    var file = info.data.files[idx];
+    _viewerFile = file;
+    var modal = document.getElementById('m-school-viewer');
+    var title = document.getElementById('school-viewer-title');
+    var body = document.getElementById('school-viewer-body');
+    if (!modal || !body) return;
+    if (title) title.textContent = file.name;
+    var isPdf = (file.type || '').includes('pdf') || (file.name || '').toLowerCase().endsWith('.pdf');
+    if (isPdf) {
+      body.innerHTML = '<iframe src="' + file.data + '" style="width:100%;height:500px;border:none;border-radius:var(--r)"></iframe>';
+    } else {
+      body.innerHTML = '<img src="' + file.data + '" style="max-width:100%;max-height:70vh;border-radius:var(--r)"/>';
+    }
+    modal.classList.add('open');
+  };
+
+  window._schoolViewerDownload = function() {
+    if (!_viewerFile) return;
+    var a = document.createElement('a');
+    a.href = _viewerFile.data;
+    a.download = _viewerFile.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   /* ═══════════════ FILE OPERATIONS ═══════════════ */
 
@@ -754,6 +786,87 @@
     }, 450);
   };
 
+  /* ═══════════════ BOARD EXPORT/IMPORT ═══════════════ */
+
+  window._schoolExportBoard = function() {
+    var board = _getActiveBoard();
+    if (!board) return;
+    var exportData = {
+      version: 1,
+      board: {
+        name: board.name,
+        drawflow: board.drawflow,
+        createdAt: board.createdAt
+      }
+    };
+    var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (board.name || 'board') + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if (window.toast) window.toast('Board exported', 'success');
+  };
+
+  window._schoolImportBoard = function() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          var imported = JSON.parse(ev.target.result);
+          if (!imported.board || !imported.board.drawflow) {
+            if (window.toast) window.toast('Invalid board file', 'error');
+            return;
+          }
+          var name = imported.board.name || 'Imported Board';
+          var school = _getSchool();
+          var board = {
+            id: 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+            name: name,
+            drawflow: imported.board.drawflow,
+            createdAt: imported.board.createdAt || new Date().toISOString()
+          };
+          school.boards.push(board);
+          school.activeBoard = board.id;
+          _saveSchool();
+          _loadCurrentBoard();
+          _refreshBoardSelector();
+          if (window.toast) window.toast('Board "' + name + '" imported', 'success');
+        } catch(e) {
+          if (window.toast) window.toast('Failed to import board: ' + e.message, 'error');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  window._schoolDuplicateBoard = function() {
+    var board = _getActiveBoard();
+    if (!board) return;
+    var school = _getSchool();
+    var newBoard = {
+      id: 'b_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+      name: board.name + ' (Copy)',
+      drawflow: JSON.parse(JSON.stringify(board.drawflow)),
+      createdAt: new Date().toISOString()
+    };
+    school.boards.push(newBoard);
+    school.activeBoard = newBoard.id;
+    _saveSchool();
+    _loadCurrentBoard();
+    _refreshBoardSelector();
+    if (window.toast) window.toast('Board duplicated', 'success');
+  };
+
   /* ═══════════════ STATS ═══════════════ */
 
   function _getStats() {
@@ -870,6 +983,7 @@
         _renderBoardSelector() +
         '<button class="btn btn-ghost btn-xs" onclick="window._schoolNewBoard()" title="New Board"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>' +
         '<button class="btn btn-ghost btn-xs" onclick="window._schoolRenameBoard()" title="Rename Board"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+        '<button class="btn btn-ghost btn-xs" onclick="window._schoolDuplicateBoard()" title="Duplicate Board"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>' +
         '<button class="btn btn-ghost btn-xs" onclick="window._schoolDeleteBoard()" title="Delete Board" style="color:var(--danger)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>' +
         '<div class="tb-divider"></div>' +
         '<div class="school-search-wrap">' +
@@ -878,6 +992,8 @@
           '<div class="school-search-clear" onclick="window._schoolClearSearch()">&#10005;</div>' +
         '</div>' +
         '<div style="flex:1"></div>' +
+        '<button class="btn btn-ghost btn-xs" onclick="window._schoolExportBoard()" title="Export Board"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>' +
+        '<button class="btn btn-ghost btn-xs" onclick="window._schoolImportBoard()" title="Import Board"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>' +
         '<button class="btn btn-ghost btn-xs" onclick="window._schoolAutoArrange()" title="Auto-arrange"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>' +
         '<button class="btn btn-ghost btn-xs" onclick="window._schoolAddNote()" title="Add Note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button>' +
         '<button class="btn btn-primary btn-xs" onclick="window._schoolAddFolder()" id="school-add-folder-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Folder</button>' +
@@ -891,7 +1007,7 @@
       '</div>' +
       '<div class="school-canvas-wrap anim-entrance" style="--delay:0.1s">' +
         '<div id="school-canvas"></div>' +
-        '<div class="school-canvas-hint">Scroll to zoom &middot; Drag to pan &middot; Right-click nodes for options</div>' +
+        '<div class="school-canvas-hint">Scroll to zoom &middot; Drag to pan &middot; Ctrl+Click to multi-select &middot; Right-click for options</div>' +
       '</div>' +
       '<div class="school-detail-panel" id="school-detail-panel">' +
         '<div class="school-detail-header"><h3>Folder Details</h3><button class="md-x" onclick="window._schoolCloseDetail()">&#10005;</button></div>' +
