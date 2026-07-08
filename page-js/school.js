@@ -95,6 +95,7 @@
     }
     try {
       _editor = new Drawflow(container);
+      _editor.start();
     } catch(e) {
       console.error('Drawflow init error:', e);
       container.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--text-muted)">' +
