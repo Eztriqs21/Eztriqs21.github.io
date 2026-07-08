@@ -74,9 +74,6 @@
       : 'Empty';
     return '<div class="school-folder-node" style="border-left-color:' + color + '">' +
       '<div class="school-folder-top">' +
-        '<div class="school-folder-icon" style="background:' + color + '15">' +
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + color + '" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' +
-        '</div>' +
         '<span class="school-folder-name">' + esc(name) + '</span>' +
       '</div>' +
       '<div class="school-folder-count" style="color:' + color + '90">' + countText + '</div>' +
@@ -164,6 +161,7 @@
           if (info) {
             info.data.text = e.target.textContent;
             _editor.updateNodeDataFromId(nodeId, info.data);
+            _updateDrawflowHTML(nodeId, _noteNodeHTML(info.data.text));
             _persistDrawflow();
           }
         }
@@ -176,7 +174,7 @@
       if (nodeData && Object.keys(nodeData).length > 0) {
         try {
           _editor.import(board.drawflow);
-          _applyNodeColors();
+          _restoreNodeVisuals();
         } catch(e) {
           console.warn('[School] Drawflow import failed, resetting board:', e);
           board.drawflow = { drawflow: { Home: { data: {} } } };
@@ -186,23 +184,37 @@
     }
   }
 
-  function _applyNodeColors() {
+  function _updateDrawflowHTML(nodeId, html) {
+    if (!_editor) return;
+    var data = _editor.drawflow.drawflow.Home.data;
+    if (data[nodeId]) {
+      data[nodeId].html = html;
+    }
+  }
+
+  function _restoreNodeVisuals() {
     if (!_editor) return;
     var data = _editor.drawflow.drawflow.Home.data;
     Object.keys(data).forEach(function(id) {
       var node = data[id];
-      if (node.name === 'folder' && node.data && node.data.color) {
-        var el = document.getElementById('node-' + id);
-        if (el) {
-          var folderNode = el.querySelector('.school-folder-node');
-          if (folderNode) folderNode.style.borderLeftColor = node.data.color;
-          var icon = el.querySelector('.school-folder-icon');
-          if (icon) icon.style.background = node.data.color + '15';
-          var iconSvg = el.querySelector('.school-folder-icon svg');
-          if (iconSvg) iconSvg.setAttribute('stroke', node.data.color);
-          var count = el.querySelector('.school-folder-count');
-          if (count) count.style.color = node.data.color + '90';
+      var el = document.getElementById('node-' + id);
+      if (!el) return;
+      if (node.name === 'folder' && node.data) {
+        var folderNode = el.querySelector('.school-folder-node');
+        var color = node.data.color || '#D4AF37';
+        if (folderNode) folderNode.style.borderLeftColor = color;
+        var count = (node.data.files || []).length;
+        var countEl = el.querySelector('.school-folder-count');
+        if (countEl) {
+          countEl.textContent = count > 0 ? count + ' file' + (count !== 1 ? 's' : '') : 'Empty';
+          countEl.style.color = color + '90';
         }
+        var nameEl = el.querySelector('.school-folder-name');
+        if (nameEl && node.data.name) nameEl.textContent = node.data.name;
+      }
+      if (node.name === 'note' && node.data) {
+        var textEl = el.querySelector('.school-note-text');
+        if (textEl && node.data.text) textEl.textContent = node.data.text;
       }
     });
   }
@@ -260,6 +272,7 @@
     if (!info) return;
     info.data.name = newName;
     _editor.updateNodeDataFromId(nodeId, info.data);
+    _updateDrawflowHTML(nodeId, _folderNodeHTML(newName, (info.data.files || []).length, info.data.color));
     var el = document.getElementById('node-' + nodeId);
     if (el) {
       var nameEl = el.querySelector('.school-folder-name');
@@ -274,14 +287,11 @@
     if (!info) return;
     info.data.color = color;
     _editor.updateNodeDataFromId(nodeId, info.data);
+    _updateDrawflowHTML(nodeId, _folderNodeHTML(info.data.name, (info.data.files || []).length, color));
     var el = document.getElementById('node-' + nodeId);
     if (el) {
       var folderNode = el.querySelector('.school-folder-node');
       if (folderNode) folderNode.style.borderLeftColor = color;
-      var icon = el.querySelector('.school-folder-icon');
-      if (icon) icon.style.background = color + '15';
-      var iconSvg = el.querySelector('.school-folder-icon svg');
-      if (iconSvg) iconSvg.setAttribute('stroke', color);
       var count = el.querySelector('.school-folder-count');
       if (count) count.style.color = color + '90';
     }
@@ -377,15 +387,18 @@
     modal.classList.add('open');
   }
 
-  window._mergeSchoolFolders = function(mode) {
-    var folderNodes = _selectedNodes.filter(function(id) {
+  function _getSelectedFolderNodes() {
+    return _selectedNodes.filter(function(id) {
       var info = _editor ? _editor.getNodeFromId(id) : null;
       return info && info.name === 'folder';
     });
-    if (folderNodes.length < 2 || !_editor) return;
+  }
+
+  function _mergeFolders(folderIds, mode) {
+    if (folderIds.length < 2 || !_editor) return;
     var allFiles = [];
     var firstName = '';
-    folderNodes.forEach(function(id, i) {
+    folderIds.forEach(function(id, i) {
       var info = _editor.getNodeFromId(id);
       if (!info) return;
       if (i === 0) firstName = info.data.name;
@@ -394,31 +407,37 @@
       });
     });
     if (mode === 'move') {
-      var firstInfo = _editor.getNodeFromId(folderNodes[0]);
+      var firstInfo = _editor.getNodeFromId(folderIds[0]);
       firstInfo.data.files = allFiles;
-      _editor.updateNodeDataFromId(folderNodes[0], firstInfo.data);
-      var nodeEl = document.getElementById('node-' + folderNodes[0]);
+      _editor.updateNodeDataFromId(folderIds[0], firstInfo.data);
+      _updateDrawflowHTML(folderIds[0], _folderNodeHTML(firstInfo.data.name, allFiles.length, firstInfo.data.color));
+      var nodeEl = document.getElementById('node-' + folderIds[0]);
       if (nodeEl) {
         var countEl = nodeEl.querySelector('.school-folder-count');
         if (countEl) countEl.textContent = allFiles.length + ' file' + (allFiles.length !== 1 ? 's' : '');
       }
-      for (var i = 1; i < folderNodes.length; i++) {
-        _editor.removeNodeId('node-' + folderNodes[i]);
+      for (var i = 1; i < folderIds.length; i++) {
+        _editor.removeNodeId('node-' + folderIds[i]);
       }
     } else {
-      var firstNode = _editor.getNodeFromId(folderNodes[0]);
+      var firstNode = _editor.getNodeFromId(folderIds[0]);
       var pos_x = firstNode ? firstNode.pos_x + 60 : 400;
       var pos_y = firstNode ? firstNode.pos_y + 60 : 300;
-      var newName = firstName + ' + ' + (folderNodes.length - 1) + ' more';
+      var newName = firstName + ' + ' + (folderIds.length - 1) + ' more';
       _editor.addNode('folder', 1, 1, pos_x, pos_y, 'school-folder',
         { name: newName, files: allFiles, color: '#D4AF37' },
         _folderNodeHTML(newName, allFiles.length, '#D4AF37'));
-      folderNodes.forEach(function(id) { _editor.removeNodeId('node-' + id); });
+      folderIds.forEach(function(id) { _editor.removeNodeId('node-' + id); });
     }
     _selectedNodes = [];
     _updateMergeButton();
     _persistDrawflow();
     window.cm('m-school-merge');
+  }
+
+  window._mergeSchoolFolders = function(mode) {
+    var folderIds = _getSelectedFolderNodes();
+    _mergeFolders(folderIds, mode);
   };
 
   /* ═══════════════ CONTEXT MENU ═══════════════ */
@@ -429,12 +448,20 @@
     if (!menu) return;
     var info = _editor.getNodeFromId(nodeId);
     var isFolder = info && info.name === 'folder';
+
+    // If only one folder node and we have selection with 2+ folders, show merge option
+    var selectedFolders = _getSelectedFolderNodes();
+    var canMerge = selectedFolders.length >= 2 && isFolder && selectedFolders.indexOf(nodeId) !== -1;
+
     var items = '';
     if (isFolder) {
       items += '<button class="school-ctx-item" onclick="window._ctxOpen()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Open</button>';
     }
     items += '<button class="school-ctx-item" onclick="window._ctxRename()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Rename</button>';
     items += '<button class="school-ctx-item" onclick="window._ctxDuplicate()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicate</button>';
+    if (canMerge) {
+      items += '<button class="school-ctx-item" onclick="window._ctxMerge()" style="color:var(--accent)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 19H5c-1 0-2-1-2-2V7c0-1 1-2 2-2h3"/><path d="M16 5h3c1 0 2 1 2 2v10c0 1-1 2-2 2h-3"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Merge Selected (' + selectedFolders.length + ')</button>';
+    }
     items += '<div class="school-ctx-divider"></div>';
     if (isFolder) {
       var colors = ['#D4AF37','#00C896','#EF476F','#ECD06F','#AA771C','#7B68EE'];
@@ -475,6 +502,7 @@
       } else {
         info.data.text = newName;
         _editor.updateNodeDataFromId(_ctxNodeId, info.data);
+        _updateDrawflowHTML(_ctxNodeId, _noteNodeHTML(newName));
         var el = document.getElementById('node-' + _ctxNodeId);
         if (el) {
           var textEl = el.querySelector('.school-note-text');
@@ -491,6 +519,13 @@
   };
   window._ctxColor = function(color) {
     if (_ctxNodeId) _changeNodeColor(_ctxNodeId, color);
+    _hideContextMenu();
+  };
+  window._ctxMerge = function() {
+    var folderIds = _getSelectedFolderNodes();
+    if (folderIds.length >= 2) {
+      _mergeFolders(folderIds, 'create');
+    }
     _hideContextMenu();
   };
   window._ctxDelete = function() {
@@ -599,6 +634,7 @@
         files.push({ name: file.name, type: file.type, data: ev.target.result });
         info.data.files = files;
         _editor.updateNodeDataFromId(nodeId, info.data);
+        _updateDrawflowHTML(nodeId, _folderNodeHTML(info.data.name, files.length, info.data.color));
         _updateNodeFileCount(nodeId, files.length);
         _persistDrawflow();
         remaining--;
@@ -614,6 +650,7 @@
     if (!info || !info.data.files) return;
     info.data.files.splice(idx, 1);
     _editor.updateNodeDataFromId(nodeId, info.data);
+    _updateDrawflowHTML(nodeId, _folderNodeHTML(info.data.name, info.data.files.length, info.data.color));
     _updateNodeFileCount(nodeId, info.data.files.length);
     _persistDrawflow();
     if (_detailPanel === nodeId) _openDetailPanel(nodeId);
